@@ -40,11 +40,6 @@ coverage/
 test-results/
 *.test
 
-# Ignore les fichiers de documentation générés
-*.pdf
-*.docx
-*.html
-
 # Ignorer les fichiers de sauvegarde
 *~
 *.bak
