@@ -1,0 +1,50 @@
+# Fichiers de configuration locaux
+*.local
+*.env
+config/
+
+# Dossiers de cache
+.cache/
+tmp/
+logs/
+log/
+
+# Dossiers de sortie (build)
+build/
+dist/
+bin/
+obj/
+*.o
+*.so
+*.exe
+
+# Fichiers de dépendances
+*.lock
+node_modules/
+vendor/
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*.bak
+
+# Fichiers générés par des éditeurs
+*.swp
+*.swo
+*.DS_Store
+*.idea/
+.vscode/
+
+# Fichiers de tests
+coverage/
+test-results/
+*.test
+
+# Ignore les fichiers de documentation générés
+*.pdf
+*.docx
+*.html
+
+# Ignorer les fichiers de sauvegarde
+*~
+*.bak
