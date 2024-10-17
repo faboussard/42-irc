@@ -6,14 +6,13 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/17 15:08:03 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/17 15:12:35 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <cstdlib>
 #include "../includes/Colors.hpp"
-
 
 
 /* Les serveurs IRC (Internet Relay Chat) utilisent généralement le port 6667
