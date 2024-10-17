@@ -1,3 +1,7 @@
+# Nom de l'exécutable et répertoire objets
+ircserv
+.objs
+
 # Fichiers de configuration locaux
 *.local
 *.env
