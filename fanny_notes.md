@@ -22,6 +22,22 @@ ca va tourner sur local host et on pourra y acceder en desactivant le ssl
 ---
 
 
+# **Plan**
+Gestion des connexions et de l'authentification (Personne A)
+
+Implémenter la gestion des connexions des clients (écoute des connexions sur le port).
+Authentifier les utilisateurs (nom d'utilisateur, mot de passe).
+Gérer la création et la destruction des sockets pour chaque client.
+Gestion des canaux et des utilisateurs (Personne B)
+
+Implémenter la gestion des canaux (création, suppression, rejoindre/quitter un canal).
+Gérer les utilisateurs dans chaque canal (ajouter/supprimer des utilisateurs).
+Mettre en œuvre les rôles des utilisateurs (opérateurs vs utilisateurs réguliers).
+Communication et gestion des messages (Personne C)
+
+Implémenter l'envoi et la réception des messages privés entre utilisateurs.
+Gérer l'envoi et la réception des messages de groupe dans les canaux.
+Assurer la transmission des messages entre clients de manière asynchrone.
 
 
 # **General**
@@ -97,6 +113,7 @@ ca va tourner sur local host et on pourra y acceder en desactivant le ssl
 - Un **tunnel** est un mécanisme qui permet de transmettre des données d'un protocole à un autre en encapsulant ces données.
  - **WebSocket** est un protocole de communication qui permet d'établir une connexion bidirectionnelle persistante entre un client (comme un navigateur ou une application) et un serveur. Contrairement à HTTP, où le client doit envoyer une requête pour obtenir une réponse du serveur, WebSocket permet au serveur d'envoyer des données au client à tout moment, ce qui est idéal pour des applications en temps réel.
  - **IP** = Internet protocol
+
  - **Sockets** : Un socket est un point de terminaison de communication bidirectionnelle entre deux programmes qui s'exécutent sur un réseau. Il est utilisé pour la communication entre les processus sur la même machine ou sur différentes machines dans un réseau.
 
 ---
@@ -106,4 +123,44 @@ ca va tourner sur local host et on pourra y acceder en desactivant le ssl
 
 ---
 
-## **Au revoir !** 👋
+## **Beej’s Guide to Network Programming !** 👋
+2.1 Two Types of Internet Sockets
+- “SOCK_STREAM = two-way connected communication streams : envoie les packets dans l'ordre et sans perte
+- SOCK_DGRAM = connectionless sockets” : envoie les packets sans garantie de réception
+- Data Encapsulation =  a packet is born, the packet is wrapped (“encapsulated”) in a header (and rarely a footer) by the first
+protocol (say, the TFTP protocol), then the whole thing (TFTP header included) is encapsulated again by
+the next protocol (say, UDP), then again by the next (IP), then again by the final protocol on the hardware
+(physical) layer (say, Ethernet).
+
+Layered Network Model
+Application
+• Presentation
+• Session
+• Transport
+• Network
+• Data Link
+• Physical
+
+Layered Network Model with unix : 
+• Application Layer (telnet, ftp, etc.)
+• Host-to-Host Transport Layer (TCP, UDP)
+• Internet Layer (IP and routing)
+• Network Access Layer (Ethernet, wi-fi, or whatever)
+
+3.1 IP Addresses, versions 4 and 6
+
+loopback address = “this machine I’m running on now” =  127.0.0.1 = localhost
+Adresse IP privée : Utilisée pour la communication sur un réseau local (local AreaNetwork).
+Adresse IP publique : Utilisée pour la communication sur Internet.
+
+Think of the IP address as the street address of a hotel, and the port number as the room number. 
+
+3.4.1 Private (Or Disconnected) Networks
+
+often times, the firewall translates “internal” IP addresses to “external” (that everyone else in the
+world knows) IP addresses using a process called Network Address Translation, or NAT
+
+9.17 poll()
+This function is very similar to select() in that they both watch sets of file descriptors for events, such
+as incoming data ready to recv(), socket ready to send() data to, out-of-band data ready to recv(),
+errors, etc.
