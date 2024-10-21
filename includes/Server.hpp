@@ -8,11 +8,12 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include <vector>
+#include <signal.h>
 
 class Server {
 public:
     Server(int port);
-    void run();
+    void runServer();
 
 private:
     int server_fd;
