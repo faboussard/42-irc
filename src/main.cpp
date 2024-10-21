@@ -1,4 +1,3 @@
-
 /* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -11,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Colors.hpp"
+#include "../includes/colors.hpp"
 #include "../includes/Server.hpp"
 
-void checkArgs(int port, std::string password){
-    if(port < 1024 || port > 65535){
+void checkArgs(int port, const std::string& password){
+    if(port < 1080 || port > 65535){
         std::cerr << "Invalid port number" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -26,20 +25,29 @@ void checkArgs(int port, std::string password){
 }
 
 int main(int ac, char **argv){
-    (void)ac;
-    (void)argv;
-    // std::string usage = "Usage: ./server <port>";
-    // if(ac != 2){
-    //     std::cerr << usage << std::endl;
-    //     exit(EXIT_FAILURE);
-    // }
+    std::string usage = "Usage: ./server <port> <password>";
+    if(ac != 3){
+        std::cerr << usage << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
-    // int port = std::atoi(argv[1]);
-    // std::string password = argv[2];
-    // checkArgs(port, password);
+    int port = std::atoi(argv[1]);
+    std::string password = argv[2];
+    checkArgs(port, password);
+    Server ser(port);
 
-    int port = 6667;
-    Server ircServer(port);
-    ircServer.run();
+    try
+    {
+        signal(SIGINT, Server::signalHandler);
+        signal(SIGQUIT, Server::signalHandler);
+        ser.runServer();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        ser.closeServer();
+    }
+
+    std::cout << "The Server Closed!" << std::endl;
     exit(EXIT_SUCCESS);
 }
