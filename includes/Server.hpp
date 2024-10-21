@@ -13,15 +13,20 @@
 class Server {
 public:
     Server(int port);
+    ~Server();
     void runServer();
+    static void signalHandler(int signal);
+    void closeServer();
 
 private:
+    static bool signal;
     int server_fd;
     int port;
     struct sockaddr_in address;
     std::vector<struct pollfd> poll_fds;
 
-    void handleClient(int client_socket);
+    // void handleClient(int client_socket);
+
 };
 
 #endif // SERVER_HPP

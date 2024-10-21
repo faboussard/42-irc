@@ -35,5 +35,21 @@ int main(int ac, char **argv){
     int port = std::atoi(argv[1]);
     std::string password = argv[2];
     checkArgs(port, password);
+
+    Server ser(port);
+    try
+    {
+      signal(SIGINT, Server::signalHandler);
+      signal(SIGQUIT, Server::signalHandler);
+      // ser.runServer();
+      std::cout << GREEN << "Server started on port " << port << RESET << std::endl;
+      
+    }
+    catch(const std::exception& e)
+    {
+        ser.closeServer();
+        std::cerr << e.what() << '\n';
+    }
+    std::cout << "The Server Closed!" << std::endl;
     exit(EXIT_SUCCESS);
 }
