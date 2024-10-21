@@ -10,24 +10,28 @@
 #include <vector>
 #include <signal.h>
 
-class Server {
-public:
-    Server(int port);
-    ~Server();
-    void runServer();
-    static void signalHandler(int signal);
-    void closeServer();
-    void createSocket();
+#include "Client.hpp"
 
+class Client;
+
+class Server {
 private:
     static bool _signal;
     int _socketFd;
     int _port;
+    std::vector<Client> _clients;
     struct sockaddr_in _address;
     std::vector<struct pollfd> _poll_fds;
 
-    // void handleClient(int client_socket);
-
+public:
+    Server(int port);
+    void runServer();
+    static void signalHandler(int signal);
+    void closeServer();
+    void createSocket();
+    void clearClients(int fd);
+    void acceptNewClient();
+    void receiveMessage(int fd);
 };
 
 #endif // SERVER_HPP

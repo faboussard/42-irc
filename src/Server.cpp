@@ -7,9 +7,6 @@ Server::Server(int port) : _port(port){
     _socketFd = -1;
 }
 
-Server::~Server(){
-}
-
 void Server::runServer(){
 
     std::cout << "Server running" << std::endl;
@@ -28,6 +25,19 @@ void Server::signalHandler(int signal){
     {
         Server::_signal = true;
     }
+}
+
+//revoir
+void Server::clearClients(int fd){ //-> clear the clients
+	for(size_t i = 0; i < _poll_fds.size(); i++){ //-> remove the client from the pollfd
+		if (_poll_fds[i].fd == fd)
+			{_poll_fds.erase(_poll_fds.begin() + i); break;}
+	}
+	for(size_t i = 0; i < _clients.size(); i++){ //-> remove the client from the vector of clients
+		if (_socketFd == fd)
+			{_clients.erase(_clients.begin() + i); break;}
+	}
+
 }
 
 void Server::createSocket(){
