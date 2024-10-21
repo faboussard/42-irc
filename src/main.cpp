@@ -15,7 +15,7 @@
 #include "../includes/Server.hpp"
 
 void checkArgs(int port, std::string password){
-    if(port < 1024 || port > 65535){
+    if(port < 10000 || port > 65535){
         std::cerr << "Invalid port number" << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -35,8 +35,8 @@ int main(int ac, char **argv){
     int port = std::atoi(argv[1]);
     std::string password = argv[2];
     checkArgs(port, password);
+      Server ser(port);
 
-    Server ser(port);
     try
     {
       signal(SIGINT, Server::signalHandler);

@@ -17,13 +17,14 @@ public:
     void runServer();
     static void signalHandler(int signal);
     void closeServer();
+    void createSocket();
 
 private:
-    static bool signal;
-    int server_fd;
-    int port;
-    struct sockaddr_in address;
-    std::vector<struct pollfd> poll_fds;
+    static bool _signal;
+    int _socketFd;
+    int _port;
+    struct sockaddr_in _address;
+    std::vector<struct pollfd> _poll_fds;
 
     // void handleClient(int client_socket);
 
