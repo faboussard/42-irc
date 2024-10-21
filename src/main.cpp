@@ -26,14 +26,20 @@ void checkArgs(int port, std::string password){
 }
 
 int main(int ac, char **argv){
-    std::string usage = "Usage: ./server <port>";
-    if(ac != 2){
-        std::cerr << usage << std::endl;
-        exit(EXIT_FAILURE);
-    }
+    (void)ac;
+    (void)argv;
+    // std::string usage = "Usage: ./server <port>";
+    // if(ac != 2){
+    //     std::cerr << usage << std::endl;
+    //     exit(EXIT_FAILURE);
+    // }
 
-    int port = std::atoi(argv[1]);
-    std::string password = argv[2];
-    checkArgs(port, password);
+    // int port = std::atoi(argv[1]);
+    // std::string password = argv[2];
+    // checkArgs(port, password);
+
+    int port = 6667;
+    Server ircServer(port);
+    ircServer.run();
     exit(EXIT_SUCCESS);
 }
