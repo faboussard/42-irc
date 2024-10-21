@@ -18,7 +18,7 @@ RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
 HEADER = Colors
-SRCS = main
+SRCS = main Server
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/
