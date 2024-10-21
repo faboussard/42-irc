@@ -1,7 +1,9 @@
+PART 3
+
 # 💻 **FD**: 
 
 ## 🛑 Pour fermer proprement des ports : 
-- Close de **1 à 1024**.
+- Close de **1 à 1024** car cest le nombre de fd dun systeme de base linux. command limit pour trouver si besoin
 
 ---
 
@@ -116,6 +118,18 @@ Assurer la transmission des messages entre clients de manière asynchrone.
 
  - **Sockets** : Un socket est un point de terminaison de communication bidirectionnelle entre deux programmes qui s'exécutent sur un réseau. Il est utilisé pour la communication entre les processus sur la même machine ou sur différentes machines dans un réseau.
 
+ - **Active socket** : Un socket actif est un socket qui est en cours d'utilisation pour la communication. Il est ouvert et prêt à envoyer ou à recevoir des données.
+
+ - **Passive socket** : Un socket passif est un socket qui est en attente de demandes de connexion entrantes. Il est utilisé pour écouter les connexions entrantes et accepter les demandes de connexion.
+
+ Active Socket (IRC Client):
+
+**An active socket in IRC** represents the client-side connection to an IRC server. The IRC client initiates communication by connecting to the IRC server using a TCP/IP connection. Once connected, the client can send commands and messages to the server and receive responses. The IRC client socket handles user input, sends messages to the server, and processes server responses.
+Passive Socket (IRC Server):
+
+**A passive socket in IRC** represents the server-side listening socket that accepts incoming connections from IRC clients. The IRC server listens for incoming connections on a specific port, When a connection request is received from an IRC client, the server socket accepts the connection, creating a new socket for communication with that client. The IRC server socket manages multiple client connections simultaneously, handling commands and messages from each connected client and broadcasting messages to all clients as needed.
+
+
 ---
 
 ### 🖥️ Référence :
@@ -125,9 +139,9 @@ Assurer la transmission des messages entre clients de manière asynchrone.
 
 ## **Beej’s Guide to Network Programming !** 👋
 2.1 Two Types of Internet Sockets
-- “SOCK_STREAM = two-way connected communication streams : envoie les packets dans l'ordre et sans perte
-- SOCK_DGRAM = connectionless sockets” : envoie les packets sans garantie de réception
-- Data Encapsulation =  a packet is born, the packet is wrapped (“encapsulated”) in a header (and rarely a footer) by the first
+- “**SOCK_STREAM** = two-way connected communication streams : envoie les packets dans l'ordre et sans perte
+- **SOCK_DGRAM** = connectionless sockets” : envoie les packets sans garantie de réception
+- **Data Encapsulation** =  a packet is born, the packet is wrapped (“encapsulated”) in a header (and rarely a footer) by the first
 protocol (say, the TFTP protocol), then the whole thing (TFTP header included) is encapsulated again by
 the next protocol (say, UDP), then again by the next (IP), then again by the final protocol on the hardware
 (physical) layer (say, Ethernet).
@@ -164,3 +178,4 @@ world knows) IP addresses using a process called Network Address Translation, or
 This function is very similar to select() in that they both watch sets of file descriptors for events, such
 as incoming data ready to recv(), socket ready to send() data to, out-of-band data ready to recv(),
 errors, etc.
+The poll() function is used to monitor changes in the status of file descriptors. It blocks until an event occurs on one or more of the monitored file descriptors, or until the specified timeout expires.
