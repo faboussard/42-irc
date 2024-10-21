@@ -15,7 +15,7 @@
 #include "../includes/Server.hpp"
 
 void checkArgs(int port, std::string password){
-    if(port < 10000 || port > 65535){
+    if(port < 1080 || port > 65535){
         std::cerr << "Invalid port number" << std::endl;
         exit(EXIT_FAILURE);
     }
