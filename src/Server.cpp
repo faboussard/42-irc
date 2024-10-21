@@ -1,26 +1,51 @@
 #include "Server.hpp"
 
-bool Server::signal = false;
+bool Server::_signal = false;
 
-Server::Server(int port){
-    this->port = port;
-    this->server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if(this->server_fd == 0){
-        throw std::runtime_error("Socket creation failed");
-    }
-    int opt = 1;
-    if(setsockopt(this->server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))){
-        throw std::runtime_error("Setsockopt failed");
-    }
-    this->address.sin_family = AF_INET;
-    this->address.sin_addr.s_addr = INADDR_ANY;
-    this->address.sin_port = htons(port);
-    if(bind(this->server_fd, (struct sockaddr *)&this->address, sizeof(this->address)) < 0){
-        throw std::runtime_error("Bind failed");
-    }
-    if(listen(this->server_fd, 3) < 0){
-        throw std::runtime_error("Listen failed");
-    }
-    this->poll_fds.push_back({this->server_fd, POLLIN, 0});
+Server::Server(int port) : _port(port){
+    _signal = false;
+    _socketFd = -1;
 }
 
+Server::~Server(){
+}
+
+void Server::runServer(){
+
+    std::cout << "Server running" << std::endl;
+}
+
+void Server::closeServer(){
+    if (_socketFd != -1)
+    {
+        close(_socketFd);
+        std::cout << "Server closed" << std::endl;
+    }
+}
+
+void Server::signalHandler(int signal){
+    if (signal == SIGINT || signal == SIGQUIT)
+    {
+        Server::_signal = true;
+    }
+}
+
+void Server::createSocket(){
+    _socketFd = socket(AF_INET, SOCK_STREAM, 0); // ipv4, tcp, 0
+    if (_socketFd == -1)
+    {
+        throw std::runtime_error("Failed to create socket");
+    }
+    _address.sin_family = AF_INET; //An integer representing the address family. For IPv4
+    _address.sin_addr.s_addr = INADDR_ANY; // It represents “any” IP address, meaning the socket will be bound to all available network interfaces on the host.
+    _address.sin_port = htons(_port); //converting a 16-bit unsigned short integer from host byte order to network byte order.
+    if (bind(_socketFd, (struct sockaddr *)&_address, sizeof(_address)) == -1)
+    {
+        throw std::runtime_error("Failed to bind socket");
+    }
+    if (listen(_socketFd, 10) == -1) // int listen(int sockfd, int backlog);
+    {
+        throw std::runtime_error("Failed to listen on socket");
+    }
+   _poll_fds.push_back({_socketFd, POLLIN, 0}); //  fill the struct pollfd with the server information. To make the server ready to receive incoming connections, set the events argument to POLLIN and push the struct to the vector fds.
+}
