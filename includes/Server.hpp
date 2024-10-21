@@ -8,8 +8,11 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include <vector>
-#include <signal.h>
-
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <fcntl.h>
+#include <csignal>
 #include "Client.hpp"
 
 class Client;
@@ -21,12 +24,14 @@ private:
     int _port;
     std::vector<Client> _clients;
     struct sockaddr_in _address;
-    std::vector<struct pollfd> _poll_fds;
+    std::vector<struct pollfd> _pollFds;
 
 public:
     Server(int port);
-    void runServer();
+
     static void signalHandler(int signal);
+
+    void runServer();
     void closeServer();
     void createSocket();
     void clearClients(int fd);

@@ -1,4 +1,3 @@
-
 /* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -11,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Colors.hpp"
+#include "../includes/colors.hpp"
 #include "../includes/Server.hpp"
 
-void checkArgs(int port, std::string password){
+void checkArgs(int port, const std::string& password){
     if(port < 1080 || port > 65535){
         std::cerr << "Invalid port number" << std::endl;
         exit(EXIT_FAILURE);
@@ -26,8 +25,8 @@ void checkArgs(int port, std::string password){
 }
 
 int main(int ac, char **argv){
-    std::string usage = "Usage: ./server <port>";
-    if(ac != 2){
+    std::string usage = "Usage: ./server <port> <password>";
+    if(ac != 3){
         std::cerr << usage << std::endl;
         exit(EXIT_FAILURE);
     }
@@ -35,21 +34,20 @@ int main(int ac, char **argv){
     int port = std::atoi(argv[1]);
     std::string password = argv[2];
     checkArgs(port, password);
-      Server ser(port);
+    Server ser(port);
 
     try
     {
-      signal(SIGINT, Server::signalHandler);
-      signal(SIGQUIT, Server::signalHandler);
-      // ser.runServer();
-      std::cout << GREEN << "Server started on port " << port << RESET << std::endl;
-      
+        signal(SIGINT, Server::signalHandler);
+        signal(SIGQUIT, Server::signalHandler);
+        ser.runServer();
     }
     catch(const std::exception& e)
     {
-        ser.closeServer();
         std::cerr << e.what() << '\n';
+        ser.closeServer();
     }
+
     std::cout << "The Server Closed!" << std::endl;
     exit(EXIT_SUCCESS);
 }

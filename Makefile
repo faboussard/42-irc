@@ -17,7 +17,7 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-HEADER = Colors
+HEADER = colors
 SRCS = main Server
 
 # ---------------------------------- Repertories ----------------------------- #
