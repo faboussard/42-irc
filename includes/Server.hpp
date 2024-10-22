@@ -1,42 +1,56 @@
-#ifndef SERVER_HPP
-#define SERVER_HPP
+/* Copyright 2024 <faboussa>************************************************* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
+/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <unistd.h>
+#ifndef INCLUDES_SERVER_HPP_
+#define INCLUDES_SERVER_HPP_
+
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <netinet/in.h>
 #include <poll.h>
-#include <vector>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <netinet/in.h>
-#include <fcntl.h>
+#include <unistd.h>
+
 #include <csignal>
-#include "Client.hpp"
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <vector>
+
+#include "../includes/Client.hpp"
 
 class Client;
 
 class Server {
-private:
-    static bool _signal;
-    int _socketFd;
-    int _port;
-    std::vector<Client> _clients;
-    struct sockaddr_in _address;
-    std::vector<struct pollfd> _pollFds;
+ private:
+  static bool _signal;
+  int _socketFd;
+  int _port;
+  std::vector<Client> _clients;
+  struct sockaddr_in _address;
+  std::vector<struct pollfd> _pollFds;
 
-public:
-    Server(int port);
+ public:
+  explicit Server(int port);
 
-    static void signalHandler(int signal);
+  static void signalHandler(int signal);
 
-    void runServer();
-    void closeServer();
-    void createSocket();
-    void clearClient(int fd);
-    void acceptNewClient();
-    void receiveMessage(int fd);
+  void runServer();
+  void closeServer();
+  void createSocket();
+  void clearClient(int fd);
+  void acceptNewClient();
+  void receiveMessage(int fd);
 };
 
-#endif // SERVER_HPP
+#endif  // INCLUDES_SERVER_HPP_
