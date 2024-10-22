@@ -33,6 +33,7 @@ void Server::runServer() {
 void shrink_to_fit(std::vector<struct pollfd>& vec) {
     std::vector<struct pollfd>(vec).swap(vec);
 }
+
 void Server::closeServer() {
   for (size_t i = 0; i < _clients.size(); ++i) {
     std::cout << RED << "Client <" << _clients[i].getFd();

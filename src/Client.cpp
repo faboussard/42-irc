@@ -1,36 +1,24 @@
 /* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/22 17:02:31 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INCLUDES_CLIENT_HPP_
-#define INCLUDES_CLIENT_HPP_
+#include "../includes/Client.hpp"
 
-#include <iostream>
-#include <string>
-#include <sys/types.h>
-#include <sys/socket.h>
-class Client {
- private:
-  int         _fd;
-  std::string _ip;
+#include "../includes/colors.hpp"
 
- public:
-  explicit Client(int fd = -1, const std::string& ip = "");
 
-  void sendMessage(const std::string& message);
-  
-  int getFd() const { return _fd; }
-  void setFd(int fd) { _fd = fd; }
-  std::string getIp() const { return _ip; }
-  void setIp(const std::string& ip) { _ip = ip; }
-};
+Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {}
 
-#endif  // INCLUDES_CLIENT_HPP_
+void Client::sendMessage(const std::string& message) {
+  if (send(_fd, message.c_str(), message.length(), 0) == -1) {
+    std::cerr << RED "Error while sending message" RESET << std::endl;
+  }
+}
