@@ -30,6 +30,9 @@ void Server::runServer() {
   std::cout << "Server shutting down..." << std::endl;
 }
 
+void shrink_to_fit(std::vector<struct pollfd>& vec) {
+    std::vector<struct pollfd>(vec).swap(vec);
+}
 void Server::closeServer() {
   for (size_t i = 0; i < _clients.size(); ++i) {
     std::cout << RED << "Client <" << _clients[i].getFd();
@@ -49,7 +52,7 @@ void Server::closeServer() {
     }
   }
   _pollFds.clear();
-  _pollFds.shrink_to_fit();
+  shrink_to_fit(_pollFds);
 }
 
 void Server::signalHandler(int signal) {
