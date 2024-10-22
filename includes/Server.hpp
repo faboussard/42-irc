@@ -52,7 +52,6 @@ class Server {
   void clearClient(int fd);
   void acceptNewClient();
   void receiveMessage(int fd);
-  void handleMessage(int fd, const std::string& message);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

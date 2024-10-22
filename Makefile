@@ -6,7 +6,7 @@
 #    By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/17 11:50:35 by mbernard         ###   ########.fr        #
+#    Updated: 2024/10/22 17:30:38 by mbernard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,8 +17,8 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-HEADER = colors
-SRCS = main Server
+HEADER = colors Server Client
+SRCS = main Server Client
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/
