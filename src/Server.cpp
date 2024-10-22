@@ -22,24 +22,34 @@ Server::Server(int port) : _port(port) {
 }
 
 void Server::runServer() {
-    createSocket();
-    std::cout << GREEN << "Server started on port " << _port << RESET << std::endl;
-     while (!_signal) {
-    }
-    std::cout << "Server shutting down..." << std::endl;
+  createSocket();
+  std::cout << GREEN << "Server started on port " << _port << RESET
+            << std::endl;
+  while (!_signal) {
+  }
+  std::cout << "Server shutting down..." << std::endl;
 }
 
 void Server::closeServer() {
-  for (size_t i = 0; i < _clients.size(); i++) {
-    std::cout << RED << "Client <" << _clients[i].getFd() << "> Disconnected"
-              << RESET << std::endl;
+  for (size_t i = 0; i < _clients.size(); ++i) {
+    std::cout << RED << "Client <" << _clients[i].getFd();
+    std::cout << "> Disconnected" << RESET << std::endl;
     close(_clients[i].getFd());
   }
+  _clients.clear();
   if (_socketFd != -1) {
-    std::cout << RED << "Server <" << _socketFd << "> Disconnected" << RESET
-              << std::endl;
+    std::cout << RED << "Server <" << _socketFd;
+    std::cout << "> Disconnected" << RESET << std::endl;
     close(_socketFd);
+    _socketFd = -1;
   }
+  for (size_t i = 0; i < _pollFds.size(); ++i) {
+    if (_pollFds[i].fd != -1) {
+      close(_pollFds[i].fd);
+    }
+  }
+  _pollFds.clear();
+  _pollFds.shrink_to_fit();
 }
 
 void Server::signalHandler(int signal) {
