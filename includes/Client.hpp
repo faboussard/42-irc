@@ -18,7 +18,7 @@
 
 class Client {
  private:
-  int _fd;
+  int         _fd;
   std::string _ip;
 
  public:

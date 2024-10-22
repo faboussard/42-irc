@@ -34,11 +34,11 @@ class Client;
 
 class Server {
  private:
-  static bool _signal;
-  int _socketFd;
-  int _port;
-  std::vector<Client> _clients;
-  struct sockaddr_in _address;
+  static bool                _signal;
+  int                        _socketFd;
+  int                        _port;
+  std::vector<Client>        _clients;
+  struct sockaddr_in         _address;
   std::vector<struct pollfd> _pollFds;
 
  public:
