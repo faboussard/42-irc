@@ -25,9 +25,8 @@ void checkArgs(int port, const std::string& password) {
 }
 
 int main(int ac, char** argv) {
-  std::string usage = "Usage: ./server <port> <password>";
   if (ac != 3) {
-    std::cerr << usage << std::endl;
+    std::cerr << "Usage: ./ircserv <port> <password>" << std::endl;
     exit(EXIT_FAILURE);
   }
 
