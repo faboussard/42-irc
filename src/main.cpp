@@ -42,8 +42,10 @@ int main(int ac, char** argv) {
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
     ser.closeServer();
+    exit(EXIT_FAILURE);
   }
 
-    std::cout << "The Server is closed" << std::endl;
-    exit(EXIT_SUCCESS);
+  ser.closeServer();
+  std::cout << "The Server is closed" << std::endl;
+  exit(EXIT_SUCCESS);
 }
