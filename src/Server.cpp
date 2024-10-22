@@ -34,7 +34,7 @@ void Server::signalHandler(int signal) {
     }
 }
 
-void Server::clearClients(int fd) {
+void Server::clearClient(int fd) {
     for(size_t i = 0; i < _pollFds.size(); i++) {
         if (_pollFds[i].fd == fd) {
             _pollFds.erase(_pollFds.begin() + i);
