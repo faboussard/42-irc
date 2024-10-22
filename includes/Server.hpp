@@ -34,7 +34,7 @@ public:
     void runServer();
     void closeServer();
     void createSocket();
-    void clearClients(int fd);
+    void clearClient(int fd);
     void acceptNewClient();
     void receiveMessage(int fd);
 };
