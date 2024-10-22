@@ -22,12 +22,11 @@ Server::Server(int port) : _port(port) {
 }
 
 void Server::runServer() {
-  createSocket();
-  std::cout << GREEN << "Server started on port " << _port << RESET
-            << std::endl;
-  while (!_signal) {
-  }
-  std::cout << RED << "Server shutting down..." << RESET << std::endl;
+    createSocket();
+    std::cout << GREEN << "Server started on port " << _port << RESET << std::endl;
+     while (!_signal) {
+    }
+    std::cout << "Server shutting down..." << std::endl;
 }
 
 void Server::closeServer() {

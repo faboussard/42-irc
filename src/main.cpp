@@ -45,6 +45,6 @@ int main(int ac, char** argv) {
     ser.closeServer();
   }
 
-  std::cout << "The Server Closed!" << std::endl;
-  exit(EXIT_SUCCESS);
+    std::cout << "The Server is closed" << std::endl;
+    exit(EXIT_SUCCESS);
 }
