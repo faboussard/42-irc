@@ -111,6 +111,18 @@ Assurer la transmission des messages entre clients de manière asynchrone.
 ---
 
 ## 🔍 **Voc**:
+- **API** Une API est un ensemble de règles, de fonctions, et de protocoles qui permettent à différents logiciels ou composants d'un système de communiquer entre eux. Une API est une sorte de contrat qui spécifie comment deux programmes ou plus peuvent interagir. 
+
+Une API réseau désigne un ensemble de fonctions ou de protocoles qui permettent aux programmes d'interagir avec des services réseau (comme les sockets, les connexions TCP/UDP, etc.)
+
+Exemple d'API dans d'autres contextes :
+API Web : Permet à une application d'interagir avec un service web. Par exemple, une application peut utiliser l'API de Twitter pour publier un tweet ou récupérer des données.
+API de bibliothèque logicielle : Une bibliothèque comme std::vector en C++ propose une API qui permet à un programmeur d'ajouter ou de retirer des éléments, d'accéder à des éléments, etc., sans avoir à connaître les détails internes de l'implémentation.
+
+Relation entre API et protocole
+Une API peut implémenter des protocoles : Par exemple, une API réseau peut fournir des fonctions pour établir des connexions, envoyer et recevoir des données en utilisant un protocole spécifique comme TCP/IP.
+Utilisation conjointe : Lorsqu'un développeur utilise une API réseau, il exploite les fonctions fournies par l'API pour interagir avec un protocole sous-jacent. Par exemple, l'API peut encapsuler des détails de protocoles comme TCP et permettre au développeur de travailler à un niveau d'abstraction plus éle
+
 - **Spanning Tree Protocol (STP)** : Un protocole de réseau utilisé pour éviter les boucles dans les réseaux locaux (LAN). Il crée une **topologie arborescente** qui connecte tous les commutateurs tout en désactivant les liens redondants.
 - Un **tunnel** est un mécanisme qui permet de transmettre des données d'un protocole à un autre en encapsulant ces données.
  - **WebSocket** est un protocole de communication qui permet d'établir une connexion bidirectionnelle persistante entre un client (comme un navigateur ou une application) et un serveur. Contrairement à HTTP, où le client doit envoyer une requête pour obtenir une réponse du serveur, WebSocket permet au serveur d'envoyer des données au client à tout moment, ce qui est idéal pour des applications en temps réel.
@@ -179,3 +191,18 @@ This function is very similar to select() in that they both watch sets of file d
 as incoming data ready to recv(), socket ready to send() data to, out-of-band data ready to recv(),
 errors, etc.
 The poll() function is used to monitor changes in the status of file descriptors. It blocks until an event occurs on one or more of the monitored file descriptors, or until the specified timeout expires.
+
+# tuto #
+
+La structure sockadrre_in est utilisee pour specifier une adresse ip et un numero de port.
+sin = sockadress in
+sin_family: tye dadress utilisee par le soket (AF_INET)
+sin_port: numero de portm convertir avec la fonciton htons pour garantir que les octets soit envoyes dans le bon ordre reseau (big endian) (octet le plus fot stocke en premier )
+sin_addr = adresse ip 
+
+
+socket function is a system call to create ta new socket for a specified tye and returns a file descriptor that can be used to refer to that socket.
+
+SO_REUSEADDR enables the socket to bypass this reservation period and reuse the port and address right away.
+
+O_NONBLOCK flag on the server socket file descriptor. This flag sets the socket to non-blocking mode, which means that operations such as read() and write() on the socket will return immediately, even if there is no data available to read or the write operation cannot be completed immediate

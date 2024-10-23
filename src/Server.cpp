@@ -101,6 +101,8 @@ void Server::createSocket() {
   if (listen(_socketFd, 10) == -1)
     throw std::runtime_error("Failed to listen on socket");
 
+    //separer ici la creation du poll fd
+
   struct pollfd newPoll;
   newPoll.fd = _socketFd;
   newPoll.events = POLLIN;

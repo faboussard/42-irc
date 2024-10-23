@@ -1,0 +1,47 @@
+Lorsqu'un serveur IRC reçoit un message et envoie une réponse numérique, plusieurs étapes sont suivies pour traiter la commande et générer une réponse adaptée. Voici un aperçu du flux général :
+
+Réception du message du client
+Le serveur reçoit un message envoyé par un client (un utilisateur connecté). Ce message suit le protocole IRC, qui est généralement une ligne de texte terminée par une nouvelle ligne (\r\n).
+Le message inclut souvent une commande (par exemple NICK, JOIN, PRIVMSG) ainsi que des paramètres.
+
+Validation et parsing du message
+Le serveur effectue une validation basique, comme s'assurer que la syntaxe du message est correcte (longueur, structure).
+Le message est ensuite analysé (parsing) pour extraire la commande et ses arguments (par exemple, un message PRIVMSG pourrait avoir la structure PRIVMSG #channel :message).
+Si le message est mal formé ou s'il manque des arguments obligatoires, le serveur peut directement envoyer une réponse d'erreur numérique appropriée.
+
+Identification de l'utilisateur
+Le serveur identifie quel client a envoyé le message en fonction de sa connexion.
+Si l'utilisateur n'est pas encore enregistré (par exemple, il n'a pas encore défini de pseudo avec la commande NICK), des étapes supplémentaires peuvent être nécessaires avant de traiter la commande.
+Traitement de la commande
+En fonction de la commande reçue (comme NICK, JOIN, PRIVMSG), le serveur effectue une action spécifique :
+Pour une commande NICK, il enregistre le pseudo de l'utilisateur.
+Pour une commande JOIN, il ajoute l'utilisateur à un canal spécifique.
+Pour une commande PRIVMSG, il envoie un message privé à une autre personne ou à un canal.
+Certaines commandes nécessitent une réponse immédiate (par exemple, un changement de pseudo pourrait générer un message d'accueil si l'utilisateur termine son enregistrement).
+
+Génération et envoi d'une réponse numérique (Numeric Reply)
+En fonction du résultat du traitement de la commande, le serveur génère une réponse numérique. Les réponses numériques sont des codes standard définis par le protocole IRC (RFC 1459). Chaque réponse numérique a une signification précise, par exemple :
+001 : Bienvenue sur le serveur après l'enregistrement (RPL_WELCOME).
+433 : Erreur de pseudo déjà utilisé (ERR_NICKNAMEINUSE).
+353 : Liste des utilisateurs dans un canal (RPL_NAMREPLY).
+Le serveur crée une chaîne de caractères avec le code numérique, suivie d'une description textuelle du message, et l'envoie au client.
+Par exemple : :server 001 user :Welcome to the IRC Network user!user@host
+
+Transmission de la réponse
+Le message contenant le code numérique et la réponse textuelle est envoyé au client.
+Le serveur continue à écouter pour d'autres messages du client ou des clients connectés.
+Propagation des messages (si nécessaire)
+Si la commande affecte plusieurs utilisateurs (par exemple, un message dans un canal ou un changement d'état dans un canal), le serveur transmettra le message modifié ou la réponse à tous les utilisateurs concernés.
+Le serveur peut aussi envoyer plusieurs réponses numériques à la suite pour fournir plus d'informations (comme une liste complète des utilisateurs dans un canal avec plusieurs lignes 353 suivies d'un 366 pour indiquer la fin de la liste).
+
+Résumé
+Le flux typique est :
+Réception d'un message du client.
+Validation et parsing du message.
+Identification de l'utilisateur.
+Traitement de la commande.
+Génération d'une réponse numérique (ou d'une série de réponses).
+Envoi de la réponse au client.
+Propagation du message si nécessaire (pour des commandes de type PRIVMSG, JOIN, etc.).
+
+Ce cycle se répète pour chaque commande ou message reçu du client
