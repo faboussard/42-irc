@@ -33,30 +33,49 @@
 #include "../includes/Client.hpp"
 #include "../includes/Channel.hpp"
 
+typedef std::map<int, Client> clientsMap;
+typedef std::map<std::string, Channel> channelsMap;
+typedef Client&  ClientRef;  // Type de référence pour les clients
+
 class Server {
  private:
   static bool                    _signal;
   int                            _socketFd;
   int                            _port;
-  std::vector<Client>            _clients;
-  // std::map<int, Client>       _clients;
+  clientsMap                     _clients;
   struct sockaddr_in             _address;
   std::vector<struct pollfd>     _pollFds;
-  std::map<std::string, Channel> _channels;
+  channelsMap                    _channels;
 
  public:
   explicit Server(int port);
+    ClientRef getClientByFd(int fd);
 
+
+  /* Server Mounting */
+  void runServer();
+  void createSocket();
+  void createPoll();
+  void monitorConnections();
   static void signalHandler(int signal);
 
-  void runServer();
-  void closeServer();
-  void createSocket();
-  void clearClient(int fd);
+  /* Clients Management */
+
   void acceptNewClient();
   void receiveMessage(int fd);
   void handleClientMessage(int fd);
+
+  /* Clear and Close */
+
+  void closeServer();
+  void clearClient(int fd);
+  void closeClient(int fd);
+
+
+  /* Chat Commands */
   void handleCommand(const std::string& command, int fd);
+
+  //for channel, list, ","
   void sendToAllClients(const std::string& message);
 };
 

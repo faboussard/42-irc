@@ -1,7 +1,7 @@
 /* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   colors.hpp                                         :+:      :+:    :+:   */
+/*   utils.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,17 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INCLUDES_COLORS_HPP_
-#define INCLUDES_COLORS_HPP_
+#ifndef INCLUDES_UTILS_HPP_
+#define INCLUDES_UTILS_HPP_
 
-#define RED "\033[31m"
-#define GREEN "\033[0;32m"
-#define YELLOW "\033[0;33m"
-#define MAGENTA "\033[35m"
-#define CYAN "\033[0;36m"
-#define BRIGHT_YELLOW "\033[1;93m"
-#define BLUE "\033[94m"
-#define RESET "\033[0m"
-#define WHITE "\033[0m"
+#include <vector>
 
-#endif  //  INCLUDES_COLORS_HPP_
+
+void shrink_to_fit(std::vector<struct pollfd>& vec);
+
+#endif  //  INCLUDES_UTILS_HPP_

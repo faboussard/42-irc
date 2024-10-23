@@ -13,20 +13,22 @@
 #include "../includes/Client.hpp"
 
 #include "../includes/colors.hpp"
+#include <cerrno>
+#include <cstring>
 
+Client::Client(int fd, const std::string &ip) : _fd(fd), _ip(ip) {}
 
-Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {}
-
-void Client::receiveMessage(const std::string& message) {
+void Client::receiveMessage(const std::string &message) {
   if (_fd != -1) {
-    if (send(_fd, message.c_str(), message.length(), 0) == -1) {
-      std::cerr << RED "Error while sending message" RESET << std::endl;
+    ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
+    if (sent == -1) {
+      std::cerr << RED "Error while sending message to fd " << _fd << ": "
+                << strerror(errno) << RESET << std::endl;
     }
   } else {
     std::cerr << RED "Invalid file descriptor" RESET << std::endl;
   }
 }
-
 // void Client::sendNumericReply(int code, const std::string& message) {
 //   std::ostringstream oss;
 //   oss << code << " " << message << "\r\n";
@@ -36,7 +38,8 @@ void Client::receiveMessage(const std::string& message) {
 std::string Client::shareMessage() {
   char buffer[1024] = {0};
   ssize_t bytesRead = recv(_fd, buffer, sizeof(buffer) - 1, 0);
-  // std::cout << MAGENTA << "Received message from client " << _fd << ": " << buffer
+  // std::cout << MAGENTA << "Received message from client " << _fd << ": " <<
+  // buffer
   //           << RESET << std::endl;
   if (bytesRead == -1) {
     std::cerr << RED "Error while receiving message: " << RESET << std::endl;

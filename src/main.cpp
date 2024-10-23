@@ -26,7 +26,7 @@ void checkArgs(int port, const std::string& password) {
 
 int main(int ac, char** argv) {
   if (ac != 3) {
-    std::cerr << "Usage: ./ircserv <port> <password>" << std::endl;
+    std::cerr << RED "Usage: ./ircserv <port> <password>" << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -40,7 +40,7 @@ int main(int ac, char** argv) {
     signal(SIGQUIT, Server::signalHandler);
     ser.runServer();
   } catch (const std::exception& e) {
-    std::cerr << e.what() << '\n';
+    std::cerr << RED << e.what() << '\n';
     ser.closeServer();
     exit(EXIT_FAILURE);
   }
