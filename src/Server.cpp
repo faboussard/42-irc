@@ -130,16 +130,20 @@ void Server::handleCommand(const std::string& command, int fd) {
     return;
   } else if (command == "JOIN") {
     // Ajouter le client au canal
-  } else if (command == "PART") {
-    // Retirer le client du canal
-  } else if (command == "LIST") {
-    // Lister les canaux
-  } else if (command == "TOPIC") {
-    // Changer le sujet du canal
-  } else if (command == "NAMES") {
-    // Lister les clients dans le canal
   } else if (command == "KICK") {
     // Exclure un client du canal
+  } else if (command == "INVITE") {
+    // Notice
+  } else if (command == "TOPIC") {
+    // Changer le sujet du canal
+  } else if (command == "MODE") {
+    // Changer le sujet du canal
+  } else if (command == "LIST") {
+    // Lister les canaux
+  } else if (command == "NOTICE") {
+    // Notice}
+  } else if (command == "NICK") {
+    // change nickname
   } else if (command == "PRIVMSG") {
     // Envoyer un message privé
   } else if (command == "QUIT") {
