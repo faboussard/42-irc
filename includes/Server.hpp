@@ -44,18 +44,6 @@ class Server {
   std::vector<struct pollfd>     _pollFds;
   std::map<std::string, Channel> _channels;
 
-  enum Command {
-    JOIN,
-    PART,
-    LIST,
-    TOPIC,
-    NAMES,
-    KICK,
-    PRIVMSG,
-    QUIT,
-    UNKNOWN
-  };
-
  public:
   explicit Server(int port);
 
