@@ -27,11 +27,11 @@ void Client::sendMessage(const std::string& message) {
   }
 }
 
-void Client::sendNumericReply(int code, const std::string& message) {
-  std::ostringstream oss;
-  oss << code << " " << message << "\r\n";
-  sendMessage(oss.str());
-}
+// void Client::sendNumericReply(int code, const std::string& message) {
+//   std::ostringstream oss;
+//   oss << code << " " << message << "\r\n";
+//   sendMessage(oss.str());
+// }
 
 std::string Client::receiveMessage() {
   char buffer[1024] = {0};
