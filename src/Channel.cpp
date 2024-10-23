@@ -18,7 +18,7 @@ Channel::Channel(const std::string& name) : _name(name) {}
 
 void Channel::removeClientFromTheChannel(int fd) {
   if (_clients.find(fd) != _clients.end()) {
-    _clients[fd].sendMessage("You have been removed from the channel");
+    _clients[fd].receiveMessage("You have been removed from the channel");
 
     _clients.erase(fd);
     std::cout << "Client " << fd << " removed from channel " << _name
@@ -46,7 +46,7 @@ void Channel::receiveMessageInTheChannel(int fd) {
       std::map<int, Client>::iterator itEnd = _clients.end();
       for (std::map<int, Client>::iterator it = itBegin; it != itEnd; ++it) {
         if (it->first != fd) {
-          it->second.sendMessage(message);
+          it->second.receiveMessage(message);
         }
       }
     }
