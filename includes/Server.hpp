@@ -21,36 +21,35 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <vector>
-#include <map>
-#include <algorithm>
 
-#include "../includes/Client.hpp"
 #include "../includes/Channel.hpp"
+#include "../includes/Client.hpp"
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
-typedef Client&  ClientRef;  // Type de référence pour les clients
+typedef Client &ClientRef; // Type de référence pour les clients
 
 class Server {
- private:
-  static bool                    _signal;
-  int                            _socketFd;
-  int                            _port;
-  clientsMap                     _clients;
-  struct sockaddr_in             _address;
-  std::vector<struct pollfd>     _pollFds;
-  channelsMap                    _channels;
+private:
+  static bool _signal;
+  int _socketFd;
+  int _port;
+  clientsMap _clients;
+  struct sockaddr_in _address;
+  std::vector<struct pollfd> _pollFds;
+  channelsMap _channels;
 
- public:
+public:
   explicit Server(int port);
-    ClientRef getClientByFd(int fd);
-
+  ClientRef getClientByFd(int fd);
 
   /* Server Mounting */
   void runServer();
@@ -71,12 +70,11 @@ class Server {
   void clearClient(int fd);
   void closeClient(int fd);
 
-
   /* Chat Commands */
-  void handleCommand(const std::string& command, int fd);
+  void handleCommand(const std::string &command, int fd);
 
-  //for channel, list, ","
-  void sendToAllClients(const std::string& message);
+  // for channel, list, ","
+  void sendToAllClients(const std::string &message);
 };
 
-#endif  // INCLUDES_SERVER_HPP_
+#endif // INCLUDES_SERVER_HPP_

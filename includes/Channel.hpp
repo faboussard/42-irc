@@ -13,31 +13,31 @@
 #ifndef INCLUDES_CHANNEL_HPP_
 #define INCLUDES_CHANNEL_HPP_
 
-#include <string>
 #include <map>
+#include <string>
 
 #include "Client.hpp"
 
-class Client; 
+class Client;
 
 typedef std::map<int, Client> clientsMap;
-typedef Client& ClientRef; 
+typedef Client &ClientRef;
 
 class Channel {
- private:
+private:
   std::string _name;
   std::string _topic;
-  clientsMap _clients; 
+  clientsMap _clients;
 
- public:
-  explicit Channel(const std::string& name = "");
+public:
+  explicit Channel(const std::string &name = "");
 
   void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(ClientRef client);  // Utilisation du type défini
+  void acceptClientInTheChannel(ClientRef client); // Utilisation du type défini
   void receiveMessageInTheChannel(int fd);
 
-  void setTopic(const std::string& topic);
+  void setTopic(const std::string &topic);
   std::string getTopic() const;
 };
 
-#endif  // INCLUDES_CHANNEL_HPP_
+#endif // INCLUDES_CHANNEL_HPP_

@@ -23,4 +23,4 @@
 #define RESET "\033[0m"
 #define WHITE "\033[0m"
 
-#endif  //  INCLUDES_COLORS_HPP_
+#endif //  INCLUDES_COLORS_HPP_
