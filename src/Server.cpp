@@ -26,12 +26,29 @@ void Server::runServer() {
   std::cout << GREEN << "Server started on port " << _port << RESET
             << std::endl;
   while (!_signal) {
+    int pollResult = poll(_pollFds.data(), _pollFds.size(),
+                          -1);  // Utilisation d'un seul appel à poll
+
+    if (pollResult == -1) {
+      std::cerr << RED "Error while polling" RESET << std::endl;
+      break;
+    }
+
+    for (size_t i = 0; i < _pollFds.size(); ++i) {
+      if (_pollFds[i].revents & POLLIN) {
+        if (_pollFds[i].fd == _socketFd) {
+          acceptNewClient();
+        } else {
+          handleClientMessage(_pollFds[i].fd);
+        }
+      }
+    }
   }
   std::cout << "Server shutting down..." << std::endl;
 }
 
 void shrink_to_fit(std::vector<struct pollfd>& vec) {
-    std::vector<struct pollfd>(vec).swap(vec);
+  std::vector<struct pollfd>(vec).swap(vec);
 }
 
 void Server::closeServer() {
@@ -95,7 +112,7 @@ void Server::createSocket() {
   if (fcntl(_socketFd, F_SETFL, O_NONBLOCK) == -1)
     throw std::runtime_error("Failed to set option O_NONBLOCK on socket");
 
-  if (bind(_socketFd, (struct sockaddr *)&_address, sizeof(_address)) == -1)
+  if (bind(_socketFd, (struct sockaddr*)&_address, sizeof(_address)) == -1)
     throw std::runtime_error("Failed to bind socket");
 
   if (listen(_socketFd, 10) == -1)
@@ -106,4 +123,66 @@ void Server::createSocket() {
   newPoll.events = POLLIN;
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
+}
+
+void Server::handleCommand(const std::string& command, int fd) {
+  if (command.empty()) {
+    return;
+  } else if (command == "JOIN") {
+    // Ajouter le client au canal
+  } else if (command == "PART") {
+    // Retirer le client du canal
+  } else if (command == "LIST") {
+    // Lister les canaux
+  } else if (command == "TOPIC") {
+    // Changer le sujet du canal
+  } else if (command == "NAMES") {
+    // Lister les clients dans le canal
+  } else if (command == "KICK") {
+    // Exclure un client du canal
+  } else if (command == "PRIVMSG") {
+    // Envoyer un message privé
+  } else if (command == "QUIT") {
+    // Déconnecter le client
+  } else if (command == "PING") {
+    client.sendNumericReply(1, "PONG");
+  } else {
+    // Commande inconnue
+  }
+}
+
+void Server::handleClientMessage(int fd) {
+    char buffer[1024] = {0};
+    int valread = read(fd, buffer, 1024);
+
+    if (valread == 0) {
+        clearClient(fd);
+        return;
+    }
+    if (valread == -1) {
+        std::cerr << RED "Error while receiving message" RESET << std::endl;
+        clearClient(fd);
+        return;
+    }
+
+    std::string message(buffer, valread);
+    std::cout << "Received message from client " << fd << ": " << message << std::endl;
+
+    // Traitez le message ici
+    // Exemple : Si le message est "JOIN #channel", ajoutez le client au canal
+    std::istringstream iss(message);
+    std::string command;
+    iss >> command;
+
+    if (command == "JOIN") {  
+        std::string channelName;
+        iss >> channelName;
+        if (_channels.find(channelName) == _channels.end()) {
+            _channels[channelName] = Channel(channelName);
+        }
+        _channels[channelName].acceptClientInTheChannel(_clients[fd]);
+    } else {
+        // Diffusez le message dans le canal approprié
+      }
+    }
 }
