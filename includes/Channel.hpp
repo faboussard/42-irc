@@ -39,7 +39,7 @@ class Channel {
 
 
  public:
-  explicit Channel(const std::string& name);
+  explicit Channel(const std::string& name = "");
 
   void removeClientFromTheChannel(int fd);
   void acceptClientInTheChannel(const Client& client);
