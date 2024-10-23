@@ -26,8 +26,8 @@ void Server::runServer() {
   std::cout << GREEN << "Server started on port " << _port << RESET
             << std::endl;
   while (!_signal) {
-    int pollResult = poll(_pollFds.data(), _pollFds.size(),
-                          -1);  // Utilisation d'un seul appel à poll
+    int pollResult = poll(_pollFds.data(), _pollFds.size(), -1);
+    // Utilisation d'un seul appel à poll
 
     if (pollResult == -1) {
       std::cerr << RED "Error while polling" RESET << std::endl;
@@ -160,14 +160,13 @@ void Server::handleClientMessage(int fd) {
     case -1:
       std::cerr << RED "Error while receiving message" RESET << std::endl;
     case 0:
-     clearClient(fd);
-     return;
+      clearClient(fd);
+      return;
   }
 
   std::string message(buffer, valread);
   std::cout << "Received message from client " << fd << ": " << message
             << std::endl;
-
   // Traitez le message ici
   // Exemple : Si le message est "JOIN #channel", ajoutez le client au canal
   std::istringstream iss(message);
@@ -183,6 +182,7 @@ void Server::handleClientMessage(int fd) {
     _channels[channelName].acceptClientInTheChannel(_clients[fd]);
   } else {
     // Diffusez le message dans le canal approprié
+    sendToAllClients(message);
   }
 }
 
@@ -198,6 +198,13 @@ void Server::acceptNewClient() {
   newPoll.events = POLLIN;  // Surveiller les événements de lecture
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
+  _clients.push_back(Client(newClientFd));
 
   std::cout << "New client connected: " << newClientFd << std::endl;
+}
+
+void Server::sendToAllClients(const std::string& message) {
+  for (size_t i = 0; i < _clients.size(); ++i) {
+    _clients[i].receiveMessage(message);
+  }
 }

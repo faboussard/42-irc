@@ -28,7 +28,7 @@ class Client {
 
   void receiveMessage(const std::string& message);
   // void sendNumericReply(int code, const std::string& message);
-  // std::string receiveMessage();
+  std::string shareMessage();
   
   int getFd() const { return _fd; }
   void setFd(int fd) { _fd = fd; }

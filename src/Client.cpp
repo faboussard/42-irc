@@ -33,16 +33,18 @@ void Client::receiveMessage(const std::string& message) {
 //   sendMessage(oss.str());
 // }
 
-// std::string Client::receiveMessage() {
-//   char buffer[1024] = {0};
-//   ssize_t bytesRead = recv(_fd, buffer, sizeof(buffer) - 1, 0);
-//   if (bytesRead == -1) {
-//     std::cerr << RED "Error while receiving message: " << RESET << std::endl;
-//     return ("");
-//   } else if (bytesRead == 0) {
-//     std::cerr << RED "Connection closed by peer" << RESET << std::endl;
-//     return ("");
-//   }
-//   buffer[bytesRead] = '\0';
-//   return (std::string(buffer));
-// }
+std::string Client::shareMessage() {
+  char buffer[1024] = {0};
+  ssize_t bytesRead = recv(_fd, buffer, sizeof(buffer) - 1, 0);
+  // std::cout << MAGENTA << "Received message from client " << _fd << ": " << buffer
+  //           << RESET << std::endl;
+  if (bytesRead == -1) {
+    std::cerr << RED "Error while receiving message: " << RESET << std::endl;
+    return ("");
+  } else if (bytesRead == 0) {
+    std::cerr << RED "Connection closed by peer" << RESET << std::endl;
+    return ("");
+  }
+  buffer[bytesRead] = '\0';
+  return (std::string(buffer));
+}
