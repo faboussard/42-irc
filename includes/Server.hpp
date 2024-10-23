@@ -25,21 +25,36 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include <vector>
+#include <map>
 #include <algorithm>
 
 #include "../includes/Client.hpp"
-
-class Client;
+#include "../includes/Channel.hpp"
 
 class Server {
  private:
-  static bool                _signal;
-  int                        _socketFd;
-  int                        _port;
-  std::vector<Client>        _clients;
-  struct sockaddr_in         _address;
-  std::vector<struct pollfd> _pollFds;
+  static bool                    _signal;
+  int                            _socketFd;
+  int                            _port;
+  std::vector<Client>            _clients;
+  // std::map<int, Client>       _clients;
+  struct sockaddr_in             _address;
+  std::vector<struct pollfd>     _pollFds;
+  std::map<std::string, Channel> _channels;
+
+  enum Command {
+    JOIN,
+    PART,
+    LIST,
+    TOPIC,
+    NAMES,
+    KICK,
+    PRIVMSG,
+    QUIT,
+    UNKNOWN
+  };
 
  public:
   explicit Server(int port);
@@ -52,6 +67,8 @@ class Server {
   void clearClient(int fd);
   void acceptNewClient();
   void receiveMessage(int fd);
+  void handleClientMessage(int fd);
+  void handleCommand(const std::string& command, int fd);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
