@@ -125,6 +125,7 @@ void Server::createSocket() {
 }
 
 void Server::handleCommand(const std::string& command, int fd) {
+  static_cast<void>(fd);
   if (command.empty()) {
     return;
   } else if (command == "JOIN") {
@@ -187,7 +188,7 @@ void Server::handleClientMessage(int fd) {
 }
 
 void Server::acceptNewClient() {
-  int newClientFd = accept(_socketFd, nullptr, nullptr);
+  int newClientFd = accept(_socketFd, NULL, NULL);
   if (newClientFd == -1) {
     std::cerr << "Failed to accept new client" << std::endl;
     return;
