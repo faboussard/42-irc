@@ -1,3 +1,5 @@
+##Steps for IRC socket creation with polling##
+
 
 A. Create the server socket(listening):
 
@@ -17,7 +19,7 @@ B. Use poll_fd to track the clients events:
 
 C. create the client socket (accept connection):
 
-1. when a client tries to cnnect, the server stores its data via the function accept(). it takes in param : 
+1. when a client tries to connect, the server stores its data via the function accept(). it takes in param : 
 - the fd from the server socket (previously configured on a listen mode)
 - the address of the client(ip, port) stored in the structure sockaddr_in
 
@@ -27,3 +29,6 @@ D. Received new data from a registered client
 1. prepare a char array buff to store the received data (init the buff with 0)
 2. call recv() to receive the data from the client socket specified by the file descriptor. 
 4. use send() to send a numeric reply and make the client do the action. (hexchat)
+
+
+![alt text](image-1.png)
