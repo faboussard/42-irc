@@ -13,7 +13,6 @@
 #include "../includes/utils.hpp"
 #include "../includes/Server.hpp"
 
-void shrink_to_fit(std::vector<struct pollfd>& vec) {
+void shrink_to_fit(std::vector<struct pollfd> &vec) {
   std::vector<struct pollfd>(vec).swap(vec);
 }
-

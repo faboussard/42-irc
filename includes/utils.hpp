@@ -15,7 +15,6 @@
 
 #include <vector>
 
+void shrink_to_fit(std::vector<struct pollfd> &vec);
 
-void shrink_to_fit(std::vector<struct pollfd>& vec);
-
-#endif  //  INCLUDES_UTILS_HPP_
+#endif //  INCLUDES_UTILS_HPP_

@@ -23,10 +23,7 @@ Server::Server(int port) : _port(port) {
   _socketFd = -1;
 }
 
-ClientRef Server::getClientByFd(int fd) {
-  return _clients.at(
-      fd); // Utilisation de at() pour obtenir le client en toute sécurité
-}
+ClientRef Server::getClientByFd(int fd) { return _clients.at(fd); }
 
 /* Server Mounting */
 
