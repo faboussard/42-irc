@@ -153,16 +153,15 @@ void Server::handleCommand(const std::string& command, int fd) {
 
 void Server::handleClientMessage(int fd) {
   char buffer[1024] = {0};
-  int valread = read(fd, buffer, 1024);
+  std::memset(buffer, 0, sizeof(buffer));
+  int valread = recv(fd, buffer, sizeof(buffer), 0);
 
-  if (valread == 0) {
-    clearClient(fd);
-    return;
-  }
-  if (valread == -1) {
-    std::cerr << RED "Error while receiving message" RESET << std::endl;
-    clearClient(fd);
-    return;
+  switch (valread) {
+    case -1:
+      std::cerr << RED "Error while receiving message" RESET << std::endl;
+    case 0:
+     clearClient(fd);
+     return;
   }
 
   std::string message(buffer, valread);
