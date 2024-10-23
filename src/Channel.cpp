@@ -37,7 +37,7 @@ void Channel::acceptClientInTheChannel(const Client& client) {
 
 void Channel::receiveMessageInTheChannel(int fd) {
   if (_clients.find(fd) != _clients.end()) {
-    std::string message = "coucou";  //_clients[fd].receiveMessage();
+    std::string message = _clients[fd].shareMessage();
     if (!message.empty()) {
       std::cout << "Message received in channel " << _name << " from client "
                 << fd << ": " << message << std::endl;
