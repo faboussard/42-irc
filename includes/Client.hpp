@@ -27,7 +27,7 @@ class Client {
   explicit Client(int fd = -1, const std::string& ip = "");
 
   void sendMessage(const std::string& message);
-  void sendNumericReply(int code, const std::string& message);
+  // void sendNumericReply(int code, const std::string& message);
   std::string receiveMessage();
   
   int getFd() const { return _fd; }

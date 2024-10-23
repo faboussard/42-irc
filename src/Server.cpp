@@ -44,7 +44,6 @@ void Server::runServer() {
       }
     }
   }
-  std::cout << "Server shutting down..." << std::endl;
 }
 
 void shrink_to_fit(std::vector<struct pollfd>& vec) {
@@ -145,44 +144,60 @@ void Server::handleCommand(const std::string& command, int fd) {
   } else if (command == "QUIT") {
     // Déconnecter le client
   } else if (command == "PING") {
-    client.sendNumericReply(1, "PONG");
+    // client.sendNumericReply(1, "PONG");
   } else {
     // Commande inconnue
   }
 }
 
 void Server::handleClientMessage(int fd) {
-    char buffer[1024] = {0};
-    int valread = read(fd, buffer, 1024);
+  char buffer[1024] = {0};
+  int valread = read(fd, buffer, 1024);
 
-    if (valread == 0) {
-        clearClient(fd);
-        return;
+  if (valread == 0) {
+    clearClient(fd);
+    return;
+  }
+  if (valread == -1) {
+    std::cerr << RED "Error while receiving message" RESET << std::endl;
+    clearClient(fd);
+    return;
+  }
+
+  std::string message(buffer, valread);
+  std::cout << "Received message from client " << fd << ": " << message
+            << std::endl;
+
+  // Traitez le message ici
+  // Exemple : Si le message est "JOIN #channel", ajoutez le client au canal
+  std::istringstream iss(message);
+  std::string command;
+  iss >> command;
+
+  if (command == "JOIN") {
+    std::string channelName;
+    iss >> channelName;
+    if (_channels.find(channelName) == _channels.end()) {
+      _channels[channelName] = Channel(channelName);
     }
-    if (valread == -1) {
-        std::cerr << RED "Error while receiving message" RESET << std::endl;
-        clearClient(fd);
-        return;
-    }
+    _channels[channelName].acceptClientInTheChannel(_clients[fd]);
+  } else {
+    // Diffusez le message dans le canal approprié
+  }
+}
 
-    std::string message(buffer, valread);
-    std::cout << "Received message from client " << fd << ": " << message << std::endl;
+void Server::acceptNewClient() {
+  int newClientFd = accept(_socketFd, nullptr, nullptr);
+  if (newClientFd == -1) {
+    std::cerr << "Failed to accept new client" << std::endl;
+    return;
+  }
 
-    // Traitez le message ici
-    // Exemple : Si le message est "JOIN #channel", ajoutez le client au canal
-    std::istringstream iss(message);
-    std::string command;
-    iss >> command;
+  struct pollfd newPoll;
+  newPoll.fd = newClientFd;
+  newPoll.events = POLLIN;  // Surveiller les événements de lecture
+  newPoll.revents = 0;
+  _pollFds.push_back(newPoll);
 
-    if (command == "JOIN") {  
-        std::string channelName;
-        iss >> channelName;
-        if (_channels.find(channelName) == _channels.end()) {
-            _channels[channelName] = Channel(channelName);
-        }
-        _channels[channelName].acceptClientInTheChannel(_clients[fd]);
-    } else {
-        // Diffusez le message dans le canal approprié
-      }
-    }
+  std::cout << "New client connected: " << newClientFd << std::endl;
 }
