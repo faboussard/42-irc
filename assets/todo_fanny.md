@@ -6,4 +6,8 @@
 
     channel creator = operator
 
+    , = pour liste rplusieurs items en un . ex: contain #channel1, #channel2, #channel3
+
+    we can have some user name but singlee nicknames
+
     
