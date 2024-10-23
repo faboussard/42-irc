@@ -30,6 +30,7 @@ class Client {
   // void sendNumericReply(int code, const std::string& message);
   std::string shareMessage();
   
+  
   int getFd() const { return _fd; }
   void setFd(int fd) { _fd = fd; }
   std::string getIp() const { return _ip; }
