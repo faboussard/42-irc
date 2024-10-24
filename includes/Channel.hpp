@@ -13,39 +13,27 @@
 #ifndef INCLUDES_CHANNEL_HPP_
 #define INCLUDES_CHANNEL_HPP_
 
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <netinet/in.h>
-#include <poll.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <csignal>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <vector>
 #include <map>
-#include <algorithm>
+#include <string>
 
 #include "../includes/Client.hpp"
 
+typedef std::map<int, Client> clientsMap;
+
 class Channel {
  private:
-  std::string                _name;
-  std::string                _topic;
-  std::map<int, Client>      _clients;
-
+  std::string _name;
+  std::string _topic;
+  clientsMap _clients;
 
  public:
-  explicit Channel(const std::string& name = "");
+  explicit Channel(const std::string &name = "");
 
   void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(const Client& client);
+  void acceptClientInTheChannel(Client &client);  // Utilisation du type défini
   void receiveMessageInTheChannel(int fd);
 
-  void setTopic(const std::string& topic);
+  void setTopic(const std::string &topic);
   std::string getTopic() const;
 };
 
