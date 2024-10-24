@@ -35,10 +35,9 @@
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
-typedef Client &ClientRef; // Type de référence pour les clients
 
 class Server {
-private:
+ private:
   static bool _signal;
   int _socketFd;
   int _port;
@@ -47,9 +46,9 @@ private:
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
 
-public:
+ public:
   explicit Server(int port);
-  ClientRef getClientByFd(int fd);
+  Client &getClientByFd(int fd);
 
   /* Server Mounting */
   void runServer();
@@ -77,4 +76,4 @@ public:
   void sendToAllClients(const std::string &message);
 };
 
-#endif // INCLUDES_SERVER_HPP_
+#endif  // INCLUDES_SERVER_HPP_

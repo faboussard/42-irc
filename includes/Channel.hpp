@@ -16,12 +16,11 @@
 #include <map>
 #include <string>
 
-#include "Client.hpp"
+#include "../includes/Client.hpp"
 
 class Client;
 
 typedef std::map<int, Client> clientsMap;
-typedef Client &ClientRef;
 
 class Channel {
 private:
@@ -33,7 +32,7 @@ public:
   explicit Channel(const std::string &name = "");
 
   void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(ClientRef client); // Utilisation du type défini
+  void acceptClientInTheChannel(Client &client); // Utilisation du type défini
   void receiveMessageInTheChannel(int fd);
 
   void setTopic(const std::string &topic);
