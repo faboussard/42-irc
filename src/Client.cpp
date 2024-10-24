@@ -22,7 +22,7 @@ void Client::receiveMessage(const std::string &message) {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {
-      std::cerr << RED "Error while sending message to fd " << _fd << ": "
+      std::cerr << RED "Error while sending message to fd " RESET << _fd << ": "
                 << strerror(errno) << RESET << std::endl;
     }
   } else {
@@ -42,10 +42,10 @@ std::string Client::shareMessage() {
   // buffer
   //           << RESET << std::endl;
   if (bytesRead == -1) {
-    std::cerr << RED "Error while receiving message: " << RESET << std::endl;
+    std::cerr << RED "Error while receiving message: " RESET << std::endl;
     return ("");
   } else if (bytesRead == 0) {
-    std::cerr << RED "Connection closed by peer" << RESET << std::endl;
+    std::cerr << RED "Connection closed by peer" RESET << std::endl;
     return ("");
   }
   buffer[bytesRead] = '\0';
