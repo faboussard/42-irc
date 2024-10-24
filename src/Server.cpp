@@ -179,7 +179,6 @@ void Server::acceptNewClient() {
 
 void Server::sendToAllClients(const std::string &message) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-    std::cout << "Sending message to client fd: " << it->first << std::endl;
     it->second.receiveMessage(message);
   }
 }
