@@ -163,6 +163,7 @@ void Server::handleClientMessage(int fd) {
   switch (valread) {
     case -1:
       std::cerr << RED "Error while receiving message" RESET << std::endl;
+      // fallthrough
     case 0:
       clearClient(fd);
       return;
