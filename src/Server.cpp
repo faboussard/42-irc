@@ -171,10 +171,26 @@ void Server::acceptNewClient() {
   cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse IP
                                           // en une chaîne de caractères
 
+  // For message test
+  cli.setNickName("chaton");
+  cli.setUserName("chaton");
+
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 
   std::cout << GREEN "New client connected: " RESET << newClientFd << std::endl;
+  sendConnectionMessage(cli);
+}
+
+void Server::sendConnectionMessage(const Client &target) const {
+  std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
+  std::string user = target.getUserName().empty() ? "*" : target.getUserName();
+  std::string host = target.getIp().empty() ? "*" : target.getIp();
+  int fd = target.getFd();
+  send101Welcome(nick, user, host, fd);
+  send102Yourhost(nick, fd);
+  send103Created(nick, fd);
+  send104Myinfo(nick, fd);
 }
 
 void Server::sendToAllClients(const std::string &message) {
@@ -242,20 +258,20 @@ void Server::handleCommand(const std::string &command, int fd) {
   }
 }
 
-void Server::handlePassword(int fd) {
-  char buffer[1024] = {0};
-  std::memset(buffer, 0, sizeof(buffer));
-  int valread = recv(fd, buffer, sizeof(buffer), 0);
+// void Server::handlePassword(int fd) {
+//   char buffer[1024] = {0};
+//   std::memset(buffer, 0, sizeof(buffer));
+//   int valread = recv(fd, buffer, sizeof(buffer), 0);
 
-  switch (valread) {
-    case -1:
-      std::cerr << RED "Error while receiving message" RESET << std::endl;
-    case 0:
-      clearClient(fd);
-      return;
-  }
-  std::cout << YELLOW << buffer << RESET << std::endl;
-  std::string message(buffer, valread);
-  std::istringstream iss(message);
-  sendToAllClients(message);
-}
+//   switch (valread) {
+//     case -1:
+//       std::cerr << RED "Error while receiving message" RESET << std::endl;
+//     case 0:
+//       clearClient(fd);
+//       return;
+//   }
+//   std::cout << YELLOW << buffer << RESET << std::endl;
+//   std::string message(buffer, valread);
+//   std::istringstream iss(message);
+//   sendToAllClients(message);
+// }

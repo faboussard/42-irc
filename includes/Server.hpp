@@ -32,6 +32,7 @@
 
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
+#include "../includes/numericReplies.hpp"
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
@@ -61,7 +62,6 @@ class Server {
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
 
-
   /* Server Mounting */
   void runServer();
   void createSocket();
@@ -72,6 +72,7 @@ class Server {
   /* Clients Management */
 
   void acceptNewClient();
+  void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
   void handleClientMessage(int fd);
 
