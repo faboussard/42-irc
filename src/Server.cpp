@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
 
@@ -30,7 +31,6 @@ const Client &Server::getClientByFd(int fd) const {
   }
   return it->second;
 }
-
 
 /* Server Mounting */
 
