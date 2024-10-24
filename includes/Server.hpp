@@ -81,7 +81,7 @@ class Server {
 
   /* Commands Management */
   void handleCommand(std::string &command, std::string &param, int fd);
-  void joinChannel(const std::string &channelName, int fd);
+  void joinChannel(std::string &channelName, int fd);
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
