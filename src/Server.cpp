@@ -230,6 +230,8 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
   if (command.empty()) {
     return;
   } else if (command == "JOIN") {
+    std::cout << "JOIN command received" << std::endl; // debug
+    std::cout << "Params: " << params << std::endl; // debug 
     joinChannel(params, fd);
   } else if (command == "KICK") {
     // Exclure un client du canal
@@ -256,39 +258,44 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
   }
 }
 
-void Server::joinChannel(const std::string &channelName, int fd) {
-  // Si le canal n'existe pas, on le crée
-  if (_channels.find(channelName) == _channels.end()) {
-    Channel newChannel(channelName);
-    _channels[channelName] = newChannel;
-  }
+void Server::joinChannel(std::string &channelName, int fd) {
+    channelName = channelName.substr(1);
 
-  // Récupérer l'instance du client avant de l'accepter dans le canal
-  const Client &client = getClientByFd(fd);
-  _channels[channelName].acceptClientInTheChannel(client);
+    if (_channels.find(channelName) == _channels.end()) {
+        Channel newChannel(channelName);
+        _channels[channelName] = newChannel;
+    }
 
-  // Envoyer la réponse JOIN au client
-  std::string nick = client.getNick();
-  std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
-  send(fd, joinMessage.c_str(), joinMessage.length(), 0);
+    // Récupérer l'instance du client avant de l'accepter dans le canal
+    const Client &client = getClientByFd(fd);
+    _channels[channelName].acceptClientInTheChannel(client);
 
-  // Envoyer la liste des utilisateurs dans le canal (353 RPL_NAMREPLY)
-  std::string nameReply =
-      ":" + getServerName() + " 353 " + nick + " = " + channelName + " :";
+    // Envoyer la réponse JOIN au client
+    std::string nick = client.getNick();
+    std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
+    send(fd, joinMessage.c_str(), joinMessage.length(), 0);
 
-  const clientsMap &clientsInChannel =
-      _channels[channelName].getClientsInChannel();
-  for (clientsMap::const_iterator it = clientsInChannel.begin();
-       it != clientsInChannel.end(); ++it) {
-    nameReply += getClientByFd(it->first).getNick() + " ";
+    // Préparer et envoyer la liste des utilisateurs dans le canal (353 RPL_NAMREPLY)
+    std::string nameReply = ":" + getServerName() + " 353 " + nick + " = " + channelName + " :";
+    
+    const clientsMap &clientsInChannel = _channels[channelName].getClientsInChannel();
+    for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+        nameReply += getClientByFd(it->first).getNick() + " ";
+    }
 
+    // Terminer le message de liste avec un retour à la ligne
     nameReply += "\r\n";
     send(fd, nameReply.c_str(), nameReply.length(), 0);
 
-    // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms est
-    // terminée
-    std::string endOfNames = ":" + getServerName() + " 366 " + nick + " " +
-                             channelName + " :End of /NAMES list\r\n";
+    // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms est terminée
+    std::string endOfNames = ":" + getServerName() + " 366 " + nick + " " + channelName + " :End of /NAMES list\r\n";
     send(fd, endOfNames.c_str(), endOfNames.length(), 0);
-  }
+
+    // Informer les autres clients dans le canal que quelqu'un a rejoint
+    for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+        if (it->first != fd) { // Évitez d'envoyer au client qui a rejoint
+            send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
+        }
+    }
 }
+

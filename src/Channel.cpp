@@ -16,6 +16,19 @@
 
 Channel::Channel(const std::string &name) : _name(name) {}
 
+/* Getters */
+
+
+const std::string &Channel::getName() const { return _name; }
+const clientsMap &Channel::getClientsInChannel() const { return _clientsInChannel; }
+const std::string &Channel::getTopic() const { return _topic; }
+
+/* Setters */
+
+
+void Channel::setTopic(const std::string &topic) { _topic = topic; }
+
+
 void Channel::removeClientFromTheChannel(int fd) {
   if (_clientsInChannel.find(fd) != _clientsInChannel.end()) {
     _clientsInChannel[fd].receiveMessage("You have been removed from the channel");
@@ -51,6 +64,4 @@ void Channel::receiveMessageInTheChannel(int fd) {
   }
 }
 
-void Channel::setTopic(const std::string &topic) { _topic = topic; }
 
-const std::string &Channel::getTopic() const { return _topic; }
