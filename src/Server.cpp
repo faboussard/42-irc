@@ -101,6 +101,7 @@ void Server::closeServer() {
     _socketFd = -1;
   }
   _pollFds.clear();
+  shrink_to_fit(_pollFds);
 }
 void Server::signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGQUIT) {
