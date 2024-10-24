@@ -13,11 +13,12 @@
 #ifndef INCLUDES_CLIENT_HPP_
 #define INCLUDES_CLIENT_HPP_
 
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <sys/socket.h>
-#include <sys/types.h>
 
 class Client {
  private:

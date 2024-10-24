@@ -22,4 +22,4 @@
 #define BLUE "\033[94m"
 #define RESET "\033[0m"
 
-#endif //  INCLUDES_COLORS_HPP_
+#endif  //  INCLUDES_COLORS_HPP_

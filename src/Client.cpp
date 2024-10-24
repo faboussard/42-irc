@@ -12,9 +12,10 @@
 
 #include "../includes/Client.hpp"
 
-#include "../includes/colors.hpp"
 #include <cerrno>
 #include <cstring>
+
+#include "../includes/colors.hpp"
 
 Client::Client(int fd, const std::string &ip) : _fd(fd), _ip(ip) {}
 
