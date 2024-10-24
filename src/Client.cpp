@@ -36,7 +36,7 @@ void Client::receiveMessage(const std::string &message) {
 //   sendMessage(oss.str());
 // }
 
-std::string Client::shareMessage() {
+std::string Client::shareMessage(void) {
   char buffer[1024] = {0};
   ssize_t bytesRead = recv(_fd, buffer, sizeof(buffer) - 1, 0);
   // std::cout << MAGENTA << "Received message from client " << _fd << ": " <<
@@ -52,3 +52,16 @@ std::string Client::shareMessage() {
   buffer[bytesRead] = '\0';
   return (std::string(buffer));
 }
+
+/*                  Setters and Getters */
+void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
+
+std::string Client::getNickname(void) const { return (_nickname); }
+
+int Client::getFd(void) const { return _fd; }
+
+void Client::setFd(int fd) { _fd = fd; }
+
+std::string Client::getIp(void) const { return _ip; }
+
+void Client::setIp(const std::string &ip) { _ip = ip; }

@@ -17,24 +17,10 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
+#include <map>
+#include "../includes/Server.hpp"
 // /JOIN quelquechose
 // parser -> JOIN -> deuxieme partie
-
-enum Command {
-  JOIN,
-  KICK,
-  INVITE,
-  TOPIC,
-  MODE,
-  LIST,
-  NOTICE,
-  NICK,
-  PRIVMSG,
-  QUIT,
-  PING,
-  UNKNOWN
-};
 
 class Parser {
  private:
@@ -46,7 +32,7 @@ class Parser {
   static std::string parseCommand(const std::vector<std::string> command);
   static std::string handleCommand(const std::string& command, int fd);
   static std::string returnMessage(const std::string& command);
-  static bool verifyNick(const std::string& nick);
+  static bool verifyNick(const std::string& nick, clientsMap clientmap);
 };
 
 #endif  // INCLUDES_PARSER_HPP_
