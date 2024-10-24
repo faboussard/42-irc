@@ -36,14 +36,12 @@
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 
-class Client;
-class Channel;
-
 class Server {
  private:
   static bool _signal;
   int _socketFd;
   int _port;
+  std::string _name;
   std::string _password;
   clientsMap _clients;
   struct sockaddr_in _address;
@@ -60,7 +58,7 @@ class Server {
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
-
+  const std::string &getServerName() const;
 
   /* Server Mounting */
   void runServer();
@@ -81,8 +79,9 @@ class Server {
   void clearClient(int fd);
   void closeClient(int fd);
 
-  /* Chat Commands */
-  void handleCommand(const std::string &command, int fd);
+  /* Commands Management */
+  void handleCommand(std::string &command, std::string &param, int fd);
+  void joinChannel(const std::string &channelName, int fd);
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);

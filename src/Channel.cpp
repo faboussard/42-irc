@@ -14,14 +14,12 @@
 
 #include "../includes/colors.hpp"
 
-// Constructeur de la classe Channel
 Channel::Channel(const std::string &name) : _name(name) {}
 
-// Supprime un client du canal
 void Channel::removeClientFromTheChannel(int fd) {
-  if (_clients.find(fd) != _clients.end()) {
-    _clients[fd].receiveMessage("You have been removed from the channel");
-    _clients.erase(fd);
+  if (_clientsInChannel.find(fd) != _clientsInChannel.end()) {
+    _clientsInChannel[fd].receiveMessage("You have been removed from the channel");
+    _clientsInChannel.erase(fd);
     std::cout << "Client " << fd << " removed from channel " << _name
               << std::endl;
   } else {
@@ -30,23 +28,21 @@ void Channel::removeClientFromTheChannel(int fd) {
   }
 }
 
-// Accepte un client dans le canal
-void Channel::acceptClientInTheChannel(Client &client) {
-  _clients[client.getFd()] = client;
+void Channel::acceptClientInTheChannel(const Client &client) {
+  _clientsInChannel[client.getFd()] = client;
   std::cout << "Client " << client.getFd() << " added to channel " << _name
             << std::endl;
 }
 
-// Reçoit un message d'un client dans le canal
 void Channel::receiveMessageInTheChannel(int fd) {
-  if (_clients.find(fd) != _clients.end()) {
-    std::string message = _clients[fd].shareMessage();
+  if (_clientsInChannel.find(fd) != _clientsInChannel.end()) {
+    std::string message = _clientsInChannel[fd].shareMessage();
     if (!message.empty()) {
       std::cout << "Message received in channel " << _name << " from client "
                 << fd << ": " << message << std::endl;
-      std::map<int, Client>::iterator itBegin = _clients.begin();
-      std::map<int, Client>::iterator itEnd = _clients.end();
-      for (std::map<int, Client>::iterator it = itBegin; it != itEnd; ++it) {
+      clientsMap::iterator itBegin = _clientsInChannel.begin();
+      clientsMap::iterator itEnd = _clientsInChannel.end();
+      for (clientsMap::iterator it = itBegin; it != itEnd; ++it) {
         if (it->first != fd) {
           it->second.receiveMessage(message);
         }
@@ -55,8 +51,6 @@ void Channel::receiveMessageInTheChannel(int fd) {
   }
 }
 
-// Définit le sujet du canal
 void Channel::setTopic(const std::string &topic) { _topic = topic; }
 
-// Récupère le sujet du canal
-std::string Channel::getTopic() const { return _topic; }
+const std::string &Channel::getTopic() const { return _topic; }

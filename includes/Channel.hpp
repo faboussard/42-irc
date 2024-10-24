@@ -24,17 +24,28 @@ class Channel {
  private:
   std::string _name;
   std::string _topic;
-  clientsMap _clients;
+  clientsMap _clientsInChannel;
 
  public:
   explicit Channel(const std::string &name = "");
 
-  void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(Client &client);  // Utilisation du type défini
-  void receiveMessageInTheChannel(int fd);
+  /* Getters */
+
+  const std::string &getName() const;
+  const clientsMap &getClientsInChannel() const;
+  const std::string &getTopic() const;
+
+  /* Setters */
 
   void setTopic(const std::string &topic);
-  std::string getTopic() const;
+
+  /* Member Functions */
+
+
+  void removeClientFromTheChannel(int fd);
+  void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
+  void receiveMessageInTheChannel(int fd);
+
 };
 
 #endif  // INCLUDES_CHANNEL_HPP_
