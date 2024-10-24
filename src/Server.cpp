@@ -133,7 +133,6 @@ void Server::handleClientMessage(int fd) {
       clearClient(fd);
       return;
   }
-
   std::string message(buffer, valread);
   std::cout << "Received message from client " << fd << ": " << message
             << std::endl;
@@ -152,7 +151,7 @@ void Server::acceptNewClient() {
   struct sockaddr_in cliadd;
   struct pollfd newPoll;
   socklen_t len = sizeof(cliadd);
-
+  
   int newClientFd = accept(_socketFd, (sockaddr *)&cliadd, &len);
   if (newClientFd == -1) {
     std::cerr << RED "Failed to accept new client" RESET << std::endl;
@@ -163,7 +162,7 @@ void Server::acceptNewClient() {
     std::cerr << "fcntl() failed" << std::endl;
     return;
   }
-
+  
   newPoll.fd = newClientFd;
   newPoll.events = POLLIN;
   newPoll.revents = 0;
@@ -260,4 +259,3 @@ void Server::handlePassword(int fd) {
   std::istringstream iss(message);
   sendToAllClients(message);
 }
-
