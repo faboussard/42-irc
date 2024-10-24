@@ -17,8 +17,8 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-HEADER = colors Server Client Channel utils
-SRCS = main Server Client Channel utils
+HEADER = colors Server Client Channel numericReplies utils
+SRCS = main Server Client Channel numericReplies utils
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/

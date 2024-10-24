@@ -27,6 +27,10 @@ Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {}
 /*       Getters & Setters                                                    */
 /*============================================================================*/
 
+void Client::setNickName(const std::string& nickName) { _nickName = nickName; }
+
+void Client::setUserName(const std::string& userName) { _userName = userName; }
+
 std::string const& Client::getNickName() const { return (_nickName); }
 
 std::string const& Client::getUserName() const { return (_userName); }

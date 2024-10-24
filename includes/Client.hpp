@@ -40,6 +40,8 @@ class Client {
   /* Setters */
   void setFd(int fd) { _fd = fd; }
   void setIp(const std::string& ip) { _ip = ip; }
+  void setNickName(const std::string& nickName);
+  void setUserName(const std::string& userName);
 
   /* Messages handling */
   void receiveMessage(const std::string& message);

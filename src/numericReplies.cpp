@@ -18,87 +18,46 @@
 // direct user messages). target: nickname of the client receiving the message
 // parameters: Additional parameters depending on the type of message
 // message: A human readable text message (welcome message or error description)
-// Example of format:
-// :irc.com 001 <nick> :Welcome to the Internet Relay Network <nick>!<user>@<host>
-
-//==== On terminal ====
-//--Hexchat----------------
-// New client connected: 4
-// Received message from client 4: CAP LS 302
-// PASS pass
-
-// Received message from client 4: NICK yusengok
-// USER yusengok 0 * :realname
-
-//--netcat-----------------
-//New client connected: 5
-
 
 #include "../includes/numericReplies.hpp"
-
-#include <sys/socket.h>
-
-#include <string>
 
 #include "../includes/Client.hpp"
 #include "../includes/Server.hpp"
 
-// ssize_t sendNumericReply(const std::string& numeric, const Client& target,
-//                          const std::string& message) {
-//   std::string numericReply = ':' + SERVER_NAME + ' ' + numeric + ' ' + message;
-//   if (send(target.getFd(), numericReply.c_str(), numericReply.size(), 0) ==
-//       -1) {
-//     throw std::runtime_error("Failed to send numeric reply");
-//   }
-// }
-
-// #define _101_RPL_WELCOME ":Welcome to the Internet Relay Network !"
-
-// void send101(const Client& target) {
-//   std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
-//   std::string user = target.getUserName().empty() ? "*" : target.getUserName();
-//   std::string host = target.getIp().empty() ? "*" : target.getIp();  // from server
-//   std::string message =
-//       nick + _101_RPL_WELCOME + nick + "!" + user + "@" + host;
-//   sendNumericReply("101", target, message);
-// }
-
-#define _101_RPL_WELCOME(nick, user, host) (":" + SERVER_NAME + " 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host)
-
-void send101(const Client& target) {
-  std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
-  std::string user = target.getUserName().empty() ? "*" : target.getUserName();
-  std::string host = target.getIp().empty() ? "*" : target.getIp();  // from server
-  std::string message = _101_RPL_WELCOME(nick.c_str(), user.c_str(), host.c_str());
-  if (send(target.getFd(), message.c_str(), message.size(), 0) == -1) {
-    throw std::runtime_error("Failed to send numeric reply");
+/* Welcome messages */
+void send101Welcome(std::string const& nick, std::string const& user,
+             std::string const& host, int fd) {
+  std::string message = _101_RPL_WELCOME(nick, user, host);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
   }
 }
 
-// ":serverName 001 userNickname : PRL_WELCOME"
+void send102Yourhost(const std::string& nick, int fd) {
+  std::string message = _102_RPL_YOURHOST(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
 
-// JOIN: Add a client to a channel
-// 	- 332 RPL_TOPIC: The topic of a channel.
+void send103Created(const std::string& nick, int fd) {
+  std::string message = _103_RPL_CREATED(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
 
-// KICK: Remove a client from a channel
+void send104Myinfo(const std::string& nick, int fd) {
+  std::string message = _104_RPL_MYINFO(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
 
-// INVITE: Invite a client to a channel
-
-// TOPIC: Change or view the channel topic
-
-// MODE: Change the channel’s mode
-
-// LIST: Show a list of available channels, often filtered by parameters
-
-// NOTICE: Send a notice message to a user or a channel
-
-// NICK: Change the client’s nickname
-//   - 433: ERR_NICKNAMEINUSE (Nickname is already in use)
-
-// PRIVMSG: Send a private message to a user or a channel
-//   - 401: ERR_NOSUCHNICK (No such nickname exists)
-
-// QUIT: Disconnect from the server
-
-// PING: Request a PONG response from a server or client to check if it is still
-// active
+/* Error messages */
+void send464PasswdMismatch(const std::string& nick, int fd) {
+  std::string message = _464_ERR_PASSWD_MISMATCH(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
