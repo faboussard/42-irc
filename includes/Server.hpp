@@ -32,6 +32,8 @@
 
 #include "../includes/Client.hpp"
 #include "../includes/Channel.hpp"
+#include "../includes/Parser.hpp"
+
 
 class Server {
  private:
