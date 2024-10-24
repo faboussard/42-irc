@@ -22,15 +22,38 @@ Server::Server(int port, std::string password) {
   _password = password;
   _signal = false;
   _socketFd = -1;
+  _name = "coco";
 }
+
+/* Getters */
+
 
 const Client &Server::getClientByFd(int fd) const {
   clientsMap::const_iterator it = _clients.find(fd);
   if (it == _clients.end()) {
     std::cerr << "Client not found with the given file descriptor" << std::endl;
+    throw std::runtime_error("Client not found");
   }
   return it->second;
 }
+
+Channel &Server::getChannelByName(const std::string &name) {
+  channelsMap::iterator it = _channels.find(name);
+  if (it == _channels.end()) {
+    std::cerr << "Channel not found with the given name" << std::endl;
+    throw std::runtime_error("Channel not found");
+  }
+  return it->second;
+}
+
+const std::string &Server::getServerName() const { return _name; }
+
+const std::string &Server::getPassword() const { return _password; }
+
+int Server::getPort() const { return _port; }
+
+int Server::getSocketFd() const { return _socketFd; }
+
 
 /* Server Mounting */
 
@@ -136,14 +159,11 @@ void Server::handleClientMessage(int fd) {
   std::string message(buffer, valread);
   std::cout << "Received message from client " << fd << ": " << message
             << std::endl;
-  std::istringstream iss(message);
-  std::string command;
-  iss >> command;
-
-  if (command == "JOIN")
-    handleCommand(command, fd);
-  else
-    sendToAllClients(message);
+  std::string command = message.substr(0, message.find(" "));
+  std::string params = message.substr(message.find(" ") + 1);
+  handleCommand(command, params, fd);
+  // sendToAllClients(message); //dans le channel, si pas de command, ca envoie
+  // a tout le monde sous la forme de PRIVMSG
 }
 
 void Server::acceptNewClient() {
@@ -184,7 +204,6 @@ void Server::sendToAllClients(const std::string &message) {
 }
 
 void Server::closeClient(int fd) {
-  // Fermer le socket du client
   if (fd != -1) {
     close(fd);
     std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
@@ -204,19 +223,14 @@ void Server::clearClient(int fd) {
 
   _clients.erase(fd);
 }
-/* Chat Commands */
+/*  Commands management */
 
-void Server::handleCommand(const std::string &command, int fd) {
+void Server::handleCommand(std::string &command, std::string &params, int fd) {
   static_cast<void>(fd);
   if (command.empty()) {
     return;
   } else if (command == "JOIN") {
-    // std::string channelName;
-    // command >> channelName;
-    // if (_channels.find(channelName) == _channels.end()) {
-    //   _channels[channelName] = Channel(channelName);
-    // }
-    // _channels[channelName].acceptClientInTheChannel(_clients[fd]);
+    joinChannel(params, fd);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
@@ -239,5 +253,42 @@ void Server::handleCommand(const std::string &command, int fd) {
     // client.sendNumericReply(1, "PONG");
   } else {
     // Commande inconnue
+  }
+}
+
+void Server::joinChannel(const std::string &channelName, int fd) {
+  // Si le canal n'existe pas, on le crée
+  if (_channels.find(channelName) == _channels.end()) {
+    Channel newChannel(channelName);
+    _channels[channelName] = newChannel;
+  }
+
+  // Récupérer l'instance du client avant de l'accepter dans le canal
+  const Client &client = getClientByFd(fd);
+  _channels[channelName].acceptClientInTheChannel(client);
+
+  // Envoyer la réponse JOIN au client
+  std::string nick = client.getNick();
+  std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
+  send(fd, joinMessage.c_str(), joinMessage.length(), 0);
+
+  // Envoyer la liste des utilisateurs dans le canal (353 RPL_NAMREPLY)
+  std::string nameReply =
+      ":" + getServerName() + " 353 " + nick + " = " + channelName + " :";
+
+  const clientsMap &clientsInChannel =
+      _channels[channelName].getClientsInChannel();
+  for (clientsMap::const_iterator it = clientsInChannel.begin();
+       it != clientsInChannel.end(); ++it) {
+    nameReply += getClientByFd(it->first).getNick() + " ";
+
+    nameReply += "\r\n";
+    send(fd, nameReply.c_str(), nameReply.length(), 0);
+
+    // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms est
+    // terminée
+    std::string endOfNames = ":" + getServerName() + " 366 " + nick + " " +
+                             channelName + " :End of /NAMES list\r\n";
+    send(fd, endOfNames.c_str(), endOfNames.length(), 0);
   }
 }
