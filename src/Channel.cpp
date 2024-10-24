@@ -24,7 +24,7 @@ void Channel::removeClientFromTheChannel(int fd) {
     std::cout << "Client " << fd << " removed from channel " << _name
               << std::endl;
   } else {
-    std::cerr << RED "Client " << fd << " not found in channel " << _name
+    std::cerr << RED "Client " RESET << fd << " not found in channel " << _name
               << RESET << std::endl;
   }
 }
@@ -44,19 +44,19 @@ void Channel::receiveMessageInTheChannel(int fd) {
     if (!message.empty()) {
       std::cout << "Message received in channel " << _name << " from client "
                 << fd << ": " << message << std::endl;
-      // Diffuser le message à tous les autres clients dans le canal
-      for (std::map<int, Client>::iterator it = _clients.begin();
-           it != _clients.end(); ++it) {
-        if (it->first != fd) {
-          it->second.receiveMessage(message);
+      std::map<int, Client>::iterator itBegin = _clients.begin();
+      std::map<int, Client>::iterator itEnd = _clients.end();
+      for (std::map<int, Client>::iterator it = itBegin; it != itEnd; ++it) {
+          if (it->first != fd) {
+            it->second.receiveMessage(message);
+          }
         }
       }
     }
   }
-}
 
-// Définit le sujet du canal
-void Channel::setTopic(const std::string &topic) { _topic = topic; }
+  // Définit le sujet du canal
+  void Channel::setTopic(const std::string &topic) { _topic = topic; }
 
-// Récupère le sujet du canal
-std::string Channel::getTopic() const { return _topic; }
+  // Récupère le sujet du canal
+  std::string Channel::getTopic() const { return _topic; }

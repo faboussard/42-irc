@@ -29,7 +29,7 @@ ClientRef Server::getClientByFd(int fd) { return _clients.at(fd); }
 
 void Server::runServer() {
   createSocket();
-  std::cout << GREEN << "Server started on port " << _port << std::endl;
+  std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   monitorConnections();
 }
 
@@ -71,7 +71,7 @@ void Server::monitorConnections() {
   while (!_signal) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1) {
-      std::cerr << RED "Error while polling" << std::endl;
+      std::cerr << RED "Error while polling" RESET << std::endl;
       break;
     }
     for (size_t i = 0; i < _pollFds.size(); ++i) {
@@ -96,7 +96,7 @@ void Server::closeServer() {
 
   // Fermer le socket principal
   if (_socketFd != -1) {
-    std::cout << RED "Server <" << _socketFd << "> Disconnected" << std::endl;
+    std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET << std::endl;
     close(_socketFd);
     _socketFd = -1;
   }
@@ -118,7 +118,7 @@ void Server::handleClientMessage(int fd) {
 
   switch (valread) {
   case -1:
-    std::cerr << RED "Error while receiving message" << std::endl;
+    std::cerr << RED "Error while receiving message" RESET << std::endl;
   case 0:
     std::cout << "Client " << fd << " disconnected" << std::endl;
     clearClient(fd);
@@ -152,7 +152,7 @@ void Server::acceptNewClient() {
 
   int newClientFd = accept(_socketFd, (sockaddr *)&cliadd, &len);
   if (newClientFd == -1) {
-    std::cerr << RED "Failed to accept new client" << RESET << std::endl;
+    std::cerr << RED "Failed to accept new client" RESET << std::endl;
     return;
   }
 
@@ -172,7 +172,7 @@ void Server::acceptNewClient() {
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 
-  std::cout << GREEN "New client connected: " << newClientFd << RESET
+  std::cout << GREEN "New client connected: " RESET << newClientFd
             << std::endl;
 }
 
@@ -188,8 +188,8 @@ void Server::closeClient(int fd) {
   // Fermer le socket du client
   if (fd != -1) {
     close(fd);
-    std::cout << RED "Client <" << WHITE << fd << RED "> Disconnected"
-              << std::endl;
+    std::cout << RED "Client <" RESET << fd << RED "> Disconnected"
+              RESET << std::endl;
   }
 }
 
