@@ -13,28 +13,29 @@
 #ifndef INCLUDES_CLIENT_HPP_
 #define INCLUDES_CLIENT_HPP_
 
+#include <sys/socket.h>
+#include <sys/types.h>
+
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <sys/types.h>
-#include <sys/socket.h>
+
 class Client {
  private:
-  int         _fd;
+  int _fd;
   std::string _ip;
 
  public:
-  explicit Client(int fd = -1, const std::string& ip = "");
+  explicit Client(int fd = -1, const std::string &ip = "");
 
-  void receiveMessage(const std::string& message);
+  void receiveMessage(const std::string &message);
   // void sendNumericReply(int code, const std::string& message);
   std::string shareMessage();
-  
+
   int getFd() const { return _fd; }
   void setFd(int fd) { _fd = fd; }
   std::string getIp() const { return _ip; }
-  void setIp(const std::string& ip) { _ip = ip; }
-
+  void setIp(const std::string &ip) { _ip = ip; }
 };
 
 #endif  // INCLUDES_CLIENT_HPP_
