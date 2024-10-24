@@ -25,6 +25,7 @@
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -45,6 +46,7 @@ class Server {
   static bool _signal;
   int _socketFd;
   int _port;
+  std::string _startTime;
   std::string _password;
   clientsMap _clients;
   struct sockaddr_in _address;
@@ -58,9 +60,13 @@ class Server {
 
   int getSocketFd() const;
   int getPort() const;
+  // const std::string &getStartTime(void) const;
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
+
+  /* Setters */
+  void setStartTime();
 
   /* Server Mounting */
   void runServer();

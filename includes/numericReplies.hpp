@@ -15,27 +15,53 @@
 
 #include "./Client.hpp"
 
-#define SERVER_NAME "ircserv"
+#define SRV_NAME "ircserv"
+#define SRV_VERSION "1.0.0"
 #define NETWORK_NAME "42 IRC"
+#define USER_MODES "ao"       // Temporary definition
+#define CHANNEL_MODES "mtov"  // Temporary definition
+
 #define RUNTIME_ERROR "Failed to send numeric reply"
 
 /* Message definition */
-
-#define _101_RPL_WELCOME(nick, user, host)                                 \
-  (std::string(":") + SERVER_NAME + " 001 " + nick + " :Welcome to the " + \
+#define _101_RPL_WELCOME(nick, user, host)                              \
+  (std::string(":") + SRV_NAME + " 001 " + nick + " :Welcome to the " + \
    NETWORK_NAME + " Network, " + nick + "!" + user + "@" + host + "\r\n")
 
-#define _102_RPL_YOURHOST(nick)                                          \
-  (std::string(":") + SERVER_NAME + " 002 " + nick + " :Your host is " + \
-   SERVER_NAME + ", running version 1.0\r\n")
+#define _102_RPL_YOURHOST(nick)                                       \
+  (std::string(":") + SRV_NAME + " 002 " + nick + " :Your host is " + \
+   SRV_NAME + ", running version " + SRV_VERSION + "\r\n")
 
-#define _103_RPL_CREATED(nick)                       \
-  (std::string(":") + SERVER_NAME + " 003 " + nick + \
-   " :This server was created " + __DATE__ + " " + __TIME__ + "\r\n")
+#define _103_RPL_CREATED(nick, starttime)         \
+  (std::string(":") + SRV_NAME + " 003 " + nick + \
+   " :This server was created on " + starttime + "\r\n")
 
 #define _104_RPL_MYINFO(nick)                                            \
-  (std::string(":") + SERVER_NAME + " 004 " + nick + " " + SERVER_NAME + \
-   " 1.0 ao mtov\r\n")
+  (std::string(":") + SRV_NAME + " 004 " + nick + " " + SRV_NAME + " " + \
+   SRV_VERSION + " " + USER_MODES + " " + CHANNEL_MODES + "\r\n")
+//----- The available user modes:
+// +i	Invisible: The user is hidden from /WHO queries unless they are in the
+// same channel. +o	Operator: Grants IRC operator privileges to the user. +w
+// Wallops: The user receives WALLOPS messages, which are special notices sent
+// by IRC operators. +s	Server Notices: The user receives server notices from
+// the IRC server. +r	Registered: The user has registered with services or
+// identified themselves. +x	Hostmasking: Hides the user's IP address or
+// hostname from other users. +a	Administrator: Grants server
+// administrator privileges. +g	Caller ID: Blocks private messages from users
+// who are not on the user's allow list.
+//----- The available channel modes:
+// +i	Invite-only: Only invited users can join the channel.
+// +m	Moderated: Only users with voice (+v) or operator (+o) privileges can
+// send messages. +n	No external messages: Prevents users outside the channel
+// from sending messages into the channel. +p	Private: The channel does not
+// appear in channel lists (/LIST), but can be joined if the name is known. +s
+// Secret: The channel is secret, meaning it doesn't appear in /WHOIS results or
+// in channel lists. +t	Topic settable by ops only: Only channel operators can
+// change the topic. +k	Key: A password is required to join the channel. +l
+// Limit: Limits the number of users that can join the channel. +v	Voice:
+// Allows a user to speak in a moderated channel. +o	Operator: Grants
+// operator privileges within the channel, allowing the user to manage the
+// channel (kick users, change modes, etc.).
 
 /* Error messages */
 
@@ -50,11 +76,13 @@
 // command for more information on characters which are allowed in various IRC
 // servers. The text used in the last param of this message may vary.
 
-// 433 ERR_NICKNAMEINUSE: "<client> <nick> :Nickname is already in use"
+#define _433_ERR_NICKNAMEINUSE(nick)              \
+  (std::string(":") + SRV_NAME + " 433 " + nick + \
+   " :Nickname is already in use\r\n")
 
 // PASS
 #define _464_ERR_PASSWD_MISMATCH(nick) \
-  (std::string(":") + SERVER_NAME + " 464 " + nick + " :Password incorrect\r\n")
+  (std::string(":") + SRV_NAME + " 464 " + nick + " :Password incorrect\r\n")
 
 // USER
 // 461 ERR_NEEDMOREPARAMS:   "<client> <command> :Not enough parameters"
@@ -67,11 +95,8 @@
 // text used in the last param of this message varies.
 
 // OPER
-// RPL_YOUREOPER (381) 
+// RPL_YOUREOPER (381)
 // ERR_NOOPERHOST (491)
-
-
-
 
 //----- JOIN: Add a client to a channel
 // 353 RPL_NAMREPLY: List of users in the channel.
@@ -113,10 +138,12 @@
 void send101Welcome(std::string const& nick, std::string const& user,
                     std::string const& host, int fd);
 void send102Yourhost(std::string const& nick, int fd);
-void send103Created(std::string const& nick, int fd);
+void send103Created(const std::string& nick, const std::string& startTime,
+                    int fd);
 void send104Myinfo(std::string const& nick, int fd);
 
 /* Error messages */
+void send433NickAlreadyInUse(const std::string& nick, int fd);
 void send464PasswdMismatch(std::string const& nick, int fd);
 
 #endif  // NUMERIC_REPLIES_HPP_

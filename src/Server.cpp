@@ -24,6 +24,7 @@ Server::Server(int port, std::string password) {
   _socketFd = -1;
 }
 
+/* Getters */
 const Client &Server::getClientByFd(int fd) const {
   clientsMap::const_iterator it = _clients.find(fd);
   if (it == _clients.end()) {
@@ -32,10 +33,13 @@ const Client &Server::getClientByFd(int fd) const {
   return it->second;
 }
 
+// const std::string &Server::getStartTime() const { return (_startTime);}
+
 /* Server Mounting */
 
 void Server::runServer() {
   createSocket();
+  setStartTime();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   monitorConnections();
 }
@@ -67,6 +71,11 @@ void Server::createSocket() {
   if (listen(_socketFd, SOMAXCONN) == -1) {
     throw std::runtime_error("Failed to listen on socket");
   }
+}
+
+void Server::setStartTime(void) {
+  time_t now = time(0);
+  _startTime = ctime(&now);
 }
 
 void Server::monitorConnections() {
@@ -189,7 +198,7 @@ void Server::sendConnectionMessage(const Client &target) const {
   int fd = target.getFd();
   send101Welcome(nick, user, host, fd);
   send102Yourhost(nick, fd);
-  send103Created(nick, fd);
+  send103Created(nick, _startTime, fd);
   send104Myinfo(nick, fd);
 }
 

@@ -26,7 +26,7 @@
 
 /* Welcome messages */
 void send101Welcome(std::string const& nick, std::string const& user,
-             std::string const& host, int fd) {
+                    std::string const& host, int fd) {
   std::string message = _101_RPL_WELCOME(nick, user, host);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
@@ -40,8 +40,9 @@ void send102Yourhost(const std::string& nick, int fd) {
   }
 }
 
-void send103Created(const std::string& nick, int fd) {
-  std::string message = _103_RPL_CREATED(nick);
+void send103Created(const std::string& nick, const std::string& startTime,
+                    int fd) {
+  std::string message = _103_RPL_CREATED(nick, startTime);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
   }
@@ -55,6 +56,13 @@ void send104Myinfo(const std::string& nick, int fd) {
 }
 
 /* Error messages */
+void send433NickAlreadyInUse(const std::string& nick, int fd) {
+  std::string message = _433_ERR_NICKNAMEINUSE(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
+
 void send464PasswdMismatch(const std::string& nick, int fd) {
   std::string message = _464_ERR_PASSWD_MISMATCH(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
