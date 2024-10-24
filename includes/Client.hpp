@@ -31,9 +31,7 @@ class Client {
  public:
   explicit Client(int fd = -1, const std::string &ip = "");
 
-  void receiveMessage(const std::string &message);
   // void sendNumericReply(int code, const std::string& message);
-  std::string shareMessage(void);
 
   /* Getters */
   int getFd() const;
