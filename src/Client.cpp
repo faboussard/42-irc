@@ -17,9 +17,34 @@
 
 #include "../includes/colors.hpp"
 
-Client::Client(int fd, const std::string &ip) : _fd(fd), _ip(ip) {}
+/*============================================================================*/
+/*       Constructors                                                         */
+/*============================================================================*/
 
-void Client::receiveMessage(const std::string &message) {
+Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {}
+
+/*============================================================================*/
+/*       Getters & Setters                                                    */
+/*============================================================================*/
+
+std::string const& Client::getNickName() const { return (_nickName); }
+
+std::string const& Client::getUserName() const { return (_userName); }
+
+int Client::getFd(void) const { return (_fd); }
+
+std::string Client::getIp(void) const { return (_ip); }
+
+void Client::setNickname(const std::string &nickname) { _nickName = nickname; }
+
+void Client::setFd(int fd) { _fd = fd; }
+
+void Client::setIp(const std::string &ip) { _ip = ip; }
+/*============================================================================*/
+/*       Messages handling                                                    */
+/*============================================================================*/
+
+void Client::receiveMessage(const std::string& message) {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {
@@ -30,11 +55,6 @@ void Client::receiveMessage(const std::string &message) {
     std::cerr << RED "Invalid file descriptor" RESET << std::endl;
   }
 }
-// void Client::sendNumericReply(int code, const std::string& message) {
-//   std::ostringstream oss;
-//   oss << code << " " << message << "\r\n";
-//   sendMessage(oss.str());
-// }
 
 std::string Client::shareMessage(void) {
   char buffer[1024] = {0};
@@ -52,16 +72,3 @@ std::string Client::shareMessage(void) {
   buffer[bytesRead] = '\0';
   return (std::string(buffer));
 }
-
-/*                  Setters and Getters */
-void Client::setNickname(const std::string &nickname) { _nickname = nickname; }
-
-std::string Client::getNickname(void) const { return (_nickname); }
-
-int Client::getFd(void) const { return _fd; }
-
-void Client::setFd(int fd) { _fd = fd; }
-
-std::string Client::getIp(void) const { return _ip; }
-
-void Client::setIp(const std::string &ip) { _ip = ip; }

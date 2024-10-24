@@ -242,3 +242,22 @@ void Server::handleCommand(const std::string &command, int fd) {
     // Commande inconnue
   }
 }
+
+void Server::handlePassword(int fd) {
+  char buffer[1024] = {0};
+  std::memset(buffer, 0, sizeof(buffer));
+  int valread = recv(fd, buffer, sizeof(buffer), 0);
+
+  switch (valread) {
+    case -1:
+      std::cerr << RED "Error while receiving message" RESET << std::endl;
+    case 0:
+      clearClient(fd);
+      return;
+  }
+  std::cout << YELLOW << buffer << RESET << std::endl;
+  std::string message(buffer, valread);
+  std::istringstream iss(message);
+  sendToAllClients(message);
+}
+
