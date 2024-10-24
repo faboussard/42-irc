@@ -75,14 +75,13 @@ void Server::monitorConnections() {
   newPoll.events = POLLIN;
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
-  while (!_signal) {
+  while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
-    if (pollResult == -1) {
+    if (pollResult == -1 && _signal == false) {
       std::cerr << RED "Error while polling" RESET << std::endl;
       break;
     }
     for (size_t i = 0; i < _pollFds.size(); ++i) {
-      std::cout << "Polling on fd: " << _pollFds[i].fd << std::endl;
       if (_pollFds[i].revents & POLLIN && _signal == false) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
@@ -213,12 +212,12 @@ void Server::handleCommand(const std::string &command, int fd) {
   if (command.empty()) {
     return;
   } else if (command == "JOIN") {
-    std::string channelName;
-    command >> channelName;
-    if (_channels.find(channelName) == _channels.end()) {
-      _channels[channelName] = Channel(channelName);
-    }
-    _channels[channelName].acceptClientInTheChannel(_clients[fd]);
+    // std::string channelName;
+    // command >> channelName;
+    // if (_channels.find(channelName) == _channels.end()) {
+    //   _channels[channelName] = Channel(channelName);
+    // }
+    // _channels[channelName].acceptClientInTheChannel(_clients[fd]);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
