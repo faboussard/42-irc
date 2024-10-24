@@ -32,13 +32,24 @@
 
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
-#include "../includes/Parser.hpp"
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 
-class Client;
-class Channel;
+enum Command {
+  JOIN,
+  KICK,
+  INVITE,
+  TOPIC,
+  MODE,
+  LIST,
+  NOTICE,
+  NICK,
+  PRIVMSG,
+  QUIT,
+  PING,
+  UNKNOWN
+};
 
 class Server {
  private:

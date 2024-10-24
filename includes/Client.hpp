@@ -24,18 +24,23 @@ class Client {
  private:
   int _fd;
   std::string _ip;
+  std::string _nickname;
+
 
  public:
   explicit Client(int fd = -1, const std::string &ip = "");
 
   void receiveMessage(const std::string &message);
   // void sendNumericReply(int code, const std::string& message);
-  std::string shareMessage();
+  std::string shareMessage(void);
 
-  int getFd() const { return _fd; }
-  void setFd(int fd) { _fd = fd; }
-  std::string getIp() const { return _ip; }
-  void setIp(const std::string &ip) { _ip = ip; }
+  int getFd(void) const;
+  void setFd(int fd);
+  std::string getIp(void) const;
+  void setIp(const std::string &ip);
+
+  void setNickname(const std::string& nickname);
+  std::string getNickname(void) const;
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

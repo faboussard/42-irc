@@ -39,7 +39,7 @@ Command Parser::choseCommand(const std::string& command) {
   return (Command::UNKNOWN);
 }
 
-bool Parser::verifyNick(const std::string& nick) {
+bool Parser::verifyNick(const std::string& nick, clientsMap clientmap) {
   size_t size = nick.size();
   if (nick.empty() || size < 9) {
     return (false);
@@ -54,7 +54,12 @@ bool Parser::verifyNick(const std::string& nick) {
       return (false);
     }
   }
-  
+  clientsMap::iterator itEnd = clientmap.end();
+  for (clientsMap::iterator it = clientmap.begin(); it != itEnd; it++) {
+    if (it->second.getNickname() == nick) {
+      return (false);
+    }
+  }
   return (true);
 }
 
