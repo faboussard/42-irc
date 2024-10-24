@@ -23,7 +23,7 @@ Server::Server(int port) : _port(port) {
   _socketFd = -1;
 }
 
-ClientRef Server::getClientByFd(int fd) { return _clients.at(fd); }
+Client &Server::getClientByFd(int fd) { return _clients.at(fd); }
 
 /* Server Mounting */
 
@@ -106,7 +106,7 @@ void Server::closeServer() {
 void Server::signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGQUIT) {
     _signal = true;
-    std::cout << std::endl << WHITE "Signal Received!" << std::endl;
+    std::cout << std::endl << "Signal Received!" << std::endl;
   }
 }
 
@@ -179,7 +179,7 @@ void Server::acceptNewClient() {
 
 void Server::sendToAllClients(const std::string &message) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-    std::cout << WHITE "Sending message to client fd: " << it->first
+    std::cout << "Sending message to client fd: " << it->first
               << std::endl;
     it->second.receiveMessage(message);
   }

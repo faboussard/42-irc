@@ -30,7 +30,7 @@ void Channel::removeClientFromTheChannel(int fd) {
 }
 
 // Accepte un client dans le canal
-void Channel::acceptClientInTheChannel(ClientRef client) {
+void Channel::acceptClientInTheChannel(Client &client) {
   _clients[client.getFd()] =
       client; // Assurez-vous que le client est référencé correctement
   std::cout << "Client " << client.getFd() << " added to channel " << _name

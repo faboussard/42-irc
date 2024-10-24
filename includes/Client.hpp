@@ -20,11 +20,11 @@
 #include <sys/types.h>
 
 class Client {
-private:
+ private:
   int _fd;
   std::string _ip;
 
-public:
+ public:
   explicit Client(int fd = -1, const std::string &ip = "");
 
   void receiveMessage(const std::string &message);
@@ -37,4 +37,4 @@ public:
   void setIp(const std::string &ip) { _ip = ip; }
 };
 
-#endif // INCLUDES_CLIENT_HPP_
+#endif  // INCLUDES_CLIENT_HPP_
