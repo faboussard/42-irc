@@ -18,25 +18,23 @@
 
 #include "../includes/Client.hpp"
 
-class Client;
-
 typedef std::map<int, Client> clientsMap;
 
 class Channel {
-private:
+ private:
   std::string _name;
   std::string _topic;
   clientsMap _clients;
 
-public:
+ public:
   explicit Channel(const std::string &name = "");
 
   void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(Client &client); // Utilisation du type défini
+  void acceptClientInTheChannel(Client &client);  // Utilisation du type défini
   void receiveMessageInTheChannel(int fd);
 
   void setTopic(const std::string &topic);
   std::string getTopic() const;
 };
 
-#endif // INCLUDES_CHANNEL_HPP_
+#endif  // INCLUDES_CHANNEL_HPP_

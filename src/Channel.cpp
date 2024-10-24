@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
+
 #include "../includes/colors.hpp"
 
 // Constructeur de la classe Channel
@@ -31,8 +32,7 @@ void Channel::removeClientFromTheChannel(int fd) {
 
 // Accepte un client dans le canal
 void Channel::acceptClientInTheChannel(Client &client) {
-  _clients[client.getFd()] =
-      client; // Assurez-vous que le client est référencé correctement
+  _clients[client.getFd()] = client;
   std::cout << "Client " << client.getFd() << " added to channel " << _name
             << std::endl;
 }
@@ -47,16 +47,16 @@ void Channel::receiveMessageInTheChannel(int fd) {
       std::map<int, Client>::iterator itBegin = _clients.begin();
       std::map<int, Client>::iterator itEnd = _clients.end();
       for (std::map<int, Client>::iterator it = itBegin; it != itEnd; ++it) {
-          if (it->first != fd) {
-            it->second.receiveMessage(message);
-          }
+        if (it->first != fd) {
+          it->second.receiveMessage(message);
         }
       }
     }
   }
+}
 
-  // Définit le sujet du canal
-  void Channel::setTopic(const std::string &topic) { _topic = topic; }
+// Définit le sujet du canal
+void Channel::setTopic(const std::string &topic) { _topic = topic; }
 
-  // Récupère le sujet du canal
-  std::string Channel::getTopic() const { return _topic; }
+// Récupère le sujet du canal
+std::string Channel::getTopic() const { return _topic; }

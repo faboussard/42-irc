@@ -15,7 +15,8 @@
 
 void checkArgs(int port, const std::string& password) {
   if (port <= 1080 || port > 65535) {
-    std::cerr << "Invalid port number (ports accepted : 1081 to 65535)" << std::endl;
+    std::cerr << "Invalid port number (ports accepted : 1081 to 65535)"
+              << std::endl;
     exit(EXIT_FAILURE);
   }
   if (password.length() > 1000) {
@@ -33,7 +34,7 @@ int main(int ac, char** argv) {
   int port = std::atoi(argv[1]);
   std::string password = argv[2];
   checkArgs(port, password);
-  Server ser(port);
+  Server ser(port, password);
 
   try {
     signal(SIGINT, Server::signalHandler);

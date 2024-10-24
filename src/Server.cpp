@@ -11,19 +11,26 @@
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-
 #include "../includes/colors.hpp"
-
 #include "../includes/utils.hpp"
 
 bool Server::_signal = false;
 
-Server::Server(int port) : _port(port) {
+Server::Server(int port, std::string password) {
+  _port = port;
+  _password = password;
   _signal = false;
   _socketFd = -1;
 }
 
-Client &Server::getClientByFd(int fd) { return _clients.at(fd); }
+const Client &Server::getClientByFd(int fd) const {
+  clientsMap::const_iterator it = _clients.find(fd);
+  if (it == _clients.end()) {
+    std::cerr << "Client not found with the given file descriptor" << std::endl;
+  }
+  return it->second;
+}
+
 
 /* Server Mounting */
 
@@ -96,7 +103,8 @@ void Server::closeServer() {
 
   // Fermer le socket principal
   if (_socketFd != -1) {
-    std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET << std::endl;
+    std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET
+              << std::endl;
     close(_socketFd);
     _socketFd = -1;
   }
@@ -118,12 +126,12 @@ void Server::handleClientMessage(int fd) {
   int valread = recv(fd, buffer, sizeof(buffer), 0);
 
   switch (valread) {
-  case -1:
-    std::cerr << RED "Error while receiving message" RESET << std::endl;
-  case 0:
-    std::cout << "Client " << fd << " disconnected" << std::endl;
-    clearClient(fd);
-    return;
+    case -1:
+      std::cerr << RED "Error while receiving message" RESET << std::endl;
+    case 0:
+      std::cout << "Client " << fd << " disconnected" << std::endl;
+      clearClient(fd);
+      return;
   }
 
   std::string message(buffer, valread);
@@ -133,16 +141,10 @@ void Server::handleClientMessage(int fd) {
   std::string command;
   iss >> command;
 
-  if (command == "JOIN") {
-    std::string channelName;
-    iss >> channelName;
-    if (_channels.find(channelName) == _channels.end()) {
-      _channels[channelName] = Channel(channelName);
-    }
-    _channels[channelName].acceptClientInTheChannel(_clients[fd]);
-  } else {
+  if (command == "JOIN")
+    handleCommand(command, fd);
+  else
     sendToAllClients(message);
-  }
 }
 
 void Server::acceptNewClient() {
@@ -167,20 +169,18 @@ void Server::acceptNewClient() {
   newPoll.revents = 0;
 
   cli.setFd(newClientFd);
-  cli.setIp(inet_ntoa(cliadd.sin_addr)); // inet_ntoa = convertit l'adresse IP
-                                         // en une chaîne de caractères
+  cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse IP
+                                          // en une chaîne de caractères
 
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 
-  std::cout << GREEN "New client connected: " RESET << newClientFd
-            << std::endl;
+  std::cout << GREEN "New client connected: " RESET << newClientFd << std::endl;
 }
 
 void Server::sendToAllClients(const std::string &message) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-    std::cout << "Sending message to client fd: " << it->first
-              << std::endl;
+    std::cout << "Sending message to client fd: " << it->first << std::endl;
     it->second.receiveMessage(message);
   }
 }
@@ -189,8 +189,8 @@ void Server::closeClient(int fd) {
   // Fermer le socket du client
   if (fd != -1) {
     close(fd);
-    std::cout << RED "Client <" RESET << fd << RED "> Disconnected"
-              RESET << std::endl;
+    std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
+              << std::endl;
   }
 }
 
@@ -213,7 +213,12 @@ void Server::handleCommand(const std::string &command, int fd) {
   if (command.empty()) {
     return;
   } else if (command == "JOIN") {
-    // Ajouter le client au canal
+    std::string channelName;
+    command >> channelName;
+    if (_channels.find(channelName) == _channels.end()) {
+      _channels[channelName] = Channel(channelName);
+    }
+    _channels[channelName].acceptClientInTheChannel(_clients[fd]);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {

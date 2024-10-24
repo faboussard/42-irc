@@ -36,19 +36,31 @@
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 
+class Client;
+class Channel;
+
 class Server {
  private:
   static bool _signal;
   int _socketFd;
   int _port;
+  std::string _password;
   clientsMap _clients;
   struct sockaddr_in _address;
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
 
  public:
-  explicit Server(int port);
-  Client &getClientByFd(int fd);
+  explicit Server(int port, std::string password);
+
+  /* Getters */
+
+  int getSocketFd() const;
+  int getPort() const;
+  const std::string &getPassword() const;
+  const Client &getClientByFd(int fd) const;
+  Channel &getChannelByName(const std::string &name);
+
 
   /* Server Mounting */
   void runServer();
