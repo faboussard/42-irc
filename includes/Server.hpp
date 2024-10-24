@@ -97,6 +97,7 @@ class Server {
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
+  void handlePassword(int fd);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

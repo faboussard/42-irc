@@ -56,7 +56,7 @@ bool Parser::verifyNick(const std::string& nick, clientsMap clientmap) {
   }
   clientsMap::iterator itEnd = clientmap.end();
   for (clientsMap::iterator it = clientmap.begin(); it != itEnd; it++) {
-    if (it->second.getNickname() == nick) {
+    if (it->second.getNickName() == nick) {
       return (false);
     }
   }
