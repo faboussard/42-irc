@@ -21,7 +21,7 @@
 // /JOIN quelquechose
 // parser -> JOIN -> deuxieme partie
 
-enum class Command {
+enum Command {
   JOIN,
   KICK,
   INVITE,
@@ -46,7 +46,7 @@ class Parser {
   static std::string parseCommand(const std::vector<std::string> command);
   static std::string handleCommand(const std::string& command, int fd);
   static std::string returnMessage(const std::string& command);
-  static bool        verifyNick(const std::string& nick);
+  static bool verifyNick(const std::string& nick);
 };
 
 #endif  // INCLUDES_PARSER_HPP_

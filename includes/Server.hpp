@@ -21,45 +21,71 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <vector>
-#include <map>
-#include <algorithm>
 
-#include "../includes/Client.hpp"
 #include "../includes/Channel.hpp"
+#include "../includes/Client.hpp"
 #include "../includes/Parser.hpp"
 
+typedef std::map<int, Client> clientsMap;
+typedef std::map<std::string, Channel> channelsMap;
+
+class Client;
+class Channel;
 
 class Server {
  private:
-  static bool                    _signal;
-  int                            _socketFd;
-  int                            _port;
-  std::vector<Client>            _clients;
-  // std::map<int, Client>       _clients;
-  struct sockaddr_in             _address;
-  std::vector<struct pollfd>     _pollFds;
-  std::map<std::string, Channel> _channels;
+  static bool                _signal;
+  int                        _socketFd;
+  int                        _port;
+  std::string                _password;
+  clientsMap                 _clients;
+  struct sockaddr_in         _address;
+  std::vector<struct pollfd> _pollFds;
+  channelsMap                _channels;
 
  public:
-  explicit Server(int port);
+  explicit Server(int port, std::string password);
 
+  /* Getters */
+
+  int getSocketFd() const;
+  int getPort() const;
+  const std::string &getPassword() const;
+  const Client &getClientByFd(int fd) const;
+  Channel &getChannelByName(const std::string &name);
+
+  /* Server Mounting */
+  void runServer();
+  void createSocket();
+  void createPoll();
+  void monitorConnections();
   static void signalHandler(int signal);
 
-  void runServer();
-  void closeServer();
-  void createSocket();
-  void clearClient(int fd);
+  /* Clients Management */
+
   void acceptNewClient();
   void receiveMessage(int fd);
   void handleClientMessage(int fd);
-  void handleCommand(const std::string& command, int fd);
-  void sendToAllClients(const std::string& message);
+
+  /* Clear and Close */
+
+  void closeServer();
+  void clearClient(int fd);
+  void closeClient(int fd);
+
+  /* Chat Commands */
+  void handleCommand(const std::string &command, int fd);
+
+  // for channel, list, ","
+  void sendToAllClients(const std::string &message);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

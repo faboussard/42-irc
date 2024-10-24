@@ -14,34 +14,36 @@
 
 #include "../includes/colors.hpp"
 
-Channel::Channel(const std::string& name) : _name(name) {}
+// Constructeur de la classe Channel
+Channel::Channel(const std::string &name) : _name(name) {}
 
+// Supprime un client du canal
 void Channel::removeClientFromTheChannel(int fd) {
   if (_clients.find(fd) != _clients.end()) {
     _clients[fd].receiveMessage("You have been removed from the channel");
-
     _clients.erase(fd);
     std::cout << "Client " << fd << " removed from channel " << _name
               << std::endl;
   } else {
-    std::cerr << RED "Client " << fd << " not found in channel " << _name
+    std::cerr << RED "Client " RESET << fd << " not found in channel " << _name
               << RESET << std::endl;
   }
 }
 
-void Channel::acceptClientInTheChannel(const Client& client) {
+// Accepte un client dans le canal
+void Channel::acceptClientInTheChannel(Client &client) {
   _clients[client.getFd()] = client;
   std::cout << "Client " << client.getFd() << " added to channel " << _name
             << std::endl;
 }
 
+// Reçoit un message d'un client dans le canal
 void Channel::receiveMessageInTheChannel(int fd) {
   if (_clients.find(fd) != _clients.end()) {
     std::string message = _clients[fd].shareMessage();
     if (!message.empty()) {
       std::cout << "Message received in channel " << _name << " from client "
                 << fd << ": " << message << std::endl;
-      // Diffuser le message à tous les autres clients dans le canal
       std::map<int, Client>::iterator itBegin = _clients.begin();
       std::map<int, Client>::iterator itEnd = _clients.end();
       for (std::map<int, Client>::iterator it = itBegin; it != itEnd; ++it) {
@@ -53,10 +55,8 @@ void Channel::receiveMessageInTheChannel(int fd) {
   }
 }
 
-void Channel::setTopic(const std::string& topic) {
-  _topic = topic;
-}
+// Définit le sujet du canal
+void Channel::setTopic(const std::string &topic) { _topic = topic; }
 
-std::string Channel::getTopic() const {
-  return (_topic);
-}
+// Récupère le sujet du canal
+std::string Channel::getTopic() const { return _topic; }
