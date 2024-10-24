@@ -14,7 +14,6 @@
 
 #include "../includes/colors.hpp"
 
-
 Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {}
 
 void Client::receiveMessage(const std::string& message) {
@@ -26,6 +25,10 @@ void Client::receiveMessage(const std::string& message) {
     std::cerr << RED "Invalid file descriptor" RESET << std::endl;
   }
 }
+
+std::string const& Client::getNickName() const { return (_nickName); }
+
+std::string const& Client::getUserName() const { return (_userName); }
 
 // void Client::sendNumericReply(int code, const std::string& message) {
 //   std::ostringstream oss;

@@ -155,6 +155,24 @@ void Server::handleCommand(const std::string& command, int fd) {
   }
 }
 
+void Server::handlePassword(int fd) {
+  char buffer[1024] = {0};
+  std::memset(buffer, 0, sizeof(buffer));
+  int valread = recv(fd, buffer, sizeof(buffer), 0);
+
+  switch (valread) {
+    case -1:
+      std::cerr << RED "Error while receiving message" RESET << std::endl;
+    case 0:
+      clearClient(fd);
+      return;
+  }
+  std::cout << YELLOW << buffer << RESET << std::endl;
+  std::string message(buffer, valread);
+  std::istringstream iss(message);
+  sendToAllClients(message);
+}
+
 void Server::handleClientMessage(int fd) {
   char buffer[1024] = {0};
   std::memset(buffer, 0, sizeof(buffer));
@@ -196,6 +214,8 @@ void Server::acceptNewClient() {
     std::cerr << "Failed to accept new client" << std::endl;
     return;
   }
+  // for (int i = 0; i < 2; ++i)
+  //  handlePassword(newClientFd);
 
   struct pollfd newPoll;
   newPoll.fd = newClientFd;
@@ -203,6 +223,9 @@ void Server::acceptNewClient() {
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
   _clients.push_back(Client(newClientFd));
+
+  // for (int i = 0; i < 2; ++i)
+  //  handlePassword(newClientFd);
 
   std::cout << "New client connected: " << newClientFd << std::endl;
 }

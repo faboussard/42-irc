@@ -22,6 +22,9 @@ class Client {
  private:
   int         _fd;
   std::string _ip;
+  std::string _nickName;
+  std::string _userName;
+  std::string _realName;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "");
@@ -34,7 +37,8 @@ class Client {
   void setFd(int fd) { _fd = fd; }
   std::string getIp() const { return _ip; }
   void setIp(const std::string& ip) { _ip = ip; }
-
+  std::string const& getNickName() const;
+  std::string const& getUserName() const;
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

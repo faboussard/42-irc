@@ -58,6 +58,7 @@ class Server {
   void handleClientMessage(int fd);
   void handleCommand(const std::string& command, int fd);
   void sendToAllClients(const std::string& message);
+  void handlePassword(int fd);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
