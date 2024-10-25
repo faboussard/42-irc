@@ -17,3 +17,13 @@
 void shrink_to_fit(std::vector<struct pollfd> &vec) {
   std::vector<struct pollfd>(vec).swap(vec);
 }
+
+std::string concatenate(const std::string& first) {
+    return (first);
+}
+
+std::string intToString(int number) {
+  std::ostringstream oss;
+  oss << number;
+  return (oss.str());
+}

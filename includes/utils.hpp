@@ -13,8 +13,12 @@
 #ifndef INCLUDES_UTILS_HPP_
 #define INCLUDES_UTILS_HPP_
 
+#include <sstream>
+#include <string>
 #include <vector>
 
-void shrink_to_fit(std::vector<struct pollfd> &vec);
+void shrink_to_fit(std::vector<struct pollfd>& vec);
+
+std::string intToString(int number);
 
 #endif  //  INCLUDES_UTILS_HPP_

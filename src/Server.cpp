@@ -76,6 +76,7 @@ void Server::createSocket() {
 void Server::setStartTime(void) {
   time_t now = time(0);
   _startTime = ctime(&now);
+  _startTime.erase(_startTime.end() - 1);
 }
 
 void Server::monitorConnections() {
@@ -180,9 +181,10 @@ void Server::acceptNewClient() {
   cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse IP
                                           // en une chaîne de caractères
 
-  // For message test
+  // ----- For test ---------
   cli.setNickName("chaton");
   cli.setUserName("chaton");
+  // ------------------------
 
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
@@ -196,10 +198,11 @@ void Server::sendConnectionMessage(const Client &target) const {
   std::string user = target.getUserName().empty() ? "*" : target.getUserName();
   std::string host = target.getIp().empty() ? "*" : target.getIp();
   int fd = target.getFd();
-  send101Welcome(nick, user, host, fd);
-  send102Yourhost(nick, fd);
-  send103Created(nick, _startTime, fd);
-  send104Myinfo(nick, fd);
+  send001Welcome(fd, nick, user, host);
+  send002Yourhost(fd, nick);
+  send003Created(fd, nick, _startTime);
+  send104Myinfo(fd, nick);
+  send005Isupport(fd, nick, TOKENS);
 }
 
 void Server::sendToAllClients(const std::string &message) {
