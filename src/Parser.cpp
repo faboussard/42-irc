@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/25 16:08:06 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/25 16:32:34 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ bool Parser::verifyNick(std::vector<std::string> &command, clientsMap clientmap)
   std::string nick = command[1];
   std::cout << "NICK IS " << nick << std::endl;
   size_t size = nick.size();
-  if (command[2] != "USER" || size > 9) {
+  if (size > 9) {
     // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
     return (false);
   }
