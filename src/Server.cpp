@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/25 15:26:33 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,21 +97,23 @@ void Server::monitorConnections() {
 void Server::handleInitialMessages(Client& client, const std::string& message) {
   // Logique pour traiter les trois premiers messages
   std::cout << "Handling initial message for client " << client.getFd() << ": " << message << std::endl;
-//  if (client.getMessageCount() == 1) {
+  std::vector<std::string> splittedMessage = Parser::splitCommand(message);
+  std::string command = splittedMessage[0];
+  std::cout << "Command: " << command << std::endl;
+  if (command == "CAP") {
+  } else if (command == "PASS") {
 //	//handlePassword(client.getFd());
-//  } else if (client.getMessageCount() == 2) {
-//	// handleUsername(client.getFd());
-//  } else if (client.getMessageCount() == 3) {
-//	// handleNickname(client.getFd());
-	if (Parser::verifyNick(message, _clients) == false) {
+  } else if (command == "NICK") {
+	if (Parser::verifyNick(splittedMessage, _clients) == false) {
 		std::cout << BLUE "Invalid nickname" RESET << std::endl;
+                clearClient(client.getFd());
 	} else {
 		std::cout << GREEN "Valid nickname" RESET << std::endl;
+		client.setNickname(splittedMessage[1]);
 	}
-	  // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
-	  // sendNumericReply(433, "ERR_NICKNAMEINUSE");
-	  // sendNumericReply(436, "ERR_NICKCOLLISION");
-//  }
+  } else {
+    std::cout << CYAN "What the fuck ?" RESET << std::endl;
+  }
   // Ajoutez ici la logique pour accepter ou refuser le client
 }
 

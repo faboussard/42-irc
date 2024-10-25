@@ -6,11 +6,12 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/24 09:46:48 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/25 16:08:06 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Parser.hpp"
+#include "../includes/colors.hpp"
 
 Command Parser::choseCommand(const std::string& command) {
   if (command == "/JOIN" || command == "/join") {
@@ -39,24 +40,39 @@ Command Parser::choseCommand(const std::string& command) {
   return (UNKNOWN);
 }
 
-bool Parser::verifyNick(const std::string& nick, clientsMap clientmap) {
+bool Parser::verifyNick(std::vector<std::string> &command, clientsMap clientmap) {
+  size_t vecSize = command.size();
+
+  for (size_t it = 0; it < vecSize; ++it) {
+    std::cout << YELLOW "itVec :\t" << command[it] << RESET << std::endl;
+  }
+  if (vecSize == 1 || command[1].empty()) {
+    // sendNumericReply(431, "ERR_NONICKNAMEGIVEN");
+    return (false);
+  }
+  std::string nick = command[1];
+  std::cout << "NICK IS " << nick << std::endl;
   size_t size = nick.size();
-  if (nick.empty() || size < 9) {
+  if (command[2] != "USER" || size > 9) {
+    // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
     return (false);
   }
   for (size_t i = 0; i < size; i++) {
-    if (i == 0 && !std::isdigit(nick[i])) {
+    if (i == 0 && std::isdigit(nick[i])) {
+      // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
       return (false);
     } else if (!std::isalnum(nick[i]) && nick[i] != '[' && nick[i] != ']'
               && nick[i] != '{' && nick[i] != '}' && nick[i] != '\\'
               && nick[i] != '|' && nick[i] != '`' && nick[i] != '_'
               && nick[i] != '^' && nick[i] != '-') {
+      // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
       return (false);
     }
   }
   clientsMap::iterator itEnd = clientmap.end();
   for (clientsMap::iterator it = clientmap.begin(); it != itEnd; ++it) {
     if (it->second.getNickName() == nick) {
+      // sendNumericReply(433, "ERR_NICKNAMEINUSE");
       return (false);
     }
   }
