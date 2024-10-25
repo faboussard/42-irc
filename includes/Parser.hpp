@@ -29,9 +29,9 @@ class Parser {
  public:
   static Command choseCommand(const std::string& command);
   static std::vector<std::string> splitCommand(const std::string& command);
-  static std::string parseCommand(const std::vector<std::string> command);
-  static std::string handleCommand(const std::string& command, int fd);
-  static std::string returnMessage(const std::string& command);
+//  static std::string parseCommand(const std::vector<std::string> command);
+  static void handleCommand(const std::string& command, int fd);
+//  static std::string returnMessage(const std::string& command);
   static bool verifyNick(const std::string& nick, clientsMap clientmap);
 };
 

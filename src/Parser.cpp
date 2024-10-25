@@ -14,29 +14,29 @@
 
 Command Parser::choseCommand(const std::string& command) {
   if (command == "/JOIN" || command == "/join") {
-    return (Command::JOIN);
+    return (JOIN);
   } else if (command == "/KICK" || command == "/kick") {
-    return (Command::KICK);
+    return (KICK);
   } else if (command == "/INVITE" || command == "/invite") {
-    return (Command::INVITE);
+    return (INVITE);
   } else if (command == "/TOPIC" || command == "/topic") {
-    return (Command::TOPIC);
+    return (TOPIC);
   } else if (command == "/MODE" || command == "/mode") {
-    return (Command::MODE);
+    return (MODE);
   } else if (command == "/LIST" || command == "/list") {
-    return (Command::LIST);
+    return (LIST);
   } else if (command == "/NOTICE" || command == "/notice") {
-    return (Command::NOTICE);
+    return (NOTICE);
   } else if (command == "/NICK" || command == "/nick") {
-    return (Command::NICK);
+    return (NICK);
   } else if (command == "/PRIVMSG" || command == "/privmsg") {
-    return (Command::PRIVMSG);
+    return (PRIVMSG);
   } else if (command == "/QUIT" || command == "/quit") {
-    return (Command::QUIT);
+    return (QUIT);
   } else if (command == "/PING" || command == "/ping") {
-    return (Command::PING);
+    return (PING);
   }
-  return (Command::UNKNOWN);
+  return (UNKNOWN);
 }
 
 bool Parser::verifyNick(const std::string& nick, clientsMap clientmap) {
@@ -55,7 +55,7 @@ bool Parser::verifyNick(const std::string& nick, clientsMap clientmap) {
     }
   }
   clientsMap::iterator itEnd = clientmap.end();
-  for (clientsMap::iterator it = clientmap.begin(); it != itEnd; it++) {
+  for (clientsMap::iterator it = clientmap.begin(); it != itEnd; ++it) {
     if (it->second.getNickName() == nick) {
       return (false);
     }
@@ -112,17 +112,17 @@ std::vector<std::string> Parser::splitCommand(const std::string& command) {
   return (message);  // /join #channel /nick nickname
 }
 
-std::string Parser::parseCommand(const std::vector<std::string> command) {
-  std::istringstream iss(command);
-  std::string firstPart;
-  std::string secondPart;
+//std::string Parser::parseCommand(const std::vector<std::string> command) {
+//  std::istringstream iss(command);
+//  std::string firstPart;
+//  std::string secondPart;
+//
+//  iss >> firstPart;
+//  iss >> secondPart;
+//  return (secondPart);
+//}
 
-  iss >> firstPart;
-  iss >> secondPart;
-  return (secondPart);
-}
-
-std::string Parser::handleCommand(const std::string& command, int fd) {
+void Parser::handleCommand(const std::string& command, int fd) {
   static_cast<void>(fd);
   if (command.empty()) {
     return;
