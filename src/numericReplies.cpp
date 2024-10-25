@@ -21,49 +21,58 @@
 
 #include "../includes/numericReplies.hpp"
 
-#include "../includes/Client.hpp"
-#include "../includes/Server.hpp"
-
-/* Welcome messages */
-void send101Welcome(std::string const& nick, std::string const& user,
-                    std::string const& host, int fd) {
-  std::string message = _101_RPL_WELCOME(nick, user, host);
+/*============================================================================*/
+/*       Welcome messages                                                     */
+/*============================================================================*/
+void send001Welcome(int fd, std::string const &nick, std::string const &user,
+                    std::string const &host) {
+  std::string message = _001_RPL_WELCOME(nick, user, host);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
   }
 }
 
-void send102Yourhost(const std::string& nick, int fd) {
-  std::string message = _102_RPL_YOURHOST(nick);
+void send002Yourhost(int fd, const std::string &nick) {
+  std::string message = _002_RPL_YOURHOST(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
   }
 }
 
-void send103Created(const std::string& nick, const std::string& startTime,
-                    int fd) {
-  std::string message = _103_RPL_CREATED(nick, startTime);
+void send003Created(int fd, const std::string &nick,
+                    const std::string &startTime) {
+  std::string message = _003_RPL_CREATED(nick, startTime);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
   }
 }
 
-void send104Myinfo(const std::string& nick, int fd) {
-  std::string message = _104_RPL_MYINFO(nick);
+void send104Myinfo(int fd, const std::string &nick) {
+  std::string message = _004_RPL_MYINFO(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
   }
 }
 
-/* Error messages */
-void send433NickAlreadyInUse(const std::string& nick, int fd) {
+void send005Isupport(int fd, const std::string &nick,
+                     const std::string &tokens) {
+  std::string message = _005_RPL_ISUPPORT(nick, tokens);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
+
+/*============================================================================*/
+/*       Error messages                                                       */
+/*============================================================================*/
+void send433NickAlreadyInUse(int fd, const std::string &nick) {
   std::string message = _433_ERR_NICKNAMEINUSE(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
   }
 }
 
-void send464PasswdMismatch(const std::string& nick, int fd) {
+void send464PasswdMismatch(int fd, const std::string &nick) {
   std::string message = _464_ERR_PASSWD_MISMATCH(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
