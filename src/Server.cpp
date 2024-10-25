@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/25 15:26:33 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/25 16:32:20 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,8 @@ void Server::handleInitialMessages(Client& client, const std::string& message) {
   } else if (command == "PASS") {
 //	//handlePassword(client.getFd());
   } else if (command == "NICK") {
-	if (Parser::verifyNick(splittedMessage, _clients) == false) {
+	if ((splittedMessage.size() > 2 && splittedMessage[2] != "USER")
+             || Parser::verifyNick(splittedMessage, _clients) == false) {
 		std::cout << BLUE "Invalid nickname" RESET << std::endl;
                 clearClient(client.getFd());
 	} else {
