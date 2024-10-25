@@ -21,7 +21,9 @@
 /*       Constructors                                                         */
 /*============================================================================*/
 
-Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {}
+Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
+	_messageCount = 0;
+}
 
 /*============================================================================*/
 /*       Getters & Setters                                                    */
@@ -71,4 +73,12 @@ std::string Client::shareMessage(void) {
   }
   buffer[bytesRead] = '\0';
   return (std::string(buffer));
+}
+
+short Client::getMessageCount() const {
+	return (_messageCount);
+}
+
+void Client::incrementMessageCount() {
+	++_messageCount;
 }

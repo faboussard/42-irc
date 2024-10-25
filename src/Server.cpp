@@ -14,6 +14,7 @@
 
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
+#include "Parser.hpp"
 
 bool Server::_signal = false;
 
@@ -61,7 +62,7 @@ void Server::createSocket() {
 
   if (bind(_socketFd, (struct sockaddr *)&_address, sizeof(_address)) == -1) {
     throw std::runtime_error(
-        "Failed to bind socket. Port might be used elsewere");
+        "Failed to bind socket. Port might be used elsewhere");
   }
 
   if (listen(_socketFd, SOMAXCONN) == -1) {
@@ -93,6 +94,27 @@ void Server::monitorConnections() {
   }
 }
 
+void Server::handleInitialMessages(Client& client, const std::string& message) {
+  // Logique pour traiter les trois premiers messages
+  std::cout << "Handling initial message for client " << client.getFd() << ": " << message << std::endl;
+//  if (client.getMessageCount() == 1) {
+//	//handlePassword(client.getFd());
+//  } else if (client.getMessageCount() == 2) {
+//	// handleUsername(client.getFd());
+//  } else if (client.getMessageCount() == 3) {
+//	// handleNickname(client.getFd());
+	if (Parser::verifyNick(message, _clients) == false) {
+		std::cout << BLUE "Invalid nickname" RESET << std::endl;
+	} else {
+		std::cout << GREEN "Valid nickname" RESET << std::endl;
+	}
+	  // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
+	  // sendNumericReply(433, "ERR_NICKNAMEINUSE");
+	  // sendNumericReply(436, "ERR_NICKCOLLISION");
+//  }
+  // Ajoutez ici la logique pour accepter ou refuser le client
+}
+
 void Server::closeServer() {
   // Fermer tous les clients
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
@@ -120,30 +142,39 @@ void Server::signalHandler(int signal) {
 /* Clients Management */
 
 void Server::handleClientMessage(int fd) {
-  char buffer[1024] = {0};
-  std::memset(buffer, 0, sizeof(buffer));
-  int valread = recv(fd, buffer, sizeof(buffer), 0);
+	char buffer[1024] = {0};
+	std::memset(buffer, 0, sizeof(buffer));
+	int valread = recv(fd, buffer, sizeof(buffer), 0);
 
-  switch (valread) {
-    case -1:
-      std::cerr << RED "Error while receiving message" RESET << std::endl;
-      // fallthrough
-    case 0:
-      std::cout << "Client " << fd << " disconnected" << std::endl;
-      clearClient(fd);
-      return;
-  }
-  std::string message(buffer, valread);
-  std::cout << "Received message from client " << fd << ": " << message
-            << std::endl;
-  std::istringstream iss(message);
-  std::string command;
-  iss >> command;
+	switch (valread) {
+		case -1:
+			std::cerr << RED "Error while receiving message" RESET << std::endl;
+			// fallthrough
+		case 0:
+			std::cout << "Client " << fd << " disconnected" << std::endl;
+			clearClient(fd);
+			return;
+	}
+	std::string message(buffer, valread);
+	std::cout << "Received message from client " << fd << ": " << message
+			  << std::endl;
 
-  if (command == "JOIN")
-    handleCommand(command, fd);
-  else
-    sendToAllClients(message);
+	Client &client = _clients[fd];
+
+	if (client.getMessageCount() <= 3) {
+		client.incrementMessageCount();
+		// Traitez les trois premiers messages ici
+		handleInitialMessages(client, message);
+	} else {
+		// Traitez les autres messages ici
+		std::istringstream iss(message);
+		std::string command;
+		iss >> command;
+		if (command == "JOIN")
+			handleCommand(command, fd);
+		else
+			sendToAllClients(message);
+	}
 }
 
 void Server::acceptNewClient() {
@@ -250,6 +281,7 @@ void Server::handlePassword(int fd) {
   switch (valread) {
     case -1:
       std::cerr << RED "Error while receiving message" RESET << std::endl;
+	  //fallthrough
     case 0:
       clearClient(fd);
       return;

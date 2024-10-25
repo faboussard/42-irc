@@ -22,11 +22,12 @@
 
 class Client {
  private:
-  int _fd;
+  int         _fd;
   std::string _ip;
   std::string _nickName;
   std::string _userName;
   std::string _realName;
+  short         _messageCount;
 
  public:
   explicit Client(int fd = -1, const std::string &ip = "");
@@ -38,15 +39,21 @@ class Client {
   std::string getIp() const;
   std::string const& getNickName() const;
   std::string const& getUserName() const;
+  short              getMessageCount() const;
+
 
   /* Setters */
   void setFd(int fd);
   void setNickname(const std::string& nickname);
   void setIp(const std::string &ip);
+  void incrementMessageCount();
+
 
   /* Messages handling */
   void receiveMessage(const std::string& message);
   std::string shareMessage();
+
+
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

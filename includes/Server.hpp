@@ -98,6 +98,8 @@ class Server {
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
   void handlePassword(int fd);
+
+	void handleInitialMessages(Client &client, const std::string &message);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
