@@ -58,6 +58,10 @@
 
 /* Error messages */
 
+#define _421_ERR_UNKNOWNCOMMAND(nick, command) \
+  (std::string(":") + SRV_NAME + " 421 " + nick + " :" + command + \
+  " :Unknown command\r\n")
+
 // NICK: Change the client’s nickname
 // 431 ERR_NONICKNAMEGIVEN:   "<client> :No nickname given"
 // Returned when a nickname parameter is expected for a command but isn’t given.
@@ -91,13 +95,17 @@
 // RPL_YOUREOPER (381)
 // ERR_NOOPERHOST (491)
 
-//----- JOIN: Add a client to a channel
+// JOIN
+// 331 RPL_NOTOPIC - Indicates that the channel has no topic set.
 // 353 RPL_NAMREPLY: List of users in the channel.
 // 366 RPL_ENDOFNAMES: End of the list of users in the channel.
 // 475 ERR_BADCHANNELKEY: Cannot join the channel (wrong channel key).
+// 403 ERR_NOSUCHCHANNEL: Channel does not exist.
+// 404 ERR_CANNOTSENDTOCHAN: Cannot send to channel. Indicates that the user cannot send messages to the channel, which may happen if the user is banned or if the channel is set to "invite only."
+// 405 ERR_TOOMANYCHANNELS: The user has joined too many channels.
+// 474 ERR_BANNEDFROMCHAN: The user is banned from the channel.
 
 // KICK: Remove a client from a channel
-// 403 ERR_NOSUCHCHANNEL: Channel does not exist.
 // 441 ERR_USERNOTINCHANNEL: The user is not in the channel.
 // 482 ERR_CHANOPRIVSNEEDED: You’re not a channel operator.
 
@@ -111,21 +119,16 @@
 
 // MODE: Change the channel’s mode
 // 324 RPL_CHANNELMODEIS: Channel mode is displayed.
-// 403 ERR_NOSUCHCHANNEL: Channel does not exist.
 // 472 ERR_UNKNOWNMODE: The mode is unknown.
 
 // LIST: Show a list of available channels, often filtered by parameters
 // 322 RPL_LIST: Channel list with details.
 // 323 RPL_LISTEND: End of channel list.
 
-// NOTICE: Send a notice message to a user or a channel
-// 401 ERR_NOSUCHNICK: Target nickname or channel does not exist.
-
 // PRIVMSG: Send a private message to a user or a channel
-//   - 401: ERR_NOSUCHNICK (No such nickname exists)
 // 401 ERR_NOSUCHNICK: No such nickname or channel.
-// 402 ERR_NOSUCHSERVER: No such server.
 // 404 ERR_CANNOTSENDTOCHAN: Cannot send to that channel.
+// 300 RPL_WHOISUSER: Details about the user being queried.
 
 /* Welcome messages */
 void send001Welcome(int fd, std::string const &nick,
@@ -137,6 +140,8 @@ void send104Myinfo(int fd, const std::string &nick);
 void send005Isupport(int fd, const std::string &nick, const std::string &toks);
 
 /* Error messages */
+void send421UnknownCommand(int fd, const std::string &nick,
+                           const std::string &command);
 void send433NickAlreadyInUse(int fd, const std::string &nick);
 void send464PasswdMismatch(int fd, const std::string &nick);
 

@@ -65,6 +65,13 @@ void send005Isupport(int fd, const std::string &nick,
 /*============================================================================*/
 /*       Error messages                                                       */
 /*============================================================================*/
+void send421UnknownCommand(int fd, const std::string &nick,
+                           const std::string &command) {
+  std::string message = _421_ERR_UNKNOWNCOMMAND(nick, command);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
 void send433NickAlreadyInUse(int fd, const std::string &nick) {
   std::string message = _433_ERR_NICKNAMEINUSE(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
