@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/24 09:39:58 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/25 15:37:52 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class Parser {
 //  static std::string parseCommand(const std::vector<std::string> command);
   static void handleCommand(const std::string& command, int fd);
 //  static std::string returnMessage(const std::string& command);
-  static bool verifyNick(const std::string& nick, clientsMap clientmap);
+  static bool verifyNick(std::vector<std::string> &command, clientsMap clientmap);
 };
 
 #endif  // INCLUDES_PARSER_HPP_
