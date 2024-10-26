@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/09/19 09:06:58 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/26 23:15:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@
 
 void shrink_to_fit(std::vector<struct pollfd>& vec);
 
-std::string intToString(int number);
+template <typename T>
+std::string toString(const T& value) {
+  std::ostringstream oss;
+  oss << value;
+  return (oss.str());
+}
 
 #endif  //  INCLUDES_UTILS_HPP_
