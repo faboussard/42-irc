@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:29:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/25 09:30:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/26 23:18:42 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #define NETWORK_NAME "42IRC"
 
 /* Modes */
-#define USER_MODES "ao"        // List of available modes in server (Example)
+#define USER_MODES "ior"       // List of available modes in server (Example)
 #define CHANNEL_MODES "itkol"  // List of available modes in server (Example)
 
 /* ISUPPORT Parameters */
@@ -31,7 +31,7 @@
 #define TOKEN_PREFIX (std::string("PREFIX=") + PREFIX)
 
 #define NICKLEN 9
-#define TOKEN_NICKLEN (std::string("NICKLEN=") + intToString(NICKLEN))
+#define TOKEN_NICKLEN (std::string("NICKLEN=") + toString(NICKLEN))
 
 #define UNIQUE ""
 #define TOKEN_UNIQUE (std::string("UNIQUE") + UNIQUE)

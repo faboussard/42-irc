@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/26 22:29:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,8 +182,12 @@ void Server::acceptNewClient() {
                                           // en une chaîne de caractères
 
   // ----- For test ---------
-  cli.setNickName("chaton");
-  cli.setUserName("chaton");
+  cli.setNickName("kitten");
+  cli.setUserName("kitten");
+  cli.setUInvisibleMode(true);
+  cli.setUOperatorMode(false);
+  cli.setURegisteredMode(true);
+  testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
   // ------------------------
 
   _clients[newClientFd] = cli;
@@ -198,6 +202,7 @@ void Server::sendConnectionMessage(const Client &target) const {
   std::string user = target.getUserName().empty() ? "*" : target.getUserName();
   std::string host = target.getIp().empty() ? "*" : target.getIp();
   int fd = target.getFd();
+  sendWelcome(fd, nick);
   send001Welcome(fd, nick, user, host);
   send002Yourhost(fd, nick);
   send003Created(fd, nick, _startTime);
