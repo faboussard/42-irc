@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:29:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/26 23:18:42 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/27 22:26:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "./utils.hpp"
 
 /* Server information */
-#define SRV_NAME "ircserv"
+#define SRV_NAME "ircserv.localhost"
 #define SRV_VERSION "1.0.0"
 #define NETWORK_NAME "42IRC"
 

@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/26 23:27:14 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/27 22:17:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,35 +74,51 @@
 
 /* Channels */
 
+# define _331_RPL_NOTOPIC(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 331 " + nick + " #" + chanName + \
+  " :No topic is set\r\n")
+// Indicates that the channel has no topic set.
+
+#define _332_RPL_TOPIC(nick, chanName, topic) \
+  (std::string(":") + SRV_NAME + " 332 " + nick + " #" + chanName + \
+  " :" + topic + "\r\n")
+// Current topic of the channel.
+
+#define _333_RPL_TOPICWHOTIME(nick, chanName, author, setTime) \
+  (std::string(":") + SRV_NAME + " 333 " + nick + " #" + chanName + \
+  " " + author + " " + setTime + "\r\n")
+// By whom and when(unix timestamp) is the topic set. Sent with 332
+
+#define _336_RPL_INVITELIST(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 336 " + nick + " #" + chanName + "\r\n")
+// Indicate a channel the client was invited to. 
+// If the client is invited to multiple channels, the server sends multiple replies.
+// If there is no channel to which the client was invited, the server sends only 337.
+// Sent as a reply to the INVITE command without parameter
+
+#define _337_RPL_ENDOFINVITELIST(nick) \
+  (std::string(":") + SRV_NAME + " 337 " + nick + " :End of /INVITE list\r\n")
+
+#define _341_RPL_INVITING(nick, invitedNick, chanName) \
+  (std::string(":") + SRV_NAME + " 341 " + nick + + " " + invitedNick + " #" + \
+  chanName + "\r\n")
+// Confirms the user has been invited to the channel.
+// Sent as a reply to the INVITE command.
+
+//------------------------------------------------------------------------------
 // 322 RPL_LIST: Channel list with details.
 // 323 RPL_LISTEND: End of channel list.
 
 // 324 RPL_CHANNELMODEIS: Channel mode is displayed. Reply to MODE #channel
 // 329_RPL_CREATIONTIME: creation time of a channel. Reply to MODE #channel
-
-# define _331_RPL_NOTOPIC(nick, channel) \
-  (std::string(":") + SRV_NAME + " 331 " + nick + " #" + channel + \
-  " :No topic is set\r\n")
-// Indicates that the channel has no topic set.
-
-#define _332_RPL_TOPIC(nick, channel, topic) \
-  (std::string(":") + SRV_NAME + " 332 " + nick + " #" + channel + \
-  " :" + topic + "\r\n")
-// Current topic of the channel.
-
-#define _333_RPL_TOPICWHOTIME(nick, channelName, author, setTime) \
-  (std::string(":") + SRV_NAME + " 333 " + nick + " #" + channelName + \
-  " " + author + " " + setTime + "\r\n")
-// 333_RPL_TOPICWHOTIME: who set the topic (<nick>) and when they set it (<setat> is a unix timestamp). Sent with 332
-
-// 336_RPL_INVITELIST: Sent to a client as a reply to the INVITE command when used with no parameter, to indicate a channel the client was invited to.
-
-// 337_RPL_ENDOFINVITELIST
-// 341 RPL_INVITING: Confirms the user has been invited to the channel.
 // 353 RPL_NAMREPLY: List of users in the channel.
+
 // 366 RPL_ENDOFNAMES: End of the list of users in the channel.
-// 367_RPL_BANLIST: List of bans set on the channel. (Sent as a reply to the MODE )
+
+// 367_RPL_BANLIST: List of bans set on the channel. (Sent as a reply to the MODE)
+
 // 368_RPL_ENDOFBANLIST: End of the list of bans for the channel.
+//------------------------------------------------------------------------------
 
 /* Error messages */
 
@@ -110,6 +126,10 @@
   (std::string(":") + SRV_NAME + " 401 " + nick + " " + targetNick + \
   " :No such nick/channel\r\n")
 // Indicates that no client can be found for the supplied nickname.
+
+#define _403_ERR_NOSUCHCHANNEL(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 403 " + nick + " #" + chanName + \
+  " :No such channel\r\n")
 
 #define _421_ERR_UNKNOWNCOMMAND(nick, command) \
   (std::string(":") + SRV_NAME + " 421 " + nick + " " + command + \
@@ -127,33 +147,27 @@
   (std::string(":") + SRV_NAME + " 433 " + nick + \
   " :Nickname is already in use\r\n")
 
-// _417_ERR_INPUTTOOLONG Returned when a message is too long for the server to process.
-// (512 bytes for the main section, 4094 or 8191 bytes for the tag section)
+#define _442_ERR_NOTONCHANNEL(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 442 " + nick + " #" + chanName + \
+  " :You're not on that channel\r\n")
 
-// _501_ERR_UMODEUNKNOWNFLAG: Unknown MODE flag
+#define _443_ERR_USERONCHANNEL(nick, invitedNick, chanName) \
+  (std::string(":") + SRV_NAME + " 443 " + nick + " " + invitedNick + " #" + \
+  chanName + " :is already on channel\r\n")
 
-// USER
-
-// _451_ERR_NOTREGISTERED: "<client> :You have not registered"
-
-// _461_ERR_NEEDMOREPARAMS:   "<client> <command> :Not enough parameters"
-// Returned when a client command cannot be parsed because not enough parameters
-// were supplied. The text used in the last param of this message may vary.
-
-// _462_ERR_ALREADYREGISTERED:  "<client> :You may not reregister"
-// Returned when a client tries to change a detail that can only be set during
-// registration (such as resending the PASS or USER after registration). The
-// text used in the last param of this message varies.
-
-// _481_ERR_NOPRIVILEGES: You're not an IRC operator"
+#define _461_ERR_NEEDMOREPARAMS(nick, command) \
+  (std::string(":") + SRV_NAME + " 461 " + nick + " " + command + \
+  " :Not enough parameters\r\n")
+// A client command cannot be parsed because not enough parameters were supplied.
 
 #define _464_ERR_PASSWD_MISMATCH(nick) \
   (std::string(":") + SRV_NAME + " 464 " + nick + " :Password incorrect\r\n")
 
-// ??
-// _465_ERR_YOUREBANNEDCREEP: You are banned from this server.
+#define _482_ERR_CHANOPRIVSNEEDED(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 482 " + nick + " #"  + chanName + \
+  " :You're not a channel operator\r\n")
 
-// _403_ERR_NOSUCHCHANNEL: Channel does not exist.
+//------------------------------------------------------------------------------
 
 // _404_ERR_CANNOTSENDTOCHAN: Cannot send to channel. Indicates that the user cannot send messages to the channel, which may happen if the user is banned or if the channel is set to "invite only."
 
@@ -163,27 +177,37 @@
 
 // _412_ERR_NOTEXTTOSEND: Returned by the PRIVMSG command to indicate the message wasn’t delivered because there was no text to send.
 
-// 441_ERR_USERNOTINCHANNEL: The user is not in the channel.
+// _417_ERR_INPUTTOOLONG Returned when a message is too long for the server to process.
+// (512 bytes for the main section, 4094 or 8191 bytes for the tag section)
 
-// 442_ERR_NOTONCHANNEL: The user is not on the channel.
+// _441_ERR_USERNOTINCHANNEL: The user is not in the channel.
 
-// 443_ERR_USERONCHANNEL: The user is already in the channel.
+// _451_ERR_NOTREGISTERED: "<client> :You have not registered"
+
+// _462_ERR_ALREADYREGISTERED:  "<client> :You may not reregister"
+// Returned when a client tries to change a detail that can only be set during
+// registration (such as resending the PASS or USER after registration). The
+// text used in the last param of this message varies.
 
 // _471_ERR_CHANNELISFULL: The channel is full.
 
-// 472_ERR_UNKNOWNMODE: The mode is unknown.
+// _472_ERR_UNKNOWNMODE: The mode is unknown.
 
-// 473_ERR_INVITEONLYCHAN: The channel is invite-only.
+// _473_ERR_INVITEONLYCHAN: The channel is invite-only.
 
-// 474_ERR_BANNEDFROMCHAN: The user is banned from the channel.
+// _474_ERR_BANNEDFROMCHAN: The user is banned from the channel.
 
-// 475_ERR_BADCHANNELKEY: Cannot join the channel (wrong channel key).
+// _475_ERR_BADCHANNELKEY: Cannot join the channel (wrong channel key).
 
-// 476_ERR_BADCHANMASK: The channel mask is invalid.
+// _476_ERR_BADCHANMASK: The channel mask is invalid.
 
-// 482_ERR_CHANOPRIVSNEEDED: You’re not a channel operator.
+// _481_ERR_NOPRIVILEGES: You're not an IRC operator"
+
+// _501_ERR_UMODEUNKNOWNFLAG: Unknown MODE flag
 
 // 525_ERR_INVALIDKEY : The key provided for a channel is invalid.
+
+// ?? _465_ERR_YOUREBANNEDCREEP: You are banned from this server.
 
 /*--------- Just for fun -----------------------------------------------------*/
 
@@ -211,24 +235,41 @@ void send104Myinfo(int fd, const std::string &nick);
 void send005Isupport(int fd, const std::string &nick, const std::string &toks);
 void sendWelcome(int fd, const std::string &nick);
 
-/* User messages */
+/* User related messages */
 void send221Umodeis(int fd, const Client &client);
 
-/* Channel messages */
+/* Channel related messages */
 void send331Notopic(int fd, const std::string &nick, const Channel &channel);
 void send332Topic(int fd, const std::string &nick, const Channel &channel);
 void send333Topicwhotime(int fd, const std::string &nick,
                          const Channel &channel);
+void send336Invitelist(int fd, const std::string &nick,
+                       const std::string &chanName);
+void send337Endofinvitelist(int fd, const std::string &nick);
+void send341Inviting(int fd, const std::string &nick, 
+                     const std::string &invitedNick,
+                     const std::string &chanName);
 
 /* Error messages */
 void send401NoSuchNick(int fd, const std::string &nick,
                        const std::string &targetNick);
+void send403NoSuchChannel(int fd, const std::string &nick,
+                          const std::string &chanName);
 void send421UnknownCommand(int fd, const std::string &nick,
                            const std::string &command);
 void send431NoNicknameGiven(int fd, const std::string &nick);
 void send432ErroneusNickname(int fd, const std::string &nick);
 void send433NickAlreadyInUse(int fd, const std::string &nick);
+void send442NotOnChannel(int fd, const std::string &nick,
+                         const std::string &chanName);
+void send443UserOnChannel(int fd, const std::string &nick,
+                          const std::string &invitedNick,
+                          const std::string &chanName);
+void send461NeedMoreParams(int fd, const std::string &nick,
+                           const std::string &command);
 void send464PasswdMismatch(int fd, const std::string &nick);
+void send482ChanOPrivsNeeded(int fd, const std::string &nick,
+                             const std::string &chanName);
 
 /* Just for test */
 void testAllNumericReplies(const std::string &serverStartTime,

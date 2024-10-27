@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/26 22:39:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/27 15:17:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,15 @@ void Client::setUserName(const std::string& userName) { _userName = userName; }
 void Client::setRealName(const std::string& realName) { _realName = realName; }
 
 void Client::setUInvisibleMode(bool isInvisible) {
-  _uModes.invisible_ = isInvisible;
+  _uModes.invisible = isInvisible;
 }
 
 void Client::setUOperatorMode(bool isOperator) {
-  _uModes.operator_ = isOperator;
+  _uModes.operatorOfServer = isOperator;
 }
 
 void Client::setURegisteredMode(bool isRegistered) {
-  _uModes.registered_ = isRegistered;
+  _uModes.registered = isRegistered;
 }
 
 /*------ Messages handling -------------------------------------------------- */
