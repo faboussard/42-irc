@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/26 22:10:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/27 15:17:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 #include <string>
 
 typedef struct UserModes {
-  bool invisible_;
-  bool operator_;
-  bool registered_;
+  bool invisible;
+  bool operatorOfServer;
+  bool registered;
 } _userModes;
 
 class Client {

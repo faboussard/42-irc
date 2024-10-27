@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/26 23:20:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/27 20:49:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,26 @@
 // Constructeur de la classe Channel
 Channel::Channel(const std::string &name) : _name(name) {}
 
+/*------ Getters ------------------------------------------------------------ */
+
 const std::string &Channel::getName() const { return _name; }
+
 const clientsMap &Channel::getClientsInChannel() const { return _clientsInChannel; }
+
 // const std::string &Channel::getTopic() const { return _topic; }
 const Topic &Channel::getTopic() const { return _topic; }
+
+bool Channel::getInviteOnlyModeStatus(void) const { return (_inviteOnly); }
+
+bool Channel::getTopicSettableByOpsOnlyModeStatus(void) const {
+  return (_topicSettableByOpsOnly);
+}
+
+const std::string &Channel::getKey(void) const { return (_key); }
+
+int Channel::getLimit(void) const { return (_limit); }
+
+/*------ Setters ------------------------------------------------------------ */
 
 // void Channel::setTopic(const std::string &topic) { _topic = topic; }
 void Channel::setTopic(const std::string &topic, const std::string &author) {
@@ -31,6 +47,17 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
   _topic.setTime = toString(now);
 }
 
+void Channel::setInviteOnlyMode(bool inviteOnly) { _inviteOnly = inviteOnly; }
+
+void Channel::setTopicSettableByOpsOnlyMode(bool topicSettableByOpsOnly) {
+  _topicSettableByOpsOnly = topicSettableByOpsOnly;
+}
+
+void Channel::setKey(const std::string &key) { _key = key; }
+
+void Channel::setLimit(int limit) { _limit = limit; }
+
+/*--------------------------------------------------------------------------- */
 // Supprime un client du canal
 void Channel::removeClientFromTheChannel(int fd) {
   if (_clientsInChannel.find(fd) != _clientsInChannel.end()) {
