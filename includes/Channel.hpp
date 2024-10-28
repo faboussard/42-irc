@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 15:33:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:50:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct Mode {
 class Channel {
  private:
   std::string _name;
+  std::string _creationTime;
   Topic _topic;
   Mode _mode;
 
@@ -52,6 +53,7 @@ class Channel {
 
   const std::string &getName() const;
   const std::string getNameWithPrefix() const;
+  const std::string &getCreationTime() const;
   const clientsMap &getClientsInChannel() const;
   const clientsMap &getChannelOperators() const;
   const Topic &getTopic(void) const;
