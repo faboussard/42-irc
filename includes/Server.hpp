@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:24:38 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -32,6 +33,7 @@
 
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
+#include "../includes/numericReplies.hpp"
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
@@ -42,6 +44,7 @@ class Server {
   int _socketFd;
   int _port;
   std::string _name;
+  std::string _startTime;
   std::string _password;
   clientsMap _clients;
   struct sockaddr_in _address;
@@ -55,10 +58,14 @@ class Server {
 
   int getSocketFd() const;
   int getPort() const;
+  // const std::string &getStartTime(void) const;
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
   const std::string &getServerName() const;
+
+  /* Setters */
+  void setStartTime();
 
   /* Server Mounting */
   void runServer();
@@ -70,6 +77,7 @@ class Server {
   /* Clients Management */
 
   void acceptNewClient();
+  void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
   void handleClientMessage(int fd);
 
@@ -85,6 +93,7 @@ class Server {
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
+  void handlePassword(int fd);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

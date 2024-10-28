@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:22:07 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,45 @@
 #include <sstream>
 #include <string>
 
+typedef struct UserModes {
+  bool invisible;
+  bool operatorOfServer;
+  bool registered;
+} _userModes;
+
 class Client {
  private:
   int _fd;
   std::string _ip;
-  std::string _nick;
+  std::string _nickName;
+  std::string _userName;
+  std::string _realName;
+  UserModes _uModes;
 
  public:
-  explicit Client(int fd = -1, const std::string &ip = "");
-
-  void receiveMessage(const std::string &message);
-  // void sendNumericReply(int code, const std::string& message);
-  std::string shareMessage();
+  explicit Client(int fd = -1, const std::string& ip = "");
 
   /* Getters */
-
   int getFd() const { return _fd; }
-  void setFd(int fd) { _fd = fd; }
   std::string getIp() const { return _ip; }
-  void setIp(const std::string &ip) { _ip = ip; }
-  std::string getNick() const { return _nick; }
+  std::string const& getNickName() const;
+  std::string const& getUserName() const;
+  std::string const& getRealName() const;
+  UserModes const& getUserModes() const;
+
+  /* Setters */
+  void setFd(int fd) { _fd = fd; }
+  void setIp(const std::string& ip) { _ip = ip; }
+  void setNickName(const std::string& nickName);
+  void setUserName(const std::string& userName);
+  void setRealName(const std::string& realName);
+  void setUInvisibleMode(bool isInvisible);
+  void setUOperatorMode(bool isOperator);
+  void setURegisteredMode(bool isRegistered);
+
+  /* Messages handling */
+  void receiveMessage(const std::string& message);
+  std::string shareMessage();
 };
 
 #endif  // INCLUDES_CLIENT_HPP_
