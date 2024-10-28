@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 14:43:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 17:59:22 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 // message: A human readable text message (welcome message or error description)
 
 #include "../includes/numericReplies.hpp"
+
+#include "../includes/colors.hpp"
 
 /*------ Welcome messages ----------------------------------------------------*/
 
@@ -72,11 +74,7 @@ void sendWelcome(int fd, const std::string &nick) {
 
 void send221Umodeis(int fd, const Client &client) {
   std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
-  UserModes modes = client.getUserModes();
-  std::string uModes = "+";
-  if (modes.invisible) uModes += "i";
-  if (modes.operatorOfServer) uModes += "o";
-  if (modes.registered) uModes += "r";
+  std::string uModes = client.getUserModesFlag();
   std::string message = _221_RPL_UMODEIS(nick, uModes);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
@@ -86,14 +84,14 @@ void send221Umodeis(int fd, const Client &client) {
 /*------ Channel related messages --------------------------------------------*/
 
 void send331Notopic(int fd, const std::string &nick, const Channel &channel) {
-  std::string chanName = channel.getName();
+  std::string chanName = channel.getNameWithPrefix();
   std::string message = _331_RPL_NOTOPIC(nick, chanName);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
 void send332Topic(int fd, const std::string &nick, const Channel &channel) {
-  std::string chanName = channel.getName();
+  std::string chanName = channel.getNameWithPrefix();
   std::string topic = channel.getTopic().topic;
   std::string message = _332_RPL_TOPIC(nick, chanName, topic);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
@@ -102,7 +100,7 @@ void send332Topic(int fd, const std::string &nick, const Channel &channel) {
 
 void send333Topicwhotime(int fd, const std::string &nick,
                          const Channel &channel) {
-  std::string chanName = channel.getName();
+  std::string chanName = channel.getNameWithPrefix();
   std::string author = channel.getTopic().author;
   std::string setTime = channel.getTopic().setTime;
   std::string message = _333_RPL_TOPICWHOTIME(nick, chanName, author, setTime);
@@ -127,6 +125,36 @@ void send341Inviting(int fd, const std::string &nick,
                      const std::string &invitedNick,
                      const std::string &chanName) {
   std::string message = _341_RPL_INVITING(nick, invitedNick, chanName);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send353Namreply(int fd, const std::string &nick, const Channel &channel) {
+  std::string chanNameWithSymbol = channel.getMode().keyRequired ? "* " : "= " ;
+  chanNameWithSymbol += channel.getNameWithPrefix();
+
+  std::string nicknames = "";
+  clientsMap chanOps = channel.getChannelOperators();
+  clientsMap::const_iterator itBegin = chanOps.begin();
+  clientsMap::const_iterator itEnd = chanOps.end();
+  for (clientsMap::const_iterator it = itBegin; it != itEnd; ++it) {
+    nicknames += "@" + it->second.getNickName() + " ";
+  }
+  clientsMap chanClients = channel.getClientsInChannel();
+  itBegin = chanClients.begin();
+  itEnd = chanClients.end();
+  for (clientsMap::const_iterator it = itBegin; it != itEnd; ++it) {
+    if (chanOps.find(it->first) == chanOps.end())
+      nicknames += it->second.getNickName() + " ";
+  }
+  std::string message = _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send366Endofnames(int fd, const std::string &nick,
+                       const std::string &chanName) {
+  std::string message = _366_RPL_ENDOFNAMES(nick, chanName);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -243,6 +271,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   testChannel.setTopic("This is the topic of a test channel", "Author");
   Channel invitedChannel("testInvited");
   invitedChannel.setTopic("This is a test channel", "Author");
+  Channel privateChannel("privateChannel");
+  privateChannel.activateKeyMode("password", client);
 
   /* Welcome */
   send001Welcome(fd, nick, user, host);
@@ -256,9 +286,11 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send331Notopic(fd, nick, testChannel);
   send332Topic(fd, nick, testChannel);
   send333Topicwhotime(fd, nick, testChannel);
-  send341Inviting(fd, nick, targetNick, invitedChannel.getName());
-  send336Invitelist(fd, nick, invitedChannel.getName());
+  send341Inviting(fd, nick, targetNick, invitedChannel.getNameWithPrefix());
+  send336Invitelist(fd, nick, invitedChannel.getNameWithPrefix());
   send337Endofinvitelist(fd, nick);
+  send353Namreply(fd, nick, testChannel);
+  send366Endofnames(fd, nick, testChannel.getNameWithPrefix());
   /* Errors */
   send401NoSuchNick(fd, nick, targetNick);
   send403NoSuchChannel(fd, nick, "notExistingChannel");
@@ -266,10 +298,10 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send431NoNicknameGiven(fd, nick);
   send432ErroneusNickname(fd, nick);
   send433NickAlreadyInUse(fd, nick);
-  send442NotOnChannel(fd, nick, testChannel.getName());
-  send443UserOnChannel(fd, nick, targetNick, invitedChannel.getName());
+  send442NotOnChannel(fd, nick, testChannel.getNameWithPrefix());
+  send443UserOnChannel(fd, nick, targetNick, invitedChannel.getNameWithPrefix());
   send461NeedMoreParams(fd, nick, command);
   send462AlreadyRegistered(fd, nick);
   send464PasswdMismatch(fd, nick);
-  send482ChanOPrivsNeeded(fd, nick, testChannel.getName());
+  send482ChanOPrivsNeeded(fd, nick, privateChannel.getNameWithPrefix());
 }

@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:29:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/27 22:26:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:42:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,15 @@
 #define NICKLEN 9
 #define TOKEN_NICKLEN (std::string("NICKLEN=") + toString(NICKLEN))
 
+#define USERLEN 20
+#define TOKEN_USERLEN (std::string("USERLEN=") + toString(USERLEN))
+
 #define UNIQUE ""
 #define TOKEN_UNIQUE (std::string("UNIQUE") + UNIQUE)
 
 #define TOKENS \
-  (TOKEN_PREFIX + std::string(" ") + TOKEN_NICKLEN + " " + TOKEN_UNIQUE)
+  (TOKEN_PREFIX + std::string(" ") + TOKEN_NICKLEN + " " + TOKEN_USERLEN + \
+   " " + TOKEN_UNIQUE)
 // https://modern.ircdocs.horse/#rplisupport-parameters
 
 #endif  // INCLUDES_SERVERCONFIG_HPP_

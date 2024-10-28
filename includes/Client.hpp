@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 14:41:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 17:58:48 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,11 @@ class Client {
   /* Getters */
   int getFd() const { return _fd; }
   std::string getIp() const { return _ip; }
-  std::string const& getNickName() const;
-  std::string const& getUserName() const;
-  std::string const& getRealName() const;
-  UserModes const& getUserModes() const;
+  const std::string &getNickName() const;
+  const std::string &getUserName() const;
+  const std::string &getRealName() const;
+  const UserModes &getUserModes() const;
+  const std::string getUserModesFlag() const;
 
   /* Setters */
   void setFd(int fd) { _fd = fd; }

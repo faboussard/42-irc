@@ -1,40 +1,67 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 14:45:20 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 17:58:42 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
 
 #include "../includes/colors.hpp"
+#include "../includes/numericReplies.hpp"
 #include "../includes/utils.hpp"
 
-Channel::Channel(const std::string &name) : _name(name) {}
+Channel::Channel(const std::string &name) : _name(name) {
+  time_t now = time(0);
+  _creationTime = toString(now);
+  _mode.inviteOnly = false;
+  _mode.topicSettableByOpsOnly = false;
+  _mode.keyRequired = false;
+  _mode.limitSet = false;
+  _mode.key = "";
+  _mode.limit = 0;
+
+  /*----- Just for test --------------*/
+  // Client testOp = Client(42);
+  // testOp.setNickName("testOp");
+  // _clientsInChannel[42] = testOp;
+  // _channelOperators[42] = testOp;
+  // Client testClient = Client(43);
+  // testClient.setNickName("testClient");
+  // _clientsInChannel[43] = testClient;
+  /*----------------------------------*/
+}
 
 /*------ Getters ------------------------------------------------------------ */
 
 const std::string &Channel::getName() const { return _name; }
 
-const clientsMap &Channel::getClientsInChannel() const { return _clientsInChannel; }
-
-// const std::string &Channel::getTopic() const { return _topic; }
-const Topic &Channel::getTopic() const { return _topic; }
-
-bool Channel::getInviteOnlyModeStatus(void) const { return (_inviteOnly); }
-
-bool Channel::getTopicSettableByOpsOnlyModeStatus(void) const {
-  return (_topicSettableByOpsOnly);
+const std::string Channel::getNameWithPrefix() const {
+  return ((_mode.keyRequired ? "&" : "#") + _name);
 }
 
-const std::string &Channel::getKey(void) const { return (_key); }
+const std::string &Channel::getCreationTime() const { return _creationTime; }
 
-int Channel::getLimit(void) const { return (_limit); }
+const clientsMap &Channel::getClientsInChannel() const {
+  return _clientsInChannel;
+}
+
+const clientsMap &Channel::getChannelOperators() const {
+  return (_channelOperators);
+}
+
+const Topic &Channel::getTopic() const { return _topic; }
+
+const Mode &Channel::getMode() const { return _mode; }
+
+const std::string &Channel::getKey(void) const { return (_mode.key); }
+
+int Channel::getLimit(void) const { return (_mode.limit); }
 
 /*------ Setters ------------------------------------------------------------ */
 
@@ -46,20 +73,27 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
   _topic.setTime = toString(now);
 }
 
-void Channel::setInviteOnlyMode(bool inviteOnly) { _inviteOnly = inviteOnly; }
-
-void Channel::setTopicSettableByOpsOnlyMode(bool topicSettableByOpsOnly) {
-  _topicSettableByOpsOnly = topicSettableByOpsOnly;
+void Channel::setInviteOnlyMode(void) {
+  if (_mode.inviteOnly == true) {
+    _mode.inviteOnly = false;
+  } else {
+    _mode.inviteOnly = true;
+  }
 }
 
-void Channel::setKey(const std::string &key) { _key = key; }
-
-void Channel::setLimit(int limit) { _limit = limit; }
+void Channel::setTopicSettableByOpsOnlyMode(void) {
+  if (_mode.topicSettableByOpsOnly == true) {
+    _mode.topicSettableByOpsOnly = false;
+  } else {
+    _mode.topicSettableByOpsOnly = true;
+  }
+}
 
 /*--------------------------------------------------------------------------- */
 void Channel::removeClientFromTheChannel(int fd) {
   if (_clientsInChannel.find(fd) != _clientsInChannel.end()) {
-    _clientsInChannel[fd].receiveMessage("You have been removed from the channel");
+    _clientsInChannel[fd].receiveMessage(
+        "You have been removed from the channel");
     _clientsInChannel.erase(fd);
     std::cout << "Client " << fd << " removed from channel " << _name
               << std::endl;
@@ -92,4 +126,29 @@ void Channel::receiveMessageInTheChannel(int fd) {
   }
 }
 
+void Channel::activateKeyMode(const std::string &key, const Client &cli) {
+  if (key.empty())
+    send461NeedMoreParams(cli.getFd(), cli.getNickName(), "MODE");
+  else {
+    _mode.keyRequired = true;
+    _mode.key = key;
+  }
+}
+void Channel::deactivateKeyMode(void) {
+  _mode.keyRequired = false;
+  _mode.key = "";
+}
 
+void Channel::activateLimitMode(int limit, const Client &cli) {
+  if (limit == 0)
+    send461NeedMoreParams(cli.getFd(), cli.getNickName(), "MODE");
+  else {
+    _mode.limitSet = true;
+    _mode.limit = limit;
+  }
+}
+
+void Channel::deactivateLimitMode(void) {
+  _mode.limitSet = false;
+  _mode.limit = 0;
+}

@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 14:43:01 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 17:58:46 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,24 @@ typedef struct Topic {
   std::string setTime;
 } Topic;
 
+typedef struct Mode {
+  bool inviteOnly;
+  bool topicSettableByOpsOnly;
+  bool keyRequired;
+  bool limitSet;
+  std::string key;
+  int limit;
+} Mode;
+
 class Channel {
  private:
   std::string _name;
-  // std::string _topic;
+  std::string _creationTime;
   Topic _topic;
-  bool _inviteOnly;
-  bool _topicSettableByOpsOnly;
-  std::string _key;
-  int _limit;
+  Mode _mode;
 
   clientsMap _clientsInChannel;
+  clientsMap _channelOperators;
 
  public:
   explicit Channel(const std::string &name = "");
@@ -49,28 +56,33 @@ class Channel {
   /* Getters */
 
   const std::string &getName() const;
+  const std::string getNameWithPrefix() const;
+  const std::string &getCreationTime() const;
   const clientsMap &getClientsInChannel() const;
-  // const std::string &getTopic() const;
+  const clientsMap &getChannelOperators() const;
   const Topic &getTopic(void) const;
-  bool getInviteOnlyModeStatus(void) const;
-  bool getTopicSettableByOpsOnlyModeStatus(void) const;
+  const Mode &getMode(void) const;
   const std::string &getKey(void) const;
   int getLimit(void) const;
 
   /* Setters */
 
-  // void setTopic(const std::string &topic);
   void setTopic(const std::string &topic, const std::string &author);
-  void setInviteOnlyMode(bool inviteOnly);
-  void setTopicSettableByOpsOnlyMode(bool topicSettableByOpsOnly);
-  void setKey(const std::string &key);
-  void setLimit(int limit);
+  void setInviteOnlyMode(void);
+  void setTopicSettableByOpsOnlyMode(void);
+  // void setKey(const std::string &key, const Client &cli);
+  // void setLimit(int limit, const Client &cli);
 
   /* Member Functions */
 
   void removeClientFromTheChannel(int fd);
   void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
   void receiveMessageInTheChannel(int fd);
+
+  void activateKeyMode(const std::string &key, const Client &cli);
+  void deactivateKeyMode(void);
+  void activateLimitMode(int limit, const Client &cli);
+  void deactivateLimitMode(void);
 };
 
 #endif  // INCLUDES_CHANNEL_HPP_
