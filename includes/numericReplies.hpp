@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 09:12:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:09:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 #include "./Channel.hpp"
 #include "./Client.hpp"
-// #include "colors.hpp"
 #include "./serverConfig.hpp"
 
 #define RUNTIME_ERROR "Failed to send numeric reply"
@@ -160,6 +159,11 @@
   " :Not enough parameters\r\n")
 // A client command cannot be parsed because not enough parameters were supplied.
 
+#define _462_ERR_ALREADYREGISTERED(nick) \
+  (std::string(":") + SRV_NAME + " 462 " + nick + " :You may not reregister\r\n")
+// Returned when a client tries to change a detail that can only be set during
+// registration (such as PASS, USER...)
+
 #define _464_ERR_PASSWD_MISMATCH(nick) \
   (std::string(":") + SRV_NAME + " 464 " + nick + " :Password incorrect\r\n")
 
@@ -183,11 +187,6 @@
 // _441_ERR_USERNOTINCHANNEL: The user is not in the channel.
 
 // _451_ERR_NOTREGISTERED: "<client> :You have not registered"
-
-// _462_ERR_ALREADYREGISTERED:  "<client> :You may not reregister"
-// Returned when a client tries to change a detail that can only be set during
-// registration (such as resending the PASS or USER after registration). The
-// text used in the last param of this message varies.
 
 // _471_ERR_CHANNELISFULL: The channel is full.
 
@@ -253,6 +252,7 @@ void send443UserOnChannel(int fd, const std::string &nick,
                           const std::string &chanName);
 void send461NeedMoreParams(int fd, const std::string &nick,
                            const std::string &command);
+void send462AlreadyRegistered(int fd, const std::string &nick);
 void send464PasswdMismatch(int fd, const std::string &nick);
 void send482ChanOPrivsNeeded(int fd, const std::string &nick,
                              const std::string &chanName);
@@ -279,7 +279,7 @@ void testAllNumericReplies(const std::string &serverStartTime,
 "───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET_ + "/\\_/\\" + CYAN_ + " ────\n" + CYAN_ + \
 "───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET_ + "( o.o )" + CYAN_ + " ───\n" + CYAN_ + \
 "────────────────────────────────────────────────────────  " + RESET_ + "> ^ <" + CYAN_ + " ────\n" + CYAN_ + \
-"────────────────── powerd by faboussa, mbernard & yusengok with " + MAGENTA_ + "♥" + CYAN_ + " ──" + RESET_ + "\n\r\n" )
+"───────────────── powered by faboussa, mbernard & yusengok with " + MAGENTA_ + "♥" + CYAN_ + " ──" + RESET_ + "\n\r\n" )
 
 // #define _WELCOME(nick) \
 //   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN + "\
@@ -291,32 +291,10 @@ void testAllNumericReplies(const std::string &serverStartTime,
 // ───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET + "/\\_/\\" + CYAN + " ────\n\
 // ───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET + "( o.o )" + CYAN + " ───\n\
 // ────────────────────────────────────────────────────────  " + RESET + "> ^ <" + CYAN + " ────\n\
-// ────────────────── powerd by faboussa, mbernard & yusengok with " + MAGENTA + "♥" + CYAN + " ──" + RESET + "\n\r\n" )
+// ───────────────── powered by faboussa, mbernard & yusengok with " + MAGENTA + "♥" + CYAN + " ──" + RESET + "\n\r\n" )
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_
 
 //  /\_/\     /\_/\     /\_/\
 // ( o.o )   ( o.o )   ( o.o )
 //  > ^ <     > ^ <     > ^ <  
-// ────────────────────────────────────────────────────────────────────
-// ────────────────────────────────────────────────────────────────────
-// ─────── d 888 ─ ,8"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────
-// ────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────
-// ───── d88 888e ─── 88P ─── 888 ── 888 88" ─ 88888 ──────────────────
-// ───── """ 888" ── d*" ──── 888 ── 888 b, ─── Y888  ,d ──  /\_/\  ───
-// ───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ "88,d88 ── ( o.o ) ───
-// ────────────────────────────────────────────────────────  > ^ < ────
-// ───────────────────── powerd by faboussa, mbernard & yusengok with ♥
-
-//   d 888  ,,"88e    888  888 88e    e88'Y88 
-//  d8 888  8  888D   888  888 888D  d888  'Y 
-// d88 888e    88P    888  888 88"  88888
-// """ 888"   d*"     888  888 b,    Y888  ,d 
-//     888  8888888   888  888 88bb,  "88,d88 
-
-
-//     44    2222    IIIII RRRRRR   CCCCC
-//    444   22  22    III  RR   RR CC    C 
-//  44  4      222    III  RRRRRR  CC
-// 44444444  2222     III  RR  RR  CC    C 
-//     44   222222   IIIII RR   RR  CCCCC 
