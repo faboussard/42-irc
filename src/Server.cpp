@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 11:09:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:29:03 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@ Server::Server(int port, std::string password) {
 }
 
 /* Getters */
-
-
 const Client &Server::getClientByFd(int fd) const {
   clientsMap::const_iterator it = _clients.find(fd);
   if (it == _clients.end()) {
@@ -59,6 +57,7 @@ int Server::getSocketFd() const { return _socketFd; }
 
 void Server::runServer() {
   createSocket();
+  setStartTime();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   monitorConnections();
 }
@@ -90,6 +89,12 @@ void Server::createSocket() {
   if (listen(_socketFd, SOMAXCONN) == -1) {
     throw std::runtime_error("Failed to listen on socket");
   }
+}
+
+void Server::setStartTime(void) {
+  time_t now = time(0);
+  _startTime = ctime(&now);
+  _startTime.erase(_startTime.end() - 1);
 }
 
 void Server::monitorConnections() {
@@ -191,10 +196,33 @@ void Server::acceptNewClient() {
   cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse IP
                                           // en une chaîne de caractères
 
+  // ----- For test ---------
+  cli.setNickName("kitten");
+  cli.setUserName("kitten");
+  cli.setUInvisibleMode(true);
+  cli.setUOperatorMode(false);
+  cli.setURegisteredMode(true);
+  testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
+  // ------------------------
+
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 
   std::cout << GREEN "New client connected: " RESET << newClientFd << std::endl;
+  sendConnectionMessage(cli);
+}
+
+void Server::sendConnectionMessage(const Client &target) const {
+  std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
+  std::string user = target.getUserName().empty() ? "*" : target.getUserName();
+  std::string host = target.getIp().empty() ? "*" : target.getIp();
+  int fd = target.getFd();
+  sendWelcome(fd, nick);
+  send001Welcome(fd, nick, user, host);
+  send002Yourhost(fd, nick);
+  send003Created(fd, nick, _startTime);
+  send104Myinfo(fd, nick);
+  send005Isupport(fd, nick, TOKENS);
 }
 
 void Server::sendToAllClients(const std::string &message) {
@@ -272,12 +300,12 @@ void Server::joinChannel(std::string &channelName, int fd) {
 
     // Envoyer la réponse JOIN au client
     // client._nick = "faboussa"; //
-    std::cout << "Client " << client.getNick() << " joined channel " << channelName << std::endl;
+    std::cout << "Client " << client.getNickName() << " joined channel " << channelName << std::endl;
 
-    std::string nick = client.getNick();
-    // #ifdef DEBUG
+    std::string nick = client.getNickName();
+    #ifdef DEBUG
       std::cout << "Client " << nick << " joined channel " << channelName << std::endl;
-    // #endif
+    #endif
     std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
     send(fd, joinMessage.c_str(), joinMessage.length(), 0);
 
@@ -286,7 +314,7 @@ void Server::joinChannel(std::string &channelName, int fd) {
     
     const clientsMap &clientsInChannel = _channels[channelName].getClientsInChannel();
     for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
-        nameReply += getClientByFd(it->first).getNick() + " ";
+        nameReply += getClientByFd(it->first).getNickName() + " ";
     }
 
     // Terminer le message de liste avec un retour à la ligne
@@ -305,3 +333,20 @@ void Server::joinChannel(std::string &channelName, int fd) {
     }
 }
 
+// void Server::handlePassword(int fd) {
+//   char buffer[1024] = {0};
+//   std::memset(buffer, 0, sizeof(buffer));
+//   int valread = recv(fd, buffer, sizeof(buffer), 0);
+
+//   switch (valread) {
+//     case -1:
+//       std::cerr << RED "Error while receiving message" RESET << std::endl;
+//     case 0:
+//       clearClient(fd);
+//       return;
+//   }
+//   std::cout << YELLOW << buffer << RESET << std::endl;
+//   std::string message(buffer, valread);
+//   std::istringstream iss(message);
+//   sendToAllClients(message);
+// }

@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/28 11:06:15 by faboussa         ###   ########.fr        #
+#    Updated: 2024/10/28 11:30:47 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,8 +17,8 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-HEADER = colors Server Client Channel utils
-SRCS = main Server Client Channel utils
+HEADER = colors Server Client Channel numericReplies utils serverConfig
+SRCS = main Server Client Channel numericReplies utils
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/
@@ -44,6 +44,7 @@ ${OBJS_DIR}:
 			${MKDIR} ${OBJS_DIR}
 
 ## ---------------------------------- Debug ----------------------------------- #
+
 debug: CFLAGS += -DDEBUG
 debug: fclean $(OBJS_DIR) $(NAME)
 

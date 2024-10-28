@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/22 17:02:31 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/27 15:17:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,43 @@
 
 #include "../includes/colors.hpp"
 
-Client::Client(int fd, const std::string &ip) : _fd(fd), _ip(ip) {}
+/*------ Constructors ------------------------------------------------------- */
 
-void Client::receiveMessage(const std::string &message) {
+Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {}
+
+/*------ Getters ------------------------------------------------------------ */
+
+std::string const& Client::getNickName() const { return (_nickName); }
+
+std::string const& Client::getUserName() const { return (_userName); }
+
+std::string const& Client::getRealName() const { return (_realName); }
+
+UserModes const& Client::getUserModes() const { return (_uModes); }
+
+/*------ Setters -------------------------------------------------------------*/
+
+void Client::setNickName(const std::string& nickName) { _nickName = nickName; }
+
+void Client::setUserName(const std::string& userName) { _userName = userName; }
+
+void Client::setRealName(const std::string& realName) { _realName = realName; }
+
+void Client::setUInvisibleMode(bool isInvisible) {
+  _uModes.invisible = isInvisible;
+}
+
+void Client::setUOperatorMode(bool isOperator) {
+  _uModes.operatorOfServer = isOperator;
+}
+
+void Client::setURegisteredMode(bool isRegistered) {
+  _uModes.registered = isRegistered;
+}
+
+/*------ Messages handling -------------------------------------------------- */
+
+void Client::receiveMessage(const std::string& message) {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {
@@ -30,11 +64,6 @@ void Client::receiveMessage(const std::string &message) {
     std::cerr << RED "Invalid file descriptor" RESET << std::endl;
   }
 }
-// void Client::sendNumericReply(int code, const std::string& message) {
-//   std::ostringstream oss;
-//   oss << code << " " << message << "\r\n";
-//   sendMessage(oss.str());
-// }
 
 std::string Client::shareMessage() {
   char buffer[1024] = {0};
