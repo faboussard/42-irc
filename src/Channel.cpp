@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 16:44:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:50:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include "../includes/utils.hpp"
 
 Channel::Channel(const std::string &name) : _name(name) {
+  time_t now = time(0);
+  _creationTime = toString(now);
   _mode.inviteOnly = false;
   _mode.topicSettableByOpsOnly = false;
   _mode.keyRequired = false;
@@ -42,6 +44,8 @@ const std::string &Channel::getName() const { return _name; }
 const std::string Channel::getNameWithPrefix() const {
   return ((_mode.keyRequired ? "&" : "#") + _name);
 }
+
+const std::string &Channel::getCreationTime() const { return _creationTime; }
 
 const clientsMap &Channel::getClientsInChannel() const {
   return _clientsInChannel;
