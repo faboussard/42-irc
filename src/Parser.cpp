@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 12:20:52 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:44:43 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,42 @@ bool Parser::verifyNick(std::string nick, clientsMap clientmap) {
   for (clientsMap::iterator it = clientmap.begin(); it != itEnd; ++it) {
     if (it->second.getNickName() == nick) {
       // sendNumericReply(433, "ERR_NICKNAMEINUSE");
+      return (false);
+    }
+  }
+  return (true);
+}
+
+bool Parser::verifyUsername(const std::string& username, clientsMap clientmap) {
+  if (username.empty()) {
+    // ERR_NEEDMOREPARAMS (461)
+    return (false);
+  }
+
+  std::istringstream iss(username);
+  std::vector<std::string> fields;
+  std::string field;
+  while (iss >> field) {
+    fields.push_back(field);
+  }
+  if (fields.size() != 4) {
+    std::cout << "fields.size() != 4" << std::endl;
+      // ERR_NEEDMOREPARAMS (461)
+    return (false);
+  }
+
+  size_t size = fields[0].size();
+  for (size_t i = 0; i < size; ++i) {
+    if (std::isspace(fields[0].at(i)) || std::iscntrl(fields[0].at(i))) {
+      std::cout << "space or control char" << std::endl;
+      return (false);
+    }
+  }
+  clientsMap::iterator itEnd = clientmap.end();
+  for (clientsMap::iterator it = clientmap.begin(); it != itEnd; ++it) {
+    if (it->second.getUserName() == username) {
+      // sendNumericReply(462, "ERR_ALREADYREGISTERED");
+      std::cout << "username already registered" << std::endl;
       return (false);
     }
   }

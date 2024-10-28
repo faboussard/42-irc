@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 14:03:39 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:42:04 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ class Client {
   bool _realnameSet;
   bool _passwordGiven;
   bool _accepted;
-  short _messageCount;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "");
@@ -44,7 +43,6 @@ class Client {
   std::string getIp() const;
   std::string const& getNickName() const;
   std::string const& getUserName() const;
-  short getMessageCount() const;
   bool isNicknameSet() const;
   bool isUsernameSet() const;
   bool isRealnameSet() const;
@@ -53,8 +51,9 @@ class Client {
   /* Setters */
   void setFd(int fd);
   void setNickname(const std::string& nickname);
+  void setUserName(const std::string& username);
+  void setRealName(const std::string& realname);
   void setIp(const std::string& ip);
-  void incrementMessageCount();
   void declareAccepted();
   void declarePasswordGiven();
 
