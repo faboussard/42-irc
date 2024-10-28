@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 14:53:36 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:33:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class Channel {
   Mode _mode;
 
   clientsMap _clientsInChannel;
+  clientsMap _channelOperators;
 
  public:
   explicit Channel(const std::string &name = "");
@@ -52,6 +53,7 @@ class Channel {
   const std::string &getName() const;
   const std::string getNameWithPrefix() const;
   const clientsMap &getClientsInChannel() const;
+  const clientsMap &getChannelOperators() const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
   const std::string &getKey(void) const;

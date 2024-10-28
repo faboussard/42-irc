@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/27 15:17:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:18:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,14 @@ std::string const& Client::getUserName() const { return (_userName); }
 std::string const& Client::getRealName() const { return (_realName); }
 
 UserModes const& Client::getUserModes() const { return (_uModes); }
+
+const std::string Client::getUserModesFlag() const {
+  std::string flags = "+";
+  if (_uModes.invisible) flags += "i";
+  if (_uModes.operatorOfServer) flags += "o";
+  if (_uModes.registered) flags += "r";
+  return (flags);
+}
 
 /*------ Setters -------------------------------------------------------------*/
 
