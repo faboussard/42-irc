@@ -1,20 +1,20 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/25 16:32:20 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 12:37:23 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
 
+#include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
-#include "Parser.hpp"
 
 bool Server::_signal = false;
 
@@ -94,30 +94,38 @@ void Server::monitorConnections() {
   }
 }
 
-void Server::handleInitialMessages(Client& client, const std::string& message) {
-  // Logique pour traiter les trois premiers messages
-  std::cout << "Handling initial message for client " << client.getFd() << ": " << message << std::endl;
-  std::vector<std::string> splittedMessage = Parser::splitCommand(message);
-  std::string command = splittedMessage[0];
-  std::cout << "Command: " << command << std::endl;
-  if (command == "CAP") {
-  } else if (command == "PASS") {
-//	//handlePassword(client.getFd());
-  } else if (command == "NICK") {
-	if ((splittedMessage.size() > 2 && splittedMessage[2] != "USER")
-             || Parser::verifyNick(splittedMessage, _clients) == false) {
-		std::cout << BLUE "Invalid nickname" RESET << std::endl;
-                clearClient(client.getFd());
-	} else {
-		std::cout << GREEN "Valid nickname" RESET << std::endl;
-		client.setNickname(splittedMessage[1]);
-	}
-  } else {
-    std::cout << CYAN "What the fuck ?" RESET << std::endl;
-  }
-  // Ajoutez ici la logique pour accepter ou refuser le client
-}
+void Server::handleInitialMessage(Client &client, const std::string &message) {
+  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
+  size_t vecSize = splittedPair.size();
 
+  for (size_t it = 0; it < vecSize; ++it) {
+    std::string command = splittedPair[it].first;
+    std::string argument = splittedPair[it].second;
+    std::cout << MAGENTA "Command: " << command << std::endl;
+    std::cout << "Message: " << argument << RESET << std::endl;
+
+    if (command == "CAP") {
+      // do nothing
+    } else if (command == "PASS") {
+      //	handlePassword(client.getFd());
+    } else if (command == "NICK") {
+      std::cout << MAGENTA "NICK" RESET << std::endl;
+      if ((splittedPair[it].second).empty() ||
+          Parser::verifyNick(argument, _clients) == false) {
+        std::cout << BLUE "Invalid nickname" RESET << std::endl;
+        clearClient(client.getFd());
+        return;
+      } else {
+        std::cout << GREEN "Valid nickname : " << argument << RESET
+                  << std::endl;
+        client.setNickname(argument);
+      }
+    } else if (command == "USER") {
+    } else {
+      std::cout << CYAN "What the fuck ?" RESET << std::endl;
+    }
+  }
+}
 void Server::closeServer() {
   // Fermer tous les clients
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
@@ -145,39 +153,41 @@ void Server::signalHandler(int signal) {
 /* Clients Management */
 
 void Server::handleClientMessage(int fd) {
-	char buffer[1024] = {0};
-	std::memset(buffer, 0, sizeof(buffer));
-	int valread = recv(fd, buffer, sizeof(buffer), 0);
+  char buffer[1024] = {0};
+  std::memset(buffer, 0, sizeof(buffer));
+  int valread = recv(fd, buffer, sizeof(buffer), 0);
 
-	switch (valread) {
-		case -1:
-			std::cerr << RED "Error while receiving message" RESET << std::endl;
-			// fallthrough
-		case 0:
-			std::cout << "Client " << fd << " disconnected" << std::endl;
-			clearClient(fd);
-			return;
-	}
-	std::string message(buffer, valread);
-	std::cout << "Received message from client " << fd << ": " << message
-			  << std::endl;
+  switch (valread) {
+    case -1:
+      std::cerr << RED "Error while receiving message" RESET << std::endl;
+      // fallthrough
+    case 0:
+      std::cout << "Client " << fd << " disconnected" << std::endl;
+      clearClient(fd);
+      return;
+  }
+  std::string message(buffer, valread);
+  std::cout << "Received message from client " << fd << ": " << message
+            << std::endl;
 
-	Client &client = _clients[fd];
+  Client &client = _clients[fd];
 
-	if (client.getMessageCount() <= 3) {
-		client.incrementMessageCount();
-		// Traitez les trois premiers messages ici
-		handleInitialMessages(client, message);
-	} else {
-		// Traitez les autres messages ici
-		std::istringstream iss(message);
-		std::string command;
-		iss >> command;
-		if (command == "JOIN")
-			handleCommand(command, fd);
-		else
-			sendToAllClients(message);
-	}
+  if (client.getMessageCount() < 1) {
+    // Traitez les trois premiers messages ici
+    handleInitialMessage(client, message);
+    if (_clients.find(fd) != _clients.end()) client.incrementMessageCount();
+  } else {
+    std::cout << MAGENTA "Message count === " << client.getMessageCount()
+              << RESET << std::endl;
+    // Traitez les autres messages ici
+    std::istringstream iss(message);
+    std::string command;
+    iss >> command;
+    if (command == "JOIN")
+      handleCommand(command, fd);
+    else
+      sendToAllClients(message);
+  }
 }
 
 void Server::acceptNewClient() {
@@ -185,7 +195,7 @@ void Server::acceptNewClient() {
   struct sockaddr_in cliadd;
   struct pollfd newPoll;
   socklen_t len = sizeof(cliadd);
-  
+
   int newClientFd = accept(_socketFd, (sockaddr *)&cliadd, &len);
   if (newClientFd == -1) {
     std::cerr << RED "Failed to accept new client" RESET << std::endl;
@@ -196,7 +206,7 @@ void Server::acceptNewClient() {
     std::cerr << "fcntl() failed" << std::endl;
     return;
   }
-  
+
   newPoll.fd = newClientFd;
   newPoll.events = POLLIN;
   newPoll.revents = 0;
@@ -284,7 +294,7 @@ void Server::handlePassword(int fd) {
   switch (valread) {
     case -1:
       std::cerr << RED "Error while receiving message" RESET << std::endl;
-	  //fallthrough
+      // fallthrough
     case 0:
       clearClient(fd);
       return;

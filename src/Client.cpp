@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/22 17:02:31 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:56:47 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@
 
 Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
 	_messageCount = 0;
+  _nicknameSet = false;
+  _usernameSet = false;
+  _realnameSet = false;
+  _passwordGiven = false;
 }
 
 /*============================================================================*/
