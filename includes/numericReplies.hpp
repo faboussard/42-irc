@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/27 22:17:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 09:12:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 #include "./Channel.hpp"
 #include "./Client.hpp"
-#include "colors.hpp"
+// #include "colors.hpp"
 #include "./serverConfig.hpp"
 
 #define RUNTIME_ERROR "Failed to send numeric reply"
@@ -208,21 +208,7 @@
 // 525_ERR_INVALIDKEY : The key provided for a channel is invalid.
 
 // ?? _465_ERR_YOUREBANNEDCREEP: You are banned from this server.
-
-/*--------- Just for fun -----------------------------------------------------*/
-
-#define _WELCOME(nick) \
-  (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN + "\
-────────────────────────────────────────────────────────────────────\n\
-────────────────────────────────────────────────────────────────────\n\
-─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n\
-────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n\
-───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n\
-───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET + "/\\_/\\" + CYAN + " ────\n\
-───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET + "( o.o )" + CYAN + " ───\n\
-────────────────────────────────────────────────────────  " + RESET + "> ^ <" + CYAN + " ────\n\
-────────────────── powerd by faboussa, mbernard & yusengok with " + MAGENTA + "♥" + CYAN + " ──" + RESET + "\n\r\n" )
-                                                                                      
+                                                                          
 /*--------- Functions --------------------------------------------------------*/
 
 /* Welcome messages */
@@ -277,8 +263,37 @@ void testAllNumericReplies(const std::string &serverStartTime,
                            const std::string &command,
                            const std::string &targetNick);
 
-#endif  // INCLUDES_NUMERICREPLIES_HPP_
+/*--------- Just for fun -----------------------------------------------------*/
 
+#define CYAN_ "\x03" "11"  // Light Cyan
+#define MAGENTA_ "\x03" "13" // Pink/Magenta
+#define RESET_ "\x03" "99"   // Reset to default
+
+#define _WELCOME(nick) \
+  (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN_ + \
+"────────────────────────────────────────────────────────────────────\n" + CYAN_ + \
+"────────────────────────────────────────────────────────────────────\n" + CYAN_ + \
+"─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + CYAN_ + \
+"────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" + CYAN_ + \
+"───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + CYAN_ + \
+"───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET_ + "/\\_/\\" + CYAN_ + " ────\n" + CYAN_ + \
+"───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET_ + "( o.o )" + CYAN_ + " ───\n" + CYAN_ + \
+"────────────────────────────────────────────────────────  " + RESET_ + "> ^ <" + CYAN_ + " ────\n" + CYAN_ + \
+"────────────────── powerd by faboussa, mbernard & yusengok with " + MAGENTA_ + "♥" + CYAN_ + " ──" + RESET_ + "\n\r\n" )
+
+// #define _WELCOME(nick) \
+//   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN + "\
+// ────────────────────────────────────────────────────────────────────\n\
+// ────────────────────────────────────────────────────────────────────\n\
+// ─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n\
+// ────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n\
+// ───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n\
+// ───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET + "/\\_/\\" + CYAN + " ────\n\
+// ───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET + "( o.o )" + CYAN + " ───\n\
+// ────────────────────────────────────────────────────────  " + RESET + "> ^ <" + CYAN + " ────\n\
+// ────────────────── powerd by faboussa, mbernard & yusengok with " + MAGENTA + "♥" + CYAN + " ──" + RESET + "\n\r\n" )
+
+#endif  // INCLUDES_NUMERICREPLIES_HPP_
 
 //  /\_/\     /\_/\     /\_/\
 // ( o.o )   ( o.o )   ( o.o )
