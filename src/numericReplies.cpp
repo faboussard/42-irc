@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 11:11:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:59:30 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,14 +86,14 @@ void send221Umodeis(int fd, const Client &client) {
 /*------ Channel related messages --------------------------------------------*/
 
 void send331Notopic(int fd, const std::string &nick, const Channel &channel) {
-  std::string chanName = channel.getName();
+  std::string chanName = channel.getNameWithPrefix();
   std::string message = _331_RPL_NOTOPIC(nick, chanName);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
 void send332Topic(int fd, const std::string &nick, const Channel &channel) {
-  std::string chanName = channel.getName();
+  std::string chanName = channel.getNameWithPrefix();
   std::string topic = channel.getTopic().topic;
   std::string message = _332_RPL_TOPIC(nick, chanName, topic);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
@@ -102,7 +102,7 @@ void send332Topic(int fd, const std::string &nick, const Channel &channel) {
 
 void send333Topicwhotime(int fd, const std::string &nick,
                          const Channel &channel) {
-  std::string chanName = channel.getName();
+  std::string chanName = channel.getNameWithPrefix();
   std::string author = channel.getTopic().author;
   std::string setTime = channel.getTopic().setTime;
   std::string message = _333_RPL_TOPICWHOTIME(nick, chanName, author, setTime);
@@ -242,6 +242,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   testChannel.setTopic("This is the topic of a test channel", "Author");
   Channel invitedChannel("testInvited");
   invitedChannel.setTopic("This is a test channel", "Author");
+  Channel privateChannel("privateChannel");
+  privateChannel.activateKeyMode("password", client);
 
   /* Welcome */
   send001Welcome(fd, nick, user, host);
@@ -255,8 +257,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send331Notopic(fd, nick, testChannel);
   send332Topic(fd, nick, testChannel);
   send333Topicwhotime(fd, nick, testChannel);
-  send341Inviting(fd, nick, targetNick, invitedChannel.getName());
-  send336Invitelist(fd, nick, invitedChannel.getName());
+  send341Inviting(fd, nick, targetNick, invitedChannel.getNameWithPrefix());
+  send336Invitelist(fd, nick, invitedChannel.getNameWithPrefix());
   send337Endofinvitelist(fd, nick);
   /* Errors */
   send401NoSuchNick(fd, nick, targetNick);
@@ -265,10 +267,10 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send431NoNicknameGiven(fd, nick);
   send432ErroneusNickname(fd, nick);
   send433NickAlreadyInUse(fd, nick);
-  send442NotOnChannel(fd, nick, testChannel.getName());
-  send443UserOnChannel(fd, nick, targetNick, invitedChannel.getName());
+  send442NotOnChannel(fd, nick, testChannel.getNameWithPrefix());
+  send443UserOnChannel(fd, nick, targetNick, invitedChannel.getNameWithPrefix());
   send461NeedMoreParams(fd, nick, command);
   send462AlreadyRegistered(fd, nick);
   send464PasswdMismatch(fd, nick);
-  send482ChanOPrivsNeeded(fd, nick, testChannel.getName());
+  send482ChanOPrivsNeeded(fd, nick, privateChannel.getNameWithPrefix());
 }
