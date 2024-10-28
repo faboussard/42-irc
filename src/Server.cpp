@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 12:37:23 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:25:32 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,15 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     std::cout << "Message: " << argument << RESET << std::endl;
 
     if (command == "CAP") {
-      // do nothing
+      continue;
     } else if (command == "PASS") {
-      //	handlePassword(client.getFd());
+      if (argument != _password) {
+        std::cout << RED "Invalid password" RESET << std::endl;
+        clearClient(client.getFd());
+        return;
+      } else {
+        client.declarePasswordGiven();
+      }
     } else if (command == "NICK") {
       std::cout << MAGENTA "NICK" RESET << std::endl;
       if ((splittedPair[it].second).empty() ||
@@ -125,7 +131,17 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       std::cout << CYAN "What the fuck ?" RESET << std::endl;
     }
   }
+  if (client.isNicknameSet()) {
+    std::cout << GREEN "NICKNAME SET" RESET << std::endl;
+    if (client.isPasswordGiven())
+      client.declareAccepted();
+    else {
+      std::cerr << RED "NO PASSWORD GIVEN !" RESET << std::endl;
+      clearClient(client.getFd());
+    }
+  }
 }
+
 void Server::closeServer() {
   // Fermer tous les clients
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
@@ -171,15 +187,11 @@ void Server::handleClientMessage(int fd) {
             << std::endl;
 
   Client &client = _clients[fd];
-
-  if (client.getMessageCount() < 1) {
-    // Traitez les trois premiers messages ici
+  if (client.isAccepted() == false) {
     handleInitialMessage(client, message);
-    if (_clients.find(fd) != _clients.end()) client.incrementMessageCount();
   } else {
     std::cout << MAGENTA "Message count === " << client.getMessageCount()
               << RESET << std::endl;
-    // Traitez les autres messages ici
     std::istringstream iss(message);
     std::string command;
     iss >> command;
@@ -212,8 +224,8 @@ void Server::acceptNewClient() {
   newPoll.revents = 0;
 
   cli.setFd(newClientFd);
-  cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse IP
-                                          // en une chaîne de caractères
+  cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
+                                          // IP en une chaîne de caractères
 
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
@@ -286,21 +298,21 @@ void Server::handleCommand(const std::string &command, int fd) {
   }
 }
 
-void Server::handlePassword(int fd) {
-  char buffer[1024] = {0};
-  std::memset(buffer, 0, sizeof(buffer));
-  int valread = recv(fd, buffer, sizeof(buffer), 0);
+// void Server::handlePassword(int fd) {
+//   char buffer[1024] = {0};
+//   std::memset(buffer, 0, sizeof(buffer));
+//   int valread = recv(fd, buffer, sizeof(buffer), 0);
 
-  switch (valread) {
-    case -1:
-      std::cerr << RED "Error while receiving message" RESET << std::endl;
-      // fallthrough
-    case 0:
-      clearClient(fd);
-      return;
-  }
-  std::cout << YELLOW << buffer << RESET << std::endl;
-  std::string message(buffer, valread);
-  std::istringstream iss(message);
-  sendToAllClients(message);
-}
+//   switch (valread) {
+//     case -1:
+//       std::cerr << RED "Error while receiving message" RESET << std::endl;
+//       // fallthrough
+//     case 0:
+//       clearClient(fd);
+//       return;
+//   }
+//   std::cout << YELLOW << buffer << RESET << std::endl;
+//   std::string message(buffer, valread);
+//   std::istringstream iss(message);
+//   sendToAllClients(message);
+// }

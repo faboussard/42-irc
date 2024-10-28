@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 11:55:58 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:03:39 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,20 @@
 
 class Client {
  private:
-  int         _fd;
+  int _fd;
   std::string _ip;
   std::string _nickName;
   std::string _userName;
   std::string _realName;
-  bool       _nicknameSet;
-  bool       _usernameSet;
-  bool       _realnameSet;
-  bool       _passwordGiven;
-  short       _messageCount;
+  bool _nicknameSet;
+  bool _usernameSet;
+  bool _realnameSet;
+  bool _passwordGiven;
+  bool _accepted;
+  short _messageCount;
 
  public:
-  explicit Client(int fd = -1, const std::string &ip = "");
+  explicit Client(int fd = -1, const std::string& ip = "");
 
   // void sendNumericReply(int code, const std::string& message);
 
@@ -43,21 +44,23 @@ class Client {
   std::string getIp() const;
   std::string const& getNickName() const;
   std::string const& getUserName() const;
-  short              getMessageCount() const;
-
-
+  short getMessageCount() const;
+  bool isNicknameSet() const;
+  bool isUsernameSet() const;
+  bool isRealnameSet() const;
+  bool isPasswordGiven() const;
+  bool isAccepted() const;
   /* Setters */
   void setFd(int fd);
   void setNickname(const std::string& nickname);
-  void setIp(const std::string &ip);
+  void setIp(const std::string& ip);
   void incrementMessageCount();
-
+  void declareAccepted();
+  void declarePasswordGiven();
 
   /* Messages handling */
   void receiveMessage(const std::string& message);
   std::string shareMessage();
-
-
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

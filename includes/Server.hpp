@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 12:17:20 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 13:57:44 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ class Server {
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
-  void handlePassword(int fd);
+  // void handlePassword(int fd);
 
 	void handleInitialMessage(Client &client, const std::string &message);
 };
