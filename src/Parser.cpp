@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 15:49:40 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:55:19 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,32 @@ Command Parser::choseCommand(const std::string& command) {
   return (UNKNOWN);
 }
 
-bool Parser::verifyNick(std::string nick, clientsMap clientmap) {
+bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
+  if (arg.empty()) {
+    // sendNumericReply(464, "ERR_PASSWDMISMATCH");
+    return (false);
+  }
+  if (arg != psd) {
+    // sendNumericReply(464, "ERR_PASSWDMISMATCH");
+    return (false);
+  }
+  client.declarePasswordGiven();
+  if (client.isNicknameSet() && client.isPasswordGiven() && client.isUsernameSet())
+        client.declareAccepted();
+  return (true);
+}
+//The password supplied must match the one defined in the server configuration.
+// WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// It is possible to send multiple PASS commands before registering but
+// only the last one sent is used for verification and it may not be changed 
+// once the client has been registered.
+
+
+bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
   if (nick.empty()) {
     // sendNumericReply(431, "ERR_NONICKNAMEGIVEN");
     return (false);
   }
-  std::cout << "NICK IS " << nick << std::endl;
   size_t size = nick.size();
   if (size > 9 || std::isdigit(nick[0])) {
     // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
@@ -61,23 +81,26 @@ bool Parser::verifyNick(std::string nick, clientsMap clientmap) {
       return (false);
     }
   }
-  clientsMap::iterator itEnd = clientmap.end();
-  for (clientsMap::iterator it = clientmap.begin(); it != itEnd; ++it) {
+  clientsMap::iterator itEnd = cltMap.end();
+  for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
     if (it->second.getNickName() == nick) {
       // sendNumericReply(433, "ERR_NICKNAMEINUSE");
       return (false);
     }
   }
+  client.setNickname(nick);
+  if (client.isNicknameSet() && client.isPasswordGiven() && client.isUsernameSet())
+        client.declareAccepted();
   return (true);
 }
 
-bool Parser::verifyUsername(const std::string& username, clientsMap clientmap) {
-  if (username.empty()) {
+bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
+  if (user.empty()) {
     // ERR_NEEDMOREPARAMS (461)
     return (false);
   }
 
-  std::istringstream iss(username);
+  std::istringstream iss(user);
   std::vector<std::string> fields;
   std::string field;
   while (iss >> field) {
@@ -85,10 +108,9 @@ bool Parser::verifyUsername(const std::string& username, clientsMap clientmap) {
   }
   if (fields.size() != 4) {
     std::cout << "fields.size() != 4" << std::endl;
-      // ERR_NEEDMOREPARAMS (461)
+    // ERR_NEEDMOREPARAMS (461)
     return (false);
   }
-
   size_t size = fields[0].size();
   for (size_t i = 0; i < size; ++i) {
     if (std::isspace(fields[0].at(i)) || std::iscntrl(fields[0].at(i))) {
@@ -96,14 +118,17 @@ bool Parser::verifyUsername(const std::string& username, clientsMap clientmap) {
       return (false);
     }
   }
-  clientsMap::iterator itEnd = clientmap.end();
-  for (clientsMap::iterator it = clientmap.begin(); it != itEnd; ++it) {
-    if (it->second.getUserName() == username) {
+  clientsMap::iterator itEnd = cltMap.end();
+  for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
+    if (it->second.getUserName() == user) {
       // sendNumericReply(462, "ERR_ALREADYREGISTERED");
       std::cout << "username already registered" << std::endl;
       return (false);
     }
   }
+  client.setUserName(user);
+  if (client.isNicknameSet() && client.isPasswordGiven() && client.isUsernameSet())
+        client.declareAccepted();
   return (true);
 }
 

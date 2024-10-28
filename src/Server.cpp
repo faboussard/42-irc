@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 15:00:57 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:54:38 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,17 @@ void Server::monitorConnections() {
   }
 }
 
+bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
+                size_t vecSize) {
+  while (it < vecSize && splittedPair[it].first != "PASS") {
+    ++it;
+  }
+  if (it >= vecSize) {
+    return (true);
+  }
+  return (false);
+}
+
 void Server::handleInitialMessage(Client &client, const std::string &message) {
   commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
   size_t vecSize = splittedPair.size();
@@ -104,47 +115,37 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     std::cout << MAGENTA "Command: " << command << std::endl;
     std::cout << "Message: " << argument << RESET << std::endl;
 
-    if (command == "CAP") {
-      continue;
-    } else if (command == "PASS") {
-      if (argument != _password) {
+    if (command == "PASS") {
+      if (isLastPass(splittedPair, it + 1, vecSize)
+          && Parser::verifyPassword(argument, _password, client) == false) {
         std::cout << RED "Invalid password" RESET << std::endl;
         clearClient(client.getFd());
         return;
-      } else {
-        client.declarePasswordGiven();
       }
     } else if (command == "NICK") {
-      std::cout << MAGENTA "NICK" RESET << std::endl;
-      if ((splittedPair[it].second).empty() ||
-          Parser::verifyNick(argument, _clients) == false) {
+      if (Parser::verifyNick(argument, client, _clients) == false) {
         std::cout << BLUE "Invalid nickname" RESET << std::endl;
         clearClient(client.getFd());
         return;
-      } else {
-        std::cout << GREEN "Valid nickname : " << argument << RESET
-                  << std::endl;
-        client.setNickname(argument);
       }
     } else if (command == "USER") {
-      if (argument.empty() || Parser::verifyUsername(argument, _clients) == false) {
+      if (Parser::verifyUser(argument, client, _clients) == false) {
         std::cout << RED "Invalid username" RESET << std::endl;
         clearClient(client.getFd());
         return;
-      } else {
-        std::cout << GREEN "Valid username : " << argument << RESET
-                  << std::endl;
-        client.setUserName(argument);
       }
-    } else {
-      std::cout << CYAN "What the fuck ?" RESET << std::endl;
+    } else if (client.isAccepted()){
+      std::cout << CYAN
+                << "IF THIS ISN T CAP YOU SHOULDN T BE HERE ! argument = "
+                << argument << RESET << std::endl;
+      handleCommand(command, client.getFd());
     }
   }
   if (client.isNicknameSet()) {
-    std::cout << GREEN "NICKNAME SET" RESET << std::endl;
     if (client.isPasswordGiven())
       client.declareAccepted();
     else {
+      // ERR_PASSWDMISMATCH` (464).
       std::cerr << RED "NO PASSWORD GIVEN !" RESET << std::endl;
       clearClient(client.getFd());
     }
@@ -168,6 +169,7 @@ void Server::closeServer() {
   _pollFds.clear();
   shrink_to_fit(_pollFds);
 }
+
 void Server::signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGQUIT) {
     _signal = true;
