@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 14:55:37 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:44:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,16 @@ Channel::Channel(const std::string &name) : _name(name) {
   _mode.limitSet = false;
   _mode.key = "";
   _mode.limit = 0;
+
+  /*----- Just for test --------------*/
+  // Client testOp = Client(42);
+  // testOp.setNickName("testOp");
+  // _clientsInChannel[42] = testOp;
+  // _channelOperators[42] = testOp;
+  // Client testClient = Client(43);
+  // testClient.setNickName("testClient");
+  // _clientsInChannel[43] = testClient;
+  /*----------------------------------*/
 }
 
 /*------ Getters ------------------------------------------------------------ */
@@ -30,14 +40,15 @@ Channel::Channel(const std::string &name) : _name(name) {
 const std::string &Channel::getName() const { return _name; }
 
 const std::string Channel::getNameWithPrefix() const {
-  if (_mode.keyRequired)
-    return ("&" + _name);
-  else
-    return ("#" + _name);
+  return ((_mode.keyRequired ? "&" : "#") + _name);
 }
 
 const clientsMap &Channel::getClientsInChannel() const {
   return _clientsInChannel;
+}
+
+const clientsMap &Channel::getChannelOperators() const {
+  return (_channelOperators);
 }
 
 const Topic &Channel::getTopic() const { return _topic; }

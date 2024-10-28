@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 14:59:52 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:44:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,13 +111,14 @@
 // 324 RPL_CHANNELMODEIS: Channel mode is displayed. Reply to MODE #channel
 // 329_RPL_CREATIONTIME: creation time of a channel. Reply to MODE #channel
 
-#define _353_RPL_NAMREPLY \
+#define _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames) \
+  (std::string(":") + SRV_NAME + " 353 " + nick + " " + chanNameWithSymbol + \
+  " :" + nicknames + "\r\n")
 // : List of users in the channel.
 
 #define _366_RPL_ENDOFNAMES(nick, chanName) \
   (std::string(":") + SRV_NAME + " 366 " + nick + " " + chanName + \
   " :End of /NAMES list\r\n")
-// : End of the list of users in the channel.
 
 // 367_RPL_BANLIST: List of bans set on the channel. (Sent as a reply to the MODE)
 
@@ -239,6 +240,9 @@ void send337Endofinvitelist(int fd, const std::string &nick);
 void send341Inviting(int fd, const std::string &nick,
                      const std::string &invitedNick,
                      const std::string &chanName);
+void send353Namreply(int fd, const std::string &nick, const Channel &channel);
+void send366Endofnames(int fd, const std::string &nick,
+                       const std::string &chanName);
 
 /* Error messages */
 void send401NoSuchNick(int fd, const std::string &nick,
@@ -270,33 +274,33 @@ void testAllNumericReplies(const std::string &serverStartTime,
 
 /*--------- Just for fun -----------------------------------------------------*/
 
-#define CYAN_ "\x03" "11"
-#define MAGENTA_ "\x03" "13"
-#define RESET_ "\x03" "99"
-
 #define _WELCOME(nick) \
-  (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN_ + \
-"────────────────────────────────────────────────────────────────────\n" + CYAN_ + \
-"────────────────────────────────────────────────────────────────────\n" + CYAN_ + \
-"─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + CYAN_ + \
-"────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" + CYAN_ + \
-"───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + CYAN_ + \
-"───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET_ + "/\\_/\\" + CYAN_ + " ────\n" + CYAN_ + \
-"───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET_ + "( o.o )" + CYAN_ + " ───\n" + CYAN_ + \
-"────────────────────────────────────────────────────────  " + RESET_ + "> ^ <" + CYAN_ + " ────\n" + CYAN_ + \
-"───────────────── powered by faboussa, mbernard & yusengok with " + MAGENTA_ + "♥" + CYAN_ + " ──" + RESET_ + "\n\r\n" )
+  (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + "\
+────────────────────────────────────────────────────────────────────\n\
+────────────────────────────────────────────────────────────────────\n\
+─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n\
+────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n\
+───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n\
+───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + "/\\_/\\" + " ────\n\
+───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + "( o.o )" + " ───\n\
+────────────────────────────────────────────────────────  " + "> ^ <" + " ────\n\
+───────────────── powered by faboussa, mbernard & yusengok with " + "♥" + " ──" + "\n\r\n" )
+
+// #define CYAN_ "\x03" "11"
+// #define MAGENTA_ "\x03" "13"
+// #define RESET_ "\x03" "99"
 
 // #define _WELCOME(nick) \
-//   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN + "\
-// ────────────────────────────────────────────────────────────────────\n\
-// ────────────────────────────────────────────────────────────────────\n\
-// ─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n\
-// ────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n\
-// ───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n\
-// ───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET + "/\\_/\\" + CYAN + " ────\n\
-// ───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET + "( o.o )" + CYAN + " ───\n\
-// ────────────────────────────────────────────────────────  " + RESET + "> ^ <" + CYAN + " ────\n\
-// ───────────────── powered by faboussa, mbernard & yusengok with " + MAGENTA + "♥" + CYAN + " ──" + RESET + "\n\r\n" )
+//   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN_ + \
+// "────────────────────────────────────────────────────────────────────\n" + CYAN_ + \
+// "────────────────────────────────────────────────────────────────────\n" + CYAN_ + \
+// "─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + CYAN_ + \
+// "────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" + CYAN_ + \
+// "───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + CYAN_ + \
+// "───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET_ + "/\\_/\\" + CYAN_ + " ────\n" + CYAN_ + \
+// "───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET_ + "( o.o )" + CYAN_ + " ───\n" + CYAN_ + \
+// "────────────────────────────────────────────────────────  " + RESET_ + "> ^ <" + CYAN_ + " ────\n" + CYAN_ + \
+// "───────────────── powered by faboussa, mbernard & yusengok with " + MAGENTA_ + "♥" + CYAN_ + " ──" + RESET_ + "\n\r\n" )
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_
 
