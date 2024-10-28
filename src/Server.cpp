@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:09:27 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,7 +271,13 @@ void Server::joinChannel(std::string &channelName, int fd) {
     _channels[channelName].acceptClientInTheChannel(client);
 
     // Envoyer la réponse JOIN au client
+    // client._nick = "faboussa"; //
+    std::cout << "Client " << client.getNick() << " joined channel " << channelName << std::endl;
+
     std::string nick = client.getNick();
+    // #ifdef DEBUG
+      std::cout << "Client " << nick << " joined channel " << channelName << std::endl;
+    // #endif
     std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
     send(fd, joinMessage.c_str(), joinMessage.length(), 0);
 
