@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 15:44:43 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:49:40 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,27 @@
 #include "Parser.hpp"
 
 Command Parser::choseCommand(const std::string& command) {
-  if (command == "/JOIN" || command == "/join") {
+  if (command == "JOIN") {
     return (JOIN);
-  } else if (command == "/KICK" || command == "/kick") {
+  } else if (command == "KICK") {
     return (KICK);
-  } else if (command == "/INVITE" || command == "/invite") {
+  } else if (command == "INVITE") {
     return (INVITE);
-  } else if (command == "/TOPIC" || command == "/topic") {
+  } else if (command == "TOPIC") {
     return (TOPIC);
-  } else if (command == "/MODE" || command == "/mode") {
+  } else if (command == "MODE") {
     return (MODE);
-  } else if (command == "/LIST" || command == "/list") {
+  } else if (command == "LIST") {
     return (LIST);
-  } else if (command == "/NOTICE" || command == "/notice") {
+  } else if (command == "NOTICE") {
     return (NOTICE);
-  } else if (command == "/NICK" || command == "/nick") {
+  } else if (command == "NICK") {
     return (NICK);
-  } else if (command == "/PRIVMSG" || command == "/privmsg") {
+  } else if (command == "PRIVMSG") {
     return (PRIVMSG);
-  } else if (command == "/QUIT" || command == "/quit") {
+  } else if (command == "QUIT") {
     return (QUIT);
-  } else if (command == "/PING" || command == "/ping") {
+  } else if (command == "PING") {
     return (PING);
   }
   return (UNKNOWN);
