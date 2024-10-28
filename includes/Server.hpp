@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 12:17:20 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ class Server {
   void sendToAllClients(const std::string &message);
   void handlePassword(int fd);
 
-	void handleInitialMessages(Client &client, const std::string &message);
+	void handleInitialMessage(Client &client, const std::string &message);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

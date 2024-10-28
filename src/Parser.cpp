@@ -6,12 +6,14 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/25 16:32:34 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 12:20:52 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Parser.hpp"
+
 #include "../includes/colors.hpp"
+#include "Parser.hpp"
 
 Command Parser::choseCommand(const std::string& command) {
   if (command == "/JOIN" || command == "/join") {
@@ -40,31 +42,21 @@ Command Parser::choseCommand(const std::string& command) {
   return (UNKNOWN);
 }
 
-bool Parser::verifyNick(std::vector<std::string> &command, clientsMap clientmap) {
-  size_t vecSize = command.size();
-
-  for (size_t it = 0; it < vecSize; ++it) {
-    std::cout << YELLOW "itVec :\t" << command[it] << RESET << std::endl;
-  }
-  if (vecSize == 1 || command[1].empty()) {
+bool Parser::verifyNick(std::string nick, clientsMap clientmap) {
+  if (nick.empty()) {
     // sendNumericReply(431, "ERR_NONICKNAMEGIVEN");
     return (false);
   }
-  std::string nick = command[1];
   std::cout << "NICK IS " << nick << std::endl;
   size_t size = nick.size();
-  if (size > 9) {
+  if (size > 9 || std::isdigit(nick[0])) {
     // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
     return (false);
   }
-  for (size_t i = 0; i < size; i++) {
-    if (i == 0 && std::isdigit(nick[i])) {
-      // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
-      return (false);
-    } else if (!std::isalnum(nick[i]) && nick[i] != '[' && nick[i] != ']'
-              && nick[i] != '{' && nick[i] != '}' && nick[i] != '\\'
-              && nick[i] != '|' && nick[i] != '`' && nick[i] != '_'
-              && nick[i] != '^' && nick[i] != '-') {
+  for (size_t i = 0; i < size; ++i) {
+    if (!std::isalnum(nick[i]) && nick[i] != '[' && nick[i] != ']' &&
+        nick[i] != '{' && nick[i] != '}' && nick[i] != '\\' && nick[i] != '|' &&
+        nick[i] != '`' && nick[i] != '_' && nick[i] != '^' && nick[i] != '-') {
       // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
       return (false);
     }
@@ -110,7 +102,6 @@ bool Parser::verifyNick(std::vector<std::string> &command, clientsMap clientmap)
 // nickname.
 
 // Numeric Replies:
-
 //     ERR_NONICKNAMEGIVEN (431)
 //     ERR_ERRONEUSNICKNAME (432)
 //     ERR_NICKNAMEINUSE (433)
@@ -128,15 +119,38 @@ std::vector<std::string> Parser::splitCommand(const std::string& command) {
   return (message);  // /join #channel /nick nickname
 }
 
-//std::string Parser::parseCommand(const std::vector<std::string> command) {
-//  std::istringstream iss(command);
-//  std::string firstPart;
-//  std::string secondPart;
-//
-//  iss >> firstPart;
-//  iss >> secondPart;
-//  return (secondPart);
-//}
+std::vector<std::string> split(const std::string& str, char delim) {
+  std::vector<std::string> result;
+  std::stringstream ss(str);
+  std::string item;
+
+  while (getline(ss, item, delim)) {
+    if (item.empty()) continue;
+    result.push_back(item);
+  }
+
+  return (result);
+}
+
+commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
+  std::vector<std::string> cmds = split(command, '\n');
+  commandVectorPairs result;
+  std::string token;
+  std::pair<std::string, std::string> pair;
+  size_t size = cmds.size();
+
+  for (size_t i = 0; i < size; ++i) {
+    cmds[i].erase(cmds[i].find_last_not_of(" \n\r\t") + 1);
+    std::string firstPart = cmds[i].substr(0, cmds[i].find_first_of(" "));
+    std::string secondPart = cmds[i].substr(cmds[i].find_first_of(" ") + 1);
+    pair = std::make_pair(firstPart, secondPart);
+    std::cout << CYAN "pair.first : " << pair.first << std::endl;
+    std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
+    result.push_back(pair);
+  }
+
+  return (result);
+}
 
 void Parser::handleCommand(const std::string& command, int fd) {
   static_cast<void>(fd);

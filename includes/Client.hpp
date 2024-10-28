@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:55:58 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,11 @@ class Client {
   std::string _nickName;
   std::string _userName;
   std::string _realName;
-  short         _messageCount;
+  bool       _nicknameSet;
+  bool       _usernameSet;
+  bool       _realnameSet;
+  bool       _passwordGiven;
+  short       _messageCount;
 
  public:
   explicit Client(int fd = -1, const std::string &ip = "");
