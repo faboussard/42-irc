@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 15:09:57 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 18:41:47 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,7 +286,8 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
     std::cout << GREY "JOIN command received" RESET << std::endl;
     std::cout << GREY "Params: " RESET << params << std::endl;
   #endif
-    joinChannel(params, fd);
+    if (params == "#")
+      joinChannel(params, fd); // ajout condition et du & 
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {

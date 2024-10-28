@@ -1,12 +1,12 @@
-#  Copyright 2024 <faboussa>************************************************** #
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
+#    By: fanny <fanny@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/28 15:10:35 by faboussa         ###   ########.fr        #
+#    Updated: 2024/10/28 18:20:48 by fanny            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,46 +17,45 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-HEADER = colors Server Client Channel numericReplies utils serverConfig
-SRCS = main Server Client Channel numericReplies utils joinChannel
+HEADER_LIST = colors Server Client Channel numericReplies utils serverConfig
+SRCS = main Server Client Channel numericReplies utils commands/joinChannel
 
-# ---------------------------------- Repertories ----------------------------- #
+# ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
 SRC_DIR = src/
 OBJS_DIR = .objs/
 OBJS = $(addprefix ${OBJS_DIR}, $(addsuffix .o, ${SRCS}))
-HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADERS_LIST}))
+HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADER_LIST}))
 INCLUDES = -I ${HEADERS_DIR}
 DEPS = ${OBJS:.o=.d}
 
 # ---------------------------------- Compilation ----------------------------- #
-all: ${NAME} ${OBJS} | ${OBJS_DIR} Makefile
+all: ${NAME}
 
 ${NAME}: ${OBJS} Makefile
 	${C} ${CFLAGS} ${OBJS} ${INCLUDES} -o $@
 
-${OBJS_DIR}%.o: ${SRC_DIR}%.cpp ${HEADERS} Makefile | ${OBJS_DIR}
+${OBJS_DIR}%.o: ${SRC_DIR}%.cpp ${HEADERS} Makefile | create_dirs
 	${C} ${CFLAGS} ${INCLUDES} -c $< -o $@
 
+create_dirs:
+	@$(foreach dir, $(sort $(dir $(OBJS))), ${MKDIR} ${dir};)
+
 -include ${DEPS}
-# ---------------------------------- Create Repertory ---------------------- #
-${OBJS_DIR}:
-			${MKDIR} ${OBJS_DIR}
 
-## ---------------------------------- Debug ----------------------------------- #
-
+# ---------------------------------- Debug ----------------------------------- #
+debug: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 debug: CFLAGS += -DDEBUG
-debug: fclean $(OBJS_DIR) $(NAME)
+debug: fclean $(NAME)
 
-## ---------------------------------- Clean ----------------------------------- #
+# ---------------------------------- Clean ----------------------------------- #
 clean:
 	${RMDIR} ${OBJS_DIR}
 
 fclean: clean
 	${RM} ${NAME}
 
-re:    fclean
-	${MAKE} ${NAME}
+re: fclean all
 
 # ---------------------------------- Phony ----------------------------------- #
 .PHONY: all clean fclean re

@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   joinChannel.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 15:05:51 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 18:40:21 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,30 +46,22 @@ JOIN 0 = part all channels
 - restrict the number of channels a user can join to CHANLIMIT.
 */
 
-
-
-
-
 void Server::joinChannel(std::string &param, int fd) {
     std::string channelName;
-    channelName = prepareChannelName(param);
+    channelName = channelName.substr(1);
     createChannelIfNotExist(channelName);
-    // #ifdef DEBUG
+    #ifdef DEBUG
         std::cout << GREY "CHANNEL NAME " << channelName << " param " << param << RESET << std::endl;
         std::cout.flush();
-    // #endif
+    #endif
     const Client &client = getClientByFd(fd);
     _channels[channelName].acceptClientInTheChannel(client);
 
     std::string nick = client.getNickName();
     sendJoinMessageToClient(fd, nick, channelName);
-    sendNameReply(fd, nick, channelName);
-    sendEndOfNames(fd, nick, channelName);
+    send353Namreply(fd, nick, _channels[channelName]);
+    send366Endofnames(fd, nick, channelName);
     broadcastJoinMessage(fd, nick, channelName);
-}
-
-std::string &Server::prepareChannelName(std::string &channelName) {
-    channelName = channelName.substr(1);
 }
 
 void Server::createChannelIfNotExist(const std::string &channelName) {
@@ -83,33 +75,9 @@ void Server::sendJoinMessageToClient(int fd, const std::string &nick, const std:
     std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
     send(fd, joinMessage.c_str(), joinMessage.length(), 0);
     #ifdef DEBUG
-    std::cout "hahaha" << std::endl;
       std::cout << GREY "Client " << nick << " joined channel " RESET << channelName << std::endl;
     #endif
-    // ajouter condition if topic 
     send331Notopic(fd, nick, _channels[channelName]);
-}
-
-void Server::sendNameReply(int fd, const std::string &nick, const std::string &channelName) {
-    std::string namesList;
-    const clientsMap &clientsInChannel = _channels[channelName].getClientsInChannel();
-    
-    for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
-        std::string prefix = getUserPrefix(it->second); // Fonction pour obtenir le préfixe en fonction du statut (opérateur, etc.)
-        namesList += prefix + getClientByFd(it->first).getNickName() + " ";
-    }
-    if (!namesList.empty()) {
-        namesList.pop_back(); // Retirer l’espace final
-    }
-
-    std::string symbol = getChannelSymbol(channelName); // Fonction pour obtenir le symbole de statut du canal
-    std::string nameReply = _353_RPL_NAMREPLY(nick, symbol, channelName, namesList);
-    send(fd, nameReply.c_str(), nameReply.length(), 0);
-}
-
-void Server::sendEndOfNames(int fd, const std::string &nick, const std::string &channelName) {
-    std::string endOfNamesMessage = _366_RPL_ENDOFNAMES(nick, channelName); // utiliser numeric reply yuko
-    send(fd, endOfNamesMessage.c_str(), endOfNamesMessage.length(), 0);
 }
 
 void Server::broadcastJoinMessage(int fd, const std::string &nick, const std::string &channelName) {
@@ -121,7 +89,6 @@ void Server::broadcastJoinMessage(int fd, const std::string &nick, const std::st
         }
     }
 }
-
 
 // void Server::handlePassword(int fd) {
 //   char buffer[1024] = {0};

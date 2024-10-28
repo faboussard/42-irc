@@ -83,11 +83,8 @@ class Server {
   void joinChannel(std::string &channelName, int fd);
 
   // Sous-fonctions pour joinChannel
-  std::string &prepareChannelName(std::string &channelName);
   void createChannelIfNotExist(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick, const std::string &channelName);
-  void sendNameReply(int fd, const std::string &nick, const std::string &channelName);
-  void sendEndOfNames(int fd, const std::string &nick, const std::string &channelName);
   void broadcastJoinMessage(int fd, const std::string &nick, const std::string &channelName);
 
   // Autres méthodes
