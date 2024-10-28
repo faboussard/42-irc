@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 14:25:32 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:00:57 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,15 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
         client.setNickname(argument);
       }
     } else if (command == "USER") {
+      if (argument.empty() || Parser::verifyUsername(argument, _clients) == false) {
+        std::cout << RED "Invalid username" RESET << std::endl;
+        clearClient(client.getFd());
+        return;
+      } else {
+        std::cout << GREEN "Valid username : " << argument << RESET
+                  << std::endl;
+        client.setUserName(argument);
+      }
     } else {
       std::cout << CYAN "What the fuck ?" RESET << std::endl;
     }
@@ -190,8 +199,6 @@ void Server::handleClientMessage(int fd) {
   if (client.isAccepted() == false) {
     handleInitialMessage(client, message);
   } else {
-    std::cout << MAGENTA "Message count === " << client.getMessageCount()
-              << RESET << std::endl;
     std::istringstream iss(message);
     std::string command;
     iss >> command;
