@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/27 22:07:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:11:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,13 @@ void send461NeedMoreParams(int fd, const std::string &nick,
   }
 }
 
+void send462AlreadyRegistered(int fd, const std::string &nick) {
+  std::string message = _462_ERR_ALREADYREGISTERED(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
+
 void send464PasswdMismatch(int fd, const std::string &nick) {
   std::string message;
   if (nick.empty())
@@ -261,6 +268,7 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send442NotOnChannel(fd, nick, testChannel.getName());
   send443UserOnChannel(fd, nick, targetNick, invitedChannel.getName());
   send461NeedMoreParams(fd, nick, command);
+  send462AlreadyRegistered(fd, nick);
   send464PasswdMismatch(fd, nick);
   send482ChanOPrivsNeeded(fd, nick, testChannel.getName());
 }
