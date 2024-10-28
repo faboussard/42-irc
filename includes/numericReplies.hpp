@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 11:09:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:59:52 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,23 +74,23 @@
 /* Channels */
 
 # define _331_RPL_NOTOPIC(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 331 " + nick + " #" + chanName + \
+  (std::string(":") + SRV_NAME + " 331 " + nick + " " + chanName + \
   " :No topic is set\r\n")
 // Indicates that the channel has no topic set.
 
 #define _332_RPL_TOPIC(nick, chanName, topic) \
-  (std::string(":") + SRV_NAME + " 332 " + nick + " #" + chanName + \
+  (std::string(":") + SRV_NAME + " 332 " + nick + " " + chanName + \
   " :" + topic + "\r\n")
 // Current topic of the channel.
 
 #define _333_RPL_TOPICWHOTIME(nick, chanName, author, setTime) \
-  (std::string(":") + SRV_NAME + " 333 " + nick + " #" + chanName + \
+  (std::string(":") + SRV_NAME + " 333 " + nick + " " + chanName + \
   " " + author + " " + setTime + "\r\n")
 // By whom and when(unix timestamp) is the topic set. Sent with 332
 
 #define _336_RPL_INVITELIST(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 336 " + nick + " #" + chanName + "\r\n")
-// Indicate a channel the client was invited to. 
+  (std::string(":") + SRV_NAME + " 336 " + nick + " " + chanName + "\r\n")
+// Indicate a channel the client was invited to.
 // If the client is invited to multiple channels, the server sends multiple replies.
 // If there is no channel to which the client was invited, the server sends only 337.
 // Sent as a reply to the INVITE command without parameter
@@ -99,7 +99,7 @@
   (std::string(":") + SRV_NAME + " 337 " + nick + " :End of /INVITE list\r\n")
 
 #define _341_RPL_INVITING(nick, invitedNick, chanName) \
-  (std::string(":") + SRV_NAME + " 341 " + nick + + " " + invitedNick + " #" + \
+  (std::string(":") + SRV_NAME + " 341 " + nick + + " " + invitedNick + " " + \
   chanName + "\r\n")
 // Confirms the user has been invited to the channel.
 // Sent as a reply to the INVITE command.
@@ -110,9 +110,14 @@
 
 // 324 RPL_CHANNELMODEIS: Channel mode is displayed. Reply to MODE #channel
 // 329_RPL_CREATIONTIME: creation time of a channel. Reply to MODE #channel
-// 353 RPL_NAMREPLY: List of users in the channel.
 
-// 366 RPL_ENDOFNAMES: End of the list of users in the channel.
+#define _353_RPL_NAMREPLY \
+// : List of users in the channel.
+
+#define _366_RPL_ENDOFNAMES(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 366 " + nick + " " + chanName + \
+  " :End of /NAMES list\r\n")
+// : End of the list of users in the channel.
 
 // 367_RPL_BANLIST: List of bans set on the channel. (Sent as a reply to the MODE)
 
@@ -127,7 +132,7 @@
 // Indicates that no client can be found for the supplied nickname.
 
 #define _403_ERR_NOSUCHCHANNEL(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 403 " + nick + " #" + chanName + \
+  (std::string(":") + SRV_NAME + " 403 " + nick + " " + chanName + \
   " :No such channel\r\n")
 
 #define _421_ERR_UNKNOWNCOMMAND(nick, command) \
@@ -147,11 +152,11 @@
   " :Nickname is already in use\r\n")
 
 #define _442_ERR_NOTONCHANNEL(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 442 " + nick + " #" + chanName + \
+  (std::string(":") + SRV_NAME + " 442 " + nick + " " + chanName + \
   " :You're not on that channel\r\n")
 
 #define _443_ERR_USERONCHANNEL(nick, invitedNick, chanName) \
-  (std::string(":") + SRV_NAME + " 443 " + nick + " " + invitedNick + " #" + \
+  (std::string(":") + SRV_NAME + " 443 " + nick + " " + invitedNick + " " + \
   chanName + " :is already on channel\r\n")
 
 #define _461_ERR_NEEDMOREPARAMS(nick, command) \
@@ -168,7 +173,7 @@
   (std::string(":") + SRV_NAME + " 464 " + nick + " :Password incorrect\r\n")
 
 #define _482_ERR_CHANOPRIVSNEEDED(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 482 " + nick + " #"  + chanName + \
+  (std::string(":") + SRV_NAME + " 482 " + nick + " "  + chanName + \
   " :You're not a channel operator\r\n")
 
 //------------------------------------------------------------------------------
@@ -207,7 +212,7 @@
 // 525_ERR_INVALIDKEY : The key provided for a channel is invalid.
 
 // ?? _465_ERR_YOUREBANNEDCREEP: You are banned from this server.
-                                                                          
+
 /*--------- Functions --------------------------------------------------------*/
 
 /* Welcome messages */
@@ -231,7 +236,7 @@ void send333Topicwhotime(int fd, const std::string &nick,
 void send336Invitelist(int fd, const std::string &nick,
                        const std::string &chanName);
 void send337Endofinvitelist(int fd, const std::string &nick);
-void send341Inviting(int fd, const std::string &nick, 
+void send341Inviting(int fd, const std::string &nick,
                      const std::string &invitedNick,
                      const std::string &chanName);
 
@@ -265,9 +270,9 @@ void testAllNumericReplies(const std::string &serverStartTime,
 
 /*--------- Just for fun -----------------------------------------------------*/
 
-#define CYAN_ "\x03" "11"  // Light Cyan
-#define MAGENTA_ "\x03" "13" // Pink/Magenta
-#define RESET_ "\x03" "99"   // Reset to default
+#define CYAN_ "\x03" "11"
+#define MAGENTA_ "\x03" "13"
+#define RESET_ "\x03" "99"
 
 #define _WELCOME(nick) \
   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN_ + \
@@ -297,4 +302,4 @@ void testAllNumericReplies(const std::string &serverStartTime,
 
 //  /\_/\     /\_/\     /\_/\
 // ( o.o )   ( o.o )   ( o.o )
-//  > ^ <     > ^ <     > ^ <  
+//  > ^ <     > ^ <     > ^ <
