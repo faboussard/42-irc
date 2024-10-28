@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 11:11:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:43:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,6 +229,7 @@ void send482ChanOPrivsNeeded(int fd, const std::string &nick,
     throw std::runtime_error(RUNTIME_ERROR);
   }
 }
+
 
 /* Just for test */
 void testAllNumericReplies(const std::string &serverStartTime,

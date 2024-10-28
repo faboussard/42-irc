@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 11:09:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:24:04 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,9 +110,13 @@
 
 // 324 RPL_CHANNELMODEIS: Channel mode is displayed. Reply to MODE #channel
 // 329_RPL_CREATIONTIME: creation time of a channel. Reply to MODE #channel
-// 353 RPL_NAMREPLY: List of users in the channel.
+#define _353_RPL_NAMREPLY(client, symbol, channel, namesList) \
+    (":" + getServerName() + " 353 " + client + " " + symbol + " " + channel + " :" + namesList + "\r\n")
 
-// 366 RPL_ENDOFNAMES: End of the list of users in the channel.
+
+#define _366_RPL_ENDOFNAMES(client, channel) \
+    (":" + getServerName() + " 366 " + client + " " + channel + " :End of /NAMES list\r\n")
+
 
 // 367_RPL_BANLIST: List of bans set on the channel. (Sent as a reply to the MODE)
 

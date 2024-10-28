@@ -1,15 +1,3 @@
-/* Copyright 2024 <faboussa>************************************************* */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 11:24:38 by faboussa         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef INCLUDES_SERVER_HPP_
 #define INCLUDES_SERVER_HPP_
 
@@ -58,11 +46,12 @@ class Server {
 
   int getSocketFd() const;
   int getPort() const;
-  // const std::string &getStartTime(void) const;
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
   const std::string &getServerName() const;
+  std::string getChannelSymbol(const std::string &channelName) const;
+  std::string getUserPrefix(const Client &client) const;
 
   /* Setters */
   void setStartTime();
@@ -71,7 +60,7 @@ class Server {
   void runServer();
   void createSocket();
   void createPoll();
-  void monitorConnections();
+  void acceptAndChat();
   static void signalHandler(int signal);
 
   /* Clients Management */
@@ -87,11 +76,21 @@ class Server {
   void clearClient(int fd);
   void closeClient(int fd);
 
-  /* Commands Management */
+  /*--------- Commands Management --------------*/
+
+  /* Join */
   void handleCommand(std::string &command, std::string &param, int fd);
   void joinChannel(std::string &channelName, int fd);
 
-  // for channel, list, ","
+  // Sous-fonctions pour joinChannel
+  std::string &prepareChannelName(std::string &channelName);
+  void createChannelIfNotExist(const std::string &channelName);
+  void sendJoinMessageToClient(int fd, const std::string &nick, const std::string &channelName);
+  void sendNameReply(int fd, const std::string &nick, const std::string &channelName);
+  void sendEndOfNames(int fd, const std::string &nick, const std::string &channelName);
+  void broadcastJoinMessage(int fd, const std::string &nick, const std::string &channelName);
+
+  // Autres méthodes
   void sendToAllClients(const std::string &message);
   void handlePassword(int fd);
 };

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 11:27:58 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:45:20 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ void Channel::setKey(const std::string &key) { _key = key; }
 void Channel::setLimit(int limit) { _limit = limit; }
 
 /*--------------------------------------------------------------------------- */
-// Supprime un client du canal
 void Channel::removeClientFromTheChannel(int fd) {
   if (_clientsInChannel.find(fd) != _clientsInChannel.end()) {
     _clientsInChannel[fd].receiveMessage("You have been removed from the channel");

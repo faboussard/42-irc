@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 11:26:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:43:01 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <string>
 
 #include "../includes/Client.hpp"
+
+#define CHANLIMIT 3
 
 typedef std::map<int, Client> clientsMap;
 
@@ -41,6 +43,8 @@ class Channel {
 
  public:
   explicit Channel(const std::string &name = "");
+  bool isSecret; // sera remplacé dans la strcuture de Yuko. 
+
 
   /* Getters */
 

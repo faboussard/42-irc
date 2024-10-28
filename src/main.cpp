@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/17 15:12:35 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:25:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int main(int ac, char** argv) {
     signal(SIGINT, Server::signalHandler);
     signal(SIGQUIT, Server::signalHandler);
     ser.runServer();
+    // testJoinChannel(ser);
   } catch (const std::exception& e) {
     std::cerr << RED << e.what() << RESET << '\n';
     ser.closeServer();

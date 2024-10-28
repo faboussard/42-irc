@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/28 11:30:47 by faboussa         ###   ########.fr        #
+#    Updated: 2024/10/28 15:10:35 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
 HEADER = colors Server Client Channel numericReplies utils serverConfig
-SRCS = main Server Client Channel numericReplies utils
+SRCS = main Server Client Channel numericReplies utils joinChannel
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 11:22:07 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:41:38 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class Client {
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "");
+  bool isOperator;
 
   /* Getters */
   int getFd() const { return _fd; }

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 11:29:03 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:09:57 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ Server::Server(int port, std::string password) {
   _name = "coco";
 }
 
-/* Getters */
+/* -------------------------  Getters ----------------------------------- */
+
 const Client &Server::getClientByFd(int fd) const {
   clientsMap::const_iterator it = _clients.find(fd);
   if (it == _clients.end()) {
@@ -52,6 +53,29 @@ int Server::getPort() const { return _port; }
 
 int Server::getSocketFd() const { return _socketFd; }
 
+std::string Server::getChannelSymbol(const std::string &channelName) const {
+    channelsMap::const_iterator it = _channels.find(channelName);
+    if (it != _channels.end()) {
+        // Vérifiez si le canal est secret
+        if (it->second.isSecret) {
+            return "@"; // Canal secret
+        } else {
+            return "="; // Canal public
+        }
+    }
+    return "="; // Valeur par défaut si le canal n'existe pas
+}
+
+
+std::string Server::getUserPrefix(const Client &client) const{
+    if (client.isOperator) {
+        return "@"; // Préfixe opérateur
+    }
+    return ""; // Pas de préfixe pour les membres réguliers
+}
+
+/* -------------------------  Member functions ----------------------------------- */
+
 
 /* Server Mounting */
 
@@ -59,7 +83,7 @@ void Server::runServer() {
   createSocket();
   setStartTime();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
-  monitorConnections();
+  acceptAndChat();
 }
 
 void Server::createSocket() {
@@ -97,7 +121,7 @@ void Server::setStartTime(void) {
   _startTime.erase(_startTime.end() - 1);
 }
 
-void Server::monitorConnections() {
+void Server::acceptAndChat() {
   struct pollfd newPoll;
   newPoll.fd = _socketFd;
   newPoll.events = POLLIN;
@@ -258,8 +282,10 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
   if (command.empty()) {
     return;
   } else if (command == "JOIN") {
-    std::cout << "JOIN command received" << std::endl; // debug
-    std::cout << "Params: " << params << std::endl; // debug 
+  #ifdef DEBUG
+    std::cout << GREY "JOIN command received" RESET << std::endl;
+    std::cout << GREY "Params: " RESET << params << std::endl;
+  #endif
     joinChannel(params, fd);
   } else if (command == "KICK") {
     // Exclure un client du canal
@@ -286,52 +312,39 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
   }
 }
 
-void Server::joinChannel(std::string &channelName, int fd) {
-    channelName = channelName.substr(1);
+// void Server::joinChannel(std::string &channelName, int fd) {
+//     channelName = channelName.substr(1);
 
-    if (_channels.find(channelName) == _channels.end()) {
-        Channel newChannel(channelName);
-        _channels[channelName] = newChannel;
-    }
-
-    // Récupérer l'instance du client avant de l'accepter dans le canal
-    const Client &client = getClientByFd(fd);
-    _channels[channelName].acceptClientInTheChannel(client);
-
-    // Envoyer la réponse JOIN au client
-    // client._nick = "faboussa"; //
-    std::cout << "Client " << client.getNickName() << " joined channel " << channelName << std::endl;
-
-    std::string nick = client.getNickName();
-    #ifdef DEBUG
-      std::cout << "Client " << nick << " joined channel " << channelName << std::endl;
-    #endif
-    std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
-    send(fd, joinMessage.c_str(), joinMessage.length(), 0);
-
-    // Préparer et envoyer la liste des utilisateurs dans le canal (353 RPL_NAMREPLY)
-    std::string nameReply = ":" + getServerName() + " 353 " + nick + " = " + channelName + " :";
+//     if (_channels.find(channelName) == _channels.end()) {
+//         Channel newChannel(channelName);
+//         _channels[channelName] = newChannel;
+//     }
+//     const Client &client = getClientByFd(fd);
+//     _channels[channelName].acceptClientInTheChannel(client);
+//     std::string nick = client.getNickName();
+//     #ifdef DEBUG
+//       std::cout << GREY "Client " << nick << " joined channel " RESET << channelName << std::endl;
+//     #endif
+//     std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
+//     send(fd, joinMessage.c_str(), joinMessage.length(), 0);
+//     // Préparer et envoyer la liste des utilisateurs dans le canal (353 RPL_NAMREPLY)
+//     std::string nameReply = ":" + getServerName() + " 353 " + nick + " = " + channelName + " :";
     
-    const clientsMap &clientsInChannel = _channels[channelName].getClientsInChannel();
-    for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
-        nameReply += getClientByFd(it->first).getNickName() + " ";
-    }
-
-    // Terminer le message de liste avec un retour à la ligne
-    nameReply += "\r\n";
-    send(fd, nameReply.c_str(), nameReply.length(), 0);
-
-    // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms est terminée
-    std::string endOfNames = ":" + getServerName() + " 366 " + nick + " " + channelName + " :End of /NAMES list\r\n";
-    send(fd, endOfNames.c_str(), endOfNames.length(), 0);
-
-    // Informer les autres clients dans le canal que quelqu'un a rejoint
-    for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
-        if (it->first != fd) { // Évitez d'envoyer au client qui a rejoint
-            send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
-        }
-    }
-}
+//     const clientsMap &clientsInChannel = _channels[channelName].getClientsInChannel();
+//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+//         nameReply += getClientByFd(it->first).getNickName() + " ";
+//     }
+//     nameReply += "\r\n";
+//     send(fd, nameReply.c_str(), nameReply.length(), 0);
+//     // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms est terminée
+//     std::string endOfNames = ":" + getServerName() + " 366 " + nick + " " + channelName + " :End of /NAMES list\r\n";
+//     send(fd, endOfNames.c_str(), endOfNames.length(), 0);
+//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+//         if (it->first != fd) {
+//             send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
+//         }
+//     }
+// }
 
 // void Server::handlePassword(int fd) {
 //   char buffer[1024] = {0};
