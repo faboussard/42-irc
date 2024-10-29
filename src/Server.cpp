@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 16:43:30 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 17:06:35 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +276,7 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
     std::cout << GREY "JOIN command received" RESET << std::endl;
     std::cout << GREY "Params: " RESET << params << std::endl;
   #endif
-    if (params == "#") // remplacer chann prefix
+    if (params == "#")
       joinChannel(params, fd);
     else
       send476BadChanMask(fd, "nick", params);
