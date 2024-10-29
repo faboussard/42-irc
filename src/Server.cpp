@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 14:33:42 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:30:40 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,25 +58,7 @@ int Server::getPort() const { return _port; }
 
 int Server::getSocketFd() const { return _socketFd; }
 
-std::string Server::getChannelSymbol(const std::string &channelName) const {
-    channelsMap::const_iterator it = _channels.find(channelName);
-    if (it != _channels.end()) {
-        if (it->second.isSecret) {
-            return SECRET_CANAL;
-        } else {
-            return PUBLIC_CANAL;
-        }
-    }
-    return PUBLIC_CANAL;
-}
 
-
-std::string Server::getUserPrefix(const Client &client) const{
-    if (client.isOperator) {
-        return "@"; // Préfixe opérateur
-    }
-    return ""; // Pas de préfixe pour les membres réguliers
-}
 
 /* -------------------------  Member functions ----------------------------------- */
 
@@ -293,8 +275,10 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
     std::cout << GREY "JOIN command received" RESET << std::endl;
     std::cout << GREY "Params: " RESET << params << std::endl;
   #endif
-    if (params == "#")
-      joinChannel(params, fd); // ajout condition et du & 
+    if (params == "#") // remplacer chann prefix
+      joinChannel(params, fd);
+    else
+       // badd channel 
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {

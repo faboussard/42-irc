@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 17:58:46 by fanny            ###   ########.fr       */
+/*   Updated: 2024/10/29 16:27:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ class Channel {
  public:
   explicit Channel(const std::string &name = "");
   bool isSecret; // sera remplacé dans la strcuture de Yuko. 
-
 
   /* Getters */
 

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 15:25:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:02:58 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,6 @@
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/numericReplies.hpp"
-
-#define SECRET_CANAL "@"
-#define PUBLIC_CANAL "="
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
@@ -69,8 +66,6 @@ public:
     const channelsMap &getChannels() const;
     const clientsMap &getClients() const;
     const std::string &getServerName() const;
-    std::string getChannelSymbol(const std::string &channelName) const;
-    std::string getUserPrefix(const Client &client) const;
 
     /* Setters */
     void setStartTime();
@@ -84,7 +79,7 @@ public:
 
     /* Clients Management */
     void acceptNewClient();
-     void addClient(int fd, const Client &client);
+    void addClient(int fd, const Client &client);
     void sendConnectionMessage(const Client &client) const;
     void receiveMessage(int fd);
     void handleClientMessage(int fd);

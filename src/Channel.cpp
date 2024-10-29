@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 17:58:42 by fanny            ###   ########.fr       */
+/*   Updated: 2024/10/29 16:27:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ const Mode &Channel::getMode() const { return _mode; }
 const std::string &Channel::getKey(void) const { return (_mode.key); }
 
 int Channel::getLimit(void) const { return (_mode.limit); }
+
 
 /*------ Setters ------------------------------------------------------------ */
 

@@ -1,12 +1,12 @@
 /* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   testJoinChannel.cpp                                :+:      :+:    :+:   */
+/*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 14:23:51 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:32:55 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,21 @@ void testJoinChannel(Server &server) {
     std::cout << "Testing JOIN 0 to leave all channels" << std::endl;
     std::string leaveAll = "0";
     server.joinChannel(leaveAll, fd1);  // Simule une sortie de tous les canaux
+
+    // bad param
+    std::cout << "Testing JOIN bad param" << std::endl;
+    std::string badParam = "&ssssss";
+    server.joinChannel(leaveAll, fd1); 
+
+    // no param
+    std::cout << "Testing JOIN no param" << std::endl;
+    std::string badParam = "g";
+    server.joinChannel(leaveAll, fd1); 
+
+    // empty param
+    std::cout << "Testing JOIN empty param" << std::endl;
+    std::string badParam = "";
+    server.joinChannel(leaveAll, fd1); 
 
     // Résultats
     std::cout << "Test completed." << std::endl;
