@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 09:17:54 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 12:33:24 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void sendWelcome(int fd, const std::string &nick) {
   }
 }
 
-/*------ Users related messages ----------------------------------------------*/
+/*------ Users related replies -----------------------------------------------*/
 
 void send221Umodeis(int fd, const Client &client) {
   std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
@@ -81,7 +81,29 @@ void send221Umodeis(int fd, const Client &client) {
   }
 }
 
-/*------ Channel related messages --------------------------------------------*/
+/*------ Channel related replies ---------------------------------------------*/
+
+void send324Channelmodeis(int fd, const std::string &nick,
+                          const Channel &channel) {
+  std::string modeArgs = "";
+  if (channel.getMode().keyRequired)
+    modeArgs += channel.getKey() + " ";
+  if (channel.getMode().limitSet)
+    modeArgs += toString(channel.getLimit()) + " ";
+  std::string message =
+      _324_RPL_CHANNELMODEIS(nick, channel.getNameWithPrefix(),
+                             channel.getChannelModeFlag(), modeArgs);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send329Creationtime(int fd, const std::string &nick,
+                         const Channel &channel) {
+  std::string message = _329_RPL_CREATIONTIME(nick, channel.getNameWithPrefix(),
+                                              channel.getCreationTime());
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
 
 void send331Notopic(int fd, const std::string &nick, const Channel &channel) {
   std::string chanName = channel.getNameWithPrefix();
@@ -130,7 +152,7 @@ void send341Inviting(int fd, const std::string &nick,
 }
 
 void send353Namreply(int fd, const std::string &nick, const Channel &channel) {
-  std::string chanNameWithSymbol = channel.getMode().keyRequired ? "* " : "= " ;
+  std::string chanNameWithSymbol = channel.getMode().keyRequired ? "* " : "= ";
   chanNameWithSymbol += channel.getNameWithPrefix();
 
   std::string nicknames = "";
@@ -171,6 +193,19 @@ void send401NoSuchNick(int fd, const std::string &nick,
 void send403NoSuchChannel(int fd, const std::string &nick,
                           const std::string &chanName) {
   std::string message = _403_ERR_NOSUCHCHANNEL(nick, chanName);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send404CannotSendToChan(int fd, const std::string &nick,
+                             const std::string &chanName) {
+  std::string message = _404_ERR_CANNOTSENDTOCHAN(nick, chanName);
+if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send405TooManyChannels(int fd, const std::string &nick) {
+  std::string message = _405_ERR_TOOMANYCHANNELS(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -252,49 +287,69 @@ void send464PasswdMismatch(int fd, const std::string &nick) {
     message = _464_ERR_PASSWD_MISMATCH("*");
   else
     message = _464_ERR_PASSWD_MISMATCH(nick);
-  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
-  }
 }
 
 void send471ChannelIsFull(int fd, const std::string &nick,
                           const std::string &chanName) {
   std::string message = _471_ERR_CHANNELISFULL(nick, chanName);
-  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
-  }
 }
+
+void send472UnknownMode(int fd, const std::string &nick,
+                        const std::string &modeChar) {
+  std::string message = _472_ERR_UNKNOWNMODE(nick, modeChar);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+ }
 
 void send473InviteOnlyChan(int fd, const std::string &nick,
                            const std::string &chanName) {
   std::string message = _473_ERR_INVITEONLYCHAN(nick, chanName);
-  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
-  }
 }
 
 void send475BadChannelKey(int fd, const std::string &nick,
                           const std::string &chanName) {
   std::string message = _475_ERR_BADCHANNELKEY(nick, chanName);
-  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
-  }
 }
 
 void send476BadChanMask(int fd, const std::string &nick,
                         const std::string &chanName) {
   std::string message = _476_ERR_BADCHANMASK(nick, chanName);
-  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
-  }
+}
+
+void send481NoPrivileges(int fd, const std::string &nick) {
+  std::string message = _481_ERR_NOPRIVILEGES(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
 }
 
 void send482ChanOPrivsNeeded(int fd, const std::string &nick,
                              const std::string &chanName) {
   std::string message = _482_ERR_CHANOPRIVSNEEDED(nick, chanName);
-  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
-  }
+}
+
+void send501UmodeUnknownFlag(int fd, const std::string &nick) {
+  std::string message = _501_ERR_UMODEUNKNOWNFLAG(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send525InvalidKey(int fd, const std::string &nick,
+                       const std::string &chanName) {
+  std::string message = _525_ERR_INVALIDKEY(nick, chanName);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
 }
 
 /* Just for test */
@@ -321,6 +376,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   /* User */
   send221Umodeis(fd, client);
   /* Channel */
+  send324Channelmodeis(fd, nick, testChannel);
+  send329Creationtime(fd, nick, testChannel);
   send331Notopic(fd, nick, testChannel);
   send332Topic(fd, nick, testChannel);
   send333Topicwhotime(fd, nick, testChannel);
@@ -332,18 +389,25 @@ void testAllNumericReplies(const std::string &serverStartTime,
   /* Errors */
   send401NoSuchNick(fd, nick, targetNick);
   send403NoSuchChannel(fd, nick, "notExistingChannel");
+  send404CannotSendToChan(fd, nick, testChannel.getNameWithPrefix());
+  send405TooManyChannels(fd, nick);
   send421UnknownCommand(fd, nick, command);
   send431NoNicknameGiven(fd, nick);
   send432ErroneusNickname(fd, nick);
   send433NickAlreadyInUse(fd, nick);
   send442NotOnChannel(fd, nick, testChannel.getNameWithPrefix());
-  send443UserOnChannel(fd, nick, targetNick, invitedChannel.getNameWithPrefix());
+  send443UserOnChannel(fd, nick, targetNick,
+                       invitedChannel.getNameWithPrefix());
   send461NeedMoreParams(fd, nick, command);
   send462AlreadyRegistered(fd, nick);
   send464PasswdMismatch(fd, nick);
   send471ChannelIsFull(fd, nick, testChannel.getNameWithPrefix());
+  send472UnknownMode(fd, nick, "x");
   send473InviteOnlyChan(fd, nick, privateChannel.getNameWithPrefix());
   send475BadChannelKey(fd, nick, privateChannel.getNameWithPrefix());
   send476BadChanMask(fd, nick, testChannel.getNameWithPrefix());
+  send481NoPrivileges(fd, nick);
   send482ChanOPrivsNeeded(fd, nick, privateChannel.getNameWithPrefix());
+  send501UmodeUnknownFlag(fd, nick);
+  send525InvalidKey(fd, nick, privateChannel.getNameWithPrefix());
 }
