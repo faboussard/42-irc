@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 16:27:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:39:18 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,13 @@
 #include "../includes/colors.hpp"
 #include "../includes/numericReplies.hpp"
 #include "../includes/utils.hpp"
+#include "../includes/serverConfig.hpp"
+
 
 Channel::Channel(const std::string &name) : _name(name) {
   time_t now = time(0);
   _creationTime = toString(now);
+
   _mode.inviteOnly = false;
   _mode.topicSettableByOpsOnly = false;
   _mode.keyRequired = false;
@@ -26,14 +29,20 @@ Channel::Channel(const std::string &name) : _name(name) {
   _mode.key = "";
   _mode.limit = 0;
 
+  _topic.topic = "";
+  _topic.author = "";
+  _topic.setTime = "";
+
   /*----- Just for test --------------*/
-  // Client testOp = Client(42);
-  // testOp.setNickName("testOp");
-  // _clientsInChannel[42] = testOp;
-  // _channelOperators[42] = testOp;
-  // Client testClient = Client(43);
-  // testClient.setNickName("testClient");
-  // _clientsInChannel[43] = testClient;
+  Client testOp = Client(42);
+  testOp.setNickName("testOp");
+  _clientsInChannel[42] = testOp;
+  _channelOperators[42] = testOp;
+  Client testClient = Client(43);
+  testClient.setNickName("testClient");
+  _clientsInChannel[43] = testClient;
+  _mode.limitSet = true;
+  _mode.limit = 42;
   /*----------------------------------*/
 }
 
@@ -58,6 +67,15 @@ const clientsMap &Channel::getChannelOperators() const {
 const Topic &Channel::getTopic() const { return _topic; }
 
 const Mode &Channel::getMode() const { return _mode; }
+
+const std::string Channel::getChannelModeFlag(void) const {
+  std::string flags = "+";
+  if (_mode.inviteOnly) flags += "i";
+  if (_mode.topicSettableByOpsOnly) flags += "t";
+  if (_mode.keyRequired) flags += "k";
+  if (_mode.limitSet) flags += "l";
+  return (flags);
+}
 
 const std::string &Channel::getKey(void) const { return (_mode.key); }
 
@@ -128,9 +146,9 @@ void Channel::receiveMessageInTheChannel(int fd) {
 }
 
 void Channel::activateKeyMode(const std::string &key, const Client &cli) {
-  if (key.empty())
+  if (key.empty()) {
     send461NeedMoreParams(cli.getFd(), cli.getNickName(), "MODE");
-  else {
+  } else {
     _mode.keyRequired = true;
     _mode.key = key;
   }
@@ -141,9 +159,9 @@ void Channel::deactivateKeyMode(void) {
 }
 
 void Channel::activateLimitMode(int limit, const Client &cli) {
-  if (limit == 0)
+  if (limit == 0) {
     send461NeedMoreParams(cli.getFd(), cli.getNickName(), "MODE");
-  else {
+  } else {
     _mode.limitSet = true;
     _mode.limit = limit;
   }

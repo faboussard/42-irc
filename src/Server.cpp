@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 16:30:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:43:30 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int Server::getSocketFd() const { return _socketFd; }
 
 void Server::runServer() {
   createSocket();
-  setStartTime();
+  _startTime = fetchStartTime();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   acceptAndChat();
 }
@@ -101,10 +101,11 @@ void Server::createSocket() {
   }
 }
 
-void Server::setStartTime(void) {
+std::string Server::fetchStartTime(void) {
   time_t now = time(0);
-  _startTime = ctime(&now);
-  _startTime.erase(_startTime.end() - 1);
+  std::string startTime = ctime(&now);
+  startTime.erase(_startTime.find_last_not_of("\n") + 1);
+  return (startTime);
 }
 
 void Server::acceptAndChat() {
@@ -278,7 +279,7 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
     if (params == "#") // remplacer chann prefix
       joinChannel(params, fd);
     else
-       // badd channel 
+      send476BadChanMask(fd, "nick", params);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {

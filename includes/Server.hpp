@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 16:02:58 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:43:57 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "../includes/Channel.hpp"
@@ -70,13 +71,6 @@ public:
     /* Setters */
     void setStartTime();
 
-    /* Server Mounting */
-    void runServer();
-    void createSocket();
-    void createPoll();
-    void acceptAndChat();
-    static void signalHandler(int signal);
-
     /* Clients Management */
     void acceptNewClient();
     void addClient(int fd, const Client &client);
@@ -88,6 +82,13 @@ public:
     void closeServer();
     void clearClient(int fd);
     void closeClient(int fd);
+  /* Server Mounting */
+  void runServer();
+  void createSocket();
+  void createPoll();
+  std::string fetchStartTime();
+  void acceptAndChat();
+  static void signalHandler(int signal);
 
     /*--------- Commands Management --------------*/
     /* Join */
