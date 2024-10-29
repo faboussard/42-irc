@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:29:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 11:57:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 14:39:46 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 #define NETWORK_NAME "42IRC"
 
 /* Modes */
-#define USER_MODES "ior"       // List of available modes in server (Example)
-#define CHANNEL_MODES "itkl"  // List of available modes in server (Example)
+#define USER_MODES "ior"      // List of available modes for user (Example)
+#define CHANNEL_MODES "itkl"  // List of available modes for channel
 
 /* ISUPPORT Parameters */
 #define PREFIX "(o)@"  // List of available client statuses in channels
