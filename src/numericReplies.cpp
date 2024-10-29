@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 16:41:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 08:57:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,6 +250,38 @@ void send464PasswdMismatch(int fd, const std::string &nick) {
   }
 }
 
+void send471ChannelIsFull(int fd, const std::string &nick,
+                          const std::string &chanName) {
+  std::string message = _471_ERR_CHANNELISFULL(nick, chanName);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
+
+void send473InviteOnlyChan(int fd, const std::string &nick,
+                           const std::string &chanName) {
+  std::string message = _473_ERR_INVITEONLYCHAN(nick, chanName);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
+
+void send475BadChannelKey(int fd, const std::string &nick,
+                          const std::string &chanName) {
+  std::string message = _475_ERR_BADCHANNELKEY(nick, chanName);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
+
+void send476BadChanMask(int fd, const std::string &nick,
+                        const std::string &chanName) {
+  std::string message = _476_ERR_BADCHANMASK(nick, chanName);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
+
 void send482ChanOPrivsNeeded(int fd, const std::string &nick,
                              const std::string &chanName) {
   std::string message = _482_ERR_CHANOPRIVSNEEDED(nick, chanName);
@@ -302,5 +334,9 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send461NeedMoreParams(fd, nick, command);
   send462AlreadyRegistered(fd, nick);
   send464PasswdMismatch(fd, nick);
+  send471ChannelIsFull(fd, nick, testChannel.getNameWithPrefix());
+  send473InviteOnlyChan(fd, nick, privateChannel.getNameWithPrefix());
+  send475BadChannelKey(fd, nick, privateChannel.getNameWithPrefix());
+  send476BadChanMask(fd, nick, testChannel.getNameWithPrefix());
   send482ChanOPrivsNeeded(fd, nick, privateChannel.getNameWithPrefix());
 }

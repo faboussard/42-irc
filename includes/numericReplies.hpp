@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 16:44:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 08:54:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,17 +60,6 @@
   (std::string(":") + SRV_NAME + " 221 " + nick + " " + modes + "\r\n")
 // Informs client's currently-set user modes. (Reply to MODE <nick> command)
 
-// ??
-// _311_RPL_WHOISUSER
-// RPL_WHOISSERVER (312)
-// RPL_WHOISOPERATOR (313)
-// RPL_ENDOFWHOIS (318)
-// RPL_WHOISCHANNELS (319)
-
-// _351_RPL_VERSION
-// :server_name 351 <client> <version> <server_info> :<comments>
-// :irc.example.com 351 Alice 1.2.3 ExampleServer :This is a test server
-
 /* Channels */
 
 # define _331_RPL_NOTOPIC(nick, chanName) \
@@ -104,13 +93,6 @@
 // Confirms the user has been invited to the channel.
 // Sent as a reply to the INVITE command.
 
-//------------------------------------------------------------------------------
-// 322 RPL_LIST: Channel list with details.
-// 323 RPL_LISTEND: End of channel list.
-
-// 324 RPL_CHANNELMODEIS: Channel mode is displayed. Reply to MODE #channel
-// 329_RPL_CREATIONTIME: creation time of a channel. Reply to MODE #channel
-
 #define _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames) \
   (std::string(":") + SRV_NAME + " 353 " + nick + " " + chanNameWithSymbol + \
   " :" + nicknames + "\r\n")
@@ -119,6 +101,13 @@
 #define _366_RPL_ENDOFNAMES(nick, chanName) \
   (std::string(":") + SRV_NAME + " 366 " + nick + " " + chanName + \
   " :End of /NAMES list\r\n")
+
+//------------------------------------------------------------------------------
+// 322 RPL_LIST: Channel list with details.
+// 323 RPL_LISTEND: End of channel list.
+
+// 324 RPL_CHANNELMODEIS: Channel mode is displayed. Reply to MODE #channel
+// 329_RPL_CREATIONTIME: creation time of a channel. Reply to MODE #channel
 
 // 367_RPL_BANLIST: List of bans set on the channel. (Sent as a reply to the MODE)
 
@@ -194,17 +183,27 @@
 
 // _451_ERR_NOTREGISTERED: "<client> :You have not registered"
 
-// _471_ERR_CHANNELISFULL: The channel is full.
+#define _471_ERR_CHANNELISFULL(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 471 " + nick + chanName + \
+  " :Cannot join channel (+l)\r\n")
+// : The channel has reached its user number limit set with +l mode
+
+#define _473_ERR_INVITEONLYCHAN(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 473 " + nick + chanName + \
+  " :Cannot join channel (+i)\r\n")
+// The channel is invite-only bur the client was not invited.
+
+#define _475_ERR_BADCHANNELKEY(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 475 " + nick + chanName + \
+  " :Cannot join channel (+k)\r\n")
+// wrong channel key(password) provided
+
+#define _476_ERR_BADCHANMASK(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 476 " + nick + chanName + \
+  " :Bad Channel mask\r\n")
+// A client attempted to join a channel with an invalid chennel name format that doesn't much the server's accepted format.
 
 // _472_ERR_UNKNOWNMODE: The mode is unknown.
-
-// _473_ERR_INVITEONLYCHAN: The channel is invite-only.
-
-// _474_ERR_BANNEDFROMCHAN: The user is banned from the channel.
-
-// _475_ERR_BADCHANNELKEY: Cannot join the channel (wrong channel key).
-
-// _476_ERR_BADCHANMASK: The channel mask is invalid.
 
 // _481_ERR_NOPRIVILEGES: You're not an IRC operator"
 
@@ -263,6 +262,14 @@ void send461NeedMoreParams(int fd, const std::string &nick,
                            const std::string &command);
 void send462AlreadyRegistered(int fd, const std::string &nick);
 void send464PasswdMismatch(int fd, const std::string &nick);
+void send471ChannelIsFull(int fd, const std::string &nick,
+                          const std::string &chanName);
+void send473InviteOnlyChan(int fd, const std::string &nick,
+                           const std::string &chanName);
+void send475BadChannelKey(int fd, const std::string &nick,
+                          const std::string &chanName);
+void send476BadChanMask(int fd, const std::string &nick,
+                        const std::string &chanName);
 void send482ChanOPrivsNeeded(int fd, const std::string &nick,
                              const std::string &chanName);
 
