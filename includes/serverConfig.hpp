@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:29:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 17:07:45 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 17:19:57 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,14 @@
 #define NICKLEN 9
 #define TOKEN_NICKLEN (std::string("NICKLEN=") + toString(NICKLEN))
 
-#define CHANLIMIT_ 10
+#define CHANLIMIT_ 10 // Example of channel limit (10 channels max for a user)
 #define CHANLIMIT ("#:" + toString(10))
 #define TOKEN_CHANLIMIT (std::string("CHANLIMIT=") + CHANLIMIT)
 
 #define CHANMODES "i,t,k,l"
 #define TOKEN_CHANMODES (std::string("CHANMODES=") + CHANMODES)
 
+#define CHAN_PREFIX_CHAR '#'
 #define CHAN_PREFIX "#"
 #define TOKEN_CHANTYPES (std::string("CHANTYPES=") + CHAN_PREFIX)
 

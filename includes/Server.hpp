@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 16:43:57 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 17:21:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,11 +95,11 @@ public:
     void handleCommand(std::string &command, std::string &param, int fd);
     void joinChannel(std::string &channelName, int fd);
     void executeJoin(int fd, const Client &client, const std::string &channelName);
-    
     // Sub-functions for joinChannel
     void createChannelIfNotExist(const std::string &channelName);
     void sendJoinMessageToClient(int fd, const std::string &nick, const std::string &channelName);
     void broadcastJoinMessage(int fd, const std::string &nick, const std::string &channelName) ;
+    bool canEnterChannel(const std::string &param);
 
     // Other methods
     void sendToAllClients(const std::string &message);

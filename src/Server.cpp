@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 17:06:35 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 17:53:51 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,8 +178,8 @@ void Server::handleClientMessage(int fd) {
   std::string command = message.substr(0, message.find(" "));
   std::string params = message.substr(message.find(" ") + 1);
   handleCommand(command, params, fd);
-  // sendToAllClients(message); //dans le channel, si pas de command, ca envoie
-  // a tout le monde sous la forme de PRIVMSG
+  sendToAllClients(message); //dans le channel, si pas de command, ca envoie
+    // a tout le monde sous la forme de PRIVMSG
 }
 
 void Server::acceptNewClient() {
@@ -268,7 +268,6 @@ void Server::clearClient(int fd) {
 /*  Commands management */
 
 void Server::handleCommand(std::string &command, std::string &params, int fd) {
-  static_cast<void>(fd);
   if (command.empty()) {
     return;
   } else if (command == "JOIN") {
@@ -276,10 +275,10 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
     std::cout << GREY "JOIN command received" RESET << std::endl;
     std::cout << GREY "Params: " RESET << params << std::endl;
   #endif
-    if (params == "#")
+    if (canEnterChannel(params))
       joinChannel(params, fd);
     else
-      send476BadChanMask(fd, "nick", params);
+      send476BadChanMask(fd, "kitten", params);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
@@ -337,22 +336,4 @@ void Server::handleCommand(std::string &command, std::string &params, int fd) {
 //             send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
 //         }
 //     }
-// }
-
-// void Server::handlePassword(int fd) {
-//   char buffer[1024] = {0};
-//   std::memset(buffer, 0, sizeof(buffer));
-//   int valread = recv(fd, buffer, sizeof(buffer), 0);
-
-//   switch (valread) {
-//     case -1:
-//       std::cerr << RED "Error while receiving message" RESET << std::endl;
-//     case 0:
-//       clearClient(fd);
-//       return;
-//   }
-//   std::cout << YELLOW << buffer << RESET << std::endl;
-//   std::string message(buffer, valread);
-//   std::istringstream iss(message);
-//   sendToAllClients(message);
 // }

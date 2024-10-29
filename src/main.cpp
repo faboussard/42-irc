@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 17:01:16 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 17:52:49 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ void checkArgs(int port, const std::string& password) {
               << std::endl;
     exit(EXIT_FAILURE);
   }
-  if (password.length() > 1000) {
+  if (password.length() > 1000) {  sendToAllClients(message); //dans le channel, si pas de command, ca envoie
+  sendToAllClients(message); //dans le channel, si pas de command, ca envoie
+
     std::cerr << "Password too long" << std::endl;
     exit(EXIT_FAILURE);
   }
@@ -36,12 +38,7 @@ int main(int ac, char** argv) {
   std::string password = argv[2];
   checkArgs(port, password);
   Server ser(port, password);
-
-  try {
-    signal(SIGINT, Server::signalHandler);
-    signal(SIGQUIT, Server::signalHandler);
-    ser.runServer();
-    /* ------------------------ unitary tests ------------------------*/
+      /* ------------------------ unitary tests ------------------------*/
 /* join */
 #ifdef TEST
       Test test;
@@ -49,7 +46,10 @@ int main(int ac, char** argv) {
       exit(EXIT_SUCCESS);
 #endif
     /* ------------------------ end of unitary tests ------------------------*/
-
+  try {
+    signal(SIGINT, Server::signalHandler);
+    signal(SIGQUIT, Server::signalHandler);
+    ser.runServer();
   } catch (const std::exception& e) {
     std::cerr << RED << e.what() << RESET << '\n';
     ser.closeServer();

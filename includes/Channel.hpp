@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 16:39:26 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 17:12:11 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ class Channel {
   Topic _topic;
   Mode _mode;
 
-  clientsMap _clientsInChannel;
-  clientsMap _channelOperators;
+  std::map<int, Client> _clientsInChannel;
+  std::map<int, Client> _channelOperators;
 
  public:
   explicit Channel(const std::string &name = "");
