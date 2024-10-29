@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:29:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 16:27:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:49:11 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@
 #define NICKLEN 9
 #define TOKEN_NICKLEN (std::string("NICKLEN=") + toString(NICKLEN))
 
-#define CHANLIMIT "#:10, &:10"
+#define CHANLIMIT_ 10
+#define CHANLIMIT ("#:" + toString(10))
 #define TOKEN_CHANLIMIT (std::string("CHANLIMIT=") + CHANLIMIT)
 
 #define CHANMODES "i,t,k,l"
