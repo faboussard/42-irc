@@ -6,17 +6,15 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 15:41:53 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 15:18:40 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "../includes/Client.hpp"
 
 #include <cerrno>
 #include <cstring>
 
+#include "../includes/Client.hpp"
 #include "../includes/colors.hpp"
-#include "Client.hpp"
 
 /*============================================================================*/
 /*       Constructors                                                         */
