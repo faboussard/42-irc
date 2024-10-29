@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 16:32:55 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 17:03:02 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,21 @@
 #include "Server.hpp" 
 #include "tests.hpp"
 
-void testJoinChannel(Server &server) {
+void Test::testJoinChannel(Server &server) {
     
         int fd1 = 1;
     int fd2 = 2;
     
-    Test jointest;
     Client newClient1(fd1, "Nick1");
     Client newClient2(fd2, "Nick2");
-
-
 
     server.addClient(fd1, newClient1);
     server.addClient(fd2, newClient2);
 
     std::string channel1 = "#channelA";
     std::string channel2 = "#channelB";
-    std::string channel2 = "channelC";
-    std::string channel2 = "&channelB";
+    std::string channel3 = "#channelC";
 
-
-    
     // Test de l'entrée d'un client dans un canal
     std::cout << "Testing client joining channel: " << channel1 << std::endl;
     server.joinChannel(channel1, fd1);
@@ -51,7 +45,7 @@ void testJoinChannel(Server &server) {
 
     // Test de la limite de canaux si une limite est implémentée (par exemple, 2 canaux max)
     std::cout << "Testing channel limit" << std::endl;
-    std::string channel3 = "#channelC";
+    std::string channel4 = "#channelC";
     server.joinChannel(channel3, fd1);  // Cette tentative doit être rejetée si le nombre de canaux est limité
 
     // Test de JOIN 0 pour quitter tous les canaux
@@ -60,19 +54,19 @@ void testJoinChannel(Server &server) {
     server.joinChannel(leaveAll, fd1);  // Simule une sortie de tous les canaux
 
     // bad param
-    std::cout << "Testing JOIN bad param" << std::endl;
+    std::cout << "Testing JOIN bad prefix" << std::endl;
     std::string badParam = "&ssssss";
-    server.joinChannel(leaveAll, fd1); 
+    server.joinChannel(badParam, fd1); 
 
     // no param
-    std::cout << "Testing JOIN no param" << std::endl;
-    std::string badParam = "g";
-    server.joinChannel(leaveAll, fd1); 
+    std::cout << "Testing JOIN no prefix" << std::endl;
+    std::string noprefix = "g";
+    server.joinChannel(noprefix, fd1); 
 
     // empty param
     std::cout << "Testing JOIN empty param" << std::endl;
-    std::string badParam = "";
-    server.joinChannel(leaveAll, fd1); 
+    std::string empty = "";
+    server.joinChannel(empty, fd1); 
 
     // Résultats
     std::cout << "Test completed." << std::endl;
