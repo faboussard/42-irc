@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 16:50:03 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 10:36:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ class Channel {
   const clientsMap &getChannelOperators() const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
+  const std::string getChannelModeFlag(void) const;
   const std::string &getKey(void) const;
   int getLimit(void) const;
 

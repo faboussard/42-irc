@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:29:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/28 11:42:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 11:57:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 /* Modes */
 #define USER_MODES "ior"       // List of available modes in server (Example)
-#define CHANNEL_MODES "itkol"  // List of available modes in server (Example)
+#define CHANNEL_MODES "itkl"  // List of available modes in server (Example)
 
 /* ISUPPORT Parameters */
 #define PREFIX "(o)@"  // List of available client statuses in channels
@@ -33,15 +33,21 @@
 #define NICKLEN 9
 #define TOKEN_NICKLEN (std::string("NICKLEN=") + toString(NICKLEN))
 
-#define USERLEN 20
-#define TOKEN_USERLEN (std::string("USERLEN=") + toString(USERLEN))
+#define CHANLIMIT "#:10, &:10"
+#define TOKEN_CHANLIMIT (std::string("CHANLIMIT=") + CHANLIMIT)
+
+#define CHANMODES "i,t,k,l"
+#define TOKEN_CHANMODES (std::string("CHANMODES=") + CHANMODES)
+
+#define CHANTYPES "#&"
+#define TOKEN_CHANTYPES (std::string("CHANTYPES=") + CHANTYPES)
 
 #define UNIQUE ""
 #define TOKEN_UNIQUE (std::string("UNIQUE") + UNIQUE)
 
 #define TOKENS \
-  (TOKEN_PREFIX + std::string(" ") + TOKEN_NICKLEN + " " + TOKEN_USERLEN + \
-   " " + TOKEN_UNIQUE)
+  (TOKEN_PREFIX + std::string(" ") + TOKEN_NICKLEN + " " + TOKEN_CHANLIMIT + \
+  " " + TOKEN_CHANMODES + " " + TOKEN_CHANTYPES + " " + TOKEN_UNIQUE)
 // https://modern.ircdocs.horse/#rplisupport-parameters
 
 #endif  // INCLUDES_SERVERCONFIG_HPP_
