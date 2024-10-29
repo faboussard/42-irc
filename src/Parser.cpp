@@ -6,14 +6,13 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 16:55:19 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 10:07:30 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Parser.hpp"
 
 #include "../includes/colors.hpp"
-#include "Parser.hpp"
 
 Command Parser::choseCommand(const std::string& command) {
   if (command == "JOIN") {
@@ -52,8 +51,6 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
     return (false);
   }
   client.declarePasswordGiven();
-  if (client.isNicknameSet() && client.isPasswordGiven() && client.isUsernameSet())
-        client.declareAccepted();
   return (true);
 }
 //The password supplied must match the one defined in the server configuration.
@@ -61,7 +58,19 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
 // It is possible to send multiple PASS commands before registering but
 // only the last one sent is used for verification and it may not be changed 
 // once the client has been registered.
+// The PASS command is used to set a ‘connection password’. If set, the password must be set before any attempt to register the connection is made. This requires that clients send a PASS command before sending the NICK / USER combination.
 
+// The password supplied must match the one defined in the server configuration. It is possible to send multiple PASS commands before registering but only the last one sent is used for verification and it may not be changed once the client has been registered.
+
+// If the password supplied does not match the password expected by the server, then the server SHOULD send ERR_PASSWDMISMATCH (464) and MAY then close the connection with ERROR. Servers MUST send at least one of these two messages.
+
+// Servers may also consider requiring SASL authentication upon connection as an alternative to this, when more information or an alternate form of identity verification is desired.
+
+// Numeric replies:
+
+//     ERR_NEEDMOREPARAMS (461)
+//     ERR_ALREADYREGISTERED (462)
+//     ERR_PASSWDMISMATCH (464)
 
 bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
   if (nick.empty()) {
@@ -89,9 +98,18 @@ bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
     }
   }
   client.setNickname(nick);
-  if (client.isNicknameSet() && client.isPasswordGiven() && client.isUsernameSet())
-        client.declareAccepted();
   return (true);
+}
+
+std::vector<std::string> fillVectorString(const std::string str) {
+  std::vector<std::string> result;
+  std::istringstream iss(str);
+  std::string token;
+
+  while (iss >> token) {
+    result.push_back(token);
+  }
+  return (result);
 }
 
 bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
@@ -99,13 +117,13 @@ bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
     // ERR_NEEDMOREPARAMS (461)
     return (false);
   }
-
-  std::istringstream iss(user);
-  std::vector<std::string> fields;
-  std::string field;
-  while (iss >> field) {
-    fields.push_back(field);
-  }
+  // std::istringstream iss(user);
+  // std::vector<std::string> fields;
+  // std::string field;
+  // while (iss >> field) {
+  //   fields.push_back(field);
+  // }
+  std::vector<std::string> fields = fillVectorString(user);
   if (fields.size() != 4) {
     std::cout << "fields.size() != 4" << std::endl;
     // ERR_NEEDMOREPARAMS (461)
@@ -114,7 +132,7 @@ bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
   size_t size = fields[0].size();
   for (size_t i = 0; i < size; ++i) {
     if (std::isspace(fields[0].at(i)) || std::iscntrl(fields[0].at(i))) {
-      std::cout << "space or control char" << std::endl;
+      std::cout <<  "space or control char" << std::endl;
       return (false);
     }
   }
@@ -127,8 +145,6 @@ bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
     }
   }
   client.setUserName(user);
-  if (client.isNicknameSet() && client.isPasswordGiven() && client.isUsernameSet())
-        client.declareAccepted();
   return (true);
 }
 
@@ -155,6 +171,14 @@ bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
 // If the server does not receive the <nickname> parameter with the NICK
 // command, it should issue an ERR_NONICKNAMEGIVEN numeric and ignore the NICK
 // command.
+// Selon la spécification du protocole IRC, une fois qu'un client est enregistré (c'est-à-dire après avoir envoyé les commandes NICK et USER avec succès), il ne peut plus changer son mot de passe en envoyant une nouvelle commande PASS. Toute tentative de changer le mot de passe après l'enregistrement doit être ignorée par le serveur.
+
+// Comportement Attendu
+// Avant l'Enregistrement : Le client peut envoyer plusieurs commandes PASS, mais seule la dernière est utilisée pour la vérification.
+// Après l'Enregistrement : Toute tentative d'envoyer une commande PASS doit être ignorée, et le serveur ne doit pas fermer la connexion du client.
+// Mise à Jour de la Méthode handleInitialMessage
+// Vous pouvez mettre à jour votre méthode handleInitialMessage pour gérer cette situation.
+
 
 // The NICK message may be sent from the server to clients to acknowledge their
 // NICK command was successful, and to inform other clients about the change of

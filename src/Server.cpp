@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 16:54:38 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 10:22:09 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,40 +115,57 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     std::cout << MAGENTA "Command: " << command << std::endl;
     std::cout << "Message: " << argument << RESET << std::endl;
 
-    if (command == "PASS") {
-      if (isLastPass(splittedPair, it + 1, vecSize)
-          && Parser::verifyPassword(argument, _password, client) == false) {
+    if (command == "CAP") {
+      continue;
+    } else if (command == "PASS") {
+      if (isLastPass(splittedPair, it + 1, vecSize) &&
+          Parser::verifyPassword(argument, _password, client) == false) {
+        // ERR_PASSWDMISMATCH` (464).
         std::cout << RED "Invalid password" RESET << std::endl;
         clearClient(client.getFd());
         return;
       }
+    } else if (client.isPasswordGiven() == false) {
+      std::cerr << RED "NO PASSWORD GIVEN !" RESET << std::endl;
+      // ERR_NEEDMOREPARAMS (461)
+      clearClient(client.getFd());
+      return;
     } else if (command == "NICK") {
       if (Parser::verifyNick(argument, client, _clients) == false) {
         std::cout << BLUE "Invalid nickname" RESET << std::endl;
         clearClient(client.getFd());
         return;
       }
-    } else if (command == "USER") {
+    } else if (command == "USER" && client.isNicknameSet()) {
       if (Parser::verifyUser(argument, client, _clients) == false) {
         std::cout << RED "Invalid username" RESET << std::endl;
         clearClient(client.getFd());
         return;
       }
-    } else if (client.isAccepted()){
-      std::cout << CYAN
-                << "IF THIS ISN T CAP YOU SHOULDN T BE HERE ! argument = "
-                << argument << RESET << std::endl;
-      handleCommand(command, client.getFd());
-    }
-  }
-  if (client.isNicknameSet()) {
-    if (client.isPasswordGiven())
-      client.declareAccepted();
-    else {
-      // ERR_PASSWDMISMATCH` (464).
-      std::cerr << RED "NO PASSWORD GIVEN !" RESET << std::endl;
+    } else if (client.isNicknameSet() == false) {
+      std::cerr << RED "NO NICKNAME GIVEN !" RESET << std::endl;
+      // ERR_NONICKNAMEGIVEN (431)
       clearClient(client.getFd());
+      return;
+    } else if (client.isUsernameSet() == false) {
+      std::cerr << RED "NO USERNAME GIVEN !" RESET << std::endl;
+      // ERR_NEEDMOREPARAMS (461)
+      clearClient(client.getFd());
+      return;
+    } else if (client.isAccepted()) {
+      if (command == "QUIT") {
+        // lancer la commande QUIT avec les arguments : quit(client, argument);
+        clearClient(client.getFd());
+        return;
+      } else {
+        std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
+                  << "\nargument = " << argument << RESET << std::endl;
+        handleCommand(command, client.getFd());
+      }
     }
+    if (client.isPasswordGiven() && client.isNicknameSet()
+        && client.isUsernameSet())
+      client.declareAccepted();
   }
 }
 
@@ -244,7 +261,7 @@ void Server::acceptNewClient() {
 
 void Server::sendToAllClients(const std::string &message) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-    it->second.receiveMessage(message);
+    if (it->second.isAccepted()) it->second.receiveMessage(message);
   }
 }
 
