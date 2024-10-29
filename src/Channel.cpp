@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 16:50:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 08:11:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,17 @@
 Channel::Channel(const std::string &name) : _name(name) {
   time_t now = time(0);
   _creationTime = toString(now);
+
   _mode.inviteOnly = false;
   _mode.topicSettableByOpsOnly = false;
   _mode.keyRequired = false;
   _mode.limitSet = false;
   _mode.key = "";
   _mode.limit = 0;
+
+  _topic.topic = "";
+  _topic.author = "";
+  _topic.setTime = "";
 
   /*----- Just for test --------------*/
   // Client testOp = Client(42);
