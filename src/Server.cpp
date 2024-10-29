@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 10:22:09 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 11:02:18 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,12 +160,35 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       } else {
         std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
                   << "\nargument = " << argument << RESET << std::endl;
-        handleCommand(command, client.getFd());
+        handleCommand(command, argument, client.getFd());
       }
     }
-    if (client.isPasswordGiven() && client.isNicknameSet()
-        && client.isUsernameSet())
+    if (client.isPasswordGiven() && client.isNicknameSet() &&
+        client.isUsernameSet())
       client.declareAccepted();
+  }
+}
+
+void Server::handleOtherMessage(Client &client, const std::string &message) {
+  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
+  size_t vecSize = splittedPair.size();
+  for (size_t it = 0; it < vecSize; ++it) {
+    std::string command = splittedPair[it].first;
+    std::string argument = splittedPair[it].second;
+    Command cmd = Parser::choseCommand(command);
+    std::cout << MAGENTA "Command: " << command << std::endl;
+    std::cout << "Message: " << argument << RESET << std::endl;
+    if (cmd == UNKNOWN) {
+      // ERR_UNKNOWNCOMMAND (421)
+      std::cerr << RED "Unknown command" RESET << std::endl;
+      continue;
+    }
+    else if (cmd == CAP || cmd == USER) {
+      continue;
+    }
+    else {
+      handleCommand(command, argument, client.getFd());
+    }
   }
 }
 
@@ -220,9 +243,10 @@ void Server::handleClientMessage(int fd) {
   } else {
     std::istringstream iss(message);
     std::string command;
+    std::string argument;
     iss >> command;
     if (command == "JOIN")
-      handleCommand(command, fd);
+      handleCommand(command, argument, fd);
     else
       sendToAllClients(message);
   }
@@ -288,11 +312,10 @@ void Server::clearClient(int fd) {
 }
 /* Chat Commands */
 
-void Server::handleCommand(const std::string &command, int fd) {
-  static_cast<void>(fd);
-  if (command.empty()) {
-    return;
-  } else if (command == "JOIN") {
+void Server::handleCommand(const std::string &command,
+                           const std::string &argument, int fd) {
+  if (command.empty()) return;
+  if (command == "JOIN") {
     // std::string channelName;
     // command >> channelName;
     // if (_channels.find(channelName) == _channels.end()) {
@@ -312,7 +335,7 @@ void Server::handleCommand(const std::string &command, int fd) {
   } else if (command == "NOTICE") {
     // Notice}
   } else if (command == "NICK") {
-    // change nickname
+    Parser::verifyNick(argument, _clients[fd], _clients);
   } else if (command == "PRIVMSG") {
     // Envoyer un message privé
   } else if (command == "QUIT") {

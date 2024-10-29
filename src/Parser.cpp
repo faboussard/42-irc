@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 10:07:30 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 11:58:33 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@ Command Parser::choseCommand(const std::string& command) {
     return (QUIT);
   } else if (command == "PING") {
     return (PING);
+  } else if (command == "CAP") {
+    return (CAP);
+  } else if (command == "USER") {
+    return (USER);
   }
   return (UNKNOWN);
 }
@@ -53,24 +57,6 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
   client.declarePasswordGiven();
   return (true);
 }
-//The password supplied must match the one defined in the server configuration.
-// WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// It is possible to send multiple PASS commands before registering but
-// only the last one sent is used for verification and it may not be changed 
-// once the client has been registered.
-// The PASS command is used to set a ‘connection password’. If set, the password must be set before any attempt to register the connection is made. This requires that clients send a PASS command before sending the NICK / USER combination.
-
-// The password supplied must match the one defined in the server configuration. It is possible to send multiple PASS commands before registering but only the last one sent is used for verification and it may not be changed once the client has been registered.
-
-// If the password supplied does not match the password expected by the server, then the server SHOULD send ERR_PASSWDMISMATCH (464) and MAY then close the connection with ERROR. Servers MUST send at least one of these two messages.
-
-// Servers may also consider requiring SASL authentication upon connection as an alternative to this, when more information or an alternate form of identity verification is desired.
-
-// Numeric replies:
-
-//     ERR_NEEDMOREPARAMS (461)
-//     ERR_ALREADYREGISTERED (462)
-//     ERR_PASSWDMISMATCH (464)
 
 bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
   if (nick.empty()) {
@@ -132,7 +118,7 @@ bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
   size_t size = fields[0].size();
   for (size_t i = 0; i < size; ++i) {
     if (std::isspace(fields[0].at(i)) || std::iscntrl(fields[0].at(i))) {
-      std::cout <<  "space or control char" << std::endl;
+      std::cout << "space or control char" << std::endl;
       return (false);
     }
   }
@@ -171,14 +157,19 @@ bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
 // If the server does not receive the <nickname> parameter with the NICK
 // command, it should issue an ERR_NONICKNAMEGIVEN numeric and ignore the NICK
 // command.
-// Selon la spécification du protocole IRC, une fois qu'un client est enregistré (c'est-à-dire après avoir envoyé les commandes NICK et USER avec succès), il ne peut plus changer son mot de passe en envoyant une nouvelle commande PASS. Toute tentative de changer le mot de passe après l'enregistrement doit être ignorée par le serveur.
+// Selon la spécification du protocole IRC, une fois qu'un client est enregistré
+// (c'est-à-dire après avoir envoyé les commandes NICK et USER avec succès), il
+// ne peut plus changer son mot de passe en envoyant une nouvelle commande PASS.
+// Toute tentative de changer le mot de passe après l'enregistrement doit être
+// ignorée par le serveur.
 
 // Comportement Attendu
-// Avant l'Enregistrement : Le client peut envoyer plusieurs commandes PASS, mais seule la dernière est utilisée pour la vérification.
-// Après l'Enregistrement : Toute tentative d'envoyer une commande PASS doit être ignorée, et le serveur ne doit pas fermer la connexion du client.
-// Mise à Jour de la Méthode handleInitialMessage
-// Vous pouvez mettre à jour votre méthode handleInitialMessage pour gérer cette situation.
-
+// Avant l'Enregistrement : Le client peut envoyer plusieurs commandes PASS,
+// mais seule la dernière est utilisée pour la vérification. Après
+// l'Enregistrement : Toute tentative d'envoyer une commande PASS doit être
+// ignorée, et le serveur ne doit pas fermer la connexion du client. Mise à Jour
+// de la Méthode handleInitialMessage Vous pouvez mettre à jour votre méthode
+// handleInitialMessage pour gérer cette situation.
 
 // The NICK message may be sent from the server to clients to acknowledge their
 // NICK command was successful, and to inform other clients about the change of
@@ -204,21 +195,30 @@ std::vector<std::string> Parser::splitCommand(const std::string& command) {
   return (message);  // /join #channel /nick nickname
 }
 
-std::vector<std::string> split(const std::string& str, char delim) {
+std::vector<std::string> split(const std::string& str, char delim1,
+                               char delim2) {
   std::vector<std::string> result;
-  std::stringstream ss(str);
+  std::string strWithoutDelim2 = str;
+  size_t size = str.size();
+
+  for (size_t i = 0; i < size; ++i) {
+    if (strWithoutDelim2[i] == delim2) {
+      strWithoutDelim2[i] = delim1;
+    }
+  }
+  std::stringstream ss(strWithoutDelim2);
   std::string item;
 
-  while (getline(ss, item, delim)) {
+  while (getline(ss, item, delim1)) {
     if (item.empty()) continue;
     result.push_back(item);
   }
 
-  return (result);
+  return result;
 }
 
 commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
-  std::vector<std::string> cmds = split(command, '\n');
+  std::vector<std::string> cmds = split(command, '\n', '\r');
   commandVectorPairs result;
   std::string token;
   std::pair<std::string, std::string> pair;
