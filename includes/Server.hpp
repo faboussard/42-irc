@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 13:57:44 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 10:56:05 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ enum Command {
   PRIVMSG,
   QUIT,
   PING,
+  CAP,
+  USER,
   UNKNOWN
 };
 
@@ -93,13 +95,14 @@ class Server {
   void closeClient(int fd);
 
   /* Chat Commands */
-  void handleCommand(const std::string &command, int fd);
+  void handleCommand(const std::string &command, const std::string &argument, int fd);
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
   // void handlePassword(int fd);
 
 	void handleInitialMessage(Client &client, const std::string &message);
+  void handleOtherMessage(Client &client, const std::string &message);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
