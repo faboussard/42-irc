@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 14:25:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:30:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,25 @@ void send221Umodeis(int fd, const Client &client) {
 }
 
 /*------ Channel related replies ---------------------------------------------*/
+void send321Liststart(int fd, const std::string &nick) {
+  std::string message = _321_RPL_LISTSTART(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send322List(int fd, const std::string &nick, const Channel &channel) {
+  std::string numUsers = toString(channel.getClientsInChannel().size());
+  std::string message = _322_RPL_LIST(nick, channel.getNameWithPrefix(),
+                                      numUsers, channel.getTopic().topic);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send323Listend(int fd, const std::string &nick) {
+  std::string message = _323_RPL_LISTEND(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
 
 void send324Channelmodeis(int fd, const std::string &nick,
                           const Channel &channel) {
@@ -135,15 +154,15 @@ void send341Inviting(int fd, const std::string &nick,
 }
 
 void send353Namreply(int fd, const std::string &nick, const Channel &channel) {
-  std::string chanNameWithSymbol = channel.getMode().keyRequired ? "* " : "= ";
-  chanNameWithSymbol += channel.getNameWithPrefix();
+  std::string chanNameWithSymbol =
+      GENERAL_CHAN_SYMBOL + std::string(" ") + channel.getNameWithPrefix();
 
   std::string nicknames = "";
   clientsMap chanOps = channel.getChannelOperators();
   clientsMap::const_iterator itBegin = chanOps.begin();
   clientsMap::const_iterator itEnd = chanOps.end();
   for (clientsMap::const_iterator it = itBegin; it != itEnd; ++it) {
-    nicknames += "@" + it->second.getNickName() + " ";
+    nicknames += OP_PREFIX + it->second.getNickName() + " ";
   }
   clientsMap chanClients = channel.getClientsInChannel();
   itBegin = chanClients.begin();
@@ -152,6 +171,7 @@ void send353Namreply(int fd, const std::string &nick, const Channel &channel) {
     if (chanOps.find(it->first) == chanOps.end())
       nicknames += it->second.getNickName() + " ";
   }
+
   std::string message = _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
@@ -189,6 +209,12 @@ void send404CannotSendToChan(int fd, const std::string &nick,
 
 void send405TooManyChannels(int fd, const std::string &nick) {
   std::string message = _405_ERR_TOOMANYCHANNELS(nick);
+  if (send(fd, message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send409NoOrigin(int fd, const std::string &nick) {
+  std::string message = _409_ERR_NOORIGIN(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -378,6 +404,9 @@ void testAllNumericReplies(const std::string &serverStartTime,
   /* User */
   send221Umodeis(fd, client);
   /* Channel */
+  send321Liststart(fd, nick);
+  send322List(fd, nick, testChannel);
+  send323Listend(fd, nick);
   send324Channelmodeis(fd, nick, testChannel);
   send329Creationtime(fd, nick, testChannel);
   send331Notopic(fd, nick, testChannel);
@@ -393,6 +422,7 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send403NoSuchChannel(fd, nick, "notExistingChannel");
   send404CannotSendToChan(fd, nick, testChannel.getNameWithPrefix());
   send405TooManyChannels(fd, nick);
+  send409NoOrigin(fd, nick);
   send411NoRecipient(fd, nick, command);
   send412NoTextToSend(fd, nick);
   send417InputTooLong(fd, nick);
