@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 08:54:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 09:17:26 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,10 +108,6 @@
 
 // 324 RPL_CHANNELMODEIS: Channel mode is displayed. Reply to MODE #channel
 // 329_RPL_CREATIONTIME: creation time of a channel. Reply to MODE #channel
-
-// 367_RPL_BANLIST: List of bans set on the channel. (Sent as a reply to the MODE)
-
-// 368_RPL_ENDOFBANLIST: End of the list of bans for the channel.
 //------------------------------------------------------------------------------
 
 /* Error messages */
@@ -162,6 +158,26 @@
 #define _464_ERR_PASSWD_MISMATCH(nick) \
   (std::string(":") + SRV_NAME + " 464 " + nick + " :Password incorrect\r\n")
 
+#define _471_ERR_CHANNELISFULL(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 471 " + nick + " " + chanName + \
+  " :Cannot join channel (+l)\r\n")
+// : The channel has reached its user number limit set with +l mode
+
+#define _473_ERR_INVITEONLYCHAN(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 473 " + nick + " " + chanName + \
+  " :Cannot join channel (+i)\r\n")
+// The channel is invite-only bur the client was not invited.
+
+#define _475_ERR_BADCHANNELKEY(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 475 " + nick + " " + chanName + \
+  " :Cannot join channel (+k)\r\n")
+// wrong channel key(password) provided
+
+#define _476_ERR_BADCHANMASK(nick, chanName) \
+  (std::string(":") + SRV_NAME + " 476 " + nick + " " + chanName + \
+  " :Bad Channel mask\r\n")
+// A client attempted to join a channel with an invalid chennel name format that doesn't much the server's accepted format.
+
 #define _482_ERR_CHANOPRIVSNEEDED(nick, chanName) \
   (std::string(":") + SRV_NAME + " 482 " + nick + " "  + chanName + \
   " :You're not a channel operator\r\n")
@@ -181,27 +197,9 @@
 
 // _441_ERR_USERNOTINCHANNEL: The user is not in the channel.
 
-// _451_ERR_NOTREGISTERED: "<client> :You have not registered"
-
-#define _471_ERR_CHANNELISFULL(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 471 " + nick + chanName + \
-  " :Cannot join channel (+l)\r\n")
-// : The channel has reached its user number limit set with +l mode
-
-#define _473_ERR_INVITEONLYCHAN(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 473 " + nick + chanName + \
-  " :Cannot join channel (+i)\r\n")
-// The channel is invite-only bur the client was not invited.
-
-#define _475_ERR_BADCHANNELKEY(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 475 " + nick + chanName + \
-  " :Cannot join channel (+k)\r\n")
-// wrong channel key(password) provided
-
-#define _476_ERR_BADCHANMASK(nick, chanName) \
-  (std::string(":") + SRV_NAME + " 476 " + nick + chanName + \
-  " :Bad Channel mask\r\n")
-// A client attempted to join a channel with an invalid chennel name format that doesn't much the server's accepted format.
+#define _451_ERR_NOTREGISTERED(nick) \
+  (std::string(":") + SRV_NAME + " 451 " + nick + " :You have not registered\r\n")
+// Returned when a client tries to send a message before registering.
 
 // _472_ERR_UNKNOWNMODE: The mode is unknown.
 
@@ -258,6 +256,7 @@ void send442NotOnChannel(int fd, const std::string &nick,
 void send443UserOnChannel(int fd, const std::string &nick,
                           const std::string &invitedNick,
                           const std::string &chanName);
+void send451NotRegistered(int fd, const std::string &nick);
 void send461NeedMoreParams(int fd, const std::string &nick,
                            const std::string &command);
 void send462AlreadyRegistered(int fd, const std::string &nick);

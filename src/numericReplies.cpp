@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 08:57:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 09:17:54 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,6 +219,13 @@ void send443UserOnChannel(int fd, const std::string &nick,
                           const std::string &invitedNick,
                           const std::string &chanName) {
   std::string message = _443_ERR_USERONCHANNEL(nick, invitedNick, chanName);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    throw std::runtime_error(RUNTIME_ERROR);
+  }
+}
+
+void send451NotRegistered(int fd, const std::string &nick) {
+  std::string message = _451_ERR_NOTREGISTERED(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     throw std::runtime_error(RUNTIME_ERROR);
   }
