@@ -1,4 +1,4 @@
-# Copyright 2024 <mbernard>*************************************************** #
+#  Copyright 2024 <mbernard>************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
@@ -6,7 +6,7 @@
 #    By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/23 08:48:42 by mbernard         ###   ########.fr        #
+#    Updated: 2024/10/29 14:27:03 by mbernard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
 HEADER = colors Server Client Channel Parser utils
-SRCS = main Server Client Channel Parser utils
+SRCS = main Server Client Channel Parser utils pass nick user
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/

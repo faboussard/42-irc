@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 11:58:33 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 14:25:26 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,147 +41,11 @@ Command Parser::choseCommand(const std::string& command) {
     return (CAP);
   } else if (command == "USER") {
     return (USER);
+  } else if (command == "PASS") {
+    return (PASS);
   }
   return (UNKNOWN);
 }
-
-bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
-  if (arg.empty()) {
-    // sendNumericReply(464, "ERR_PASSWDMISMATCH");
-    return (false);
-  }
-  if (arg != psd) {
-    // sendNumericReply(464, "ERR_PASSWDMISMATCH");
-    return (false);
-  }
-  client.declarePasswordGiven();
-  return (true);
-}
-
-bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
-  if (nick.empty()) {
-    // sendNumericReply(431, "ERR_NONICKNAMEGIVEN");
-    return (false);
-  }
-  size_t size = nick.size();
-  if (size > 9 || std::isdigit(nick[0])) {
-    // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
-    return (false);
-  }
-  for (size_t i = 0; i < size; ++i) {
-    if (!std::isalnum(nick[i]) && nick[i] != '[' && nick[i] != ']' &&
-        nick[i] != '{' && nick[i] != '}' && nick[i] != '\\' && nick[i] != '|' &&
-        nick[i] != '`' && nick[i] != '_' && nick[i] != '^' && nick[i] != '-') {
-      // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
-      return (false);
-    }
-  }
-  clientsMap::iterator itEnd = cltMap.end();
-  for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
-    if (it->second.getNickName() == nick) {
-      // sendNumericReply(433, "ERR_NICKNAMEINUSE");
-      return (false);
-    }
-  }
-  client.setNickname(nick);
-  return (true);
-}
-
-std::vector<std::string> fillVectorString(const std::string str) {
-  std::vector<std::string> result;
-  std::istringstream iss(str);
-  std::string token;
-
-  while (iss >> token) {
-    result.push_back(token);
-  }
-  return (result);
-}
-
-bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
-  if (user.empty()) {
-    // ERR_NEEDMOREPARAMS (461)
-    return (false);
-  }
-  // std::istringstream iss(user);
-  // std::vector<std::string> fields;
-  // std::string field;
-  // while (iss >> field) {
-  //   fields.push_back(field);
-  // }
-  std::vector<std::string> fields = fillVectorString(user);
-  if (fields.size() != 4) {
-    std::cout << "fields.size() != 4" << std::endl;
-    // ERR_NEEDMOREPARAMS (461)
-    return (false);
-  }
-  size_t size = fields[0].size();
-  for (size_t i = 0; i < size; ++i) {
-    if (std::isspace(fields[0].at(i)) || std::iscntrl(fields[0].at(i))) {
-      std::cout << "space or control char" << std::endl;
-      return (false);
-    }
-  }
-  clientsMap::iterator itEnd = cltMap.end();
-  for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
-    if (it->second.getUserName() == user) {
-      // sendNumericReply(462, "ERR_ALREADYREGISTERED");
-      std::cout << "username already registered" << std::endl;
-      return (false);
-    }
-  }
-  client.setUserName(user);
-  return (true);
-}
-
-// The NICK command is used to give the client a nickname or change the previous
-// one.
-
-// If the server receives a NICK command from a client where the desired
-// nickname is already in use on the network, it should issue an
-// ERR_NICKNAMEINUSE numeric and ignore the NICK command. If the server does not
-// accept the new nickname supplied by the client as valid (for instance, due to
-// containing invalid characters), it should issue an ERR_ERRONEUSNICKNAME
-// numeric and ignore the NICK command.
-// Servers MUST allow at least
-// all alphanumerical characters,
-// square and curly brackets ([]{}),
-// backslashes (\),
-// and pipe (|) characters in nicknames,
-// and MAY disallow digits as the first character.
-// Servers MAY allow extra characters, as long as they do not
-// introduce ambiguity in other commands, including:
-//     no leading # character or other character advertized in CHANTYPES
-//     no leading colon (:)
-//     no ASCII space
-// If the server does not receive the <nickname> parameter with the NICK
-// command, it should issue an ERR_NONICKNAMEGIVEN numeric and ignore the NICK
-// command.
-// Selon la spécification du protocole IRC, une fois qu'un client est enregistré
-// (c'est-à-dire après avoir envoyé les commandes NICK et USER avec succès), il
-// ne peut plus changer son mot de passe en envoyant une nouvelle commande PASS.
-// Toute tentative de changer le mot de passe après l'enregistrement doit être
-// ignorée par le serveur.
-
-// Comportement Attendu
-// Avant l'Enregistrement : Le client peut envoyer plusieurs commandes PASS,
-// mais seule la dernière est utilisée pour la vérification. Après
-// l'Enregistrement : Toute tentative d'envoyer une commande PASS doit être
-// ignorée, et le serveur ne doit pas fermer la connexion du client. Mise à Jour
-// de la Méthode handleInitialMessage Vous pouvez mettre à jour votre méthode
-// handleInitialMessage pour gérer cette situation.
-
-// The NICK message may be sent from the server to clients to acknowledge their
-// NICK command was successful, and to inform other clients about the change of
-// nickname. In these cases, the <source> of the message will be the old
-// nickname [ [ "!" user ] "@" host ] of the user who is changing their
-// nickname.
-
-// Numeric Replies:
-//     ERR_NONICKNAMEGIVEN (431)
-//     ERR_ERRONEUSNICKNAME (432)
-//     ERR_NICKNAMEINUSE (433)
-//     ERR_NICKCOLLISION (436)
 
 std::vector<std::string> Parser::splitCommand(const std::string& command) {
   std::istringstream iss(command);
@@ -254,7 +118,7 @@ void Parser::handleCommand(const std::string& command, int fd) {
   } else if (command == "LIST") {
     // Lister les canaux
   } else if (command == "NOTICE") {
-    // Notice}
+    // Notice
   } else if (command == "NICK") {
     // change nickname
   } else if (command == "PRIVMSG") {
