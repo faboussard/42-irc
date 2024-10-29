@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 14:44:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:09:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ Channel::Channel(const std::string &name) : _name(name) {
 const std::string &Channel::getName() const { return _name; }
 
 const std::string Channel::getNameWithPrefix() const {
-  return ((_mode.keyRequired ? "&" : "#") + _name);
+  return (CHAN_PREFIX + _name);
 }
 
 const std::string &Channel::getCreationTime() const { return _creationTime; }

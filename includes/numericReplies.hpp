@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 14:32:32 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 15:32:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,16 @@
 
 /*------ Channel related messages --------------------------------------------*/
 
+#define _321_RPL_LISTSTART(nick) \
+  (FROM_SERVER + "321 " + nick + " Channel :Users Name\r\n")
+
+#define _322_RPL_LIST(nick, chanName, numUsers, topic)                    \
+  (FROM_SERVER + "322 " + nick + " " + chanName + " " + numUsers + " :" + \
+  topic + "\r\n")
+
+#define _323_RPL_LISTEND(nick) \
+  (FROM_SERVER + "323 " + nick + " :End of /LIST\r\n")
+
 #define _324_RPL_CHANNELMODEIS(nick, chanName, modeFlag, modeArgs) \
   (FROM_SERVER + "324 " + nick + " " + chanName + " " + modeFlag + " " \
   + modeArgs + "\r\n")
@@ -98,13 +108,6 @@
 #define _366_RPL_ENDOFNAMES(nick, chanName) \
   (FROM_SERVER + "366 " + nick + " " + chanName + " :End of /NAMES list\r\n")
 
-//------------------------------------------------------------------------------
-// Replies to the LIST command
-// 321 RPL_LISTSTART: Start of channel list.
-// 322 RPL_LIST: Channel list with details.
-// 323 RPL_LISTEND: End of channel list.
-//------------------------------------------------------------------------------
-
 /*------ Error messages ------------------------------------------------------*/
 
 #define _401_ERR_NOSUCHNICK(nick, target) \
@@ -122,6 +125,24 @@
 
 #define _405_ERR_TOOMANYCHANNELS(nick) \
   (FROM_SERVER + "405 " + nick + " :You have joined too many channels\r\n")
+
+#define _409_ERR_NOORIGIN(nick) \
+  (FROM_SERVER + "409 " + nick + " :No origin specified\r\n")
+
+#define _411_ERR_NORECIPIENT(nick, command) \
+  (FROM_SERVER + "411 " + nick + " :No recipient given("  + command + ")\r\n")
+// Client tries to send a command that requires a recipient
+// (such as PRIVMSG or NOTICE) but does not specify one.
+
+#define _412_ERR_NOTEXTTOSEND(nick) \
+  (FROM_SERVER + "412 " + nick + " :No text to send\r\n")
+// Client issues a command like PRIVMSG or NOTICE
+// but does not include any text in the message body.
+
+#define _417_ERR_INPUTTOOLONG(nick) \
+  (FROM_SERVER + "417 " + nick + " :Input line was too long\r\n")
+//  Returned when a message is too long for the server to process.
+// (512 bytes for the main section, 4094 or 8191 bytes for the tag section)
 
 #define _421_ERR_UNKNOWNCOMMAND(nick, command) \
   (FROM_SERVER + "421 " + nick + " " + command + " :Unknown command\r\n")
@@ -144,6 +165,12 @@
 #define _443_ERR_USERONCHANNEL(nick, invitedNick, chanName)           \
   (FROM_SERVER + "443 " + nick + " " + invitedNick + " " + chanName + \
   " :is already on channel\r\n")
+
+#define _441_ERR_USERNOTINCHANNEL(nick, targetNick, chanName) \
+  (FROM_SERVER + "441 " + nick + " " + targetNick + " " + chanName + \
+  " :They aren't on that channel\r\n")
+// Returned when a client tries to perform a channel+nick affecting command,
+// when the nick isn’t joined to the channel (e.g. MODE #channel +o nick).
 
 #define _451_ERR_NOTREGISTERED(nick) \
   (FROM_SERVER + "451 " + nick + " :You have not registered\r\n")
@@ -201,33 +228,10 @@
   (FROM_SERVER + "525 " + nick + " " + chanName + \
   " :Key is not well-formed\r\n")
 
-//------------------------------------------------------------------------------
-#define _411_ERR_NORECIPIENT(nick, command) \
-  (FROM_SERVER + "411 " + nick + " :No recipient given("  + command + ")\r\n")
-// Client tries to send a command that requires a recipient
-// (such as PRIVMSG or NOTICE) but does not specify one.
-
-#define _412_ERR_NOTEXTTOSEND(nick) \
-  (FROM_SERVER + "412 " + nick + " :No text to send\r\n")
-// Client issues a command like PRIVMSG or NOTICE
-// but does not include any text in the message body.
-
-#define _417_ERR_INPUTTOOLONG(nick) \
-  (FROM_SERVER + "417 " + nick + " :Input line was too long\r\n")
-//  Returned when a message is too long for the server to process.
-// (512 bytes for the main section, 4094 or 8191 bytes for the tag section)
-
-#define _441_ERR_USERNOTINCHANNEL(nick, targetNick, chanName) \
-  (FROM_SERVER + "441 " + nick + " " + targetNick + " " + chanName + \
-  " :They aren't on that channel\r\n")
-// Returned when a client tries to perform a channel+nick affecting command,
-// when the nick isn’t joined to the channel (e.g. MODE #channel +o nick).
-
-//------------------------------------------------------------------------------
-
 /* Functions */
 
-/* Welcome messages */
+/*------ Welcome messages ----------------------------------------------------*/
+
 void send001Welcome(int fd, std::string const &nick,
                     std::string const &user, std::string const &host);
 void send002Yourhost(int fd, const std::string &nick);
@@ -238,9 +242,14 @@ void send005Isupport(int fd, const std::string &nick, const std::string &toks);
 void sendWelcome(int fd, const std::string &nick);
 
 /*------ User related replies ------------------------------------------------*/
+
 void send221Umodeis(int fd, const Client &client);
 
 /*------ Channel related replies ---------------------------------------------*/
+
+void send321Liststart(int fd, const std::string &nick);
+void send322List(int fd, const std::string &nick, const Channel &channel);
+void send323Listend(int fd, const std::string &nick);
 void send324Channelmodeis(int fd, const std::string &nick,
                           const Channel &channel);
 void send329Creationtime(int fd, const std::string &nick,
@@ -260,6 +269,7 @@ void send366Endofnames(int fd, const std::string &nick,
                        const std::string &chanName);
 
 /*------ Error messages ------------------------------------------------------*/
+
 void send401NoSuchNick(int fd, const std::string &nick,
                        const std::string &targetNick);
 void send403NoSuchChannel(int fd, const std::string &nick,
@@ -267,6 +277,7 @@ void send403NoSuchChannel(int fd, const std::string &nick,
 void send404CannotSendToChan(int fd, const std::string &nick,
                              const std::string &chanName);
 void send405TooManyChannels(int fd, const std::string &nick);
+void send409NoOrigin(int fd, const std::string &nick);
 void send411NoRecipient(int fd, const std::string &nick,
                         const std::string &command);
 void send412NoTextToSend(int fd, const std::string &nick);
