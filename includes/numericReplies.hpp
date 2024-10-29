@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 12:35:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/29 14:32:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@
 #define _404_ERR_CANNOTSENDTOCHAN(nick, chanName) \
   (FROM_SERVER + "404 " + nick + " " + chanName + \
   " :Cannot send to channel\r\n")
-// Indicates that the user cannot send messages to the channel, 
+// Indicates that the user cannot send messages to the channel,
 // which may happen if the channel is set to "invite only."
 
 #define _405_ERR_TOOMANYCHANNELS(nick) \
@@ -152,7 +152,7 @@
 #define _461_ERR_NEEDMOREPARAMS(nick, command)   \
   (FROM_SERVER + "461 " + nick + " " + command + \
   " :Not enough parameters\r\n")
-// A client command cannot be parsed because not enough parameters were supplied.
+// Command cannot be parsed because not enough parameters were supplied.
 
 #define _462_ERR_ALREADYREGISTERED(nick) \
   (FROM_SERVER + "462 " + nick + " :You may not reregister\r\n")
@@ -183,7 +183,8 @@
 
 #define _476_ERR_BADCHANMASK(nick, chanName) \
   (FROM_SERVER + "476 " + nick + " " + chanName + " :Bad Channel mask\r\n")
-// A client attempted to join a channel with an invalid chennel name format that doesn't much the server's accepted format.
+// A client attempted to join a channel with an invalid chennel name format
+// that doesn't much the server's accepted format.
 
 #define _481_ERR_NOPRIVILEGES(nick) \
   (FROM_SERVER + "481 " + nick +    \
@@ -201,14 +202,26 @@
   " :Key is not well-formed\r\n")
 
 //------------------------------------------------------------------------------
-// _411_ERR_NORECIPIENT: Returned by the PRIVMSG command to indicate the message wasn’t delivered because there was no recipient given.
+#define _411_ERR_NORECIPIENT(nick, command) \
+  (FROM_SERVER + "411 " + nick + " :No recipient given("  + command + ")\r\n")
+// Client tries to send a command that requires a recipient
+// (such as PRIVMSG or NOTICE) but does not specify one.
 
-// _412_ERR_NOTEXTTOSEND: Returned by the PRIVMSG command to indicate the message wasn’t delivered because there was no text to send.
+#define _412_ERR_NOTEXTTOSEND(nick) \
+  (FROM_SERVER + "412 " + nick + " :No text to send\r\n")
+// Client issues a command like PRIVMSG or NOTICE
+// but does not include any text in the message body.
 
-// _417_ERR_INPUTTOOLONG Returned when a message is too long for the server to process.
+#define _417_ERR_INPUTTOOLONG(nick) \
+  (FROM_SERVER + "417 " + nick + " :Input line was too long\r\n")
+//  Returned when a message is too long for the server to process.
 // (512 bytes for the main section, 4094 or 8191 bytes for the tag section)
 
-// _441_ERR_USERNOTINCHANNEL: The user is not in the channel.
+#define _441_ERR_USERNOTINCHANNEL(nick, targetNick, chanName) \
+  (FROM_SERVER + "441 " + nick + " " + targetNick + " " + chanName + \
+  " :They aren't on that channel\r\n")
+// Returned when a client tries to perform a channel+nick affecting command,
+// when the nick isn’t joined to the channel (e.g. MODE #channel +o nick).
 
 //------------------------------------------------------------------------------
 
@@ -231,8 +244,7 @@ void send221Umodeis(int fd, const Client &client);
 void send324Channelmodeis(int fd, const std::string &nick,
                           const Channel &channel);
 void send329Creationtime(int fd, const std::string &nick,
-                         const std::string &chanName,
-                         const std::string &creationTime);
+                         const Channel &channel);
 void send331Notopic(int fd, const std::string &nick, const Channel &channel);
 void send332Topic(int fd, const std::string &nick, const Channel &channel);
 void send333Topicwhotime(int fd, const std::string &nick,
@@ -255,11 +267,18 @@ void send403NoSuchChannel(int fd, const std::string &nick,
 void send404CannotSendToChan(int fd, const std::string &nick,
                              const std::string &chanName);
 void send405TooManyChannels(int fd, const std::string &nick);
+void send411NoRecipient(int fd, const std::string &nick,
+                        const std::string &command);
+void send412NoTextToSend(int fd, const std::string &nick);
+void send417InputTooLong(int fd, const std::string &nick);
 void send421UnknownCommand(int fd, const std::string &nick,
                            const std::string &command);
 void send431NoNicknameGiven(int fd, const std::string &nick);
 void send432ErroneusNickname(int fd, const std::string &nick);
 void send433NickAlreadyInUse(int fd, const std::string &nick);
+void send441UserNotInChannel(int fd, const std::string &nick,
+                             const std::string &targetNick,
+                             const std::string &chanName);
 void send442NotOnChannel(int fd, const std::string &nick,
                          const std::string &chanName);
 void send443UserOnChannel(int fd, const std::string &nick,
@@ -302,26 +321,14 @@ void testAllNumericReplies(const std::string &serverStartTime,
 "─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + \
 "────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" + \
 "───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + \
-"───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + "/\\_/\\" + " ────\n" + \
-"───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + "( o.o )" + " ───\n" + \
-"────────────────────────────────────────────────────────  " + "> ^ <" + " ────\n" + \
-"───────────────── powered by faboussa, mbernard & yusengok with " + "♥" + " ──" + "\n\r\n" )
-
-// #define CYAN_ "\x03" "11"
-// #define MAGENTA_ "\x03" "13"
-// #define RESET_ "\x03" "99"
-
-// #define _WELCOME(nick) \
-//   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + CYAN_ + \
-// "────────────────────────────────────────────────────────────────────\n" + CYAN_ + \
-// "────────────────────────────────────────────────────────────────────\n" + CYAN_ + \
-// "─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + CYAN_ + \
-// "────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" + CYAN_ + \
-// "───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + CYAN_ + \
-// "───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + RESET_ + "/\\_/\\" + CYAN_ + " ────\n" + CYAN_ + \
-// "───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + RESET_ + "( o.o )" + CYAN_ + " ───\n" + CYAN_ + \
-// "────────────────────────────────────────────────────────  " + RESET_ + "> ^ <" + CYAN_ + " ────\n" + CYAN_ + \
-// "───────────────── powered by faboussa, mbernard & yusengok with " + MAGENTA_ + "♥" + CYAN_ + " ──" + RESET_ + "\n\r\n" )
+"───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + \
+"/\\_/\\" + " ────\n" + \
+"───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + "( o.o )" + \
+" ───\n" + \
+"────────────────────────────────────────────────────────  " + "> ^ <" + \
+" ────\n" + \
+"───────────────── powered by faboussa, mbernard & yusengok with " + "♥" + \
+" ──" + "\n\r\n" )
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_
 
