@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 11:24:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 11:11:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,11 @@ class Server {
   Channel &getChannelByName(const std::string &name);
   const std::string &getServerName() const;
 
-  /* Setters */
-  void setStartTime();
-
   /* Server Mounting */
   void runServer();
   void createSocket();
   void createPoll();
+  std::string fetchStartTime();
   void monitorConnections();
   static void signalHandler(int signal);
 

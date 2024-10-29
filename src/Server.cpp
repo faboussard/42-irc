@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 11:29:03 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 11:09:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int Server::getSocketFd() const { return _socketFd; }
 
 void Server::runServer() {
   createSocket();
-  setStartTime();
+  _startTime = fetchStartTime();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   monitorConnections();
 }
@@ -91,10 +91,11 @@ void Server::createSocket() {
   }
 }
 
-void Server::setStartTime(void) {
+std::string Server::fetchStartTime(void) {
   time_t now = time(0);
-  _startTime = ctime(&now);
-  _startTime.erase(_startTime.end() - 1);
+  std::string startTime = ctime(&now);
+  startTime.erase(_startTime.find_last_not_of("\n") + 1);
+  return (startTime);
 }
 
 void Server::monitorConnections() {
