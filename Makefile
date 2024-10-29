@@ -1,12 +1,12 @@
-# **************************************************************************** #
+#  Copyright 2024 <faboussa>************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: fanny <fanny@student.42.fr>                +#+  +:+       +#+         #
+#    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/28 18:20:48 by fanny            ###   ########.fr        #
+#    Updated: 2024/10/29 14:28:59 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,8 +17,8 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-HEADER_LIST = colors Server Client Channel numericReplies utils serverConfig
-SRCS = main Server Client Channel numericReplies utils commands/joinChannel
+HEADER_LIST = colors Server Client Channel numericReplies utils serverConfig tests
+SRCS = main Server Client Channel numericReplies utils commands/joinChannel unitTests/testjoinChannels
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
@@ -47,6 +47,11 @@ create_dirs:
 debug: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 debug: CFLAGS += -DDEBUG
 debug: fclean $(NAME)
+
+# ---------------------------------- Test ----------------------------------- #
+test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
+test: CFLAGS += -DTEST
+test: fclean $(NAME)
 
 # ---------------------------------- Clean ----------------------------------- #
 clean:

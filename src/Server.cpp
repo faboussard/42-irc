@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 18:41:47 by fanny            ###   ########.fr       */
+/*   Updated: 2024/10/29 14:33:42 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 bool Server::_signal = false;
 
-Server::Server(int port, std::string password) {
+Server::Server(int port, const std::string &password) {
   _port = port;
   _password = password;
   _signal = false;
@@ -36,8 +36,13 @@ const Client &Server::getClientByFd(int fd) const {
   return it->second;
 }
 
-Channel &Server::getChannelByName(const std::string &name) {
-  channelsMap::iterator it = _channels.find(name);
+const clientsMap &Server::getClients() const { return _clients; }
+
+const channelsMap &Server::getChannels() const { return _channels; }
+
+
+const Channel &Server::getChannelByName(const std::string &name) const {
+  channelsMap::const_iterator it = _channels.find(name);
   if (it == _channels.end()) {
     std::cerr << "Channel not found with the given name" << std::endl;
     throw std::runtime_error("Channel not found");
@@ -56,14 +61,13 @@ int Server::getSocketFd() const { return _socketFd; }
 std::string Server::getChannelSymbol(const std::string &channelName) const {
     channelsMap::const_iterator it = _channels.find(channelName);
     if (it != _channels.end()) {
-        // Vérifiez si le canal est secret
         if (it->second.isSecret) {
-            return "@"; // Canal secret
+            return SECRET_CANAL;
         } else {
-            return "="; // Canal public
+            return PUBLIC_CANAL;
         }
     }
-    return "="; // Valeur par défaut si le canal n'existe pas
+    return PUBLIC_CANAL;
 }
 
 
@@ -272,9 +276,12 @@ void Server::clearClient(int fd) {
       break;
     }
   }
-
   _clients.erase(fd);
 }
+
+ void Server::addClient(int fd, const Client &client) {
+        _clients[fd] = client; // This will now be accessible
+    }
 /*  Commands management */
 
 void Server::handleCommand(std::string &command, std::string &params, int fd) {

@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   joinChannel.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <fanny@student.42.fr>                +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 18:40:21 by fanny            ###   ########.fr       */
+/*   Updated: 2024/10/29 15:25:35 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ JOIN 0 = part all channels
 
 void Server::joinChannel(std::string &param, int fd) {
     std::string channelName;
-    channelName = channelName.substr(1);
+    channelName = param.substr(1);
     createChannelIfNotExist(channelName);
     #ifdef DEBUG
         std::cout << GREY "CHANNEL NAME " << channelName << " param " << param << RESET << std::endl;
@@ -56,7 +56,12 @@ void Server::joinChannel(std::string &param, int fd) {
     #endif
     const Client &client = getClientByFd(fd);
     _channels[channelName].acceptClientInTheChannel(client);
+    executeJoin(fd, client, channelName);
+}
 
+
+void Server::executeJoin(int fd, const Client &client, const std::string &channelName)
+{
     std::string nick = client.getNickName();
     sendJoinMessageToClient(fd, nick, channelName);
     send353Namreply(fd, nick, _channels[channelName]);

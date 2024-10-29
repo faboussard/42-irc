@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 13:59:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 14:17:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,13 @@
 
 #include "Server.hpp"
 
-void testJoinChannel(Server &server);
+class Test
+{
+    public:
+    /* join */
+    void testJoinChannel(Server &server);
+    
+    
+};
 
 #endif  //  INCLUDES_TESTS_HPP_

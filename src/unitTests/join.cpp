@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/28 13:59:55 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 14:23:51 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,28 @@
 #include <map>
 #include <string>
 #include "Server.hpp" 
+#include "tests.hpp"
 
 void testJoinChannel(Server &server) {
-
-    int fd1 = 1;
+    
+        int fd1 = 1;
     int fd2 = 2;
-    server.addClient(fd1, "User1", "Nick1");
-    server.addClient(fd2, "User2", "Nick2");
+    
+    Test jointest;
+    Client newClient1(fd1, "Nick1");
+    Client newClient2(fd2, "Nick2");
+
+
+
+    server.addClient(fd1, newClient1);
+    server.addClient(fd2, newClient2);
 
     std::string channel1 = "#channelA";
     std::string channel2 = "#channelB";
+    std::string channel2 = "channelC";
+    std::string channel2 = "&channelB";
+
+
     
     // Test de l'entrée d'un client dans un canal
     std::cout << "Testing client joining channel: " << channel1 << std::endl;
@@ -50,11 +62,3 @@ void testJoinChannel(Server &server) {
     // Résultats
     std::cout << "Test completed." << std::endl;
 }
-
-int main() {
-    // Appel de la fonction de test
-    testJoinChannel();
-
-    return 0;
-}
-
