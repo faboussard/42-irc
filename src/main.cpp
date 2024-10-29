@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 17:52:49 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/29 17:58:05 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,7 @@ void checkArgs(int port, const std::string& password) {
               << std::endl;
     exit(EXIT_FAILURE);
   }
-  if (password.length() > 1000) {  sendToAllClients(message); //dans le channel, si pas de command, ca envoie
-  sendToAllClients(message); //dans le channel, si pas de command, ca envoie
-
+  if (password.length() > 1000) { 
     std::cerr << "Password too long" << std::endl;
     exit(EXIT_FAILURE);
   }
