@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 12:21:27 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/30 10:57:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,16 @@
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
+#include "../includes/numericReplies.hpp"
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
@@ -59,6 +62,8 @@ class Server {
   static bool                _signal;
   int                        _socketFd;
   int                        _port;
+//  std::string _name;
+  std::string _startTime;
   std::string                _password;
   clientsMap                 _clients;
   struct sockaddr_in         _address;
@@ -72,20 +77,24 @@ class Server {
 
   int getSocketFd() const;
   int getPort() const;
+  // const std::string &getStartTime(void) const;
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
+  // const std::string &getServerName() const;
 
   /* Server Mounting */
   void runServer();
   void createSocket();
   void createPoll();
+  std::string fetchStartTime();
   void monitorConnections();
   static void signalHandler(int signal);
 
   /* Clients Management */
 
   void acceptNewClient();
+  void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
   void handleClientMessage(int fd);
 
@@ -95,8 +104,9 @@ class Server {
   void clearClient(int fd);
   void closeClient(int fd);
 
-  /* Chat Commands */
-  void handleCommand(const std::string &command, const std::string &argument, int fd);
+  /* Commands Management */
+  void handleCommand(const std::string &command, std::string &argument, int fd);
+  // void joinChannel(std::string &channelName, int fd);
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);

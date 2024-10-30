@@ -3,7 +3,7 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+         #
+#    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
 #    Updated: 2024/10/30 09:15:40 by mbernard         ###   ########.fr        #
@@ -19,8 +19,8 @@ RMDIR = rm -rf
 # ---------------------------------- Sources --------------------------------- #
 vpath %.cpp src src/commands
 
-HEADERS_LIST = colors Server Client Channel Parser utils
-SRCS = main Server Client Channel Parser utils pass nick user
+HEADERS_LIST = colors Server Client Channel Parser numericReplies utils serverConfig
+SRCS = main Server Client Channel Parser numericReplies utils pass nick user invite mode ping topic
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/
@@ -45,8 +45,9 @@ ${OBJS_DIR}:
 			${MKDIR} ${OBJS_DIR}
 
 ## ---------------------------------- Debug ----------------------------------- #
-debug: fclean
-	${MAKE} CFLAGS="-g3"
+
+debug: CFLAGS += -DDEBUG
+debug: fclean $(OBJS_DIR) $(NAME)
 
 ## ---------------------------------- Clean ----------------------------------- #
 clean:
