@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:57:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 19:35:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,4 +116,5 @@ class Server {
   void handleOtherMessage(Client &client, const std::string &message);
 };
 
+#endif  // INCLUDES_SERVER_HPP_
 #endif  // INCLUDES_SERVER_HPP_

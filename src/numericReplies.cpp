@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/30 10:40:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 19:36:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 #include "../includes/colors.hpp"
 
-/*------ Welcome messages ----------------------------------------------------*/
+/*============================================================================*/
+/*       Welcome messages                                                     */
+/*============================================================================*/
 
 void send001Welcome(int fd, std::string const &nick, std::string const &user,
                     std::string const &host) {
@@ -55,7 +57,9 @@ void sendWelcome(int fd, const std::string &nick) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-/*------ Users related replies -----------------------------------------------*/
+/*============================================================================*/
+/*       Users related replies                                                */
+/*============================================================================*/
 
 void send221Umodeis(int fd, const Client &client) {
   std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
@@ -65,7 +69,10 @@ void send221Umodeis(int fd, const Client &client) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-/*------ Channel related replies ---------------------------------------------*/
+/*============================================================================*/
+/*       Channel related replies                                              */
+/*============================================================================*/
+
 void send321Liststart(int fd, const std::string &nick) {
   std::string message = _321_RPL_LISTSTART(nick);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
@@ -184,7 +191,9 @@ void send366Endofnames(int fd, const std::string &nick,
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-/*------ Error messages ------------------------------------------------------*/
+/*============================================================================*/
+/*       Error messages                                                       */
+/*============================================================================*/
 
 void send401NoSuchNick(int fd, const std::string &nick,
                        const std::string &targetNick) {
@@ -380,72 +389,71 @@ void send525InvalidKey(int fd, const std::string &nick,
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-/* Just for test */
-void testAllNumericReplies(const std::string &serverStartTime,
-                           const Client &client, const std::string &command,
-                           const std::string &targetNick) {
-  int fd = client.getFd();
-  std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
-  std::string user = client.getUserName().empty() ? "*" : client.getUserName();
-  std::string host = client.getIp().empty() ? "*" : client.getIp();
-  Channel testChannel("testChannel");
-  testChannel.setTopic("This is the topic of a test channel", "Author");
-  Channel invitedChannel("testInvited");
-  invitedChannel.setTopic("This is a test channel", "Author");
-  Channel privateChannel("privateChannel");
-  privateChannel.activateKeyMode("password", client);
+// void testAllNumericReplies(const std::string &serverStartTime,
+//                            const Client &client, const std::string &command,
+//                            const std::string &targetNick) {
+//   int fd = client.getFd();
+//   std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
+//   std::string user = client.getUserName().empty() ? "*" : client.getUserName();
+//   std::string host = client.getIp().empty() ? "*" : client.getIp();
+//   Channel testChannel("testChannel");
+//   testChannel.setTopic("This is the topic of a test channel", "Author");
+//   Channel invitedChannel("testInvited");
+//   invitedChannel.setTopic("This is a test channel", "Author");
+//   Channel privateChannel("privateChannel");
+//   privateChannel.activateKeyMode("password", client);
 
-  /* Welcome */
-  send001Welcome(fd, nick, user, host);
-  send002Yourhost(fd, nick);
-  send003Created(fd, nick, serverStartTime);
-  send104Myinfo(fd, nick);
-  send005Isupport(fd, nick, TOKENS);
-  /* User */
-  send221Umodeis(fd, client);
-  /* Channel */
-  send321Liststart(fd, nick);
-  send322List(fd, nick, testChannel);
-  send323Listend(fd, nick);
-  send324Channelmodeis(fd, nick, testChannel);
-  send329Creationtime(fd, nick, testChannel);
-  send331Notopic(fd, nick, testChannel);
-  send332Topic(fd, nick, testChannel);
-  send333Topicwhotime(fd, nick, testChannel);
-  send341Inviting(fd, nick, targetNick, invitedChannel.getNameWithPrefix());
-  send336Invitelist(fd, nick, invitedChannel.getNameWithPrefix());
-  send337Endofinvitelist(fd, nick);
-  send353Namreply(fd, nick, testChannel);
-  send366Endofnames(fd, nick, testChannel.getNameWithPrefix());
-  /* Errors */
-  send401NoSuchNick(fd, nick, targetNick);
-  send403NoSuchChannel(fd, nick, "notExistingChannel");
-  send404CannotSendToChan(fd, nick, testChannel.getNameWithPrefix());
-  send405TooManyChannels(fd, nick);
-  send409NoOrigin(fd, nick);
-  send411NoRecipient(fd, nick, command);
-  send412NoTextToSend(fd, nick);
-  send417InputTooLong(fd, nick);
-  send421UnknownCommand(fd, nick, command);
-  send431NoNicknameGiven(fd, nick);
-  send432ErroneusNickname(fd, nick);
-  send433NickAlreadyInUse(fd, nick);
-  send441UserNotInChannel(fd, nick, targetNick,
-                          testChannel.getNameWithPrefix());
-  send442NotOnChannel(fd, nick, testChannel.getNameWithPrefix());
-  send443UserOnChannel(fd, nick, targetNick,
-                       invitedChannel.getNameWithPrefix());
-  send451NotRegistered(fd, nick);
-  send461NeedMoreParams(fd, nick, command);
-  send462AlreadyRegistered(fd, nick);
-  send464PasswdMismatch(fd, nick);
-  send471ChannelIsFull(fd, nick, testChannel.getNameWithPrefix());
-  send472UnknownMode(fd, nick, "x");
-  send473InviteOnlyChan(fd, nick, privateChannel.getNameWithPrefix());
-  send475BadChannelKey(fd, nick, privateChannel.getNameWithPrefix());
-  send476BadChanMask(fd, nick, testChannel.getNameWithPrefix());
-  send481NoPrivileges(fd, nick);
-  send482ChanOPrivsNeeded(fd, nick, privateChannel.getNameWithPrefix());
-  send501UmodeUnknownFlag(fd, nick);
-  send525InvalidKey(fd, nick, privateChannel.getNameWithPrefix());
-}
+//   /* Welcome */
+//   send001Welcome(fd, nick, user, host);
+//   send002Yourhost(fd, nick);
+//   send003Created(fd, nick, serverStartTime);
+//   send104Myinfo(fd, nick);
+//   send005Isupport(fd, nick, TOKENS);
+//   /* User */
+//   send221Umodeis(fd, client);
+//   /* Channel */
+//   send321Liststart(fd, nick);
+//   send322List(fd, nick, testChannel);
+//   send323Listend(fd, nick);
+//   send324Channelmodeis(fd, nick, testChannel);
+//   send329Creationtime(fd, nick, testChannel);
+//   send331Notopic(fd, nick, testChannel);
+//   send332Topic(fd, nick, testChannel);
+//   send333Topicwhotime(fd, nick, testChannel);
+//   send341Inviting(fd, nick, targetNick, invitedChannel.getNameWithPrefix());
+//   send336Invitelist(fd, nick, invitedChannel.getNameWithPrefix());
+//   send337Endofinvitelist(fd, nick);
+//   send353Namreply(fd, nick, testChannel);
+//   send366Endofnames(fd, nick, testChannel.getNameWithPrefix());
+//   /* Errors */
+//   send401NoSuchNick(fd, nick, targetNick);
+//   send403NoSuchChannel(fd, nick, "notExistingChannel");
+//   send404CannotSendToChan(fd, nick, testChannel.getNameWithPrefix());
+//   send405TooManyChannels(fd, nick);
+//   send409NoOrigin(fd, nick);
+//   send411NoRecipient(fd, nick, command);
+//   send412NoTextToSend(fd, nick);
+//   send417InputTooLong(fd, nick);
+//   send421UnknownCommand(fd, nick, command);
+//   send431NoNicknameGiven(fd, nick);
+//   send432ErroneusNickname(fd, nick);
+//   send433NickAlreadyInUse(fd, nick);
+//   send441UserNotInChannel(fd, nick, targetNick,
+//                           testChannel.getNameWithPrefix());
+//   send442NotOnChannel(fd, nick, testChannel.getNameWithPrefix());
+//   send443UserOnChannel(fd, nick, targetNick,
+//                        invitedChannel.getNameWithPrefix());
+//   send451NotRegistered(fd, nick);
+//   send461NeedMoreParams(fd, nick, command);
+//   send462AlreadyRegistered(fd, nick);
+//   send464PasswdMismatch(fd, nick);
+//   send471ChannelIsFull(fd, nick, testChannel.getNameWithPrefix());
+//   send472UnknownMode(fd, nick, "x");
+//   send473InviteOnlyChan(fd, nick, privateChannel.getNameWithPrefix());
+//   send475BadChannelKey(fd, nick, privateChannel.getNameWithPrefix());
+//   send476BadChanMask(fd, nick, testChannel.getNameWithPrefix());
+//   send481NoPrivileges(fd, nick);
+//   send482ChanOPrivsNeeded(fd, nick, privateChannel.getNameWithPrefix());
+//   send501UmodeUnknownFlag(fd, nick);
+//   send525InvalidKey(fd, nick, privateChannel.getNameWithPrefix());
+// }

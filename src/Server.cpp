@@ -7,7 +7,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:57:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 19:37:41 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,22 @@
 
 bool Server::_signal = false;
 
+/*============================================================================*/
+/*       Constructors                                                         */
+/*============================================================================*/
+
+// Server::Server(int port, std::string password) : _config(CONFIG_FILE_PATH) {
 Server::Server(int port, std::string password) {
   _port = port;
   _password = password;
   _signal = false;
   _socketFd = -1;
-  // _name = "coco";
 }
 
-/* Getters */
+/*============================================================================*/
+/*       Getters                                                              */
+/*============================================================================*/
+
 const Client &Server::getClientByFd(int fd) const {
   clientsMap::const_iterator it = _clients.find(fd);
   if (it == _clients.end()) {
@@ -47,16 +54,15 @@ Channel &Server::getChannelByName(const std::string &name) {
   return it->second;
 }
 
-// const std::string &Server::getServerName() const { return _name; }
-
 const std::string &Server::getPassword() const { return _password; }
 
 int Server::getPort() const { return _port; }
 
 int Server::getSocketFd() const { return _socketFd; }
 
-
-/* Server Mounting */
+/*============================================================================*/
+/*       Server Mounting                                                      */
+/*============================================================================*/
 
 void Server::runServer() {
   createSocket();
@@ -246,7 +252,9 @@ void Server::signalHandler(int signal) {
   }
 }
 
-/* Clients Management */
+/*============================================================================*/
+/*       Clients Management                                                   */
+/*============================================================================*/
 
 void Server::handleClientMessage(int fd) {
   char buffer[1024] = {0};
@@ -270,7 +278,6 @@ void Server::handleClientMessage(int fd) {
   if (client.isAccepted() == false) {
     handleInitialMessage(client, message);
   } else {
-    // sendToAllClients(message);
     handleOtherMessage(client, message);
   }
 }
@@ -281,8 +288,8 @@ void Server::acceptNewClient() {
   struct pollfd newPoll;
   socklen_t len = sizeof(cliadd);
 
-  int newClientFd = accept(_socketFd,
-                          reinterpret_cast<sockaddr *>(&cliadd), &len);
+  int newClientFd =
+      accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
     std::cerr << RED "Failed to accept new client" RESET << std::endl;
     return;
@@ -300,14 +307,6 @@ void Server::acceptNewClient() {
   cli.setFd(newClientFd);
   cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
                                           // IP en une chaîne de caractères
-
-  // ----- For test ---------
-  cli.setUInvisibleMode(true);
-  cli.setUOperatorMode(false);
-  cli.setURegisteredMode(true);
-  testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
-  // ------------------------
-
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 
@@ -354,10 +353,13 @@ void Server::clearClient(int fd) {
 
   _clients.erase(fd);
 }
-/*  Commands management */
 
-void Server::handleCommand(const std::string &command,
-                           std::string &argument, int fd) {
+/*============================================================================*/
+/*       Commands management                                                  */
+/*============================================================================*/
+
+void Server::handleCommand(const std::string &command, std::string &argument,
+                           int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
     // joinChannel(argument, fd);
@@ -405,20 +407,25 @@ void Server::handleCommand(const std::string &command,
 
 //     // Envoyer la réponse JOIN au client
 //     // client._nick = "faboussa"; //
-//     std::cout << "Client " << client.getNickName() << " joined channel " << channelName << std::endl;
+//     std::cout << "Client " << client.getNickName() << " joined channel " <<
+//     channelName << std::endl;
 
 //     std::string nick = client.getNickName();
 //     #ifdef DEBUG
-//       std::cout << "Client " << nick << " joined channel " << channelName << std::endl;
+//       std::cout << "Client " << nick << " joined channel " << channelName <<
+//       std::endl;
 //     #endif
 //     std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
 //     send(fd, joinMessage.c_str(), joinMessage.length(), 0);
 
-//     // Préparer et envoyer la liste des utilisateurs dans le canal (353 RPL_NAMREPLY)
-//     std::string nameReply = ":" + SRV_NAME + " 353 " + nick + " = " + channelName + " :";
-    
-//     const clientsMap &clientsInChannel = _channels[channelName].getClientsInChannel();
-//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+//     // Préparer et envoyer la liste des utilisateurs dans le canal (353
+//     RPL_NAMREPLY) std::string nameReply = ":" + SRV_NAME + " 353 " + nick + "
+//     = " + channelName + " :";
+
+//     const clientsMap &clientsInChannel =
+//     _channels[channelName].getClientsInChannel(); for
+//     (clientsMap::const_iterator it = clientsInChannel.begin(); it !=
+//     clientsInChannel.end(); ++it) {
 //         nameReply += getClientByFd(it->first).getNickName() + " ";
 //     }
 
@@ -426,15 +433,16 @@ void Server::handleCommand(const std::string &command,
 //     nameReply += "\r\n";
 //     send(fd, nameReply.c_str(), nameReply.length(), 0);
 
-//     // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms est terminée
-//     std::string endOfNames = ":" + SRV_NAME + " 366 " + nick + " " + channelName + " :End of /NAMES list\r\n";
-//     send(fd, endOfNames.c_str(), endOfNames.length(), 0);
+//     // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms
+//     est terminée std::string endOfNames = ":" + SRV_NAME + " 366 " + nick + "
+//     " + channelName + " :End of /NAMES list\r\n"; send(fd,
+//     endOfNames.c_str(), endOfNames.length(), 0);
 
 //     // Informer les autres clients dans le canal que quelqu'un a rejoint
-//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it !=
+//     clientsInChannel.end(); ++it) {
 //         if (it->first != fd) { // Évitez d'envoyer au client qui a rejoint
 //             send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
 //         }
 //     }
 // }
-
