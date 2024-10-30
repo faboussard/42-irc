@@ -136,85 +136,6 @@ bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
   return (false);
 }
 
-void Server::handleInitialMessage(Client &client, const std::string &message) {
-  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
-  size_t vecSize = splittedPair.size();
-
-  for (size_t it = 0; it < vecSize; ++it) {
-    std::string command = splittedPair[it].first;
-    std::string argument = splittedPair[it].second;
-    std::cout << MAGENTA "Command: " << command << std::endl;
-    std::cout << "Message: " << argument << RESET << std::endl;
-
-    if (command == "CAP" && client.isCapSend() == false && client.isPasswordGiven() == false) {
-      client.setCapSend(true);
-      continue;
-    }
-    if (command == "PASS" && isLastPass(splittedPair, it + 1, vecSize)) {
-      if (Parser::verifyPassword(argument, _password, client) == false) {
-        clearClient(client.getFd());
-        return;
-      }
-    } else if (client.isPasswordGiven() == false) {
-      send461NeedMoreParams(client.getFd(), "", "PASS");
-      clearClient(client.getFd());
-      return;
-    } else if (command == "NICK") {
-      if (Parser::verifyNick(argument, client, _clients) == false) {
-        clearClient(client.getFd());
-        return;
-      }
-    } else if (command == "USER" && client.isNicknameSet()) {
-      if (Parser::verifyUser(argument, client, _clients) == false) {
-        clearClient(client.getFd());
-        return;
-      }
-    } else if (client.isNicknameSet() == false) {
-      send431NoNicknameGiven(client.getFd(), "");
-      clearClient(client.getFd());
-      return;
-    } else if (client.isUsernameSet() == false) {
-      send461NeedMoreParams(client.getFd(), client.getNickName(), "USER");
-      clearClient(client.getFd());
-      return;
-    } else if (client.isAccepted()) {
-      if (command == "QUIT") {
-        // lancer la commande QUIT avec les arguments : quit(client, argument);
-        clearClient(client.getFd());
-        return;
-      } else {
-        std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
-                  << "\nargument = " << argument << RESET << std::endl;
-        handleCommand(command, argument, client.getFd());
-      }
-    }
-    if (client.isPasswordGiven() && client.isNicknameSet() &&
-        client.isUsernameSet())
-      client.declareAccepted();
-  }
-}
-
-void Server::handleOtherMessage(Client &client, const std::string &message) {
-  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
-  size_t vecSize = splittedPair.size();
-  for (size_t it = 0; it < vecSize; ++it) {
-    std::string command = splittedPair[it].first;
-    std::string argument = splittedPair[it].second;
-    Command cmd = Parser::choseCommand(command);
-    std::cout << MAGENTA "Command: " << command << std::endl;
-    std::cout << "Message: " << argument << RESET << std::endl;
-    if (cmd == UNKNOWN) {
-      // ERR_UNKNOWNCOMMAND (421)
-      std::cerr << RED "Unknown command" RESET << std::endl;
-      continue;
-    } else if (cmd == CAP) {
-      continue;
-    } else {
-      handleCommand(command, argument, client.getFd());
-    }
-  }
-}
-
 void Server::closeServer() {
   // Fermer tous les clients
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
@@ -241,33 +162,6 @@ void Server::signalHandler(int signal) {
 }
 
 /* Clients Management */
-
-void Server::handleClientMessage(int fd) {
-  char buffer[1024] = {0};
-  std::memset(buffer, 0, sizeof(buffer));
-  int valread = recv(fd, buffer, sizeof(buffer), 0);
-
-  switch (valread) {
-    case -1:
-      std::cerr << RED "Error while receiving message" RESET << std::endl;
-      // fallthrough
-    case 0:
-      std::cout << "Client " << fd << " disconnected" << std::endl;
-      clearClient(fd);
-      return;
-  }
-  std::string message(buffer, valread);
-  std::cout << "Received message from client " << fd << ": " << message
-            << std::endl;
-
-  Client &client = _clients[fd];
-  if (client.isAccepted() == false) {
-    handleInitialMessage(client, message);
-  } else {
-    // sendToAllClients(message);
-    handleOtherMessage(client, message);
-  }
-}
 
 void Server::acceptNewClient() {
   Client cli;
@@ -347,42 +241,6 @@ void Server::clearClient(int fd) {
   }
 
   _clients.erase(fd);
-}
-/*  Commands management */
-
-void Server::handleCommand(const std::string &command,
-                           std::string &argument, int fd) {
-  if (command.empty()) return;
-  if (command == "JOIN") {
-    // joinChannel(argument, fd);
-  } else if (command == "KICK") {
-    // Exclure un client du canal
-  } else if (command == "INVITE") {
-    // Notice
-  } else if (command == "TOPIC") {
-    // Changer le sujet du canal
-  } else if (command == "MODE") {
-    // Changer le sujet du canal
-  } else if (command == "LIST") {
-    // Lister les canaux
-  } else if (command == "NOTICE") {
-    // Notice}
-  } else if (command == "NICK") {
-    Parser::verifyNick(argument, _clients[fd], _clients);
-  } else if (command == "PRIVMSG") {
-    // Envoyer un message privé
-  } else if (command == "QUIT") {
-    // Déconnecter le client
-  } else if (command == "PING") {
-    // client.sendNumericReply(1, "PONG");
-  } else if (command == "PASS" || command == "USER") {
-    // if (argument.empty())
-    //   sendNumericReply(461, ERR_NEEDMOREPARAMS);
-    // else
-    //   sendNumericReply(462, ERR_ALREADYREGISTERED);
-  } else {
-    // Commande inconnue
-  }
 }
 
 // void Server::joinChannel(std::string &channelName, int fd) {

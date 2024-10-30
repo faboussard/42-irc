@@ -20,7 +20,8 @@ RMDIR = rm -rf
 vpath %.cpp src src/commands
 
 HEADERS_LIST = colors Server Client Channel Parser numericReplies utils serverConfig
-SRCS = main Server Client Channel Parser numericReplies utils pass nick user invite mode ping topic
+SRCS = main Server Client Channel Parser numericReplies messageManagement utils \
+       pass nick user invite mode ping topic
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/
