@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/30 11:29:07 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:47:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,17 @@ Channel::Channel(const std::string &name) : _name(name) {
   _topic.author = "";
   _topic.setTime = "";
 
-  /*----- Just for test --------------*/
-  Client testOp = Client(42);
-  testOp.setNickname("testOp");
-  _clientsInChannel[42] = testOp;
-  _channelOperators[42] = testOp;
-  Client testClient = Client(43);
-  testClient.setNickname("testClient");
-  _clientsInChannel[43] = testClient;
-  _mode.limitSet = true;
-  _mode.limit = 42;
-  /*----------------------------------*/
+  // /*----- Just for test --------------*/
+  // Client testOp = Client(42);
+  // testOp.setNickname("testOp");
+  // _clientsInChannel[42] = testOp;
+  // _channelOperators[42] = testOp;
+  // Client testClient = Client(43);
+  // testClient.setNickname("testClient");
+  // _clientsInChannel[43] = testClient;
+  // _mode.limitSet = true;
+  // _mode.limit = 42;
+  // /*----------------------------------*/
 }
 
 /*------ Getters ------------------------------------------------------------ */
@@ -122,7 +122,7 @@ void Channel::removeClientFromTheChannel(int fd) {
   }
 }
 
-void Channel::acceptClientInTheChannel(const Client &client) {
+void Channel::addClientToChannelMap(const Client &client) {
   _clientsInChannel[client.getFd()] = client;
   std::cout << "Client " << client.getFd() << " added to channel " << _name
             << std::endl;

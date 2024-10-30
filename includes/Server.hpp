@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 13:55:29 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:25:37 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,6 @@ class Server {
 
   /* Clients Management */
   void acceptNewClient();
-  void addClient(int fd, const Client &client);
   void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
   void handleClientMessage(int fd);
@@ -106,17 +105,17 @@ class Server {
 
   /*--------- Commands Management --------------*/
   /* Join */
-  void handleCommand(const std::string &command, std::string &param, int fd);
+  void handleCommand(const std::string &command, std::string &argument, int fd);
   void joinChannel(std::string &channelName, int fd);
   void executeJoin(int fd, const Client &client,
                    const std::string &channelName);
   // Sub-functions for joinChannel
-  void createChannelIfNotExist(const std::string &channelName);
+  void addChanneltoServer(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
-  bool canEnterChannel(const std::string &param);
+  bool canEnterChannel(const std::string &argument);
 
   // Other methods
   void sendToAllClients(const std::string &message);
@@ -131,6 +130,10 @@ class Server {
 
   void handleInitialMessage(Client &client, const std::string &message);
   void handleOtherMessage(Client &client, const std::string &message);
+
+  /* tests */
+  void addClient(int fd, const Client &client);
+
 };
 
 #endif  // INCLUDES_SERVER_HPP_

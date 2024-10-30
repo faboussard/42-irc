@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 17:12:11 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:48:26 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 typedef std::map<int, Client> clientsMap;
 
 typedef struct Topic {
-  std::string topic;
+  std::string topicName;
   std::string author;
   std::string setTime;
 } Topic;
@@ -74,7 +74,7 @@ class Channel {
   /* Member Functions */
 
   void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
+  void addClientToChannelMap(const Client &client);  // Utilisation du type défini
   void receiveMessageInTheChannel(int fd);
 
   void activateKeyMode(const std::string &key, const Client &cli);

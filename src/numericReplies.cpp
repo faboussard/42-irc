@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/30 11:29:11 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:29:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,12 +173,18 @@ void send353Namreply(int fd, const std::string &nick, const Channel &channel) {
   }
 
   std::string message = _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames);
+    #ifdef DEBUG
+  std::cout << " nick " << nick << " nicknames " << nicknames << " chanNameWithSymbol " << chanNameWithSymbol <<  std::endl;
+  #endif
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
 void send366Endofnames(int fd, const std::string &nick,
                        const std::string &chanName) {
+  #ifdef DEBUG
+  std::cout << "nick " << nick << " chanName " << chanName <<  std::endl;
+  #endif
   std::string message = _366_RPL_ENDOFNAMES(nick, chanName);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);

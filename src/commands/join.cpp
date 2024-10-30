@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 13:50:52 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:48:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,10 @@ bool Server::canEnterChannel(const std::string &param) {
 void Server::joinChannel(std::string &param, int fd) {
   std::string channelName;
   channelName = param.substr(1);
-  createChannelIfNotExist(channelName);
-#ifdef DEBUG
-  std::cout << GREY "CHANNEL NAME " << channelName << " param " << param
-            << RESET << std::endl;
-#endif
+  addChanneltoServer
+(channelName);
   const Client &client = getClientByFd(fd);
-  _channels[channelName].acceptClientInTheChannel(client);
+  _channels[channelName].addClientToChannelMap(client);
   executeJoin(fd, client, channelName);
 }
 
@@ -79,11 +76,13 @@ void Server::executeJoin(int fd, const Client &client,
   #endif
   sendJoinMessageToClient(fd, nick, channelName);
   send353Namreply(fd, nick, _channels[channelName]);
+    std::cout << " _channels[channelName] " << _channels[channelName].getName()
+            << std::endl;
   send366Endofnames(fd, nick, channelName);
   broadcastJoinMessage(fd, nick, channelName);
 }
 
-void Server::createChannelIfNotExist(const std::string &channelName) {
+void Server::addChanneltoServer(const std::string &channelName) {
   if (_channels.find(channelName) == _channels.end()) {
     Channel newChannel(channelName);
     _channels[channelName] = newChannel;
@@ -93,23 +92,33 @@ void Server::createChannelIfNotExist(const std::string &channelName) {
 void Server::sendJoinMessageToClient(int fd, const std::string &nick,
                                      const std::string &channelName) {
   std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
-  send(fd, joinMessage.c_str(), joinMessage.length(), 0);
+  if (send(fd, joinMessage.c_str(), joinMessage.length(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
 #ifdef DEBUG
-  std::cout << GREY "Client " << nick << " joined channel " RESET << channelName
+  std::cout << GREY "Client " << nick <<  << " user " << server.getClientByFd().getUserName() << " joined channel " RESET << channelName
             << std::endl;
 #endif
-  send331Notopic(fd, nick, _channels[channelName]);
+  if (_channels[channelName].getTopic().topicName.empty())
+    send331Notopic(fd, nick, _channels[channelName]);
+  else
+    send332Topic(fd, nick, _channels[channelName]);
 }
 
 void Server::broadcastJoinMessage(int fd, const std::string &nick,
                                   const std::string &channelName) {
-  std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
-  const clientsMap &clientsInChannel =
-      _channels[channelName].getClientsInChannel();
-  for (clientsMap::const_iterator it = clientsInChannel.begin();
-       it != clientsInChannel.end(); ++it) {
-    if (it->first != fd) {
-      send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
+   std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
+    const clientsMap &clientsInChannel = _channels[channelName].getClientsInChannel();
+    clientsMap::const_iterator it = clientsInChannel.begin();
+    clientsMap::const_iterator ite = clientsInChannel.end();
+
+    for (it = clientsInChannel.begin(); it != ite; ++it) {
+        if (it->first != fd) {
+            if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) == -1)
+                throw std::runtime_error(RUNTIME_ERROR);
+        }
     }
-  }
+  #ifdef DEBUG
+  std::cout << GREY "broadcastJoinMessage ok " << nick << " joined channel " RESET << channelName
+            << std::endl;
+#endif
 }
