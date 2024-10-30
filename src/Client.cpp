@@ -1,25 +1,83 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/22 17:02:31 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 15:18:40 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "../includes/Client.hpp"
 
 #include <cerrno>
 #include <cstring>
 
+#include "../includes/Client.hpp"
 #include "../includes/colors.hpp"
 
-Client::Client(int fd, const std::string &ip) : _fd(fd), _ip(ip) {}
+/*============================================================================*/
+/*       Constructors                                                         */
+/*============================================================================*/
 
-void Client::receiveMessage(const std::string &message) {
+Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
+  _nicknameSet = false;
+  _usernameSet = false;
+  _realnameSet = false;
+  _passwordGiven = false;
+  _accepted = false;
+}
+
+/*============================================================================*/
+/*       Getters & Setters                                                    */
+/*============================================================================*/
+
+std::string const& Client::getNickName() const { return (_nickName); }
+
+std::string const& Client::getUserName() const { return (_userName); }
+
+int Client::getFd(void) const { return (_fd); }
+
+std::string Client::getIp(void) const { return (_ip); }
+
+void Client::setNickname(const std::string& nickname) {
+  _nickName = nickname;
+  _nicknameSet = true;
+}
+
+void Client::setUserName(const std::string& username) {
+  _userName = username;
+  _usernameSet = true;
+}
+
+void Client::setRealName(const std::string& realname) {
+  _realName = realname;
+  _realnameSet = true;
+}
+
+void Client::setFd(int fd) { _fd = fd; }
+
+void Client::setIp(const std::string& ip) { _ip = ip; }
+
+void Client::declareAccepted() { _accepted = true; }
+
+void Client::declarePasswordGiven() { _passwordGiven = true; }
+
+bool Client::isNicknameSet() const { return (_nicknameSet); }
+
+bool Client::isUsernameSet() const { return (_usernameSet); }
+
+bool Client::isRealnameSet() const { return (_realnameSet); }
+
+bool Client::isPasswordGiven() const { return (_passwordGiven); }
+
+bool Client::isAccepted() const { return (_accepted); }
+
+/*============================================================================*/
+/*       Messages handling                                                    */
+/*============================================================================*/
+
+void Client::receiveMessage(const std::string& message) {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {
@@ -30,13 +88,8 @@ void Client::receiveMessage(const std::string &message) {
     std::cerr << RED "Invalid file descriptor" RESET << std::endl;
   }
 }
-// void Client::sendNumericReply(int code, const std::string& message) {
-//   std::ostringstream oss;
-//   oss << code << " " << message << "\r\n";
-//   sendMessage(oss.str());
-// }
 
-std::string Client::shareMessage() {
+std::string Client::shareMessage(void) {
   char buffer[1024] = {0};
   ssize_t bytesRead = recv(_fd, buffer, sizeof(buffer) - 1, 0);
   // std::cout << MAGENTA << "Received message from client " << _fd << ": " <<
