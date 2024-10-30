@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/30 18:54:03 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 20:31:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,14 +258,14 @@ void send332Topic(int fd, const std::string &nick, const Channel &channel);
 void send333Topicwhotime(int fd, const std::string &nick,
                          const Channel &channel);
 void send336Invitelist(int fd, const std::string &nick,
-                       const std::string &chanName);
+                       const Channel &channel);
 void send337Endofinvitelist(int fd, const std::string &nick);
 void send341Inviting(int fd, const std::string &nick,
                      const std::string &invitedNick,
-                     const std::string &chanName);
+                     const Channel &channel);
 void send353Namreply(int fd, const std::string &nick, const Channel &channel);
 void send366Endofnames(int fd, const std::string &nick,
-                       const std::string &chanName);
+                       const Channel &channel);
 
 /*------ Error messages ------------------------------------------------------*/
 
@@ -274,7 +274,7 @@ void send401NoSuchNick(int fd, const std::string &nick,
 void send403NoSuchChannel(int fd, const std::string &nick,
                           const std::string &chanName);
 void send404CannotSendToChan(int fd, const std::string &nick,
-                             const std::string &chanName);
+                             const Channel &channel);
 void send405TooManyChannels(int fd, const std::string &nick);
 void send409NoOrigin(int fd, const std::string &nick);
 void send411NoRecipient(int fd, const std::string &nick,
@@ -288,33 +288,39 @@ void send432ErroneusNickname(int fd, const std::string &nick);
 void send433NickAlreadyInUse(int fd, const std::string &nick);
 void send441UserNotInChannel(int fd, const std::string &nick,
                              const std::string &targetNick,
-                             const std::string &chanName);
+                             const Channel &channel);
 void send442NotOnChannel(int fd, const std::string &nick,
-                         const std::string &chanName);
+                         const Channel &channel);
 void send443UserOnChannel(int fd, const std::string &nick,
                           const std::string &invitedNick,
-                          const std::string &chanName);
+                          const Channel &channel);
 void send451NotRegistered(int fd, const std::string &nick);
 void send461NeedMoreParams(int fd, const std::string &nick,
                            const std::string &command);
 void send462AlreadyRegistered(int fd, const std::string &nick);
 void send464PasswdMismatch(int fd, const std::string &nick);
 void send471ChannelIsFull(int fd, const std::string &nick,
-                          const std::string &chanName);
+                          const Channel &channel);
 void send472UnknownMode(int fd, const std::string &nick,
                         const std::string &modeChar);
 void send473InviteOnlyChan(int fd, const std::string &nick,
-                           const std::string &chanName);
+                           const Channel &channel);
 void send475BadChannelKey(int fd, const std::string &nick,
-                          const std::string &chanName);
+                          const Channel &channel);
 void send476BadChanMask(int fd, const std::string &nick,
-                        const std::string &chanName);
+                        const Channel &channel);
 void send481NoPrivileges(int fd, const std::string &nick);
 void send482ChanOPrivsNeeded(int fd, const std::string &nick,
-                             const std::string &chanName);
+                             const Channel &channel);
 void send501UmodeUnknownFlag(int fd, const std::string &nick);
 void send525InvalidKey(int fd, const std::string &nick,
-                       const std::string &chanName);
+                       const Channel &channel);
+
+/*--------- Test -------------------------------------------------------------*/
+
+void testAllNumericReplies(const std::string &serverStartTime,
+                           const Client &client, const std::string &command,
+                           const std::string &targetNick);
 
 /*--------- Just for fun -----------------------------------------------------*/
 
