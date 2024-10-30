@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/23 14:08:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 08:58:29 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,17 +63,19 @@
 //   sendNumericReply("101", target, message);
 // }
 
-#define _101_RPL_WELCOME(nick, user, host) (":" + SERVER_NAME + " 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host)
 
-void send101(const Client& target) {
-  std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
-  std::string user = target.getUserName().empty() ? "*" : target.getUserName();
-  std::string host = target.getIp().empty() ? "*" : target.getIp();  // from server
-  std::string message = _101_RPL_WELCOME(nick.c_str(), user.c_str(), host.c_str());
-  if (send(target.getFd(), message.c_str(), message.size(), 0) == -1) {
-    throw std::runtime_error("Failed to send numeric reply");
-  }
-}
+// FROM MERGE PARSING
+// #define _101_RPL_WELCOME(nick, user, host) (":" + SERVER_NAME + " 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host)
+// void send101(const Client& target) {
+//   std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
+//   std::string user = target.getUserName().empty() ? "*" : target.getUserName();
+//   std::string host = target.getIp().empty() ? "*" : target.getIp();  // from server
+//   std::string message = _101_RPL_WELCOME(nick.c_str(), user.c_str(), host.c_str());
+//   if (send(target.getFd(), message.c_str(), message.size(), 0) == -1) {
+//     throw std::runtime_error("Failed to send numeric reply");
+//   }
+// }
+// END FROM MERGE PARSING
 
 // ":serverName 001 userNickname : PRL_WELCOME"
 

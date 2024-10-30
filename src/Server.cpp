@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 15:17:45 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/30 08:57:05 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
       // ERR_UNKNOWNCOMMAND (421)
       std::cerr << RED "Unknown command" RESET << std::endl;
       continue;
-    } else if (cmd == CAP || cmd == USER) {
+    } else if (cmd == CAP) {
       continue;
     } else {
       handleCommand(command, argument, client.getFd());

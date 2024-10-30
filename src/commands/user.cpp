@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 15:13:42 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/30 08:39:13 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,10 @@ static bool realnameContainsForbiddenCaracters(const std::string realname) {
 }
 
 bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
+  if (client.isUsernameSet()) {
+    // ERR_ALREADYREGISTERED (462)
+    return (false);
+  }
   if (user.empty()) {
     // ERR_NEEDMOREPARAMS (461)
     return (false);
