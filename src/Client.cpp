@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 15:18:40 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
 }
 
 /*============================================================================*/
-/*       Getters & Setters                                                    */
+/*       Getters                                                              */
 /*============================================================================*/
 
 std::string const& Client::getNickName() const { return (_nickName); }
@@ -39,6 +39,32 @@ std::string const& Client::getUserName() const { return (_userName); }
 int Client::getFd(void) const { return (_fd); }
 
 std::string Client::getIp(void) const { return (_ip); }
+
+std::string const& Client::getRealName() const { return (_realName); }
+
+UserModes const& Client::getUserModes() const { return (_uModes); }
+
+const std::string Client::getUserModesFlag() const {
+  std::string flags = "+";
+  if (_uModes.invisible) flags += "i";
+  if (_uModes.operatorOfServer) flags += "o";
+  if (_uModes.registered) flags += "r";
+  return (flags);
+}
+
+bool Client::isNicknameSet(void) const { return (_nicknameSet); }
+
+bool Client::isUsernameSet(void) const { return (_usernameSet); }
+
+bool Client::isRealnameSet(void) const { return (_realnameSet); }
+
+bool Client::isPasswordGiven(void) const { return (_passwordGiven); }
+
+bool Client::isAccepted(void) const { return (_accepted); }
+
+/*============================================================================*/
+/*       Setters                                                              */
+/*============================================================================*/
 
 void Client::setNickname(const std::string& nickname) {
   _nickName = nickname;
@@ -59,19 +85,21 @@ void Client::setFd(int fd) { _fd = fd; }
 
 void Client::setIp(const std::string& ip) { _ip = ip; }
 
-void Client::declareAccepted() { _accepted = true; }
+void Client::setUInvisibleMode(bool isInvisible) {
+  _uModes.invisible = isInvisible;
+}
 
-void Client::declarePasswordGiven() { _passwordGiven = true; }
+void Client::setUOperatorMode(bool isOperator) {
+  _uModes.operatorOfServer = isOperator;
+}
 
-bool Client::isNicknameSet() const { return (_nicknameSet); }
+void Client::setURegisteredMode(bool isRegistered) {
+  _uModes.registered = isRegistered;
+}
 
-bool Client::isUsernameSet() const { return (_usernameSet); }
+void Client::declareAccepted(void) { _accepted = true; }
 
-bool Client::isRealnameSet() const { return (_realnameSet); }
-
-bool Client::isPasswordGiven() const { return (_passwordGiven); }
-
-bool Client::isAccepted() const { return (_accepted); }
+void Client::declarePasswordGiven(void) { _passwordGiven = true; }
 
 /*============================================================================*/
 /*       Messages handling                                                    */

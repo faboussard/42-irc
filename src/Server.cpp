@@ -4,9 +4,10 @@
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 08:57:05 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/30 10:57:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +15,7 @@
 
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/serverConfig.hpp"
 #include "../includes/utils.hpp"
 
 bool Server::_signal = false;
@@ -23,20 +25,42 @@ Server::Server(int port, std::string password) {
   _password = password;
   _signal = false;
   _socketFd = -1;
+  // _name = "coco";
 }
 
+/* Getters */
 const Client &Server::getClientByFd(int fd) const {
   clientsMap::const_iterator it = _clients.find(fd);
   if (it == _clients.end()) {
     std::cerr << "Client not found with the given file descriptor" << std::endl;
+    throw std::runtime_error("Client not found");
   }
   return it->second;
 }
+
+Channel &Server::getChannelByName(const std::string &name) {
+  channelsMap::iterator it = _channels.find(name);
+  if (it == _channels.end()) {
+    std::cerr << "Channel not found with the given name" << std::endl;
+    throw std::runtime_error("Channel not found");
+  }
+  return it->second;
+}
+
+// const std::string &Server::getServerName() const { return _name; }
+
+const std::string &Server::getPassword() const { return _password; }
+
+int Server::getPort() const { return _port; }
+
+int Server::getSocketFd() const { return _socketFd; }
+
 
 /* Server Mounting */
 
 void Server::runServer() {
   createSocket();
+  _startTime = fetchStartTime();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   monitorConnections();
 }
@@ -68,6 +92,13 @@ void Server::createSocket() {
   if (listen(_socketFd, SOMAXCONN) == -1) {
     throw std::runtime_error("Failed to listen on socket");
   }
+}
+
+std::string Server::fetchStartTime(void) {
+  time_t now = time(0);
+  std::string startTime = ctime(&now);
+  startTime.erase(_startTime.find_last_not_of("\n") + 1);
+  return (startTime);
 }
 
 void Server::monitorConnections() {
@@ -270,10 +301,31 @@ void Server::acceptNewClient() {
   cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
                                           // IP en une chaîne de caractères
 
+  // ----- For test ---------
+  cli.setUInvisibleMode(true);
+  cli.setUOperatorMode(false);
+  cli.setURegisteredMode(true);
+  testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
+  // ------------------------
+
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 
   std::cout << GREEN "New client connected: " RESET << newClientFd << std::endl;
+  sendConnectionMessage(cli);
+}
+
+void Server::sendConnectionMessage(const Client &target) const {
+  std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
+  std::string user = target.getUserName().empty() ? "*" : target.getUserName();
+  std::string host = target.getIp().empty() ? "*" : target.getIp();
+  int fd = target.getFd();
+  sendWelcome(fd, nick);
+  send001Welcome(fd, nick, user, host);
+  send002Yourhost(fd, nick);
+  send003Created(fd, nick, _startTime);
+  send104Myinfo(fd, nick);
+  send005Isupport(fd, nick, TOKENS);
 }
 
 void Server::sendToAllClients(const std::string &message) {
@@ -283,7 +335,6 @@ void Server::sendToAllClients(const std::string &message) {
 }
 
 void Server::closeClient(int fd) {
-  // Fermer le socket du client
   if (fd != -1) {
     close(fd);
     std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
@@ -303,13 +354,13 @@ void Server::clearClient(int fd) {
 
   _clients.erase(fd);
 }
-/* Chat Commands */
+/*  Commands management */
 
 void Server::handleCommand(const std::string &command,
-                           const std::string &argument, int fd) {
+                           std::string &argument, int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
-    // join
+    // joinChannel(argument, fd);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
@@ -339,3 +390,51 @@ void Server::handleCommand(const std::string &command,
     // Commande inconnue
   }
 }
+
+// void Server::joinChannel(std::string &channelName, int fd) {
+//     channelName = channelName.substr(1);
+
+//     if (_channels.find(channelName) == _channels.end()) {
+//         Channel newChannel(channelName);
+//         _channels[channelName] = newChannel;
+//     }
+
+//     // Récupérer l'instance du client avant de l'accepter dans le canal
+//     const Client &client = getClientByFd(fd);
+//     _channels[channelName].acceptClientInTheChannel(client);
+
+//     // Envoyer la réponse JOIN au client
+//     // client._nick = "faboussa"; //
+//     std::cout << "Client " << client.getNickName() << " joined channel " << channelName << std::endl;
+
+//     std::string nick = client.getNickName();
+//     #ifdef DEBUG
+//       std::cout << "Client " << nick << " joined channel " << channelName << std::endl;
+//     #endif
+//     std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
+//     send(fd, joinMessage.c_str(), joinMessage.length(), 0);
+
+//     // Préparer et envoyer la liste des utilisateurs dans le canal (353 RPL_NAMREPLY)
+//     std::string nameReply = ":" + SRV_NAME + " 353 " + nick + " = " + channelName + " :";
+    
+//     const clientsMap &clientsInChannel = _channels[channelName].getClientsInChannel();
+//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+//         nameReply += getClientByFd(it->first).getNickName() + " ";
+//     }
+
+//     // Terminer le message de liste avec un retour à la ligne
+//     nameReply += "\r\n";
+//     send(fd, nameReply.c_str(), nameReply.length(), 0);
+
+//     // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms est terminée
+//     std::string endOfNames = ":" + SRV_NAME + " 366 " + nick + " " + channelName + " :End of /NAMES list\r\n";
+//     send(fd, endOfNames.c_str(), endOfNames.length(), 0);
+
+//     // Informer les autres clients dans le canal que quelqu'un a rejoint
+//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+//         if (it->first != fd) { // Évitez d'envoyer au client qui a rejoint
+//             send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
+//         }
+//     }
+// }
+

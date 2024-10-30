@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 15:42:04 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,12 @@
 #include <sstream>
 #include <string>
 
+typedef struct UserModes {
+  bool invisible;
+  bool operatorOfServer;
+  bool registered;
+} _userModes;
+
 class Client {
  private:
   int _fd;
@@ -32,6 +38,7 @@ class Client {
   bool _realnameSet;
   bool _passwordGiven;
   bool _accepted;
+  UserModes _uModes;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "");
@@ -41,13 +48,16 @@ class Client {
   /* Getters */
   int getFd() const;
   std::string getIp() const;
-  std::string const& getNickName() const;
-  std::string const& getUserName() const;
+  const std::string &getNickName() const;
+  const std::string &getUserName() const;
   bool isNicknameSet() const;
   bool isUsernameSet() const;
   bool isRealnameSet() const;
   bool isPasswordGiven() const;
-  bool isAccepted() const;
+  bool isAccepted() const;  const std::string &getRealName() const;
+  const UserModes &getUserModes() const;
+  const std::string getUserModesFlag() const;
+
   /* Setters */
   void setFd(int fd);
   void setNickname(const std::string& nickname);
@@ -56,6 +66,9 @@ class Client {
   void setIp(const std::string& ip);
   void declareAccepted();
   void declarePasswordGiven();
+  void setUInvisibleMode(bool isInvisible);
+  void setUOperatorMode(bool isOperator);
+  void setURegisteredMode(bool isRegistered);
 
   /* Messages handling */
   void receiveMessage(const std::string& message);
