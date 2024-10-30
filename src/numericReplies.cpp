@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/30 14:29:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:53:05 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void send321Liststart(int fd, const std::string &nick) {
 void send322List(int fd, const std::string &nick, const Channel &channel) {
   std::string numUsers = toString(channel.getClientsInChannel().size());
   std::string message = _322_RPL_LIST(nick, channel.getNameWithPrefix(),
-                                      numUsers, channel.getTopic().topic);
+                                      numUsers, channel.getTopic().topicName);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -116,8 +116,8 @@ void send331Notopic(int fd, const std::string &nick, const Channel &channel) {
 
 void send332Topic(int fd, const std::string &nick, const Channel &channel) {
   std::string chanName = channel.getNameWithPrefix();
-  std::string topic = channel.getTopic().topic;
-  std::string message = _332_RPL_TOPIC(nick, chanName, topic);
+  std::string topicName = channel.getTopic().topicName;
+  std::string message = _332_RPL_TOPIC(nick, chanName, topicName);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }

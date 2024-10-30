@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/30 14:47:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:51:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ Channel::Channel(const std::string &name) : _name(name) {
   _mode.key = "";
   _mode.limit = 0;
 
-  _topic.topic = "";
+  _topic.topicName = "";
   _topic.author = "";
   _topic.setTime = "";
 
-  // /*----- Just for test --------------*/
+  // /*----- TESTS FOR SEVERAL CLIENTS --------------*/
   // Client testOp = Client(42);
   // testOp.setNickname("testOp");
   // _clientsInChannel[42] = testOp;
@@ -86,7 +86,7 @@ int Channel::getLimit(void) const { return (_mode.limit); }
 
 // void Channel::setTopic(const std::string &topic) { _topic = topic; }
 void Channel::setTopic(const std::string &topic, const std::string &author) {
-  _topic.topic = topic;
+  _topic.topicName = topic;
   _topic.author = author;
   time_t now = time(0);
   _topic.setTime = toString(now);

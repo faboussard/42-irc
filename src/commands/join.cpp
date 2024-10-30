@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 14:48:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:59:11 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,11 @@ JOIN 0 = part all channels
 
 //gerer que on q #pqrqm pui si virgule, on doit fqire join sur le deuxieme #param. si espqce -> key.
 bool Server::canEnterChannel(const std::string &param) {
-  return (                 // Ensure param length is greater than 1
+  return                 // Ensure param length is greater than 1
       param.length() < 51  // Channel name should be less than 51 characters
       && param.find(" ") == std::string::npos  // No spaces in param
       &&
-      param[0] ==
-          CHAN_PREFIX_CHAR);  // Check if first character is the channel prefix
+      param[0] == CHAN_PREFIX_CHAR || (param.length() == 1 && param[0] == 0 );  // Check if first character is the channel prefix
 }
 
 void Server::joinChannel(std::string &param, int fd) {
@@ -94,10 +93,6 @@ void Server::sendJoinMessageToClient(int fd, const std::string &nick,
   std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
   if (send(fd, joinMessage.c_str(), joinMessage.length(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
-#ifdef DEBUG
-  std::cout << GREY "Client " << nick <<  << " user " << server.getClientByFd().getUserName() << " joined channel " RESET << channelName
-            << std::endl;
-#endif
   if (_channels[channelName].getTopic().topicName.empty())
     send331Notopic(fd, nick, _channels[channelName]);
   else

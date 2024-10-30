@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/10/30 14:05:16 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 15:03:39 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,8 +217,10 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
     std::string command = splittedPair[it].first;
     std::string argument = splittedPair[it].second;
     Command cmd = Parser::choseCommand(command);
+    #ifdef DEBUG
     std::cout << MAGENTA "Command: " << command << std::endl;
     std::cout << "Message: " << argument << RESET << std::endl;
+     #endif
     if (cmd == UNKNOWN) {
       // ERR_UNKNOWNCOMMAND (421)
       std::cerr << RED "Unknown command" RESET << std::endl;
@@ -226,10 +228,6 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
     } else if (cmd == CAP) {
       continue;
     } else {
-      #ifdef DEBUG
-      std::cout << CYAN << "OTHER COMMAND: \ncommand = " << command
-                << "\nargument = " << argument << RESET << std::endl;
-      #endif
       handleCommand(command, argument, client.getFd());
     }
   }
