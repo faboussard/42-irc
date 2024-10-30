@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/10/30 11:57:09 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 13:22:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -380,7 +380,7 @@ void Server::handleCommand(const std::string &command, std::string &argument, in
     if (canEnterChannel(argument))
       joinChannel(argument, fd);
     else
-      send476BadChanMask(fd, "kitten", argument);
+      send476BadChanMask(fd, getClientByFd(fd).getNickName(), argument);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
