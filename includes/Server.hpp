@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/17 11:53:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/29 12:21:27 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,19 +36,34 @@
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 
-class Client;
-class Channel;
+enum Command {
+  JOIN,
+  KICK,
+  INVITE,
+  TOPIC,
+  MODE,
+  LIST,
+  NOTICE,
+  NICK,
+  PRIVMSG,
+  QUIT,
+  PING,
+  CAP,
+  USER,
+  PASS,
+  UNKNOWN
+};
 
 class Server {
  private:
-  static bool _signal;
-  int _socketFd;
-  int _port;
-  std::string _password;
-  clientsMap _clients;
-  struct sockaddr_in _address;
+  static bool                _signal;
+  int                        _socketFd;
+  int                        _port;
+  std::string                _password;
+  clientsMap                 _clients;
+  struct sockaddr_in         _address;
   std::vector<struct pollfd> _pollFds;
-  channelsMap _channels;
+  channelsMap                _channels;
 
  public:
   explicit Server(int port, std::string password);
@@ -60,7 +75,6 @@ class Server {
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
-
 
   /* Server Mounting */
   void runServer();
@@ -82,10 +96,14 @@ class Server {
   void closeClient(int fd);
 
   /* Chat Commands */
-  void handleCommand(const std::string &command, int fd);
+  void handleCommand(const std::string &command, const std::string &argument, int fd);
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
+  // void handlePassword(int fd);
+
+	void handleInitialMessage(Client &client, const std::string &message);
+  void handleOtherMessage(Client &client, const std::string &message);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
