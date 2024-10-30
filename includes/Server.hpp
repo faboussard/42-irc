@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:57:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 13:54:26 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,15 @@
 #include <string>
 #include <vector>
 
+#include "../includes/Config.hpp"
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/numericReplies.hpp"
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
+
+#define CONFIG_FILE_PATH "./server.conf"
 
 enum Command {
   JOIN,
@@ -62,8 +65,8 @@ class Server {
   static bool                _signal;
   int                        _socketFd;
   int                        _port;
-//  std::string _name;
-  std::string _startTime;
+  Config                     _config;
+  std::string                _startTime;
   std::string                _password;
   clientsMap                 _clients;
   struct sockaddr_in         _address;
@@ -81,7 +84,7 @@ class Server {
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
-  // const std::string &getServerName() const;
+  // const std::string &getConfigParam(const std::string &key) const;
 
   /* Server Mounting */
   void runServer();
@@ -110,7 +113,6 @@ class Server {
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
-  // void handlePassword(int fd);
 
 	void handleInitialMessage(Client &client, const std::string &message);
   void handleOtherMessage(Client &client, const std::string &message);

@@ -19,8 +19,8 @@ RMDIR = rm -rf
 # ---------------------------------- Sources --------------------------------- #
 vpath %.cpp src src/commands
 
-HEADERS_LIST = colors Server Client Channel Parser numericReplies utils serverConfig
-SRCS = main Server Client Channel Parser numericReplies utils pass nick user invite mode ping topic
+HEADERS_LIST = colors Server Client Channel Parser Config numericReplies utils
+SRCS = main Server Client Channel Parser Config numericReplies utils pass nick user invite mode ping topic
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/
@@ -40,16 +40,16 @@ ${OBJS_DIR}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR}
 	${C} ${CFLAGS} ${INCLUDES} -c $< -o $@
 
 -include ${DEPS}
-# ---------------------------------- Create Repertory ---------------------- #
+# ---------------------------------- Create Repertory ------------------------ #
 ${OBJS_DIR}:
 			${MKDIR} ${OBJS_DIR}
 
-## ---------------------------------- Debug ----------------------------------- #
+# ---------------------------------- Debug ----------------------------------- #
 
 debug: CFLAGS += -DDEBUG
 debug: fclean $(OBJS_DIR) $(NAME)
 
-## ---------------------------------- Clean ----------------------------------- #
+# ---------------------------------- Clean ----------------------------------- #
 clean:
 	${RMDIR} ${OBJS_DIR}
 
