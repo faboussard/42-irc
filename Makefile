@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/30 11:16:51 by faboussa         ###   ########.fr        #
+#    Updated: 2024/10/30 14:04:52 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,9 +29,10 @@ OBJS = $(addprefix ${OBJS_DIR}, $(addsuffix .o, ${SRCS}))
 HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADER_LIST}))
 INCLUDES = -I ${HEADERS_DIR}
 DEPS = ${OBJS:.o=.d}
+HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADERS_LIST}))
 
 # ---------------------------------- Compilation ----------------------------- #
-all: ${NAME}
+all: create_dirs ${NAME}
 
 ${NAME}: ${OBJS} Makefile
 	${C} ${CFLAGS} ${OBJS} ${INCLUDES} -o $@
@@ -47,12 +48,13 @@ create_dirs:
 # ---------------------------------- Debug ----------------------------------- #
 debug: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 debug: CFLAGS += -DDEBUG
-debug: fclean $(NAME)
+debug: clean create_dirs ${NAME}
 
 # ---------------------------------- Test ----------------------------------- #
 test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 test: CFLAGS += -DTEST
-test: fclean $(NAME)
+test: clean create_dirs ${NAME}
+
 
 # ---------------------------------- Clean ----------------------------------- #
 clean:

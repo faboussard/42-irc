@@ -1,12 +1,12 @@
 /* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   joinChannel.cpp                                    :+:      :+:    :+:   */
+/*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 17:50:06 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 13:50:52 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ void Server::joinChannel(std::string &param, int fd) {
 #ifdef DEBUG
   std::cout << GREY "CHANNEL NAME " << channelName << " param " << param
             << RESET << std::endl;
-  std::cout.flush();
 #endif
   const Client &client = getClientByFd(fd);
   _channels[channelName].acceptClientInTheChannel(client);
@@ -72,7 +71,12 @@ void Server::joinChannel(std::string &param, int fd) {
 
 void Server::executeJoin(int fd, const Client &client,
                          const std::string &channelName) {
+
   std::string nick = client.getNickName();
+  #ifdef DEBUG
+  std::cout << GREY " nick " << nick << " fd " << fd
+            << RESET << std::endl;
+  #endif
   sendJoinMessageToClient(fd, nick, channelName);
   send353Namreply(fd, nick, _channels[channelName]);
   send366Endofnames(fd, nick, channelName);

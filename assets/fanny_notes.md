@@ -181,3 +181,8 @@ errors, etc.
 The poll() function is used to monitor changes in the status of file descriptors. It blocks until an event occurs on one or more of the monitored file descriptors, or until the specified timeout expires.
 
 raccourci cpplint : ctrl shift i
+
+---
+## **issues encontered and solved**
+
+s :End of /NAMES list: 

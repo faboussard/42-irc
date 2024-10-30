@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/10/30 13:22:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 14:05:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,10 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
     } else if (cmd == CAP) {
       continue;
     } else {
+      #ifdef DEBUG
+      std::cout << CYAN << "OTHER COMMAND: \ncommand = " << command
+                << "\nargument = " << argument << RESET << std::endl;
+      #endif
       handleCommand(command, argument, client.getFd());
     }
   }
@@ -375,7 +379,7 @@ void Server::handleCommand(const std::string &command, std::string &argument, in
   } else if (command == "JOIN") {
   #ifdef DEBUG
     std::cout << GREY "JOIN command received" RESET << std::endl;
-    std::cout << GREY "Params: " RESET << params << std::endl;
+    std::cout << GREY "argument: " RESET << argument << std::endl;
   #endif
     if (canEnterChannel(argument))
       joinChannel(argument, fd);

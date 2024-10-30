@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 11:59:33 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 13:55:29 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ class Server {
   static bool _signal;
   int _socketFd;
   int _port;
-  std::string _name;
   std::string _startTime;
   std::string _password;
   clientsMap _clients;
@@ -85,9 +84,7 @@ class Server {
   const Channel &getChannelByName(const std::string &name) const;
   const channelsMap &getChannels() const;
   const clientsMap &getClients() const;
-  const std::string &getServerName() const;
     // const std::string &getStartTime(void) const;
-  // const std::string &getServerName() const;
 
   /* Setters */
   void setStartTime();
