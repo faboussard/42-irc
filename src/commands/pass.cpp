@@ -15,7 +15,6 @@
 bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
   if (client.isPasswordGiven()) {
     send462AlreadyRegistered(client.getFd(), client.getNickName());
-    // sendNumericReply(462, "ERR_ALREADYREGISTERED");
     return (false);
   }
   if (arg.empty()) {

@@ -150,14 +150,12 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       client.setCapSend(true);
       continue;
     }
-    if (command == "PASS") {
-      if (isLastPass(splittedPair, it + 1, vecSize) &&
-          Parser::verifyPassword(argument, _password, client) == false) {
+    if (command == "PASS" && isLastPass(splittedPair, it + 1, vecSize)) {
+      if (Parser::verifyPassword(argument, _password, client) == false) {
         clearClient(client.getFd());
         return;
       }
     } else if (client.isPasswordGiven() == false) {
-      std::cerr << RED "NO PASSWORD GIVEN !" RESET << std::endl;
       send461NeedMoreParams(client.getFd(), "", "PASS");
       clearClient(client.getFd());
       return;
@@ -168,7 +166,6 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       }
     } else if (command == "USER" && client.isNicknameSet()) {
       if (Parser::verifyUser(argument, client, _clients) == false) {
-        std::cout << RED "Invalid username" RESET << std::endl;
         clearClient(client.getFd());
         return;
       }
