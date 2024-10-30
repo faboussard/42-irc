@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 14:59:11 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 17:23:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,23 +56,19 @@ bool Server::canEnterChannel(const std::string &param) {
 }
 
 void Server::joinChannel(std::string &param, int fd) {
-  std::string channelName;
-  channelName = param.substr(1);
+  std::string channelNameNoSymbol;
+  channelNameNoSymbol = param.substr(1);
   addChanneltoServer
-(channelName);
+(channelNameNoSymbol);
   const Client &client = getClientByFd(fd);
-  _channels[channelName].addClientToChannelMap(client);
-  executeJoin(fd, client, channelName);
+  _channels[channelNameNoSymbol].addClientToChannelMap(client);
+  executeJoin(fd, client, channelNameNoSymbol);
 }
 
 void Server::executeJoin(int fd, const Client &client,
                          const std::string &channelName) {
 
   std::string nick = client.getNickName();
-  #ifdef DEBUG
-  std::cout << GREY " nick " << nick << " fd " << fd
-            << RESET << std::endl;
-  #endif
   sendJoinMessageToClient(fd, nick, channelName);
   send353Namreply(fd, nick, _channels[channelName]);
     std::cout << " _channels[channelName] " << _channels[channelName].getName()

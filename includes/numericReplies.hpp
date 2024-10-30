@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 16:48:34 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/10/30 17:18:05 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,13 +100,13 @@
 // Confirms the user has been invited to the channel.
 // Sent as a reply to the INVITE command.
 
-#define _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames) \
-  (FROM_SERVER + "353 " + nick + " " + chanNameWithSymbol + " :" + nicknames + \
+#define _353_RPL_NAMREPLY(nick, chanName, nicknames) \
+  (FROM_SERVER + "353 " + nick + " " + chanName + " :" + nicknames + \
   "\r\n")
 // : List of users in the channel.
 
 #define _366_RPL_ENDOFNAMES(nick, chanName) \
-  (FROM_SERVER + "366 " + nick + " " + chanName + " :End of /NAMES list\r\n")
+  (FROM_SERVER + "366 " + nick + " " + chanName + " :End of \\NAMES list\r\n")
 
 /*------ Error messages ------------------------------------------------------*/
 

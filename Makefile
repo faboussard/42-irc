@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/30 14:04:52 by faboussa         ###   ########.fr        #
+#    Updated: 2024/10/30 15:22:45 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,8 @@ create_dirs:
 
 # ---------------------------------- Debug ----------------------------------- #
 debug: CFLAGS := $(filter-out -Werror, $(CFLAGS))
-debug: CFLAGS += -DDEBUG
+debug: C = g++
+debug: CFLAGS += -DDEBUG -g3
 debug: clean create_dirs ${NAME}
 
 # ---------------------------------- Test ----------------------------------- #
