@@ -151,14 +151,13 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     } else if (command == "PASS") {
       if (isLastPass(splittedPair, it + 1, vecSize) &&
           Parser::verifyPassword(argument, _password, client) == false) {
-        // ERR_PASSWDMISMATCH` (464).
-        std::cout << RED "Invalid password" RESET << std::endl;
         clearClient(client.getFd());
         return;
       }
     } else if (client.isPasswordGiven() == false) {
       std::cerr << RED "NO PASSWORD GIVEN !" RESET << std::endl;
       // ERR_NEEDMOREPARAMS (461)
+      send461NeedMoreParams(client.getFd(), "", "PASS");
       clearClient(client.getFd());
       return;
     } else if (command == "NICK") {

@@ -14,18 +14,18 @@
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
   if (client.isPasswordGiven()) {
+    send462AlreadyRegistered(client.getFd(), client.getNickName());
     // sendNumericReply(462, "ERR_ALREADYREGISTERED");
     return (false);
   }
   if (arg.empty()) {
-    // sendNumericReply(461, "ERR_NEEDMOREPARAMS");
+    send461NeedMoreParams(client.getFd(), "", "PASS");
     return (false);
   }
   if (arg != psd) {
-    // sendNumericReply(464, "ERR_PASSWDMISMATCH");
+    send464PasswdMismatch(client.getFd(), "");
     return (false);
   }
   client.declarePasswordGiven();
   return (true);
 }
-

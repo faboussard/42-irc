@@ -91,7 +91,11 @@ commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
   for (size_t i = 0; i < size; ++i) {
     cmds[i].erase(cmds[i].find_last_not_of(" \n\r\t") + 1);
     std::string firstPart = cmds[i].substr(0, cmds[i].find_first_of(" "));
-    std::string secondPart = cmds[i].substr(cmds[i].find_first_of(" ") + 1);
+    std::string secondPart;
+    if (firstPart.size() != cmds[i].size())
+      secondPart = cmds[i].substr(cmds[i].find_first_of(" ") + 1);
+    else
+      secondPart = "";
     pair = std::make_pair(firstPart, secondPart);
     std::cout << CYAN "pair.first : " << pair.first << std::endl;
     std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
