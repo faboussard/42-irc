@@ -4,10 +4,9 @@
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 19:37:41 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 22:38:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +14,8 @@
 
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/Config.hpp"
+#include "../includes/numericReplies.hpp"
 #include "../includes/serverConfig.hpp"
 #include "../includes/utils.hpp"
 
@@ -24,7 +25,6 @@ bool Server::_signal = false;
 /*       Constructors                                                         */
 /*============================================================================*/
 
-// Server::Server(int port, std::string password) : _config(CONFIG_FILE_PATH) {
 Server::Server(int port, std::string password) {
   _port = port;
   _password = password;
@@ -131,6 +131,108 @@ void Server::monitorConnections() {
   }
 }
 
+void Server::signalHandler(int signal) {
+  if (signal == SIGINT || signal == SIGQUIT) {
+    _signal = true;
+    std::cout << std::endl << "Signal Received!" << std::endl;
+  }
+}
+
+/*============================================================================*/
+/*       Server Shutdown                                                      */
+/*============================================================================*/
+
+void Server::closeServer() {
+  // Fermer tous les clients
+  for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
+    closeClient(it->second.getFd());
+  }
+  _clients.clear();
+
+  // Fermer le socket principal
+  if (_socketFd != -1) {
+    std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET
+              << std::endl;
+    close(_socketFd);
+    _socketFd = -1;
+  }
+  _pollFds.clear();
+  shrink_to_fit(_pollFds);
+}
+
+/*============================================================================*/
+/*       Clients connection Management                                        */
+/*============================================================================*/
+
+void Server::acceptNewClient() {
+  Client cli;
+  struct sockaddr_in cliadd;
+  struct pollfd newPoll;
+  socklen_t len = sizeof(cliadd);
+
+  int newClientFd =
+      accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
+  if (newClientFd == -1) {
+    std::cerr << RED "Failed to accept new client" RESET << std::endl;
+    return;
+  }
+
+  if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
+    std::cerr << "fcntl() failed" << std::endl;
+    return;
+  }
+
+  newPoll.fd = newClientFd;
+  newPoll.events = POLLIN;
+  newPoll.revents = 0;
+
+  cli.setFd(newClientFd);
+  cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
+                                          // IP en une chaîne de caractères
+  _clients[newClientFd] = cli;
+  _pollFds.push_back(newPoll);
+
+  std::cout << GREEN "New client connected: " RESET << newClientFd << std::endl;
+  testAllNumericReplies(_startTime, cli, "NICK", "targetNick");
+}
+
+void Server::sendConnectionMessage(const Client &target) const {
+  std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
+  std::string user = target.getUserName().empty() ? "*" : target.getUserName();
+  std::string host = target.getIp().empty() ? "*" : target.getIp();
+  int fd = target.getFd();
+  sendWelcome(fd, nick);
+  send001Welcome(fd, nick, user, host);
+  send002Yourhost(fd, nick);
+  send003Created(fd, nick, _startTime);
+  send104Myinfo(fd, nick);
+  send005Isupport(fd, nick, TOKENS);
+}
+
+void Server::closeClient(int fd) {
+  if (fd != -1) {
+    close(fd);
+    std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
+              << std::endl;
+  }
+}
+
+void Server::clearClient(int fd) {
+  closeClient(fd);
+
+  for (size_t i = 0; i < _pollFds.size(); i++) {
+    if (_pollFds[i].fd == fd) {
+      _pollFds.erase(_pollFds.begin() + i);
+      break;
+    }
+  }
+  _clients.erase(fd);
+}
+
+/*============================================================================*/
+/*       Clients Messages Management                                          */
+/*============================================================================*/
+
 bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
                 size_t vecSize) {
   while (it < vecSize && splittedPair[it].first != "PASS") {
@@ -201,8 +303,10 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       }
     }
     if (client.isPasswordGiven() && client.isNicknameSet() &&
-        client.isUsernameSet())
+        client.isUsernameSet()) {
       client.declareAccepted();
+      sendConnectionMessage(client);
+    }
   }
 }
 
@@ -226,35 +330,6 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
     }
   }
 }
-
-void Server::closeServer() {
-  // Fermer tous les clients
-  for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
-    closeClient(it->second.getFd());
-  }
-  _clients.clear();
-
-  // Fermer le socket principal
-  if (_socketFd != -1) {
-    std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET
-              << std::endl;
-    close(_socketFd);
-    _socketFd = -1;
-  }
-  _pollFds.clear();
-  shrink_to_fit(_pollFds);
-}
-
-void Server::signalHandler(int signal) {
-  if (signal == SIGINT || signal == SIGQUIT) {
-    _signal = true;
-    std::cout << std::endl << "Signal Received!" << std::endl;
-  }
-}
-
-/*============================================================================*/
-/*       Clients Management                                                   */
-/*============================================================================*/
 
 void Server::handleClientMessage(int fd) {
   char buffer[1024] = {0};
@@ -282,76 +357,10 @@ void Server::handleClientMessage(int fd) {
   }
 }
 
-void Server::acceptNewClient() {
-  Client cli;
-  struct sockaddr_in cliadd;
-  struct pollfd newPoll;
-  socklen_t len = sizeof(cliadd);
-
-  int newClientFd =
-      accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
-  if (newClientFd == -1) {
-    std::cerr << RED "Failed to accept new client" RESET << std::endl;
-    return;
-  }
-
-  if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
-    std::cerr << "fcntl() failed" << std::endl;
-    return;
-  }
-
-  newPoll.fd = newClientFd;
-  newPoll.events = POLLIN;
-  newPoll.revents = 0;
-
-  cli.setFd(newClientFd);
-  cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
-                                          // IP en une chaîne de caractères
-  _clients[newClientFd] = cli;
-  _pollFds.push_back(newPoll);
-
-  std::cout << GREEN "New client connected: " RESET << newClientFd << std::endl;
-  sendConnectionMessage(cli);
-}
-
-void Server::sendConnectionMessage(const Client &target) const {
-  std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
-  std::string user = target.getUserName().empty() ? "*" : target.getUserName();
-  std::string host = target.getIp().empty() ? "*" : target.getIp();
-  int fd = target.getFd();
-  sendWelcome(fd, nick);
-  send001Welcome(fd, nick, user, host);
-  send002Yourhost(fd, nick);
-  send003Created(fd, nick, _startTime);
-  send104Myinfo(fd, nick);
-  send005Isupport(fd, nick, TOKENS);
-}
-
 void Server::sendToAllClients(const std::string &message) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
     if (it->second.isAccepted()) it->second.receiveMessage(message);
   }
-}
-
-void Server::closeClient(int fd) {
-  if (fd != -1) {
-    close(fd);
-    std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
-              << std::endl;
-  }
-}
-
-void Server::clearClient(int fd) {
-  closeClient(fd);
-
-  for (size_t i = 0; i < _pollFds.size(); i++) {
-    if (_pollFds[i].fd == fd) {
-      _pollFds.erase(_pollFds.begin() + i);
-      break;
-    }
-  }
-
-  _clients.erase(fd);
 }
 
 /*============================================================================*/
@@ -446,3 +455,4 @@ void Server::handleCommand(const std::string &command, std::string &argument,
 //         }
 //     }
 // }
+

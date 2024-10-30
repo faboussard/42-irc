@@ -6,10 +6,11 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/17 15:12:35 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/30 23:09:20 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../includes/Config.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
 
@@ -39,6 +40,7 @@ int main(int ac, char** argv) {
   try {
     signal(SIGINT, Server::signalHandler);
     signal(SIGQUIT, Server::signalHandler);
+    initServerConfig();
     ser.runServer();
   } catch (const std::exception& e) {
     std::cerr << RED << e.what() << RESET << '\n';
@@ -48,5 +50,6 @@ int main(int ac, char** argv) {
 
   ser.closeServer();
   std::cout << "The Server is closed" << std::endl;
+  delete gConfig;
   exit(EXIT_SUCCESS);
 }

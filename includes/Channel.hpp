@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 10:36:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 23:06:55 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 #include <string>
 
 #include "../includes/Client.hpp"
+#include "../includes/Config.hpp"
+
+extern Config *gConfig;
 
 typedef std::map<int, Client> clientsMap;
 

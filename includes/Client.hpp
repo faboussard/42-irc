@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 22:23:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,6 @@ class Client {
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "");
-
-  // void sendNumericReply(int code, const std::string& message);
 
   /* Getters */
   int getFd() const;

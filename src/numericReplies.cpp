@@ -6,13 +6,14 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/30 20:33:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 21:59:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/numericReplies.hpp"
 
 #include "../includes/colors.hpp"
+#include "../includes/Config.hpp"
 
 /*============================================================================*/
 /*       Welcome messages                                                     */

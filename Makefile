@@ -19,8 +19,8 @@ RMDIR = rm -rf
 # ---------------------------------- Sources --------------------------------- #
 vpath %.cpp src src/commands
 
-HEADERS_LIST = colors Server Client Channel Parser numericReplies utils serverConfig
-SRCS = main Server Client Channel Parser numericReplies utils pass nick user invite mode ping topic
+HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils serverConfig
+SRCS = main Server Config Client Channel Parser numericReplies utils pass nick user invite mode ping topic
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/

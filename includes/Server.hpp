@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 19:39:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 22:52:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ class Server {
   static bool                _signal;
   int                        _socketFd;
   int                        _port;
-//  std::string _name;
   std::string _startTime;
   std::string                _password;
   clientsMap                 _clients;
@@ -84,6 +83,7 @@ class Server {
   // const std::string &getServerName() const;
 
   /* Server Mounting */
+
   void runServer();
   void createSocket();
   void createPoll();
@@ -96,7 +96,6 @@ class Server {
   void acceptNewClient();
   void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
-  void handleClientMessage(int fd);
 
   /* Clear and Close */
 
@@ -105,15 +104,18 @@ class Server {
   void closeClient(int fd);
 
   /* Commands Management */
+
   void handleCommand(const std::string &command, std::string &argument, int fd);
   // void joinChannel(std::string &channelName, int fd);
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
-  // void handlePassword(int fd);
+
+  /* Clients message handling */
 
 	void handleInitialMessage(Client &client, const std::string &message);
   void handleOtherMessage(Client &client, const std::string &message);
+  void handleClientMessage(int fd);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
