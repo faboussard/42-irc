@@ -1,31 +1,44 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/28 15:18:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "../includes/Client.hpp"
 
 #include <cerrno>
 #include <cstring>
 
+#include "../includes/Client.hpp"
 #include "../includes/colors.hpp"
 
-/*------ Constructors ------------------------------------------------------- */
+/*============================================================================*/
+/*       Constructors                                                         */
+/*============================================================================*/
 
-Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {}
+Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
+  _nicknameSet = false;
+  _usernameSet = false;
+  _realnameSet = false;
+  _passwordGiven = false;
+  _accepted = false;
+}
 
-/*------ Getters ------------------------------------------------------------ */
+/*============================================================================*/
+/*       Getters                                                              */
+/*============================================================================*/
 
 std::string const& Client::getNickName() const { return (_nickName); }
 
 std::string const& Client::getUserName() const { return (_userName); }
+
+int Client::getFd(void) const { return (_fd); }
+
+std::string Client::getIp(void) const { return (_ip); }
 
 std::string const& Client::getRealName() const { return (_realName); }
 
@@ -39,13 +52,38 @@ const std::string Client::getUserModesFlag() const {
   return (flags);
 }
 
-/*------ Setters -------------------------------------------------------------*/
+bool Client::isNicknameSet(void) const { return (_nicknameSet); }
 
-void Client::setNickName(const std::string& nickName) { _nickName = nickName; }
+bool Client::isUsernameSet(void) const { return (_usernameSet); }
 
-void Client::setUserName(const std::string& userName) { _userName = userName; }
+bool Client::isRealnameSet(void) const { return (_realnameSet); }
 
-void Client::setRealName(const std::string& realName) { _realName = realName; }
+bool Client::isPasswordGiven(void) const { return (_passwordGiven); }
+
+bool Client::isAccepted(void) const { return (_accepted); }
+
+/*============================================================================*/
+/*       Setters                                                              */
+/*============================================================================*/
+
+void Client::setNickname(const std::string& nickname) {
+  _nickName = nickname;
+  _nicknameSet = true;
+}
+
+void Client::setUserName(const std::string& username) {
+  _userName = username;
+  _usernameSet = true;
+}
+
+void Client::setRealName(const std::string& realname) {
+  _realName = realname;
+  _realnameSet = true;
+}
+
+void Client::setFd(int fd) { _fd = fd; }
+
+void Client::setIp(const std::string& ip) { _ip = ip; }
 
 void Client::setUInvisibleMode(bool isInvisible) {
   _uModes.invisible = isInvisible;
@@ -59,7 +97,13 @@ void Client::setURegisteredMode(bool isRegistered) {
   _uModes.registered = isRegistered;
 }
 
-/*------ Messages handling -------------------------------------------------- */
+void Client::declareAccepted(void) { _accepted = true; }
+
+void Client::declarePasswordGiven(void) { _passwordGiven = true; }
+
+/*============================================================================*/
+/*       Messages handling                                                    */
+/*============================================================================*/
 
 void Client::receiveMessage(const std::string& message) {
   if (_fd != -1) {
@@ -73,7 +117,7 @@ void Client::receiveMessage(const std::string& message) {
   }
 }
 
-std::string Client::shareMessage() {
+std::string Client::shareMessage(void) {
   char buffer[1024] = {0};
   ssize_t bytesRead = recv(_fd, buffer, sizeof(buffer) - 1, 0);
   // std::cout << MAGENTA << "Received message from client " << _fd << ": " <<

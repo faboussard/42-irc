@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/29 16:51:30 by faboussa         ###   ########.fr        #
+#    Updated: 2024/10/30 11:16:51 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,12 +17,13 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-HEADER_LIST = colors Server Client Channel numericReplies utils serverConfig tests
-SRCS = main Server Client Channel numericReplies utils commands/joinChannel unitTests/join
+vpath %.cpp src src/commands
+
+HEADERS_LIST = colors Server Client Channel Parser numericReplies utils serverConfig
+SRCS = main Server Client Channel Parser numericReplies utils pass nick user invite mode ping topic join unitTests/join
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
-SRC_DIR = src/
 OBJS_DIR = .objs/
 OBJS = $(addprefix ${OBJS_DIR}, $(addsuffix .o, ${SRCS}))
 HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADER_LIST}))
@@ -35,7 +36,7 @@ all: ${NAME}
 ${NAME}: ${OBJS} Makefile
 	${C} ${CFLAGS} ${OBJS} ${INCLUDES} -o $@
 
-${OBJS_DIR}%.o: ${SRC_DIR}%.cpp ${HEADERS} Makefile | create_dirs
+${OBJS_DIR}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR}
 	${C} ${CFLAGS} ${INCLUDES} -c $< -o $@
 
 create_dirs:
