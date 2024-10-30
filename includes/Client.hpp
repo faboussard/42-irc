@@ -38,6 +38,7 @@ class Client {
   bool _realnameSet;
   bool _passwordGiven;
   bool _accepted;
+  bool _CapSend;
   UserModes _uModes;
 
  public:
@@ -54,7 +55,10 @@ class Client {
   bool isUsernameSet() const;
   bool isRealnameSet() const;
   bool isPasswordGiven() const;
-  bool isAccepted() const;  const std::string &getRealName() const;
+  bool isAccepted() const;
+  bool isCapSend() const;
+
+  const std::string &getRealName() const;
   const UserModes &getUserModes() const;
   const std::string getUserModesFlag() const;
 
@@ -64,6 +68,8 @@ class Client {
   void setUserName(const std::string& username);
   void setRealName(const std::string& realname);
   void setIp(const std::string& ip);
+  void setCapSend(bool yes);
+
   void declareAccepted();
   void declarePasswordGiven();
   void setUInvisibleMode(bool isInvisible);

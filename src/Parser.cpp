@@ -56,7 +56,7 @@ std::vector<std::string> Parser::splitCommand(const std::string& command) {
     message.push_back(token);
     token.clear();
   }
-  return (message);  // /join #channel /nick nickname
+  return (message);
 }
 
 std::vector<std::string> split(const std::string& str, char delim1,
@@ -77,8 +77,7 @@ std::vector<std::string> split(const std::string& str, char delim1,
     if (item.empty()) continue;
     result.push_back(item);
   }
-
-  return result;
+  return (result);
 }
 
 commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
@@ -101,7 +100,6 @@ commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
     std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
     result.push_back(pair);
   }
-
   return (result);
 }
 

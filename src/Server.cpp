@@ -146,9 +146,11 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     std::cout << MAGENTA "Command: " << command << std::endl;
     std::cout << "Message: " << argument << RESET << std::endl;
 
-    if (command == "CAP") {
+    if (command == "CAP" && client.isCapSend() == false && client.isPasswordGiven() == false) {
+      client.setCapSend(true);
       continue;
-    } else if (command == "PASS") {
+    }
+    if (command == "PASS") {
       if (isLastPass(splittedPair, it + 1, vecSize) &&
           Parser::verifyPassword(argument, _password, client) == false) {
         clearClient(client.getFd());
@@ -156,13 +158,11 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       }
     } else if (client.isPasswordGiven() == false) {
       std::cerr << RED "NO PASSWORD GIVEN !" RESET << std::endl;
-      // ERR_NEEDMOREPARAMS (461)
       send461NeedMoreParams(client.getFd(), "", "PASS");
       clearClient(client.getFd());
       return;
     } else if (command == "NICK") {
       if (Parser::verifyNick(argument, client, _clients) == false) {
-        std::cout << BLUE "Invalid nickname" RESET << std::endl;
         clearClient(client.getFd());
         return;
       }
@@ -173,13 +173,11 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
         return;
       }
     } else if (client.isNicknameSet() == false) {
-      std::cerr << RED "NO NICKNAME GIVEN !" RESET << std::endl;
-      // ERR_NONICKNAMEGIVEN (431)
+      send431NoNicknameGiven(client.getFd(), "");
       clearClient(client.getFd());
       return;
     } else if (client.isUsernameSet() == false) {
-      std::cerr << RED "NO USERNAME GIVEN !" RESET << std::endl;
-      // ERR_NEEDMOREPARAMS (461)
+      send461NeedMoreParams(client.getFd(), client.getNickName(), "USER");
       clearClient(client.getFd());
       return;
     } else if (client.isAccepted()) {

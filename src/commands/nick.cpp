@@ -14,26 +14,26 @@
 
 bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
   if (nick.empty()) {
-    // sendNumericReply(431, "ERR_NONICKNAMEGIVEN");
+    send431NoNicknameGiven(client.getFd(), "");
     return (false);
   }
   size_t size = nick.size();
   if (size > 9 || std::isdigit(nick[0])) {
-    // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
+    send432ErroneusNickname(client.getFd(), nick);
     return (false);
   }
   for (size_t i = 0; i < size; ++i) {
     if (!std::isalnum(nick[i]) && nick[i] != '[' && nick[i] != ']' &&
         nick[i] != '{' && nick[i] != '}' && nick[i] != '\\' && nick[i] != '|' &&
         nick[i] != '`' && nick[i] != '_' && nick[i] != '^' && nick[i] != '-') {
-      // sendNumericReply(432, "ERR_ERRONEUSNICKNAME");
+      send432ErroneusNickname(client.getFd(), nick);
       return (false);
     }
   }
   clientsMap::iterator itEnd = cltMap.end();
   for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
     if (it->second.getNickName() == nick) {
-      // sendNumericReply(433, "ERR_NICKNAMEINUSE");
+      send432ErroneusNickname(client.getFd(), nick);
       return (false);
     }
   }
