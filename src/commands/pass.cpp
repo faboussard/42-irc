@@ -1,25 +1,31 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   pass.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/28 10:57:41 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 08:49:24 by yusengok         ###   ########.fr       */
+/*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
+/*   Updated: 2024/10/30 10:47:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// ======== PASS <password> ====================================================
-// If the client is already registered, the server MUST ignore the PASS command
-// and send 
-// -- 462 ERR_ALREADYREGISTERED
+#include "../includes/Parser.hpp"
 
-// ======== PASS (without parameters) ==========================================
-// Replies:
-// -- 461 ERR_NEEDMOREPARAMS
+bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
+  if (client.isPasswordGiven()) {
+    // sendNumericReply(462, "ERR_ALREADYREGISTERED");
+    return (false);
+  }
+  if (arg.empty()) {
+    // sendNumericReply(461, "ERR_NEEDMOREPARAMS");
+    return (false);
+  }
+  if (arg != psd) {
+    // sendNumericReply(464, "ERR_PASSWDMISMATCH");
+    return (false);
+  }
+  client.declarePasswordGiven();
+  return (true);
+}
 
-// ======== PASS <wrong password> ==============================================
-// Replies:
-// -- 464 ERR_PASSWDMISMATCH
-// and then close the connection with -- ERROR message (standard reply format)

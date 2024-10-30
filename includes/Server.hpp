@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/29 14:42:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 10:57:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,18 +39,36 @@
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 
+enum Command {
+  JOIN,
+  KICK,
+  INVITE,
+  TOPIC,
+  MODE,
+  LIST,
+  NOTICE,
+  NICK,
+  PRIVMSG,
+  QUIT,
+  PING,
+  CAP,
+  USER,
+  PASS,
+  UNKNOWN
+};
+
 class Server {
  private:
-  static bool _signal;
-  int _socketFd;
-  int _port;
-  std::string _name;
+  static bool                _signal;
+  int                        _socketFd;
+  int                        _port;
+//  std::string _name;
   std::string _startTime;
-  std::string _password;
-  clientsMap _clients;
-  struct sockaddr_in _address;
+  std::string                _password;
+  clientsMap                 _clients;
+  struct sockaddr_in         _address;
   std::vector<struct pollfd> _pollFds;
-  channelsMap _channels;
+  channelsMap                _channels;
 
  public:
   explicit Server(int port, std::string password);
@@ -63,7 +81,7 @@ class Server {
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
-  const std::string &getServerName() const;
+  // const std::string &getServerName() const;
 
   /* Server Mounting */
   void runServer();
@@ -87,12 +105,15 @@ class Server {
   void closeClient(int fd);
 
   /* Commands Management */
-  void handleCommand(std::string &command, std::string &param, int fd);
-  void joinChannel(std::string &channelName, int fd);
+  void handleCommand(const std::string &command, std::string &argument, int fd);
+  // void joinChannel(std::string &channelName, int fd);
 
   // for channel, list, ","
   void sendToAllClients(const std::string &message);
-  void handlePassword(int fd);
+  // void handlePassword(int fd);
+
+	void handleInitialMessage(Client &client, const std::string &message);
+  void handleOtherMessage(Client &client, const std::string &message);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

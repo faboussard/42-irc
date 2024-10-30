@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 16:09:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,11 @@ Channel::Channel(const std::string &name) : _name(name) {
 
   /*----- Just for test --------------*/
   Client testOp = Client(42);
-  testOp.setNickName("testOp");
+  testOp.setNickname("testOp");
   _clientsInChannel[42] = testOp;
   _channelOperators[42] = testOp;
   Client testClient = Client(43);
-  testClient.setNickName("testClient");
+  testClient.setNickname("testClient");
   _clientsInChannel[43] = testClient;
   _mode.limitSet = true;
   _mode.limit = 42;
