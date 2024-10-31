@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/31 11:35:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 16:34:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 #include <string>
 #include <vector>
 
+#include "../includes/Config.hpp"
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/numericReplies.hpp"
@@ -41,6 +42,8 @@
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
+
+extern Config *gConfig;
 
 enum Command {
   JOIN,
@@ -90,7 +93,7 @@ class Server {
   void runServer();
   void createSocket();
   void createPoll();
-  std::string fetchStartTime();
+  void fetchStartTime();
   void monitorConnections();
   static void signalHandler(int signal);
 

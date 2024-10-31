@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 07:52:25 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 16:36:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ Channel::Channel(const std::string &name) : _name(name) {
   time_t now = time(0);
   _creationTime = toString(now);
 
+  _type = REG_CHAN;
+  _nameWzPrefix = _type + _name;
   _mode.inviteOnly = false;
   _mode.topicSettableByOpsOnly = false;
   _mode.keyRequired = false;
@@ -49,7 +51,7 @@ Channel::Channel(const std::string &name) : _name(name) {
 const std::string &Channel::getName() const { return _name; }
 
 const std::string Channel::getNameWithPrefix() const {
-  return (CHAN_PREFIX + _name);
+  return (_nameWzPrefix);
 }
 
 const std::string &Channel::getCreationTime() const { return _creationTime; }
@@ -103,6 +105,10 @@ void Channel::setTopicSettableByOpsOnlyMode(void) {
   } else {
     _mode.topicSettableByOpsOnly = true;
   }
+}
+
+void Channel::updateKey(const std::string& newKey) {
+  _mode.key = newKey;
 }
 
 /*--------------------------------------------------------------------------- */

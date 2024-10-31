@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:50:36 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/31 11:29:11 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 16:27:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,25 +23,27 @@ typedef std::map<std::string, size_t> numParametersMap;
 
 class Config {
  private:
-  parametersMap _parameters;
+  parametersMap    _parameters;
   numParametersMap _numerictParameters;
+
+  std::string      _supportedChanModes;
+  std::string      _isupportParamTokens;
 
   void _parseConfigFile(const std::string& pathToConfigFile);
   void _setNumericParameters(void);
+  void _setSupportedChanModes(void);
+  void _setIsupportParamToken(void);
 
  public:
   explicit Config(const std::string& pathToConfigFile);
 
   size_t getLimit(const std::string& key) const;
   const std::string& getParam(const std::string& key) const;
-  const std::string& getChanPrefix(void) const;
-  
-  const std::string& generateIsupportParamToken(void) const;
+
+  const std::string& getSupportedChanModes(void) const;
+  const std::string& getIsupportParamToken(void) const;
 };
 
-  void initServerConfig(void);
+void initServerConfig(void);
 
 #endif  // INCLUDES_CONFIG_HPP_
-
-
-// gConfig->getLimit("USERLEN")

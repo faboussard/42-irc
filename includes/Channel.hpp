@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/30 23:06:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 16:12:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@
 #include "../includes/Config.hpp"
 
 extern Config *gConfig;
+
+#define REG_CHAN "#"     // regular channel prefix
+#define PUBLIC_CHAN "="  // public channel symbol
+#define CHAN_OP "@"      // channel operator prefix
 
 typedef std::map<int, Client> clientsMap;
 
@@ -42,9 +46,11 @@ typedef struct Mode {
 class Channel {
  private:
   std::string _name;
+  std::string _type;
+  std::string _nameWzPrefix;
   std::string _creationTime;
-  Topic _topic;
-  Mode _mode;
+  Topic       _topic;
+  Mode        _mode;
 
   clientsMap _clientsInChannel;
   clientsMap _channelOperators;
@@ -70,7 +76,6 @@ class Channel {
   void setTopic(const std::string &topic, const std::string &author);
   void setInviteOnlyMode(void);
   void setTopicSettableByOpsOnlyMode(void);
-  // void setKey(const std::string &key, const Client &cli);
   // void setLimit(int limit, const Client &cli);
 
   /* Member Functions */
@@ -79,6 +84,7 @@ class Channel {
   void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
   void receiveMessageInTheChannel(int fd);
 
+  void updateKey(const std::string &key);
   void activateKeyMode(const std::string &key, const Client &cli);
   void deactivateKeyMode(void);
   void activateLimitMode(int limit, const Client &cli);

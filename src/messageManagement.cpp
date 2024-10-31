@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/10/31 11:57:38 by mbernard         ###   ########.fr       */
+/*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
+/*   Updated: 2024/10/31 16:43:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,9 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
   }
 }
 
-/* Clients Management */
+/*============================================================================*/
+/*       Clients management                                                   */
+/*============================================================================*/
 
 void Server::handleClientMessage(int fd) {
   char buffer[1024] = {0};
@@ -157,7 +159,9 @@ void Server::handleClientMessage(int fd) {
   }
 }
 
-/*  Commands management */
+/*============================================================================*/
+/*       Commands management                                                  */
+/*============================================================================*/
 
 void Server::handleCommand(const std::string &command, std::string &argument,
                            int fd) {

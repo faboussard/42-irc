@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/31 11:54:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 16:28:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,24 +32,25 @@ extern Config *gConfig;
 
 #define _001_RPL_WELCOME(nick, user, host)                                 \
   (FROM_SERVER + "001 " + nick + " :Welcome to the " +                     \
-   gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user + "@" + \
-   host + "\r\n")
+  gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user + "@" + \
+  host + "\r\n")
 
 #define _002_RPL_YOURHOST(nick)                                 \
   (FROM_SERVER + "002 " + nick + " :Your host is " + SRV_NAME + \
-   ", running version " + SRV_VERSION + "\r\n")
+  ", running version " + SRV_VERSION + "\r\n")
 
 #define _003_RPL_CREATED(nick, starttime)                                      \
   (FROM_SERVER + "003 " + nick + " :This server was created on " + starttime + \
-   "\r\n")
+  "\r\n")
 
 #define _004_RPL_MYINFO(nick)                                                \
   (FROM_SERVER + "004 " + nick + " :" + SRV_NAME + " " + SRV_VERSION + " " + \
-   USER_MODES + " " + CHANNEL_MODES + "\r\n")
+  gConfig->getParam("USERMODES") + " " + gConfig->getSupportedChanModes() +   \
+  "\r\n")
 
-#define _005_RPL_ISUPPORT(nick, tokens)          \
-  (FROM_SERVER + "005 " + nick + " :" + tokens + \
-   " :are supported by this server\r\n")
+#define _005_RPL_ISUPPORT(nick)                                      \
+  (FROM_SERVER + "005 " + nick + " :" + gConfig->getIsupportParamToken() + \
+  ":are supported by this server\r\n")
 // Inform clients about the server-supported features and settings
 
 /*------ User related messages -----------------------------------------------*/
@@ -65,14 +66,14 @@ extern Config *gConfig;
 
 #define _322_RPL_LIST(nick, chanName, numUsers, topic)                    \
   (FROM_SERVER + "322 " + nick + " " + chanName + " " + numUsers + " :" + \
-   topic + "\r\n")
+  topic + "\r\n")
 
 #define _323_RPL_LISTEND(nick) \
   (FROM_SERVER + "323 " + nick + " :End of /LIST\r\n")
 
 #define _324_RPL_CHANNELMODEIS(nick, chanName, modeFlag, modeArgs)       \
   (FROM_SERVER + "324 " + nick + " " + chanName + " " + modeFlag + " " + \
-   modeArgs + "\r\n")
+  modeArgs + "\r\n")
 // Channel mode is displayed with arguments associated with the modes.
 // Reply to MODE <prefix><channel>
 
@@ -90,7 +91,7 @@ extern Config *gConfig;
 
 #define _333_RPL_TOPICWHOTIME(nick, chanName, author, setTime)         \
   (FROM_SERVER + "333 " + nick + " " + chanName + " " + author + " " + \
-   setTime + "\r\n")
+  setTime + "\r\n")
 // By whom and when(unix timestamp) is the topic set. Sent with 332
 
 #define _336_RPL_INVITELIST(nick, chanName) \
@@ -107,7 +108,7 @@ extern Config *gConfig;
 
 #define _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames)                 \
   (FROM_SERVER + "353 " + nick + " " + chanNameWithSymbol + " :" + nicknames + \
-   "\r\n")
+  "\r\n")
 // : List of users in the channel.
 
 #define _366_RPL_ENDOFNAMES(nick, chanName) \
@@ -124,7 +125,7 @@ extern Config *gConfig;
 
 #define _404_ERR_CANNOTSENDTOCHAN(nick, chanName) \
   (FROM_SERVER + "404 " + nick + " " + chanName + \
-   " :Cannot send to channel\r\n")
+  " :Cannot send to channel\r\n")
 // Indicates that the user cannot send messages to the channel,
 // which may happen if the channel is set to "invite only."
 
@@ -165,15 +166,15 @@ extern Config *gConfig;
 
 #define _442_ERR_NOTONCHANNEL(nick, chanName)     \
   (FROM_SERVER + "442 " + nick + " " + chanName + \
-   " :You're not on that channel\r\n")
+  " :You're not on that channel\r\n")
 
 #define _443_ERR_USERONCHANNEL(nick, invitedNick, chanName)           \
   (FROM_SERVER + "443 " + nick + " " + invitedNick + " " + chanName + \
-   " :is already on channel\r\n")
+  " :is already on channel\r\n")
 
 #define _441_ERR_USERNOTINCHANNEL(nick, targetNick, chanName)        \
   (FROM_SERVER + "441 " + nick + " " + targetNick + " " + chanName + \
-   " :They aren't on that channel\r\n")
+  " :They aren't on that channel\r\n")
 // Returned when a client tries to perform a channel+nick affecting command,
 // when the nick isn’t joined to the channel (e.g. MODE #channel +o nick).
 
@@ -195,21 +196,21 @@ extern Config *gConfig;
 
 #define _471_ERR_CHANNELISFULL(nick, chanName)    \
   (FROM_SERVER + "471 " + nick + " " + chanName + \
-   " :Cannot join channel (+l)\r\n")
+  " :Cannot join channel (+l)\r\n")
 // : The channel has reached its user number limit set with +l mode
 
 #define _472_ERR_UNKNOWNMODE(nick, modechar)      \
   (FROM_SERVER + "472 " + nick + " " + modechar + \
-   " :is unknown mode char to me\r\n")
+  " :is unknown mode char to me\r\n")
 
 #define _473_ERR_INVITEONLYCHAN(nick, chanName)   \
   (FROM_SERVER + "473 " + nick + " " + chanName + \
-   " :Cannot join channel (+i)\r\n")
+  " :Cannot join channel (+i)\r\n")
 // The channel is invite-only bur the client was not invited.
 
 #define _475_ERR_BADCHANNELKEY(nick, chanName)    \
   (FROM_SERVER + "475 " + nick + " " + chanName + \
-   " :Cannot join channel (+k)\r\n")
+  " :Cannot join channel (+k)\r\n")
 // wrong channel key(password) provided
 
 #define _476_ERR_BADCHANMASK(nick, chanName) \
@@ -219,18 +220,18 @@ extern Config *gConfig;
 
 #define _481_ERR_NOPRIVILEGES(nick) \
   (FROM_SERVER + "481 " + nick +    \
-   " :Permission Denied- You're not an IRC operator\r\n")
+  " :Permission Denied- You're not an IRC operator\r\n")
 
 #define _482_ERR_CHANOPRIVSNEEDED(nick, chanName) \
   (FROM_SERVER + "482 " + nick + " " + chanName + \
-   " :You're not a channel operator\r\n")
+  " :You're not a channel operator\r\n")
 
 #define _501_ERR_UMODEUNKNOWNFLAG(nick) \
   (FROM_SERVER + "501 " + nick + " :Unknown MODE flag\r\n")
 
 #define _525_ERR_INVALIDKEY(nick, chanName)       \
   (FROM_SERVER + "525 " + nick + " " + chanName + \
-   " :Key is not well-formed\r\n")
+  " :Key is not well-formed\r\n")
 
 /* Functions */
 
@@ -242,7 +243,7 @@ void send002Yourhost(int fd, const std::string &nick);
 void send003Created(int fd, const std::string &nick,
                     const std::string &startTime);
 void send104Myinfo(int fd, const std::string &nick);
-void send005Isupport(int fd, const std::string &nick, const std::string &toks);
+void send005Isupport(const Client& client);
 void sendWelcome(int fd, const std::string &nick);
 
 /*------ User related replies ------------------------------------------------*/
@@ -327,18 +328,18 @@ void testAllNumericReplies(const std::string &serverStartTime,
 
 #define _WELCOME(nick)                                                         \
   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" +                  \
-   "────────────────────────────────────────────────────────────────────\n" +  \
-   "────────────────────────────────────────────────────────────────────\n" +  \
-   "─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + \
-   "────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" +  \
-   "───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + \
-   "───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " +         \
-   "/\\_/\\" + " ────\n" +                                                     \
-   "───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + "( o.o )" +  \
-   " ───\n" + "────────────────────────────────────────────────────────  " +   \
-   "> ^ <" + " ────\n" +                                                       \
-   "───────────────── powered by faboussa, mbernard & yusengok with " + "♥" +  \
-   " ──" + "\n\r\n")
+  "────────────────────────────────────────────────────────────────────\n" +  \
+  "────────────────────────────────────────────────────────────────────\n" +  \
+  "─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + \
+  "────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" +  \
+  "───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + \
+  "───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " +         \
+  "/\\_/\\" + " ────\n" +                                                     \
+  "───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + "( o.o )" +  \
+  " ───\n" + "────────────────────────────────────────────────────────  " +   \
+  "> ^ <" + " ────\n" +                                                       \
+  "───────────────── powered by faboussa, mbernard & yusengok with " + "♥" +  \
+  " ──" + "\n\r\n")
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_
 

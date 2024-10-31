@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:55:24 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/31 11:49:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 16:27:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ Config* gConfig = NULL;
 
 Config::Config(const std::string& pathToConfigFile) {
   _parseConfigFile(pathToConfigFile);
+  _setSupportedChanModes();
+  _setIsupportParamToken();
 }
 
 /*============================================================================*/
@@ -38,7 +40,7 @@ Config::Config(const std::string& pathToConfigFile) {
 void initServerConfig(void) { gConfig = new Config(CONFIG_FILE_PATH); }
 
 /*============================================================================*/
-/*       Getters                                                              */
+/*       Getters & Setters                                                    */
 /*============================================================================*/
 
 size_t Config::getLimit(const std::string& key) const {
@@ -49,17 +51,33 @@ const std::string& Config::getParam(const std::string& key) const {
   return (_parameters.at(key));
 }
 
-// const std::string& Config::getChanPrefix(void) const {
-//   return (_parameters.at("CHANTYPES"));
-// }
+const std::string& Config::getIsupportParamToken(void) const {
+  return (_isupportParamTokens);
+}
 
-/*============================================================================*/
-/*       Public functions                                                     */
-/*============================================================================*/
+const std::string& Config::getSupportedChanModes(void) const {
+  return (_supportedChanModes);
+}
 
-// const std::string& Config::generateIsupportParamToken(void) const {
-  
-// }
+void Config::_setSupportedChanModes(void) {
+  std::string modes = _parameters.at("CHANMODES");
+  std::istringstream iss(modes);
+  std::string buffer;
+  while (std::getline(iss, buffer, ',')) {
+    _supportedChanModes += buffer;
+  }
+}
+
+void Config::_setIsupportParamToken(void) {
+  parametersMap::const_iterator itEnd = _parameters.end();
+  for (parametersMap::const_iterator it = _parameters.begin(); it != itEnd;
+       ++it) {
+    if (it->second.empty())
+      continue;
+    else
+      _isupportParamTokens += it->first + "=" + it->second + " ";
+  }
+}
 
 /*============================================================================*/
 /*       Private functions                                                    */
@@ -80,9 +98,8 @@ void Config::_parseConfigFile(const std::string& pathToConfigFile) {
     if (std::getline(lineStream, key, '=')) {
       std::string value;
       if (std::getline(lineStream, value)) {
+        _parameters[key] = value;
       }
-      _parameters[key] = value;
-      std::cout << "key: " << key << " value: " << value << std::endl;
     }
   }
   _setNumericParameters();
@@ -95,8 +112,6 @@ void Config::_setNumericParameters(void) {
       char* end = NULL;
       _numerictParameters[it->first] =
           std::strtoul(it->second.c_str(), &end, 10);
-      std::cout << "key: " << it->first
-                << " value: " << _numerictParameters[it->first] << std::endl;
     }
   }
 }
