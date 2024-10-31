@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 22:52:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 11:35:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,9 @@
 #include "../includes/Client.hpp"
 #include "../includes/numericReplies.hpp"
 
+#define SRV_NAME "ircserv.localhost"
+#define SRV_VERSION "1.0.0"
+
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 
@@ -62,7 +65,7 @@ class Server {
   static bool                _signal;
   int                        _socketFd;
   int                        _port;
-  std::string _startTime;
+  std::string                _startTime;
   std::string                _password;
   clientsMap                 _clients;
   struct sockaddr_in         _address;

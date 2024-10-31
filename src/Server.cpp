@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 22:38:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 11:58:35 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ void Server::acceptNewClient() {
   _pollFds.push_back(newPoll);
 
   std::cout << GREEN "New client connected: " RESET << newClientFd << std::endl;
-  testAllNumericReplies(_startTime, cli, "NICK", "targetNick");
+  // testAllNumericReplies(_startTime, cli, "NICK", "targetNick");
 }
 
 void Server::sendConnectionMessage(const Client &target) const {

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 07:52:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ Channel::Channel(const std::string &name) : _name(name) {
   _topic.author = "";
   _topic.setTime = "";
 
-  /*----- Just for test --------------*/
+  /*--- For test numeric replies print ---*/
   Client testOp = Client(42);
   testOp.setNickname("testOp");
   _clientsInChannel[42] = testOp;
@@ -41,7 +41,7 @@ Channel::Channel(const std::string &name) : _name(name) {
   _clientsInChannel[43] = testClient;
   _mode.limitSet = true;
   _mode.limit = 42;
-  /*----------------------------------*/
+  /*--------------------------------------*/
 }
 
 /*------ Getters ------------------------------------------------------------ */

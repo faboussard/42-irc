@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/30 23:07:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 11:54:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,22 +23,21 @@
 
 extern Config *gConfig;
 
-#define FROM_SERVER (std::string(":") + gConfig->getParam("SRV_NAME") + " ")
+#define FROM_SERVER (std::string(":") + SRV_NAME + " ")
 #define RUNTIME_ERROR "Failed to send numeric reply"
 
 /* Messages definition */
 
 /*------ Connection registration ---------------------------------------------*/
 
-#define _001_RPL_WELCOME(nick, user, host)                                  \
-  (FROM_SERVER + "001 " + nick + " :Welcome to the "                        \
-   + gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user +  \
-  "@" + host + "\r\n")
+#define _001_RPL_WELCOME(nick, user, host)                                 \
+  (FROM_SERVER + "001 " + nick + " :Welcome to the " +                     \
+   gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user + "@" + \
+   host + "\r\n")
 
-#define _002_RPL_YOURHOST(nick)                          \
-  (FROM_SERVER + "002 " + nick + " :Your host is "       \
-   + gConfig->getParam("SRV_NAME") + ", running version " \
-   + gConfig->getParam("SRV_VERSION") + "\r\n")
+#define _002_RPL_YOURHOST(nick)                                 \
+  (FROM_SERVER + "002 " + nick + " :Your host is " + SRV_NAME + \
+   ", running version " + SRV_VERSION + "\r\n")
 
 #define _003_RPL_CREATED(nick, starttime)                                      \
   (FROM_SERVER + "003 " + nick + " :This server was created on " + starttime + \
@@ -263,15 +262,12 @@ void send331Notopic(int fd, const std::string &nick, const Channel &channel);
 void send332Topic(int fd, const std::string &nick, const Channel &channel);
 void send333Topicwhotime(int fd, const std::string &nick,
                          const Channel &channel);
-void send336Invitelist(int fd, const std::string &nick,
-                       const Channel &channel);
+void send336Invitelist(int fd, const std::string &nick, const Channel &channel);
 void send337Endofinvitelist(int fd, const std::string &nick);
 void send341Inviting(int fd, const std::string &nick,
-                     const std::string &invitedNick,
-                     const Channel &channel);
+                     const std::string &invitedNick, const Channel &channel);
 void send353Namreply(int fd, const std::string &nick, const Channel &channel);
-void send366Endofnames(int fd, const std::string &nick,
-                       const Channel &channel);
+void send366Endofnames(int fd, const std::string &nick, const Channel &channel);
 
 /*------ Error messages ------------------------------------------------------*/
 
@@ -319,8 +315,7 @@ void send481NoPrivileges(int fd, const std::string &nick);
 void send482ChanOPrivsNeeded(int fd, const std::string &nick,
                              const Channel &channel);
 void send501UmodeUnknownFlag(int fd, const std::string &nick);
-void send525InvalidKey(int fd, const std::string &nick,
-                       const Channel &channel);
+void send525InvalidKey(int fd, const std::string &nick, const Channel &channel);
 
 /*--------- Test -------------------------------------------------------------*/
 
