@@ -6,13 +6,14 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/30 10:48:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 08:55:10 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Parser.hpp"
 
 static std::vector<std::string> fillUserVectorString(const std::string &str) {
+  if (str.empty()) return (std::vector<std::string>());
   std::vector<std::string> result;
   std::istringstream iss(str);
   std::string token;
@@ -34,9 +35,12 @@ static std::vector<std::string> fillUserVectorString(const std::string &str) {
   return (result);
 }
 
-static bool usernameContainsForbiddenCaracters(const std::string &username) {
+static bool usernameIsInvalid(const std::string &username) {
   const size_t size = username.size();
 
+  if (size > 10) {
+    return (true);
+  }
   for (size_t i = 0; i < size; ++i) {
     if (std::isspace(username.at(i)) || std::iscntrl(username.at(i))) {
       return (true);
@@ -45,7 +49,7 @@ static bool usernameContainsForbiddenCaracters(const std::string &username) {
   return (false);
 }
 
-static bool realnameContainsForbiddenCaracters(const std::string realname) {
+static bool realnameIsInvalid(const std::string realname) {
   size_t size = realname.size();
 
   for (size_t i = 0; i < size; ++i) {
@@ -56,22 +60,17 @@ static bool realnameContainsForbiddenCaracters(const std::string realname) {
   return (false);
 }
 
-bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
+bool Parser::verifyUser(std::string user, Client &client, clientsMap cltMap) {
   if (client.isUsernameSet()) {
     send462AlreadyRegistered(client.getFd(), client.getNickName());
     return (false);
   }
-  if (user.empty()) {
-    send461NeedMoreParams(client.getFd(), client.getNickName(), "USER");
-    return (false);
-  }
   std::vector<std::string> fields = fillUserVectorString(user);
-  if (fields.size() != 4) {
+  if (user.empty() || fields.size() != 4) {
     send461NeedMoreParams(client.getFd(), client.getNickName(), "USER");
     return (false);
   }
-  if (usernameContainsForbiddenCaracters(fields[0])
-      || realnameContainsForbiddenCaracters(fields[3])) {
+  if (usernameIsInvalid(fields[0]) || realnameIsInvalid(fields[3])) {
     send432ErroneusNickname(client.getFd(), client.getNickName());
     return (false);
   }

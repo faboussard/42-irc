@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 14:25:26 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/31 10:52:53 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,10 @@ std::vector<std::string> split(const std::string& str, char delim1,
   std::string item;
 
   while (getline(ss, item, delim1)) {
+    if (item.empty()) continue;
+    while (std::isspace(item[0])) {
+      item.erase(0, 1);
+    }
     if (item.empty()) continue;
     result.push_back(item);
   }

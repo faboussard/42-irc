@@ -1,26 +1,36 @@
 /* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
+/*   messageManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:57:08 by yusengok         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2024/10/31 10:49:18 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Server.hpp"
 #include "../includes/Parser.hpp"
+#include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
 
 static bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
-                size_t vecSize) {
+                   size_t vecSize) {
   while (it < vecSize && splittedPair[it].first != "PASS") {
     ++it;
   }
   if (it >= vecSize) {
+    return (true);
+  }
+  return (false);
+}
+
+static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
+                   size_t vecSize) {
+  while (it < vecSize && splittedPair[it].first != "NICK" && splittedPair[it].first != "USER") {
+    ++it;
+  }
+  if ( it >= vecSize || splittedPair[it].first == "USER") {
     return (true);
   }
   return (false);
@@ -36,23 +46,33 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     std::cout << MAGENTA "Command: " << command << std::endl;
     std::cout << "Message: " << argument << RESET << std::endl;
 
-    if (command == "CAP" && client.isCapSend() == false && client.isPasswordGiven() == false) {
+    if (command == "QUIT") {
+      // lancer la commande QUIT avec les arguments : quit(client, argument);
+      clearClient(client.getFd());
+      return;
+    }
+    if (command == "CAP" && client.isCapSend() == false &&
+        client.isPasswordGiven() == false) {
       client.setCapSend(true);
       continue;
     }
-    if (command == "PASS" && isLastPass(splittedPair, it + 1, vecSize)) {
-      if (Parser::verifyPassword(argument, _password, client) == false) {
-        clearClient(client.getFd());
-        return;
+    if (command == "PASS") {
+      if (isLastPass(splittedPair, it + 1, vecSize)) {
+        if (Parser::verifyPassword(argument, _password, client) == false) {
+          clearClient(client.getFd());
+          return;
+        }
       }
     } else if (client.isPasswordGiven() == false) {
       send461NeedMoreParams(client.getFd(), "", "PASS");
       clearClient(client.getFd());
       return;
-    } else if (command == "NICK" && it == 1) {
-      if (Parser::verifyNick(argument, client, _clients) == false) {
-        clearClient(client.getFd());
-        return;
+    } else if (command == "NICK") {
+      if (isLastNick(splittedPair, it + 1, vecSize)) {
+        if (Parser::verifyNick(argument, client, _clients) == false) {
+          clearClient(client.getFd());
+          return;
+        }
       }
     } else if (command == "USER" && client.isNicknameSet()) {
       if (Parser::verifyUser(argument, client, _clients) == false) {
@@ -68,15 +88,12 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       clearClient(client.getFd());
       return;
     } else if (client.isAccepted()) {
-      if (command == "QUIT") {
-        // lancer la commande QUIT avec les arguments : quit(client, argument);
-        clearClient(client.getFd());
-        return;
-      } else {
-        std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
-                  << "\nargument = " << argument << RESET << std::endl;
-        handleCommand(command, argument, client.getFd());
-      }
+      std::cout << BLUE "NickName: " << client.getNickName() << std::endl;
+      std::cout << "UserName: " << client.getUserName() << std::endl;
+      std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
+      std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
+                << "\nargument = " << argument << RESET << std::endl;
+      handleCommand(command, argument, client.getFd());
     }
     if (client.isPasswordGiven() && client.isNicknameSet() &&
         client.isUsernameSet())
@@ -91,14 +108,15 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
     std::string command = splittedPair[it].first;
     std::string argument = splittedPair[it].second;
     Command cmd = Parser::choseCommand(command);
+    std::cout << BLUE "NickName: " << client.getNickName() << std::endl;
+    std::cout << "UserName: " << client.getUserName() << std::endl;
     std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
     std::cout << MAGENTA "Message: " << argument << RESET << std::endl;
     if (cmd == UNKNOWN) {
       send421UnknownCommand(client.getFd(), client.getNickName(), command);
       continue;
     }
-    if (cmd == CAP)
-      continue;
+    if (cmd == CAP) continue;
     handleCommand(command, argument, client.getFd());
   }
 }
@@ -134,8 +152,8 @@ void Server::handleClientMessage(int fd) {
 
 /*  Commands management */
 
-void Server::handleCommand(const std::string &command,
-                           std::string &argument, int fd) {
+void Server::handleCommand(const std::string &command, std::string &argument,
+                           int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
     // joinChannel(argument, fd);
@@ -162,10 +180,10 @@ void Server::handleCommand(const std::string &command,
   } else if (command == "PING") {
     // client.sendNumericReply(1, "PONG");
   } else if (command == "PASS" || command == "USER") {
-     if (argument.empty())
-       send461NeedMoreParams(fd, "", command);
-     else
-       send462AlreadyRegistered(fd, _clients[fd].getNickName());
+    if (argument.empty())
+      send461NeedMoreParams(fd, "", command);
+    else
+      send462AlreadyRegistered(fd, _clients[fd].getNickName());
   } else {
     // Commande inconnue
   }
