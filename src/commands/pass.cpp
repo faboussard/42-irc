@@ -6,14 +6,16 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 11:53:28 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/31 13:58:51 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../includes/Client.hpp"
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
+  client.incrementNbPassAttempts();
   if (client.isPasswordGiven()) {
     send462AlreadyRegistered(client.getFd(), client.getNickName());
     return (false);

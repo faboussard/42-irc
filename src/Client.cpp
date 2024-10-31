@@ -6,14 +6,15 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 14:49:31 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../includes/Client.hpp"
 
 #include <cerrno>
 #include <cstring>
 
-#include "../includes/Client.hpp"
 #include "../includes/colors.hpp"
 
 /*============================================================================*/
@@ -27,6 +28,7 @@ Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
   _passwordGiven = false;
   _accepted = false;
   _CapSend = false;
+  _nbPassAttempts = 0;
 }
 
 /*============================================================================*/
@@ -64,6 +66,8 @@ bool Client::isPasswordGiven(void) const { return (_passwordGiven); }
 bool Client::isAccepted(void) const { return (_accepted); }
 
 bool Client::isCapSend(void) const { return (_CapSend); }
+
+uint8_t Client::getNbPassAttempts(void) const { return (_nbPassAttempts); }
 
 /*============================================================================*/
 /*       Setters                                                              */
@@ -106,6 +110,7 @@ void Client::declareAccepted(void) { _accepted = true; }
 
 void Client::declarePasswordGiven(void) { _passwordGiven = true; }
 
+void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 
 /*============================================================================*/
 /*       Messages handling                                                    */

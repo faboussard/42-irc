@@ -4,12 +4,12 @@
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:57:08 by yusengok         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2024/10/31 13:04:42 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "../includes/Server.hpp"
 
@@ -190,10 +190,10 @@ void Server::acceptNewClient() {
                                           // IP en une chaîne de caractères
 
   // ----- For test ---------
-  cli.setUInvisibleMode(true);
-  cli.setUOperatorMode(false);
-  cli.setURegisteredMode(true);
-  testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
+  // cli.setUInvisibleMode(true);
+  // cli.setUOperatorMode(false);
+  // cli.setURegisteredMode(true);
+  // testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
   // ------------------------
 
   _clients[newClientFd] = cli;
