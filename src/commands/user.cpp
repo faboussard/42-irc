@@ -6,11 +6,12 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 08:55:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/31 12:09:02 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Parser.hpp"
+#include "../includes/colors.hpp"
 
 static std::vector<std::string> fillUserVectorString(const std::string &str) {
   if (str.empty()) return (std::vector<std::string>());
@@ -81,7 +82,8 @@ bool Parser::verifyUser(std::string user, Client &client, clientsMap cltMap) {
       return (false);
     }
   }
-  client.setUserName(user);
+  client.setUserName(fields[0]);
   client.setRealName(fields[3]);
+  std::cout << BRIGHT_YELLOW "UserName IS ACCEPTED !!!!! : " << client.getUserName() << RESET << std::endl;
   return (true);
 }

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/10/31 10:49:18 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/31 11:57:38 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       clearClient(client.getFd());
       return;
     } else if (client.isAccepted()) {
+      std::cout << BRIGHT_YELLOW "CLIENT ACCEPTED !!!!!!!  " << command << std::endl;
       std::cout << BLUE "NickName: " << client.getNickName() << std::endl;
       std::cout << "UserName: " << client.getUserName() << std::endl;
       std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
@@ -96,8 +97,14 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       handleCommand(command, argument, client.getFd());
     }
     if (client.isPasswordGiven() && client.isNicknameSet() &&
-        client.isUsernameSet())
+        client.isUsernameSet()) {
       client.declareAccepted();
+      std::cout << GREEN "Client IS ACCEPTED !!!!" RESET << std::endl;
+      if (client.isAccepted()) {
+        std::cout << GREEN "Client IS REEEALLLYYY ACCEPTED !!!!" RESET << std::endl;
+        sendConnectionMessage(client);
+      }
+    }
   }
 }
 

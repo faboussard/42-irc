@@ -6,11 +6,12 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/30 10:47:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 11:53:28 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Parser.hpp"
+#include "../includes/colors.hpp"
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
   if (client.isPasswordGiven()) {
@@ -26,5 +27,6 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
     return (false);
   }
   client.declarePasswordGiven();
+  std::cout << BRIGHT_YELLOW "Password IS ACCEPTED !!!!! : " << arg << RESET << std::endl;
   return (true);
 }
