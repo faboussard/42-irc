@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/31 16:08:36 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 17:17:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,17 @@ void Server::fetchStartTime(void) {
   time_t now = time(0);
   _startTime = ctime(&now);
   _startTime.erase(_startTime.find_last_not_of("\n") + 1);
+}
+
+std::string Server::getHostname(void) {
+  char hostname[1024];
+  gethostname(hostname, sizeof(hostname));
+  if (hostname == NULL) {
+    return ("localhost");
+  } else if (strlen(hostname) > gConfig->getLimit("HOSTLEN")) {
+    return ("Get ip address");
+  }
+  return std::string(hostname);
 }
 
 void Server::monitorConnections() {

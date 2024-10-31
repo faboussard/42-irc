@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/31 16:34:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 17:16:26 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ class Server {
   void createSocket();
   void createPoll();
   void fetchStartTime();
+  std::string Server::getHostname(void);
   void monitorConnections();
   static void signalHandler(int signal);
 
