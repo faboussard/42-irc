@@ -26,6 +26,7 @@ Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
   _realnameSet = false;
   _passwordGiven = false;
   _accepted = false;
+  _CapSend = false;
 }
 
 /*============================================================================*/
@@ -62,6 +63,8 @@ bool Client::isPasswordGiven(void) const { return (_passwordGiven); }
 
 bool Client::isAccepted(void) const { return (_accepted); }
 
+bool Client::isCapSend(void) const { return (_CapSend); }
+
 /*============================================================================*/
 /*       Setters                                                              */
 /*============================================================================*/
@@ -85,6 +88,8 @@ void Client::setFd(int fd) { _fd = fd; }
 
 void Client::setIp(const std::string& ip) { _ip = ip; }
 
+void Client::setCapSend(bool yes) { _CapSend = yes; }
+
 void Client::setUInvisibleMode(bool isInvisible) {
   _uModes.invisible = isInvisible;
 }
@@ -100,6 +105,7 @@ void Client::setURegisteredMode(bool isRegistered) {
 void Client::declareAccepted(void) { _accepted = true; }
 
 void Client::declarePasswordGiven(void) { _passwordGiven = true; }
+
 
 /*============================================================================*/
 /*       Messages handling                                                    */

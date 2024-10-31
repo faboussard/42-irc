@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 14:25:26 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/10/31 10:52:53 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ std::vector<std::string> Parser::splitCommand(const std::string& command) {
     message.push_back(token);
     token.clear();
   }
-  return (message);  // /join #channel /nick nickname
+  return (message);
 }
 
 std::vector<std::string> split(const std::string& str, char delim1,
@@ -75,10 +75,13 @@ std::vector<std::string> split(const std::string& str, char delim1,
 
   while (getline(ss, item, delim1)) {
     if (item.empty()) continue;
+    while (std::isspace(item[0])) {
+      item.erase(0, 1);
+    }
+    if (item.empty()) continue;
     result.push_back(item);
   }
-
-  return result;
+  return (result);
 }
 
 commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
@@ -91,13 +94,16 @@ commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
   for (size_t i = 0; i < size; ++i) {
     cmds[i].erase(cmds[i].find_last_not_of(" \n\r\t") + 1);
     std::string firstPart = cmds[i].substr(0, cmds[i].find_first_of(" "));
-    std::string secondPart = cmds[i].substr(cmds[i].find_first_of(" ") + 1);
+    std::string secondPart;
+    if (firstPart.size() != cmds[i].size())
+      secondPart = cmds[i].substr(cmds[i].find_first_of(" ") + 1);
+    else
+      secondPart = "";
     pair = std::make_pair(firstPart, secondPart);
     std::cout << CYAN "pair.first : " << pair.first << std::endl;
     std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
     result.push_back(pair);
   }
-
   return (result);
 }
 

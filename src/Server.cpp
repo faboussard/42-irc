@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/31 11:58:35 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/10/31 16:08:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
-#include "../includes/Config.hpp"
-#include "../includes/numericReplies.hpp"
-#include "../includes/serverConfig.hpp"
 #include "../includes/utils.hpp"
 
 bool Server::_signal = false;
@@ -66,8 +63,8 @@ int Server::getSocketFd() const { return _socketFd; }
 
 void Server::runServer() {
   createSocket();
-  _startTime = fetchStartTime();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
+  fetchStartTime();
   monitorConnections();
 }
 
@@ -100,11 +97,10 @@ void Server::createSocket() {
   }
 }
 
-std::string Server::fetchStartTime(void) {
+void Server::fetchStartTime(void) {
   time_t now = time(0);
-  std::string startTime = ctime(&now);
-  startTime.erase(_startTime.find_last_not_of("\n") + 1);
-  return (startTime);
+  _startTime = ctime(&now);
+  _startTime.erase(_startTime.find_last_not_of("\n") + 1);
 }
 
 void Server::monitorConnections() {
@@ -189,24 +185,16 @@ void Server::acceptNewClient() {
   cli.setFd(newClientFd);
   cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
                                           // IP en une chaîne de caractères
+
+  // ----- For test ---------
+  cli.setUInvisibleMode(true);
+  cli.setUOperatorMode(false);
+  cli.setURegisteredMode(true);
+  // testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
+  // ------------------------
+
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
-
-  std::cout << GREEN "New client connected: " RESET << newClientFd << std::endl;
-  // testAllNumericReplies(_startTime, cli, "NICK", "targetNick");
-}
-
-void Server::sendConnectionMessage(const Client &target) const {
-  std::string nick = target.getNickName().empty() ? "*" : target.getNickName();
-  std::string user = target.getUserName().empty() ? "*" : target.getUserName();
-  std::string host = target.getIp().empty() ? "*" : target.getIp();
-  int fd = target.getFd();
-  sendWelcome(fd, nick);
-  send001Welcome(fd, nick, user, host);
-  send002Yourhost(fd, nick);
-  send003Created(fd, nick, _startTime);
-  send104Myinfo(fd, nick);
-  send005Isupport(fd, nick, TOKENS);
 }
 
 void Server::closeClient(int fd) {
@@ -230,175 +218,25 @@ void Server::clearClient(int fd) {
 }
 
 /*============================================================================*/
-/*       Clients Messages Management                                          */
+/*       Clients management                                                   */
 /*============================================================================*/
 
-bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
-                size_t vecSize) {
-  while (it < vecSize && splittedPair[it].first != "PASS") {
-    ++it;
-  }
-  if (it >= vecSize) {
-    return (true);
-  }
-  return (false);
-}
-
-void Server::handleInitialMessage(Client &client, const std::string &message) {
-  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
-  size_t vecSize = splittedPair.size();
-
-  for (size_t it = 0; it < vecSize; ++it) {
-    std::string command = splittedPair[it].first;
-    std::string argument = splittedPair[it].second;
-    std::cout << MAGENTA "Command: " << command << std::endl;
-    std::cout << "Message: " << argument << RESET << std::endl;
-
-    if (command == "CAP") {
-      continue;
-    } else if (command == "PASS") {
-      if (isLastPass(splittedPair, it + 1, vecSize) &&
-          Parser::verifyPassword(argument, _password, client) == false) {
-        // ERR_PASSWDMISMATCH` (464).
-        std::cout << RED "Invalid password" RESET << std::endl;
-        clearClient(client.getFd());
-        return;
-      }
-    } else if (client.isPasswordGiven() == false) {
-      std::cerr << RED "NO PASSWORD GIVEN !" RESET << std::endl;
-      // ERR_NEEDMOREPARAMS (461)
-      clearClient(client.getFd());
-      return;
-    } else if (command == "NICK") {
-      if (Parser::verifyNick(argument, client, _clients) == false) {
-        std::cout << BLUE "Invalid nickname" RESET << std::endl;
-        clearClient(client.getFd());
-        return;
-      }
-    } else if (command == "USER" && client.isNicknameSet()) {
-      if (Parser::verifyUser(argument, client, _clients) == false) {
-        std::cout << RED "Invalid username" RESET << std::endl;
-        clearClient(client.getFd());
-        return;
-      }
-    } else if (client.isNicknameSet() == false) {
-      std::cerr << RED "NO NICKNAME GIVEN !" RESET << std::endl;
-      // ERR_NONICKNAMEGIVEN (431)
-      clearClient(client.getFd());
-      return;
-    } else if (client.isUsernameSet() == false) {
-      std::cerr << RED "NO USERNAME GIVEN !" RESET << std::endl;
-      // ERR_NEEDMOREPARAMS (461)
-      clearClient(client.getFd());
-      return;
-    } else if (client.isAccepted()) {
-      if (command == "QUIT") {
-        // lancer la commande QUIT avec les arguments : quit(client, argument);
-        clearClient(client.getFd());
-        return;
-      } else {
-        std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
-                  << "\nargument = " << argument << RESET << std::endl;
-        handleCommand(command, argument, client.getFd());
-      }
-    }
-    if (client.isPasswordGiven() && client.isNicknameSet() &&
-        client.isUsernameSet()) {
-      client.declareAccepted();
-      sendConnectionMessage(client);
-    }
-  }
-}
-
-void Server::handleOtherMessage(Client &client, const std::string &message) {
-  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
-  size_t vecSize = splittedPair.size();
-  for (size_t it = 0; it < vecSize; ++it) {
-    std::string command = splittedPair[it].first;
-    std::string argument = splittedPair[it].second;
-    Command cmd = Parser::choseCommand(command);
-    std::cout << MAGENTA "Command: " << command << std::endl;
-    std::cout << "Message: " << argument << RESET << std::endl;
-    if (cmd == UNKNOWN) {
-      // ERR_UNKNOWNCOMMAND (421)
-      std::cerr << RED "Unknown command" RESET << std::endl;
-      continue;
-    } else if (cmd == CAP) {
-      continue;
-    } else {
-      handleCommand(command, argument, client.getFd());
-    }
-  }
-}
-
-void Server::handleClientMessage(int fd) {
-  char buffer[1024] = {0};
-  std::memset(buffer, 0, sizeof(buffer));
-  int valread = recv(fd, buffer, sizeof(buffer), 0);
-
-  switch (valread) {
-    case -1:
-      std::cerr << RED "Error while receiving message" RESET << std::endl;
-      // fallthrough
-    case 0:
-      std::cout << "Client " << fd << " disconnected" << std::endl;
-      clearClient(fd);
-      return;
-  }
-  std::string message(buffer, valread);
-  std::cout << "Received message from client " << fd << ": " << message
-            << std::endl;
-
-  Client &client = _clients[fd];
-  if (client.isAccepted() == false) {
-    handleInitialMessage(client, message);
-  } else {
-    handleOtherMessage(client, message);
-  }
+void Server::sendConnectionMessage(const Client &client) const {
+  std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
+  std::string user = client.getUserName().empty() ? "*" : client.getUserName();
+  std::string host = client.getIp().empty() ? "*" : client.getIp();
+  int fd = client.getFd();
+  sendWelcome(fd, nick);
+  send001Welcome(fd, nick, user, host);
+  send002Yourhost(fd, nick);
+  send003Created(fd, nick, _startTime);
+  send104Myinfo(fd, nick);
+  send005Isupport(client);
 }
 
 void Server::sendToAllClients(const std::string &message) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
     if (it->second.isAccepted()) it->second.receiveMessage(message);
-  }
-}
-
-/*============================================================================*/
-/*       Commands management                                                  */
-/*============================================================================*/
-
-void Server::handleCommand(const std::string &command, std::string &argument,
-                           int fd) {
-  if (command.empty()) return;
-  if (command == "JOIN") {
-    // joinChannel(argument, fd);
-  } else if (command == "KICK") {
-    // Exclure un client du canal
-  } else if (command == "INVITE") {
-    // Notice
-  } else if (command == "TOPIC") {
-    // Changer le sujet du canal
-  } else if (command == "MODE") {
-    // Changer le sujet du canal
-  } else if (command == "LIST") {
-    // Lister les canaux
-  } else if (command == "NOTICE") {
-    // Notice}
-  } else if (command == "NICK") {
-    Parser::verifyNick(argument, _clients[fd], _clients);
-  } else if (command == "PRIVMSG") {
-    // Envoyer un message privé
-  } else if (command == "QUIT") {
-    // Déconnecter le client
-  } else if (command == "PING") {
-    // client.sendNumericReply(1, "PONG");
-  } else if (command == "PASS" || command == "USER") {
-    // if (argument.empty())
-    //   sendNumericReply(461, ERR_NEEDMOREPARAMS);
-    // else
-    //   sendNumericReply(462, ERR_ALREADYREGISTERED);
-  } else {
-    // Commande inconnue
   }
 }
 
@@ -455,4 +293,3 @@ void Server::handleCommand(const std::string &command, std::string &argument,
 //         }
 //     }
 // }
-
