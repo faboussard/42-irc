@@ -6,12 +6,12 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 11:51:04 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:30:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Parser.hpp"
-#include "../includes/colors.hpp"
+#include "../../includes/Parser.hpp"
+#include "../../includes/colors.hpp"
 
 bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
   if (nick.empty()) {
@@ -33,12 +33,12 @@ bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
   }
   clientsMap::iterator itEnd = cltMap.end();
   for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
-    if (it->second.getNickName() == nick) {
+    if (it->second.getNickname() == nick) {
       send432ErroneusNickname(client.getFd(), nick);
       return (false);
     }
   }
   client.setNickname(nick);
-  std::cout << BRIGHT_YELLOW "NickName IS ACCEPTED !!!!! : " << client.getNickName() << RESET << std::endl;
+  std::cout << BRIGHT_YELLOW "NickName IS ACCEPTED !!!!! : " << client.getNickname() << RESET << std::endl;
   return (true);
 }

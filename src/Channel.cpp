@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 16:36:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:07:17 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void Channel::receiveMessageInTheChannel(int fd) {
 
 void Channel::activateKeyMode(const std::string &key, const Client &cli) {
   if (key.empty()) {
-    send461NeedMoreParams(cli.getFd(), cli.getNickName(), "MODE");
+    send461NeedMoreParams(cli.getFd(), cli.getNickname(), "MODE");
   } else {
     _mode.keyRequired = true;
     _mode.key = key;
@@ -164,7 +164,7 @@ void Channel::deactivateKeyMode(void) {
 
 void Channel::activateLimitMode(int limit, const Client &cli) {
   if (limit == 0) {
-    send461NeedMoreParams(cli.getFd(), cli.getNickName(), "MODE");
+    send461NeedMoreParams(cli.getFd(), cli.getNickname(), "MODE");
   } else {
     _mode.limitSet = true;
     _mode.limit = limit;

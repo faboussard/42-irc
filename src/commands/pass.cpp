@@ -6,16 +6,16 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 11:53:28 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:30:07 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Parser.hpp"
-#include "../includes/colors.hpp"
+#include "../../includes/Parser.hpp"
+#include "../../includes/colors.hpp"
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
   if (client.isPasswordGiven()) {
-    send462AlreadyRegistered(client.getFd(), client.getNickName());
+    send462AlreadyRegistered(client.getFd(), client.getNickname());
     return (false);
   }
   if (arg.empty()) {

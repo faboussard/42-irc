@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 16:43:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:12:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,12 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       clearClient(client.getFd());
       return;
     } else if (client.isUsernameSet() == false) {
-      send461NeedMoreParams(client.getFd(), client.getNickName(), "USER");
+      send461NeedMoreParams(client.getFd(), client.getNickname(), "USER");
       clearClient(client.getFd());
       return;
     } else if (client.isAccepted()) {
       std::cout << BRIGHT_YELLOW "CLIENT ACCEPTED !!!!!!!  " << command << std::endl;
-      std::cout << BLUE "NickName: " << client.getNickName() << std::endl;
+      std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
       std::cout << "UserName: " << client.getUserName() << std::endl;
       std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
       std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
@@ -115,12 +115,12 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
     std::string command = splittedPair[it].first;
     std::string argument = splittedPair[it].second;
     Command cmd = Parser::choseCommand(command);
-    std::cout << BLUE "NickName: " << client.getNickName() << std::endl;
+    std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
     std::cout << "UserName: " << client.getUserName() << std::endl;
     std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
     std::cout << MAGENTA "Message: " << argument << RESET << std::endl;
     if (cmd == UNKNOWN) {
-      send421UnknownCommand(client.getFd(), client.getNickName(), command);
+      send421UnknownCommand(client.getFd(), client.getNickname(), command);
       continue;
     }
     if (cmd == CAP) continue;
@@ -194,7 +194,7 @@ void Server::handleCommand(const std::string &command, std::string &argument,
     if (argument.empty())
       send461NeedMoreParams(fd, "", command);
     else
-      send462AlreadyRegistered(fd, _clients[fd].getNickName());
+      send462AlreadyRegistered(fd, _clients[fd].getNickname());
   } else {
     // Commande inconnue
   }

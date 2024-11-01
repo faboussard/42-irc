@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/31 17:16:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:26:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <ctime>
 #include <iostream>
 #include <map>
+#include <netdb.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -82,11 +83,9 @@ class Server {
 
   int getSocketFd() const;
   int getPort() const;
-  // const std::string &getStartTime(void) const;
   const std::string &getPassword() const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
-  // const std::string &getServerName() const;
 
   /* Server Mounting */
 
@@ -94,7 +93,6 @@ class Server {
   void createSocket();
   void createPoll();
   void fetchStartTime();
-  std::string Server::getHostname(void);
   void monitorConnections();
   static void signalHandler(int signal);
 

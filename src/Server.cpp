@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/31 17:17:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:22:14 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,17 +103,6 @@ void Server::fetchStartTime(void) {
   _startTime.erase(_startTime.find_last_not_of("\n") + 1);
 }
 
-std::string Server::getHostname(void) {
-  char hostname[1024];
-  gethostname(hostname, sizeof(hostname));
-  if (hostname == NULL) {
-    return ("localhost");
-  } else if (strlen(hostname) > gConfig->getLimit("HOSTLEN")) {
-    return ("Get ip address");
-  }
-  return std::string(hostname);
-}
-
 void Server::monitorConnections() {
   struct pollfd newPoll;
   newPoll.fd = _socketFd;
@@ -172,10 +161,11 @@ void Server::closeServer() {
 /*============================================================================*/
 
 void Server::acceptNewClient() {
-  Client cli;
+  // Client             cli;
   struct sockaddr_in cliadd;
-  struct pollfd newPoll;
-  socklen_t len = sizeof(cliadd);
+  socklen_t          len = sizeof(cliadd);
+  struct pollfd      newPoll;
+  struct hostent*    host;
 
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
@@ -183,7 +173,6 @@ void Server::acceptNewClient() {
     std::cerr << RED "Failed to accept new client" RESET << std::endl;
     return;
   }
-
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
     std::cerr << "fcntl() failed" << std::endl;
     return;
@@ -193,9 +182,21 @@ void Server::acceptNewClient() {
   newPoll.events = POLLIN;
   newPoll.revents = 0;
 
-  cli.setFd(newClientFd);
-  cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
+  // cli.setFd(newClientFd);
+  // cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
                                           // IP en une chaîne de caractères
+  // cli.setFd(newClientFd);
+  std::string clientIp = inet_ntoa(cliadd.sin_addr);
+  // cli.setIp(clientIp);
+  Client cli(newClientFd, clientIp);
+  host = gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
+  if (host == NULL ||
+      static_cast<size_t> (host->h_length) > gConfig->getLimit("HOSTLEN"))
+    cli.setHostName(clientIp);
+  else
+    cli.setHostName(host->h_name);
+  std::cout << "IP " << cli.getIp() << std::endl;
+  std::cout << "Hostname " << cli.getHostName() << std::endl;
 
   // ----- For test ---------
   cli.setUInvisibleMode(true);
@@ -233,9 +234,9 @@ void Server::clearClient(int fd) {
 /*============================================================================*/
 
 void Server::sendConnectionMessage(const Client &client) const {
-  std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
-  std::string user = client.getUserName().empty() ? "*" : client.getUserName();
-  std::string host = client.getIp().empty() ? "*" : client.getIp();
+  std::string nick = client.getNickname();
+  std::string user = client.getUserName();
+  std::string host = client.getHostName();
   int fd = client.getFd();
   sendWelcome(fd, nick);
   send001Welcome(fd, nick, user, host);

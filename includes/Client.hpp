@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 22:23:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:12:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ class Client {
  private:
   int _fd;
   std::string _ip;
-  std::string _nickName;
+  std::string _hostName;
+  std::string _nickname;
   std::string _userName;
   std::string _realName;
   bool _nicknameSet;
@@ -47,7 +48,8 @@ class Client {
   /* Getters */
   int getFd() const;
   std::string getIp() const;
-  const std::string &getNickName() const;
+  const std::string &getHostName() const;
+  const std::string &getNickname() const;
   const std::string &getUserName() const;
   bool isNicknameSet() const;
   bool isUsernameSet() const;
@@ -66,6 +68,7 @@ class Client {
   void setUserName(const std::string& username);
   void setRealName(const std::string& realname);
   void setIp(const std::string& ip);
+  void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
 
   void declareAccepted();

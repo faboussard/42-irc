@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/31 14:56:34 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:13:41 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void send104Myinfo(int fd, const std::string &nick) {
 }
 
 void send005Isupport(const Client& client) {
-  std::string message = _005_RPL_ISUPPORT(client.getNickName());
+  std::string message = _005_RPL_ISUPPORT(client.getNickname());
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -62,7 +62,7 @@ void sendWelcome(int fd, const std::string &nick) {
 /*============================================================================*/
 
 void send221Umodeis(int fd, const Client &client) {
-  std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
+  std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
   std::string uModes = client.getUserModesFlag();
   std::string message = _221_RPL_UMODEIS(nick, uModes);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
@@ -169,14 +169,14 @@ void send353Namreply(int fd, const std::string &nick, const Channel &channel) {
   clientsMap::const_iterator itBegin = chanOps.begin();
   clientsMap::const_iterator itEnd = chanOps.end();
   for (clientsMap::const_iterator it = itBegin; it != itEnd; ++it) {
-    nicknames += OP_PREFIX + it->second.getNickName() + " ";
+    nicknames += OP_PREFIX + it->second.getNickname() + " ";
   }
   clientsMap chanClients = channel.getClientsInChannel();
   itBegin = chanClients.begin();
   itEnd = chanClients.end();
   for (clientsMap::const_iterator it = itBegin; it != itEnd; ++it) {
     if (chanOps.find(it->first) == chanOps.end())
-      nicknames += it->second.getNickName() + " ";
+      nicknames += it->second.getNickname() + " ";
   }
 
   std::string message = _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames);
@@ -401,7 +401,7 @@ void testAllNumericReplies(const std::string &serverStartTime,
                            const Client &client, const std::string &command,
                            const std::string &targetNick) {
   int fd = client.getFd();
-  std::string nick = client.getNickName().empty() ? "*" : client.getNickName();
+  std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
   std::string user = client.getUserName().empty() ? "*" : client.getUserName();
   std::string host = client.getIp().empty() ? "*" : client.getIp();
   Channel testChannel("testChannel");

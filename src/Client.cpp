@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/01 23:03:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,15 @@ Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
 /*       Getters                                                              */
 /*============================================================================*/
 
-std::string const& Client::getNickName() const { return (_nickName); }
+std::string const& Client::getNickname() const { return (_nickname); }
 
 std::string const& Client::getUserName() const { return (_userName); }
 
 int Client::getFd(void) const { return (_fd); }
 
 std::string Client::getIp(void) const { return (_ip); }
+
+std::string const& Client::getHostName() const { return (_hostName); }
 
 std::string const& Client::getRealName() const { return (_realName); }
 
@@ -70,7 +72,7 @@ bool Client::isCapSend(void) const { return (_CapSend); }
 /*============================================================================*/
 
 void Client::setNickname(const std::string& nickname) {
-  _nickName = nickname;
+  _nickname = nickname;
   _nicknameSet = true;
 }
 
@@ -87,6 +89,8 @@ void Client::setRealName(const std::string& realname) {
 void Client::setFd(int fd) { _fd = fd; }
 
 void Client::setIp(const std::string& ip) { _ip = ip; }
+
+void Client::setHostName(const std::string& hostname) { _hostName = hostname; }
 
 void Client::setCapSend(bool yes) { _CapSend = yes; }
 
