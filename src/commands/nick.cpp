@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/01 23:30:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 22:31:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,26 +15,26 @@
 
 bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
   if (nick.empty()) {
-    send431NoNicknameGiven(client.getFd(), "");
+    send431NoNicknameGiven(client);
     return (false);
   }
   size_t size = nick.size();
   if (size > 9 || std::isdigit(nick[0])) {
-    send432ErroneusNickname(client.getFd(), nick);
+    send432ErroneusNickname(client);
     return (false);
   }
   for (size_t i = 0; i < size; ++i) {
     if (!std::isalnum(nick[i]) && nick[i] != '[' && nick[i] != ']' &&
         nick[i] != '{' && nick[i] != '}' && nick[i] != '\\' && nick[i] != '|' &&
         nick[i] != '`' && nick[i] != '_' && nick[i] != '^' && nick[i] != '-') {
-      send432ErroneusNickname(client.getFd(), nick);
+      send432ErroneusNickname(client);
       return (false);
     }
   }
   clientsMap::iterator itEnd = cltMap.end();
   for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
     if (it->second.getNickname() == nick) {
-      send432ErroneusNickname(client.getFd(), nick);
+      send432ErroneusNickname(client);
       return (false);
     }
   }

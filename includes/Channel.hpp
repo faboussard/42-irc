@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/02 22:19:11 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 23:13:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ extern Config *gConfig;
 #define PUBLIC_CHAN "="  // public channel symbol
 #define CHAN_OP "@"      // channel operator prefix
 
-typedef std::map<int, Client> clientsMap;
+// typedef std::map<int, Client> clientsMap;
+typedef std::map<int, Client*> clientPMap;
 
 typedef struct Topic {
   std::string topic;
@@ -52,8 +53,10 @@ class Channel {
   Topic       _topic;
   Mode        _mode;
 
-  clientsMap _clientsInChannel;
-  clientsMap _channelOperators;
+  // clientsMap _clientsInChannel;
+  // clientsMap _channelOperators;
+  clientPMap _clientsInChannel;
+  clientPMap _channelOperators;
 
  public:
   explicit Channel(const std::string &name = "");
@@ -63,8 +66,8 @@ class Channel {
   const std::string &getName() const;
   const std::string getNameWithPrefix() const;
   const std::string &getCreationTime() const;
-  const clientsMap &getClientsInChannel() const;
-  const clientsMap &getChannelOperators() const;
+  const clientPMap &getClientsInChannel() const;
+  const clientPMap &getChannelOperators() const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
   const std::string getChannelModeFlag(void) const;
@@ -81,8 +84,11 @@ class Channel {
   /* Member Functions */
 
   void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
+  // void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
+  void acceptClientInTheChannel(Client *client);
   void receiveMessageInTheChannel(int fd);
+
+  void addOperator(Client *client);
 
   void updateKey(const std::string &key);
   void activateKeyMode(const std::string &key, const Client &client);

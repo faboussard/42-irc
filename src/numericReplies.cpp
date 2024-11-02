@@ -6,14 +6,13 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/02 21:31:07 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 23:50:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/numericReplies.hpp"
 
 #include "../includes/Config.hpp"
-#include "../includes/colors.hpp"
 
 /*============================================================================*/
 /*       Welcome messages                                                     */
@@ -61,7 +60,7 @@ void sendWelcome(int fd, const std::string &nick) {
 /*       Users related replies                                                */
 /*============================================================================*/
 
-void send221Umodeis(int fd, const Client &client) {
+void send221Umodeis(const Client &client) {
   std::string nick = client.getNickname();
   std::string uModes = client.getUserModesFlag();
   std::string message = _221_RPL_UMODEIS(nick, uModes);
@@ -162,21 +161,21 @@ void send341Inviting(const Client &client,
 
 void send353Namreply(const Client &client, const Channel &channel) {
   std::string chanNameWithSymbol =
-      GENERAL_CHAN_SYMBOL + std::string(" ") + channel.getNameWithPrefix();
+      REG_CHAN + std::string(" ") + channel.getNameWithPrefix();
 
   std::string nicknames = "";
-  clientsMap chanOps = channel.getChannelOperators();
-  clientsMap::const_iterator itBegin = chanOps.begin();
-  clientsMap::const_iterator itEnd = chanOps.end();
-  for (clientsMap::const_iterator it = itBegin; it != itEnd; ++it) {
-    nicknames += OP_PREFIX + it->second.getNickname() + " ";
+  clientPMap chanOps = channel.getChannelOperators();
+  clientPMap::const_iterator itBegin = chanOps.begin();
+  clientPMap::const_iterator itEnd = chanOps.end();
+  for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
+    nicknames += CHAN_OP + it->second->getNickname() + " ";
   }
-  clientsMap chanClients = channel.getClientsInChannel();
+  clientPMap chanClients = channel.getClientsInChannel();
   itBegin = chanClients.begin();
   itEnd = chanClients.end();
-  for (clientsMap::const_iterator it = itBegin; it != itEnd; ++it) {
+  for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
     if (chanOps.find(it->first) == chanOps.end())
-      nicknames += it->second.getNickname() + " ";
+      nicknames += it->second->getNickname() + " ";
   }
 
   std::string message = _353_RPL_NAMREPLY(client.getNickname(), chanNameWithSymbol, nicknames);
@@ -395,20 +394,38 @@ void send525InvalidKey(const Client &client,
 /*       Unit test - numeric replies                                          */
 /*============================================================================*/
 
+  // testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
 void testAllNumericReplies(const std::string &serverStartTime,
                            const Client &client, const std::string &command,
                            const std::string &targetNick) {
   int fd = client.getFd();
-  std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
-  std::string user = client.getUserName().empty() ? "*" : client.getUserName();
-  std::string host = client.getIp().empty() ? "*" : client.getIp();
+  Client testClient(fd, client.getIp(), client.getHostName());
+  testClient.setNickname("testClient");
+  testClient.setUserName("testUser");
+  testClient.setRealName("Test User");
+  testClient.setUInvisibleMode(true);
+  testClient.setUOperatorMode(false);
+  testClient.setURegisteredMode(true);
+  std::string nick =testClient.getNickname();
+  std::string user = testClient.getUserName();
+  std::string host = testClient.getHostName();
+
   Channel testChannel("testChannel");
+  Client testOp(4, "127.0.0.1", "localhost");
+  testOp.setNickname("testOp");
+  testChannel.acceptClientInTheChannel(&testClient);
+  testChannel.addOperator(&testOp);
+  Client testNonOPClient(42, "127.0.0.1", "localhost");
+  testNonOPClient.setNickname("testNonOPClient");
+  testChannel.acceptClientInTheChannel(&testNonOPClient);
+  testChannel.activateLimitMode(42, testClient);
   testChannel.setTopic("This is the topic of a test channel", "Author");
   Channel invitedChannel("testInvited");
   invitedChannel.setTopic("This is a test channel", "Author");
   Channel kModeChannel("kModeChannel");
   kModeChannel.activateKeyMode("password", client);
 
+  send(fd, "\n=========== This is a Numeric replies Test ===========\n", 59, 0);
   /* Welcome */
   send001Welcome(fd, nick, user, host);
   send002Yourhost(fd, nick);
@@ -416,7 +433,7 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send104Myinfo(fd, nick);
   send005Isupport(fd, nick);
   /* User */
-  send221Umodeis(fd, client);
+  send221Umodeis(client);
   /* Channel */
   send321Liststart(client);
   send322List(client, testChannel);
@@ -460,4 +477,5 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send482ChanOPrivsNeeded(client, kModeChannel);
   send501UmodeUnknownFlag(client);
   send525InvalidKey(client, kModeChannel);
+  send(fd, "==================== End of Test =====================\n\n", 59, 0);
 }

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/02 21:55:15 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 22:37:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,16 +195,10 @@ void Server::acceptNewClient() {
   else
     hostName = host->h_name;
   Client cli(newClientFd, clientIp, hostName);
-  std::cout << "IP " << cli.getIp() << std::endl;
-  std::cout << "Hostname " << cli.getHostName() << std::endl;
-
-  // ----- For test ---------
-  cli.setUInvisibleMode(true);
-  cli.setUOperatorMode(false);
-  cli.setURegisteredMode(true);
-  // testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
-  // ------------------------
-
+  #ifdef DEBUG
+    std::cout << "New client IP " << cli.getIp() << std::endl;
+    std::cout << "New client host name " << cli.getHostName() << std::endl;
+  #endif
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 }

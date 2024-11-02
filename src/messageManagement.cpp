@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/02 21:45:36 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 23:34:53 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,9 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       if (client.isAccepted()) {
         std::cout << GREEN "Client IS REEEALLLYYY ACCEPTED !!!!" RESET << std::endl;
         sendConnectionMessage(client);
+      #ifdef DEBUG
+        testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
+      #endif
       }
     }
   }

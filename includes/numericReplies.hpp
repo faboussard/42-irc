@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/02 21:27:14 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 23:48:46 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@
 #include "./Client.hpp"
 #include "./Config.hpp"
 #include "./Server.hpp"
-#include "./serverConfig.hpp"
+#include "./Client.hpp"
+#include "./utils.hpp"
 
 extern Config *gConfig;
 
@@ -248,7 +249,7 @@ void sendWelcome(int fd, std::string const &nick);
 
 /*------ User related replies ------------------------------------------------*/
 
-void send221Umodeis(int fd, const Client &client);
+void send221Umodeis(const Client &client);
 
 /*------ Channel related replies ---------------------------------------------*/
 
