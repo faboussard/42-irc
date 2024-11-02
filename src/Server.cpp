@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/01 23:22:14 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 21:55:15 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,6 @@ void Server::acceptNewClient() {
   struct sockaddr_in cliadd;
   socklen_t          len = sizeof(cliadd);
   struct pollfd      newPoll;
-  struct hostent*    host;
 
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
@@ -188,13 +187,14 @@ void Server::acceptNewClient() {
   // cli.setFd(newClientFd);
   std::string clientIp = inet_ntoa(cliadd.sin_addr);
   // cli.setIp(clientIp);
-  Client cli(newClientFd, clientIp);
-  host = gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
+  struct hostent* host = gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
+  std::string hostName;
   if (host == NULL ||
       static_cast<size_t> (host->h_length) > gConfig->getLimit("HOSTLEN"))
-    cli.setHostName(clientIp);
+    hostName = clientIp;
   else
-    cli.setHostName(host->h_name);
+    hostName = host->h_name;
+  Client cli(newClientFd, clientIp, hostName);
   std::cout << "IP " << cli.getIp() << std::endl;
   std::cout << "Hostname " << cli.getHostName() << std::endl;
 
@@ -229,10 +229,6 @@ void Server::clearClient(int fd) {
   _clients.erase(fd);
 }
 
-/*============================================================================*/
-/*       Clients management                                                   */
-/*============================================================================*/
-
 void Server::sendConnectionMessage(const Client &client) const {
   std::string nick = client.getNickname();
   std::string user = client.getUserName();
@@ -243,8 +239,12 @@ void Server::sendConnectionMessage(const Client &client) const {
   send002Yourhost(fd, nick);
   send003Created(fd, nick, _startTime);
   send104Myinfo(fd, nick);
-  send005Isupport(client);
+  send005Isupport(fd, nick);
 }
+
+/*============================================================================*/
+/*       Clients management                                                   */
+/*============================================================================*/
 
 void Server::sendToAllClients(const std::string &message) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {

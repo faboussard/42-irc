@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/01 23:03:36 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 21:51:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,14 @@
 /*       Constructors                                                         */
 /*============================================================================*/
 
-Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
-  _nicknameSet = false;
-  _usernameSet = false;
-  _realnameSet = false;
-  _passwordGiven = false;
-  _accepted = false;
-  _CapSend = false;
+Client::Client(int fd, const std::string& ip, const std::string& hostName) 
+  : _fd(fd), _ip(ip), _hostName(hostName),
+    _nickname("*"), _userName("*"), _realName("*"), 
+    _nicknameSet(false), _usernameSet(false), _realnameSet(false),
+    _passwordGiven(false), _accepted(false), _CapSend(false) {
+  _uModes.invisible = false;
+  _uModes.operatorOfServer = false;
+  _uModes.registered = false;
 }
 
 /*============================================================================*/

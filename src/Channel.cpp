@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/01 23:07:17 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 22:18:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Channel::Channel(const std::string &name) : _name(name) {
   _creationTime = toString(now);
 
   _type = REG_CHAN;
-  _nameWzPrefix = _type + _name;
+  _nameWithPrefix = _type + _name;
   _mode.inviteOnly = false;
   _mode.topicSettableByOpsOnly = false;
   _mode.keyRequired = false;
@@ -51,7 +51,7 @@ Channel::Channel(const std::string &name) : _name(name) {
 const std::string &Channel::getName() const { return _name; }
 
 const std::string Channel::getNameWithPrefix() const {
-  return (_nameWzPrefix);
+  return (_nameWithPrefix);
 }
 
 const std::string &Channel::getCreationTime() const { return _creationTime; }
@@ -149,9 +149,9 @@ void Channel::receiveMessageInTheChannel(int fd) {
   }
 }
 
-void Channel::activateKeyMode(const std::string &key, const Client &cli) {
+void Channel::activateKeyMode(const std::string &key, const Client &client) {
   if (key.empty()) {
-    send461NeedMoreParams(cli.getFd(), cli.getNickname(), "MODE");
+    send461NeedMoreParams(client, "MODE");
   } else {
     _mode.keyRequired = true;
     _mode.key = key;
@@ -162,9 +162,9 @@ void Channel::deactivateKeyMode(void) {
   _mode.key = "";
 }
 
-void Channel::activateLimitMode(int limit, const Client &cli) {
+void Channel::activateLimitMode(int limit, const Client &client) {
   if (limit == 0) {
-    send461NeedMoreParams(cli.getFd(), cli.getNickname(), "MODE");
+    send461NeedMoreParams(client, "MODE");
   } else {
     _mode.limitSet = true;
     _mode.limit = limit;

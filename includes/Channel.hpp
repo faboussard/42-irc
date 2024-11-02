@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 16:12:25 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 22:19:11 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ class Channel {
  private:
   std::string _name;
   std::string _type;
-  std::string _nameWzPrefix;
+  std::string _nameWithPrefix;
   std::string _creationTime;
   Topic       _topic;
   Mode        _mode;
@@ -85,9 +85,9 @@ class Channel {
   void receiveMessageInTheChannel(int fd);
 
   void updateKey(const std::string &key);
-  void activateKeyMode(const std::string &key, const Client &cli);
+  void activateKeyMode(const std::string &key, const Client &client);
   void deactivateKeyMode(void);
-  void activateLimitMode(int limit, const Client &cli);
+  void activateLimitMode(int limit, const Client &client);
   void deactivateLimitMode(void);
 };
 

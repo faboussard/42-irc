@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/01 23:12:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 21:45:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
         }
       }
     } else if (client.isPasswordGiven() == false) {
-      send461NeedMoreParams(client.getFd(), "", "PASS");
+      send461NeedMoreParams(client, "PASS");
       clearClient(client.getFd());
       return;
     } else if (command == "NICK") {
@@ -80,11 +80,11 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
         return;
       }
     } else if (client.isNicknameSet() == false) {
-      send431NoNicknameGiven(client.getFd(), "");
+      send431NoNicknameGiven(client);
       clearClient(client.getFd());
       return;
     } else if (client.isUsernameSet() == false) {
-      send461NeedMoreParams(client.getFd(), client.getNickname(), "USER");
+      send461NeedMoreParams(client, "USER");
       clearClient(client.getFd());
       return;
     } else if (client.isAccepted()) {
@@ -120,7 +120,7 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
     std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
     std::cout << MAGENTA "Message: " << argument << RESET << std::endl;
     if (cmd == UNKNOWN) {
-      send421UnknownCommand(client.getFd(), client.getNickname(), command);
+      send421UnknownCommand(client, command);
       continue;
     }
     if (cmd == CAP) continue;
@@ -192,9 +192,9 @@ void Server::handleCommand(const std::string &command, std::string &argument,
     // client.sendNumericReply(1, "PONG");
   } else if (command == "PASS" || command == "USER") {
     if (argument.empty())
-      send461NeedMoreParams(fd, "", command);
+      send461NeedMoreParams(_clients[fd], command);
     else
-      send462AlreadyRegistered(fd, _clients[fd].getNickname());
+      send462AlreadyRegistered(_clients[fd]);
   } else {
     // Commande inconnue
   }

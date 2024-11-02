@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/01 23:12:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 21:51:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ class Client {
   UserModes _uModes;
 
  public:
-  explicit Client(int fd = -1, const std::string& ip = "");
+  explicit Client(int fd = -1, const std::string& ip = "", \
+                  const std::string& hostName = "");
 
   /* Getters */
   int getFd() const;
