@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 09:14:34 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:39:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ void Client::receiveMessage(const std::string& message) {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {
-      std::cerr << RED "Error while sending message to fd " RESET << _fd << ": "
+      std::cerr << RED "Error while sending message to fd " << _fd << ": "
                 << strerror(errno) << RESET << std::endl;
     }
   } else {

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 09:18:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:57:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ class Server {
   explicit Server(int port, std::string password);
 
   /* Getters */
-
   int getSocketFd(void) const;
   int getPort(void) const;
   const std::string &getPassword(void) const;
@@ -88,7 +87,6 @@ class Server {
   Channel &getChannelByName(const std::string &name);
 
   /* Server Mounting */
-
   void runServer(void);
   void createSocket(void);
   void createPoll(void);
@@ -97,30 +95,45 @@ class Server {
   static void signalHandler(int signal);
 
   /* Clients Management */
-
   void acceptNewClient();
   void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
 
-  /* Clear and Close */
+  /* Clients message handling */
+  void handleInitialMessage(Client &client, const std::string &message);
+  void handleOtherMessage(Client &client, const std::string &message);
+  void handleClientMessage(int fd);
 
+  /* Clear and Close */
   void closeServer();
   void clearClient(int fd);
   void closeClient(int fd);
 
-  /* Commands Management */
-
+  /* Commands handling */
   void handleCommand(const std::string &command, std::string &argument, int fd);
+  void sendToAllClients(const std::string &message);  // Broadcast
+
+  /*-------- QUIT --------*/
+
+  /*-------- JOIN --------*/
   // void joinChannel(std::string &channelName, int fd);
 
-  // for channel, list, ","
-  void sendToAllClients(const std::string &message);
+  /*-------- KICK --------*/
 
-  /* Clients message handling */
+  /*-------- INVITE --------*/
 
-  void handleInitialMessage(Client &client, const std::string &message);
-  void handleOtherMessage(Client &client, const std::string &message);
-  void handleClientMessage(int fd);
+  /*-------- TOPIC --------*/
+
+  /*-------- MODE --------*/
+
+  /*-------- LIST --------*/
+
+  /*-------- NOTICE --------*/
+
+  /*-------- PRIVMSG --------*/
+
+  /*-------- PING --------*/
+  void ping(Client *client, const std::string &token);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

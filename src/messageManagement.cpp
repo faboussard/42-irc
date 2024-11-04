@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/02 23:34:53 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 12:13:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ static bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
 
 static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
                    size_t vecSize) {
-  while (it < vecSize && splittedPair[it].first != "NICK" && splittedPair[it].first != "USER") {
+  while (it < vecSize && splittedPair[it].first != "NICK" \
+         && splittedPair[it].first != "USER") {
     ++it;
   }
   if ( it >= vecSize || splittedPair[it].first == "USER") {
@@ -192,7 +193,7 @@ void Server::handleCommand(const std::string &command, std::string &argument,
   } else if (command == "QUIT") {
     // Déconnecter le client
   } else if (command == "PING") {
-    // client.sendNumericReply(1, "PONG");
+    ping(&_clients[fd], argument);
   } else if (command == "PASS" || command == "USER") {
     if (argument.empty())
       send461NeedMoreParams(_clients[fd], command);

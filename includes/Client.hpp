@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 09:05:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:36:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,15 @@ class Client {
   const std::string &getHostName(void) const;
   const std::string &getNickname(void) const;
   const std::string &getUserName(void) const;
+  const std::string &getRealName(void) const;
+  const UserModes &getUserModes(void) const;
+  const std::string getUserModesFlag(void) const;
   bool isNicknameSet(void) const;
   bool isUsernameSet(void) const;
   bool isRealnameSet(void) const;
   bool isPasswordGiven(void) const;
   bool isAccepted(void) const;
   bool isCapSend(void) const;
-
-  const std::string &getRealName(void) const;
-  const UserModes &getUserModes(void) const;
-  const std::string getUserModesFlag(void) const;
 
   /* Setters */
   void setFd(int fd);
