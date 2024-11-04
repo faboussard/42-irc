@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/04 12:13:36 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 20:47:54 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ void Server::handleCommand(const std::string &command, std::string &argument,
   } else if (command == "MODE") {
     // Changer le sujet du canal
   } else if (command == "LIST") {
-    // Lister les canaux
+    list(_clients[fd], argument);
   } else if (command == "NOTICE") {
     // Notice}
   } else if (command == "NICK") {

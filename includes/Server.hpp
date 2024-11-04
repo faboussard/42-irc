@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 13:47:25 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 20:46:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,10 @@ class Server {
   /*-------- MODE --------*/
 
   /*-------- LIST --------*/
-  void list(Client *client, const std::string argument);
+  void list(const Client &client, const std::string &argument);
+  void listAllChannels(int fd, const std::string &nick);
+  void listChannels(const std::vector<std::string> &channels, \
+                    const Client &client);
 
   /*-------- NOTICE --------*/
 

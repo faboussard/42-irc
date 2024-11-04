@@ -6,13 +6,14 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 10:41:16 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 21:09:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INCLUDES_UTILS_HPP_
 #define INCLUDES_UTILS_HPP_
 
+#include <cctype>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -20,6 +21,8 @@
 void shrink_to_fit(std::vector<struct pollfd>& vec);
 
 bool isNumeric(const std::string& str);
+
+std::string trimWhiteSpaces(const std::string &str);
 
 template <typename T>
 std::string toString(const T& value) {
