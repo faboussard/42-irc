@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 08:43:53 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:18:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
@@ -28,7 +29,6 @@
 #include <ctime>
 #include <iostream>
 #include <map>
-#include <netdb.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -118,7 +118,7 @@ class Server {
 
   /* Clients message handling */
 
-	void handleInitialMessage(Client &client, const std::string &message);
+  void handleInitialMessage(Client &client, const std::string &message);
   void handleOtherMessage(Client &client, const std::string &message);
   void handleClientMessage(int fd);
 };

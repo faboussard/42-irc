@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 09:03:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:15:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,7 +189,8 @@ void Server::acceptNewClient(void) {
   // cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
                                           // IP en une chaîne de caractères
   std::string clientIp = inet_ntoa(cliadd.sin_addr);
-  struct hostent* host = gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
+  struct hostent* host = gethostbyaddr(&cliadd.sin_addr, \
+  sizeof(cliadd.sin_addr), AF_INET);
   std::string hostName;
   if (host->h_name == NULL || sizeof(host->h_name) == 0 ||
       static_cast<size_t> (host->h_length) > gConfig->getLimit("HOSTLEN"))
