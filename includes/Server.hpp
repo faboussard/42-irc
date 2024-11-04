@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 11:57:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 13:47:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,7 @@ class Server {
   /*-------- MODE --------*/
 
   /*-------- LIST --------*/
+  void list(Client *client, const std::string argument);
 
   /*-------- NOTICE --------*/
 
