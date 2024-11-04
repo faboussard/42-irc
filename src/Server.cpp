@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 09:15:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 12:37:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,11 @@ bool Server::_signal = false;
 /*       Constructors                                                         */
 /*============================================================================*/
 
-Server::Server(int port, std::string password) {
-  _port = port;
-  _password = password;
-  _signal = false;
-  _socketFd = -1;
-}
+Server::Server(int port, std::string password)
+: _socketFd(-1), _port(port), _password(password) { _signal = false; }
+  // _port = port;
+  // _password = password;
+  // _socketFd = -1;
 
 /*============================================================================*/
 /*       Getters                                                              */
