@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
+#    By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/10/30 09:15:40 by mbernard         ###   ########.fr        #
+#    Updated: 2024/11/04 08:56:06 by mbernard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ vpath %.cpp src src/commands
 
 HEADERS_LIST = colors Server Client Channel Parser numericReplies utils serverConfig
 SRCS = main Server Client Channel Parser numericReplies messageManagement utils \
-       pass nick user invite mode ping topic
+       pass nick user quit invite mode ping topic
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/

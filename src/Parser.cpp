@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 10:52:53 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/04 08:40:43 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,33 +107,3 @@ commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
   return (result);
 }
 
-void Parser::handleCommand(const std::string& command, int fd) {
-  static_cast<void>(fd);
-  if (command.empty()) {
-    return;
-  } else if (command == "JOIN") {
-    // Ajouter le client au canal
-  } else if (command == "KICK") {
-    // Exclure un client du canal
-  } else if (command == "INVITE") {
-    // Notice
-  } else if (command == "TOPIC") {
-    // Changer le sujet du canal
-  } else if (command == "MODE") {
-    // Changer le sujet du canal
-  } else if (command == "LIST") {
-    // Lister les canaux
-  } else if (command == "NOTICE") {
-    // Notice
-  } else if (command == "NICK") {
-    // change nickname
-  } else if (command == "PRIVMSG") {
-    // Envoyer un message privé
-  } else if (command == "QUIT") {
-    // Déconnecter le client
-  } else if (command == "PING") {
-    // client.sendNumericReply(1, "PONG");
-  } else {
-    // Commande inconnue
-  }
-}

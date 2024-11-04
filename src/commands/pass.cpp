@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 13:58:51 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:38:11 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
     return (false);
   }
   if (arg.empty()) {
-    send461NeedMoreParams(client.getFd(), "", "PASS");
+    send461NeedMoreParams(client.getFd(), "*", "PASS");
     return (false);
   }
   if (arg != psd) {
-    send464PasswdMismatch(client.getFd(), "");
+    send464PasswdMismatch(client.getFd(), "*");
     return (false);
   }
   client.declarePasswordGiven();

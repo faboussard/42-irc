@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/10/31 15:05:59 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:03:20 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,7 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     std::cout << "Message: " << argument << RESET << std::endl;
 
     if (command == "QUIT") {
-      // lancer la commande QUIT avec les arguments : quit(client, argument);
-      clearClient(client.getFd());
+      quit(argument, client, _clients);
       return;
     }
     if (client.isAccepted()) {
@@ -60,7 +59,7 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
       handleCommand(command, argument, client.getFd());
     } else if (command == "CAP" && client.isCapSend() == false &&
-        client.isPasswordGiven() == false) {
+               client.isPasswordGiven() == false) {
       if (client.isCapSend() == false) client.setCapSend(true);
     } else if (command == "PASS") {
       if (isLastPass(splittedPair, it + 1, vecSize)) {
@@ -169,7 +168,7 @@ void Server::handleCommand(const std::string &command, std::string &argument,
   } else if (command == "PRIVMSG") {
     // Envoyer un message privé
   } else if (command == "QUIT") {
-    // Déconnecter le client
+    quit(argument, _clients[fd], _clients);
   } else if (command == "PING") {
     // client.sendNumericReply(1, "PONG");
   } else if (command == "PASS" || command == "USER") {

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:57:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:30:27 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ class Server {
   int                        _socketFd;
   int                        _port;
 //  std::string _name;
-  std::string _startTime;
+  std::string                _startTime;
   std::string                _password;
   clientsMap                 _clients;
   struct sockaddr_in         _address;
@@ -75,32 +75,32 @@ class Server {
 
   /* Getters */
 
-  int getSocketFd() const;
-  int getPort() const;
+  int getSocketFd(void) const;
+  int getPort(void) const;
   // const std::string &getStartTime(void) const;
-  const std::string &getPassword() const;
+  const std::string &getPassword(void) const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
   // const std::string &getServerName() const;
 
   /* Server Mounting */
-  void runServer();
-  void createSocket();
-  void createPoll();
-  std::string fetchStartTime();
-  void monitorConnections();
+  void runServer(void);
+  void createSocket(void);
+  void createPoll(void);
+  void fetchStartTime(void);
+  void monitorConnections(void);
   static void signalHandler(int signal);
 
   /* Clients Management */
 
-  void acceptNewClient();
+  void acceptNewClient(void);
   void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
   void handleClientMessage(int fd);
 
   /* Clear and Close */
 
-  void closeServer();
+  void closeServer(void);
   void clearClient(int fd);
   void closeClient(int fd);
 
@@ -114,6 +114,8 @@ class Server {
 
 	void handleInitialMessage(Client &client, const std::string &message);
   void handleOtherMessage(Client &client, const std::string &message);
+
+  void quit(std::string argument, Client& client, clientsMap &cltMap);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
