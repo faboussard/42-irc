@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/04 13:51:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 17:21:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,7 +311,7 @@ void send473InviteOnlyChan(const Client &client,
 void send475BadChannelKey(const Client &client,
                           const Channel &channel);
 void send476BadChanMask(const Client &client,
-                        const Channel &channel);
+                        const std::string &chanNameWithBadMask);
 void send481NoPrivileges(const Client &client);
 void send482ChanOPrivsNeeded(const Client &client,
                              const Channel &channel);

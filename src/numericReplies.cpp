@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/04 13:54:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 17:27:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,9 +345,10 @@ void send475BadChannelKey(const Client &client, const Channel &channel) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send476BadChanMask(const Client &client, const Channel &channel) {
+void send476BadChanMask(const Client &client, \
+                        const std::string &chanNameWithBadMask) {
   std::string message =
-      _476_ERR_BADCHANMASK(client.getNickname(), channel.getNameWithPrefix());
+      _476_ERR_BADCHANMASK(client.getNickname(), chanNameWithBadMask);
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -467,7 +468,7 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send472UnknownMode(client, "x");
   send473InviteOnlyChan(client, kModeChannel);
   send475BadChannelKey(client, kModeChannel);
-  send476BadChanMask(client, testChannel);
+  send476BadChanMask(client, "&testChannel");
   send481NoPrivileges(client);
   send482ChanOPrivsNeeded(client, kModeChannel);
   send501UmodeUnknownFlag(client);
