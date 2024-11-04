@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/02 22:37:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:03:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,24 +51,24 @@ Channel &Server::getChannelByName(const std::string &name) {
   return it->second;
 }
 
-const std::string &Server::getPassword() const { return _password; }
+const std::string &Server::getPassword(void) const { return _password; }
 
-int Server::getPort() const { return _port; }
+int Server::getPort(void) const { return _port; }
 
-int Server::getSocketFd() const { return _socketFd; }
+int Server::getSocketFd(void) const { return _socketFd; }
 
 /*============================================================================*/
 /*       Server Mounting                                                      */
 /*============================================================================*/
 
-void Server::runServer() {
+void Server::runServer(void) {
   createSocket();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   fetchStartTime();
   monitorConnections();
 }
 
-void Server::createSocket() {
+void Server::createSocket(void) {
   _address.sin_family = AF_INET;
   _address.sin_addr.s_addr = INADDR_ANY;
   _address.sin_port = htons(_port);
@@ -99,11 +99,15 @@ void Server::createSocket() {
 
 void Server::fetchStartTime(void) {
   time_t now = time(0);
-  _startTime = ctime(&now);
-  _startTime.erase(_startTime.find_last_not_of("\n") + 1);
+  char buffer[26];
+
+  ctime_r(&now, buffer);
+  std::string startTime = buffer;
+  startTime.erase(_startTime.find_last_not_of("\n") + 1);
+  _startTime = startTime;
 }
 
-void Server::monitorConnections() {
+void Server::monitorConnections(void) {
   struct pollfd newPoll;
   newPoll.fd = _socketFd;
   newPoll.events = POLLIN;
@@ -138,7 +142,7 @@ void Server::signalHandler(int signal) {
 /*       Server Shutdown                                                      */
 /*============================================================================*/
 
-void Server::closeServer() {
+void Server::closeServer(void) {
   // Fermer tous les clients
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
     closeClient(it->second.getFd());
@@ -160,8 +164,7 @@ void Server::closeServer() {
 /*       Clients connection Management                                        */
 /*============================================================================*/
 
-void Server::acceptNewClient() {
-  // Client             cli;
+void Server::acceptNewClient(void) {
   struct sockaddr_in cliadd;
   socklen_t          len = sizeof(cliadd);
   struct pollfd      newPoll;
@@ -181,15 +184,14 @@ void Server::acceptNewClient() {
   newPoll.events = POLLIN;
   newPoll.revents = 0;
 
+  // Client cli;
   // cli.setFd(newClientFd);
   // cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
                                           // IP en une chaîne de caractères
-  // cli.setFd(newClientFd);
   std::string clientIp = inet_ntoa(cliadd.sin_addr);
-  // cli.setIp(clientIp);
   struct hostent* host = gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
   std::string hostName;
-  if (host == NULL ||
+  if (host->h_name == NULL || sizeof(host->h_name) == 0 ||
       static_cast<size_t> (host->h_length) > gConfig->getLimit("HOSTLEN"))
     hostName = clientIp;
   else

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/02 23:50:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 08:53:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -425,7 +425,12 @@ void testAllNumericReplies(const std::string &serverStartTime,
   Channel kModeChannel("kModeChannel");
   kModeChannel.activateKeyMode("password", client);
 
-  send(fd, "\n=========== This is a Numeric replies Test ===========\n", 59, 0);
+  std::string testBegin = FROM_SERVER + " NOTICE " + nick + " :\n" + \
+  "=========== This is a Numeric replies Test ===========\n";
+  std::string testEnd = FROM_SERVER + " NOTICE " + nick + " :\n" + \
+  "==================== End of Test =====================\n\n";
+
+  send(fd, testBegin.c_str(), testBegin.size(), 0);
   /* Welcome */
   send001Welcome(fd, nick, user, host);
   send002Yourhost(fd, nick);
@@ -477,5 +482,5 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send482ChanOPrivsNeeded(client, kModeChannel);
   send501UmodeUnknownFlag(client);
   send525InvalidKey(client, kModeChannel);
-  send(fd, "==================== End of Test =====================\n\n", 59, 0);
+    send(fd, testEnd.c_str(), testEnd.size(), 0);
 }

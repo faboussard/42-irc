@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/02 21:51:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:05:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,25 +30,33 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
   _uModes.registered = false;
 }
 
+// Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
+//   _nicknameSet = false;
+//   _usernameSet = false;
+//   _realnameSet = false;
+//   _passwordGiven = false;
+//   _accepted = false;
+// }
+
 /*============================================================================*/
 /*       Getters                                                              */
 /*============================================================================*/
 
-std::string const& Client::getNickname() const { return (_nickname); }
+std::string const& Client::getNickname(void) const { return (_nickname); }
 
-std::string const& Client::getUserName() const { return (_userName); }
+std::string const& Client::getUserName(void) const { return (_userName); }
 
 int Client::getFd(void) const { return (_fd); }
 
 std::string Client::getIp(void) const { return (_ip); }
 
-std::string const& Client::getHostName() const { return (_hostName); }
+std::string const& Client::getHostName(void) const { return (_hostName); }
 
-std::string const& Client::getRealName() const { return (_realName); }
+std::string const& Client::getRealName(void) const { return (_realName); }
 
-UserModes const& Client::getUserModes() const { return (_uModes); }
+UserModes const& Client::getUserModes(void) const { return (_uModes); }
 
-const std::string Client::getUserModesFlag() const {
+const std::string Client::getUserModesFlag(void) const {
   std::string flags = "+";
   if (_uModes.invisible) flags += "i";
   if (_uModes.operatorOfServer) flags += "o";

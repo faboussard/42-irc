@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/02 21:51:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:05:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,23 +45,24 @@ class Client {
  public:
   explicit Client(int fd = -1, const std::string& ip = "", \
                   const std::string& hostName = "");
+  // explicit Client(int fd = -1, const std::string& ip = "");
 
   /* Getters */
-  int getFd() const;
-  std::string getIp() const;
-  const std::string &getHostName() const;
-  const std::string &getNickname() const;
-  const std::string &getUserName() const;
-  bool isNicknameSet() const;
-  bool isUsernameSet() const;
-  bool isRealnameSet() const;
-  bool isPasswordGiven() const;
-  bool isAccepted() const;
-  bool isCapSend() const;
+  int getFd(void) const;
+  std::string getIp(void) const;
+  const std::string &getHostName(void) const;
+  const std::string &getNickname(void) const;
+  const std::string &getUserName(void) const;
+  bool isNicknameSet(void) const;
+  bool isUsernameSet(void) const;
+  bool isRealnameSet(void) const;
+  bool isPasswordGiven(void) const;
+  bool isAccepted(void) const;
+  bool isCapSend(void) const;
 
-  const std::string &getRealName() const;
-  const UserModes &getUserModes() const;
-  const std::string getUserModesFlag() const;
+  const std::string &getRealName(void) const;
+  const UserModes &getUserModes(void) const;
+  const std::string getUserModesFlag(void) const;
 
   /* Setters */
   void setFd(int fd);
@@ -72,15 +73,15 @@ class Client {
   void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
 
-  void declareAccepted();
-  void declarePasswordGiven();
+  void declareAccepted(void);
+  void declarePasswordGiven(void);
   void setUInvisibleMode(bool isInvisible);
   void setUOperatorMode(bool isOperator);
   void setURegisteredMode(bool isRegistered);
 
   /* Messages handling */
   void receiveMessage(const std::string& message);
-  std::string shareMessage();
+  std::string shareMessage(void);
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

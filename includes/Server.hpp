@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/01 23:26:21 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 08:43:53 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,18 +81,18 @@ class Server {
 
   /* Getters */
 
-  int getSocketFd() const;
-  int getPort() const;
-  const std::string &getPassword() const;
+  int getSocketFd(void) const;
+  int getPort(void) const;
+  const std::string &getPassword(void) const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
 
   /* Server Mounting */
 
-  void runServer();
-  void createSocket();
-  void createPoll();
-  void fetchStartTime();
+  void runServer(void);
+  void createSocket(void);
+  void createPoll(void);
+  void fetchStartTime(void);
   void monitorConnections();
   static void signalHandler(int signal);
 
