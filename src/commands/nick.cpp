@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 11:45:02 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:51:11 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ bool Parser::verifyNick(std::string nick, Client& client, clientsMap cltMap) {
   }
   clientsMap::iterator itEnd = cltMap.end();
   for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
-    if (it->second.getNickname() == nick
-        && it->second.getFd() != client.getFd()) {
-      send433NickAlreadyInUse(client);
+    if (it->second.getNickname() == nick) {
+      if (it->second.getFd() != client.getFd())
+        send433NickAlreadyInUse(client);
       return (false);
     }
   }
