@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 18:32:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 18:39:06 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ bool Server::hasNoSpaces(const std::string &param) {
 }
 
 bool Server::isValidPrefix(const std::string &param) {
-  return param[0] ==  atoi(CHAN_PREFIX);
+  return param[0] == REG_CHAN[0];
 }
 
 bool Server::isJoinZero(const std::string &param) { return param == "0"; }
@@ -81,13 +81,16 @@ bool Server::isChannelValid(const std::string &param,const Client &client) {
     return false;
 #endif
     send461NeedMoreParams(client, "JOIN");
+    return false;
+
   }
-  else if (!goodChannelName(param)) {
+  else if (!isValidLength(param) && !hasNoSpaces(param) && !isValidPrefix(param)) {
 #ifdef TEST
     std::cout << "client: " << fd << RED" has a bad channel name"RESET << std::endl;
     return false;
 #endif
     send476BadChanMask(client, param);
+    return false;
   } else if (static_cast<size_t>(client.getChannelsCount()) >= gConfig->getLimit("CHANLIMIT"))
   {
 #ifdef TEST
@@ -95,6 +98,7 @@ bool Server::isChannelValid(const std::string &param,const Client &client) {
     return false;
 #endif
     send405TooManyChannels(client);
+    return false;
   }
   return true;
 }
