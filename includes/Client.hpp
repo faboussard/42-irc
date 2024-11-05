@@ -6,13 +6,14 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 11:36:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/05 10:51:18 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INCLUDES_CLIENT_HPP_
 #define INCLUDES_CLIENT_HPP_
 
+#include <stdint.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -41,6 +42,7 @@ class Client {
   bool _accepted;
   bool _CapSend;
   UserModes _uModes;
+  uint8_t _nbPassAttempts;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "", \
@@ -62,6 +64,7 @@ class Client {
   bool isPasswordGiven(void) const;
   bool isAccepted(void) const;
   bool isCapSend(void) const;
+  uint8_t getNbPassAttempts(void) const;
 
   /* Setters */
   void setFd(int fd);
@@ -74,6 +77,7 @@ class Client {
 
   void declareAccepted(void);
   void declarePasswordGiven(void);
+  void incrementNbPassAttempts(void);
   void setUInvisibleMode(bool isInvisible);
   void setUOperatorMode(bool isOperator);
   void setURegisteredMode(bool isRegistered);
