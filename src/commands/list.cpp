@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/05 15:22:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/05 15:43:53 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,18 +46,21 @@ void Server::listChannels(const stringVector &channels, const Client &client) {
   std::string nick = client.getNickname();
   stringVector::const_iterator itEnd = channels.end();
   for (stringVector::const_iterator it = channels.begin(); it != itEnd; ++it) {
-    if ((*it)[0] == '#') {
+    char prefix = (*it)[0];
+    if (prefix == '#') {
       std::string toFind = std::string((*it).begin() + 1, (*it).end());
       channelsMap::iterator itChannel = _channels.find(toFind);
       if (itChannel != _channels.end())
         send322List(fd, nick, itChannel->second);
       else
         send403NoSuchChannel(client, *it);
-    } else if (((*it)[0] == '&' || (*it)[0] == '!' || (*it)[0] == '+') &&
-               findChannel(*it)) {
-      send476BadChanMask(client, *it);
+    } else if (prefix == '&' || prefix == '!' || prefix == '+') {
+        if (findChannel(*it))
+          send476BadChanMask(client, *it);
+        else
+          send403NoSuchChannel(client, *it);  
     } else {
-      send403NoSuchChannel(client, *it);
+        send476BadChanMask(client, *it);
     }
   }
 }
