@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 14:36:31 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 15:50:49 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ void Server::sendJoinMessageToClient(int fd, const std::string &nick,
   std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
   if (send(fd, joinMessage.c_str(), joinMessage.length(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
-  if (_channels[channelName].getTopic().topicName.empty())
+  if (_channels[channelName].getTopic().topic.empty())
     send331Notopic(fd, nick, _channels[channelName]);
   else
     send332Topic(fd, nick, _channels[channelName]);

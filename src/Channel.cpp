@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 11:15:23 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 15:51:17 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,50 +17,45 @@
 #include "../includes/utils.hpp"
 #include "../includes/serverConfig.hpp"
 
+/*============================================================================*/
+/*       Constructors                                                         */
+/*============================================================================*/
+
 
 Channel::Channel(const std::string &name) : _name(name) {
   time_t now = time(0);
   _creationTime = toString(now);
 
+  _type = REG_CHAN;
+  _nameWithPrefix = _type + _name;
   _mode.inviteOnly = false;
   _mode.topicSettableByOpsOnly = false;
   _mode.keyRequired = false;
   _mode.limitSet = false;
   _mode.key = "";
   _mode.limit = 0;
-
-  _topic.topicName = "";
+  _topic.topic = "";
   _topic.author = "";
   _topic.setTime = "";
-
-  // /*----- TESTS FOR SEVERAL CLIENTS --------------*/
-  // Client testOp = Client(42);
-  // testOp.setNickname("testOp");
-  // _clientsInChannel[42] = testOp;
-  // _channelOperators[42] = testOp;
-  // Client testClient = Client(43);
-  // testClient.setNickname("testClient");
-  // _clientsInChannel[43] = testClient;
-  // _mode.limitSet = true;
-  // _mode.limit = 42;
-  // /*----------------------------------*/
 }
 
-/*------ Getters ------------------------------------------------------------ */
+/*============================================================================*/
+/*       Getters                                                              */
+/*============================================================================*/
 
 const std::string &Channel::getName() const { return _name; }
 
 const std::string Channel::getNameWithPrefix() const {
-  return (CHAN_PREFIX + _name);
+  return (_nameWithPrefix);
 }
 
 const std::string &Channel::getCreationTime() const { return _creationTime; }
 
-const clientsMap &Channel::getClientsInChannel() const {
-  return _clientsInChannel;
+const clientPMap &Channel::getClientsInChannel() const {
+  return (_clientsInChannel);
 }
 
-const clientsMap &Channel::getChannelOperators() const {
+const clientPMap &Channel::getChannelOperators() const {
   return (_channelOperators);
 }
 
@@ -82,11 +77,12 @@ const std::string &Channel::getKey(void) const { return (_mode.key); }
 int Channel::getLimit(void) const { return (_mode.limit); }
 
 
-/*------ Setters ------------------------------------------------------------ */
+/*============================================================================*/
+/*       Setters                                                              */
+/*============================================================================*/
 
-// void Channel::setTopic(const std::string &topic) { _topic = topic; }
 void Channel::setTopic(const std::string &topic, const std::string &author) {
-  _topic.topicName = topic;
+  _topic.topic = topic;
   _topic.author = author;
   time_t now = time(0);
   _topic.setTime = toString(now);
@@ -108,10 +104,13 @@ void Channel::setTopicSettableByOpsOnlyMode(void) {
   }
 }
 
-/*--------------------------------------------------------------------------- */
+void Channel::updateKey(const std::string& newKey) {
+  _mode.key = newKey;
+}
+
 void Channel::removeClientFromTheChannel(int fd) {
   if (_clientsInChannel.find(fd) != _clientsInChannel.end()) {
-    _clientsInChannel[fd].receiveMessage(
+    _clientsInChannel[fd]->receiveMessage(
         "You have been removed from the channel");
     _clientsInChannel.erase(fd);
     std::cout << "Client " << fd << " removed from channel " << _name
@@ -122,32 +121,36 @@ void Channel::removeClientFromTheChannel(int fd) {
   }
 }
 
-void Channel::addClientToChannelMap(const Client &client) {
-  _clientsInChannel[client.getFd()] = client;
-  std::cout << "Client " << client.getFd() << " added to channel " << _name
+void Channel::addClientToChannelMap(Client *client) {
+  _clientsInChannel[client->getFd()] = client;
+  std::cout << "Client " << client->getFd() << " added to channel " << _name
             << std::endl;
 }
 
 void Channel::receiveMessageInTheChannel(int fd) {
   if (_clientsInChannel.find(fd) != _clientsInChannel.end()) {
-    std::string message = _clientsInChannel[fd].shareMessage();
+    std::string message = _clientsInChannel[fd]->shareMessage();
     if (!message.empty()) {
       std::cout << "Message received in channel " << _name << " from client "
                 << fd << ": " << message << std::endl;
-      clientsMap::iterator itBegin = _clientsInChannel.begin();
-      clientsMap::iterator itEnd = _clientsInChannel.end();
-      for (clientsMap::iterator it = itBegin; it != itEnd; ++it) {
+      clientPMap::iterator itBegin = _clientsInChannel.begin();
+      clientPMap::iterator itEnd = _clientsInChannel.end();
+      for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {
         if (it->first != fd) {
-          it->second.receiveMessage(message);
+          it->second->receiveMessage(message);
         }
       }
     }
   }
 }
 
-void Channel::activateKeyMode(const std::string &key, const Client &cli) {
+void Channel::addOperator(Client *client) {
+  _channelOperators[client->getFd()] = client;
+}
+
+void Channel::activateKeyMode(const std::string &key, const Client &client) {
   if (key.empty()) {
-    send461NeedMoreParams(cli.getFd(), cli.getNickName(), "MODE");
+    send461NeedMoreParams(client, "MODE");
   } else {
     _mode.keyRequired = true;
     _mode.key = key;
@@ -158,9 +161,9 @@ void Channel::deactivateKeyMode(void) {
   _mode.key = "";
 }
 
-void Channel::activateLimitMode(int limit, const Client &cli) {
+void Channel::activateLimitMode(int limit, const Client &client) {
   if (limit == 0) {
-    send461NeedMoreParams(cli.getFd(), cli.getNickName(), "MODE");
+    send461NeedMoreParams(client, "MODE");
   } else {
     _mode.limitSet = true;
     _mode.limit = limit;

@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/05 11:25:28 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/05 14:46:11 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,10 +17,13 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-vpath %.cpp src src/commands
+vpath %.cpp src src/commands src/unitTests
 
-HEADERS_LIST = colors Server Client Channel Parser numericReplies utils serverConfig tests
-SRCS = main Server Client Channel Parser numericReplies utils pass nick user invite mode ping topic join unitTests/join unitTests/general
+HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils tests
+SRCS = main Server Client Channel Parser Config \
+       numericReplies messageManagement utils \
+       join pass nick user quit invite mode ping topic \
+		join unitTestsgeneral
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
@@ -44,6 +47,11 @@ create_dirs:
 	@$(foreach dir, $(sort $(dir $(OBJS))), ${MKDIR} ${dir};)
 
 -include ${DEPS}
+
+
+# ---------------------------------- Create Repertory ------------------------ #
+${OBJS_DIR}:
+			${MKDIR} ${OBJS_DIR}
 
 # ---------------------------------- Debug ----------------------------------- #
 debug: CFLAGS := $(filter-out -Werror, $(CFLAGS))
