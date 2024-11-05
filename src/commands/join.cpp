@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 12:10:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 12:35:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,22 +42,60 @@ They receive all PRIVMSG and NOTICE messages sent to the
 JOIN 0 = part all channels
 */
 
-/*
-- restrict the number of channels a user can join to CHANLIMIT.
-*/
-
 // gerer que on q #pqrqm pui si virgule, on doit fqire join sur le deuxieme
 // #param. si espqce -> key.
-bool Server::GoodChannelName(const std::string &param) {
-  return
 
-      param.length() < 51 && param.find(" ") == std::string::npos &&
-      (param[0] == CHAN_PREFIX_CHAR ||
-       (param.length() == 1 &&
-        param[0] == 0));  // Check if first character is the channel prefix
+bool isValidLength(const std::string &param) {
+  return param.length() < 51;
+}
+
+bool hasNoSpaces(const std::string &param) {
+  return param.find(" ") == std::string::npos;
+}
+
+bool isValidPrefix(const std::string &param) {
+  return param[0] == CHAN_PREFIX_CHAR;
+}
+
+bool isZero(const std::string &param) {
+  return param == "0";
+}
+
+bool GoodChannelName(const std::string &param) {
+  return isValidLength(param) && hasNoSpaces(param);
 }
 
 void Server::joinChannel(const std::string &param, int fd, Client &client) {
+  if (isZero(param))
+  {
+    #ifdef TEST
+    std::cout << "client: " << fd << " has parted all channels " << std::endl;
+  return;
+#endif
+    // part all channels
+    // send part message to all channels
+    // remove client from all channels
+    // send part message to client
+    // remove client from server
+    return;
+  }
+  else if (param.empty())
+  {
+#ifdef TEST
+    std::cout << "client: " << fd << " has no channel name" << std::endl;
+  return;
+#endif
+  send461NeedMoreParams(fd, client.getNickName(), "JOIN");
+  }
+  else if (!isValidPrefix(param))
+  {
+#ifdef TEST
+    std::cout << "client: " << fd << " has a bad prefix" << std::endl;
+  return;
+#endif
+  send475BadChannelKey(fd, client.getNickName(), param);
+  }
+  else
   if (!GoodChannelName(param))
   {
 #ifdef TEST

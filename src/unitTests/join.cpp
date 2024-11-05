@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 12:11:06 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 12:28:04 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ void Test::testJoinChannel(Server &server) {
     // Test de la limite de canaux si une limite est implémentée (par exemple, 2 canaux max)
     std::cout << MAGENTA "Testing channel limit" RESET << std::endl;
     std::cout << "Chanlimit is " << CHANLIMIT_ << std::endl;
-    std::cout << "fd1 is in " << server.getClientByFd(fd1).getChannelsCount() << " channels" << std::endl;
+    std::cout << "fd1 is in " << newClient1.getChannelsCount() << " channels" << std::endl;
     server.joinChannel(channel3, fd1, newClient1);  // Cette tentative doit être rejetée si le nombre de canaux est limité
-    std::cout << "fd1 is in " << server.getClientByFd(fd1).getChannelsCount() << " channels" << std::endl;
+    std::cout << "fd1 is in " << newClient1.getChannelsCount() << " channels" << std::endl;
 
     // Test de JOIN 0 pour quitter tous les canaux
     std::cout << MAGENTA "Testing JOIN 0 to leave all channels" RESET << std::endl;
