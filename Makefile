@@ -57,7 +57,7 @@ debug: fclean $(OBJS_DIR) $(NAME)
 testnumericr: CFLAGS += -DTESTNUMERICR
 testnumericr: fclean $(OBJS_DIR) $(NAME)
 
-testlist: CFLAGS += -DTESTLIST
+testlist: CFLAGS += -g3 -DTESTLIST
 testlist: fclean $(OBJS_DIR) $(NAME)
 
 # ---------------------------------- Clean ----------------------------------- #

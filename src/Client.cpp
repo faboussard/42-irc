@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 10:58:30 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/05 15:23:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,6 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
   _uModes.operatorOfServer = false;
   _uModes.registered = false;
 }
-
-// Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
-//   _nicknameSet = false;
-//   _usernameSet = false;
-//   _realnameSet = false;
-//   _passwordGiven = false;
-//   _accepted = false;
-// }
 
 /*============================================================================*/
 /*       Getters                                                              */
