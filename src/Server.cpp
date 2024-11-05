@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 15:41:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 17:24:38 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,6 @@ Server::Server(int port, const std::string &password)
     : _socketFd(-1), _port(port), _password(password) {
   _signal = false;
 }
-// _port = port;
-// _password = password;
-// _socketFd = -1;
 
 /*============================================================================*/
 /*       Getters                                                              */
@@ -163,6 +160,7 @@ void Server::closeServer(void) {
   }
   _pollFds.clear();
   shrink_to_fit(_pollFds);
+  _channels.clear();
 }
 
 /*============================================================================*/

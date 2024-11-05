@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/05 14:46:11 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/05 17:17:12 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,6 +64,14 @@ test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 test: CFLAGS += -DTEST
 test: clean create_dirs ${NAME}
 
+
+# ---------------------------------- Tests ----------------------------------- #
+
+testnumericr: CFLAGS += -DTESTNUMERICR
+testnumericr: fclean $(OBJS_DIR) $(NAME)
+
+testlist: CFLAGS += -g3 -DTESTLIST
+testlist: fclean $(OBJS_DIR) $(NAME)
 
 # ---------------------------------- Clean ----------------------------------- #
 clean:

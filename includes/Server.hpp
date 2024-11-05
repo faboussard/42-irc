@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 16:23:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 17:52:14 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
+typedef std::vector<std::string> stringVector;
 
 extern Config *gConfig;
 
@@ -114,7 +115,7 @@ class Server {
   /*--------- Commands --------------*/
   /* Join */
   void handleCommand(const std::string &command, std::string &argument, int fd,const Client &client);
-  void joinChannel(const std::string &channelName, int fd, Client &client);
+  void joinChannel(const std::string &channelName, int fd,const Client &client);
   void executeJoin(int fd, Client &client, const std::string &channelName);
   bool goodChannelName(const std::string &argument);
   bool isValidPrefix(const std::string &param);
@@ -122,11 +123,11 @@ class Server {
   bool hasNoSpaces(const std::string &param);
   bool isJoinZero(const std::string &param);
   void joinChannels(const std::string &param, int fd, Client &client);
-  bool isChannelValid(const std::string &param, int fd, Client &client);
+  bool isChannelValid(const std::string &param, Client &client);
 
   // Sub-functions for joinChannel
   void addChanneltoServer(const std::string &channelName);
-  void sendJoinMessageToClient(int fd, const std::string &nick, const std::string &channelName);
+  void sendJoinMessageToClient(int fd, const std::string &nick, const std::string &channelName, const Client &client);
   void broadcastJoinMessage(int fd, const std::string &nick, const std::string &channelName);
 
   /* Other methods */
@@ -143,6 +144,27 @@ class Server {
 
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client& client, clientsMap &cltMap);
+
+  /*-------- JOIN --------*/
+  // void joinChannel(std::string &channelName, int fd);
+
+  /*-------- KICK --------*/
+
+  /*-------- INVITE --------*/
+
+  /*-------- TOPIC --------*/
+
+  /*-------- MODE --------*/
+
+  /*-------- LIST --------*/
+  // void list(const Client &client, const std::string &argument);
+  // void listAllChannels(int fd, const std::string &nick);
+  // void listChannels(const stringVector &channels, const Client &client);
+  // bool findChannel(const std::string &channel);
+
+  /*-------- NOTICE --------*/
+
+  /*-------- PRIVMSG --------*/
 
   /*-------- PING --------*/
   void ping(Client *client, const std::string &token);

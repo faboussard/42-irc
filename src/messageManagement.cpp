@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 16:23:34 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 17:42:17 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void Server::handleInitialMessage( Client &client, const std::string &message) {
           client.isAccepted() == false && client.isNicknameSet()) {
         client.declareAccepted();
         sendConnectionMessage(client);
-#ifdef DEBUG
+      #ifdef TESTNUMERICR
         testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
 #endif
       }
@@ -163,10 +163,10 @@ void Server::handleClientMessage(int fd) {
 /*============================================================================*/
 
 void Server::handleCommand(const std::string &command, std::string &argument,
-                           int fd, Client &client) {
+                           int fd,const Client &client) {
   if (command.empty()) return;
   if (command == "JOIN") {
-    // joinChannel(argument, fd);
+     joinChannel(argument, fd, client);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
@@ -176,7 +176,7 @@ void Server::handleCommand(const std::string &command, std::string &argument,
   } else if (command == "MODE") {
     // Changer le sujet du canal
   } else if (command == "LIST") {
-    // Lister les canaux
+    // list(_clients[fd], argument);
   } else if (command == "NOTICE") {
     // Notice}
   } else if (command == "NICK") {

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/05 15:05:43 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 17:17:20 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,9 +252,9 @@ void send221Umodeis(const Client &client);
 
 /*------ Channel related replies ---------------------------------------------*/
 
-void send321Liststart(const Client &client);
-void send322List(const Client &client, const Channel &channel);
-void send323Listend(const Client &client);
+void send321Liststart(int fd, const std::string &nick);
+void send322List(int fd, const std::string &nick, const Channel &channel);
+void send323Listend(int fd, const std::string &nick);
 void send324Channelmodeis(const Client &client,
                           const Channel &channel);
 void send329Creationtime(const Client &client,
@@ -311,7 +311,7 @@ void send473InviteOnlyChan(const Client &client,
 void send475BadChannelKey(const Client &client,
                           const Channel &channel);
 void send476BadChanMask(const Client &client,
-                        const Channel &channel);
+                        const std::string &chanNameWithBadMask);
 void send481NoPrivileges(const Client &client);
 void send482ChanOPrivsNeeded(const Client &client,
                              const Channel &channel);

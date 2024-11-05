@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 17:14:34 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 17:52:04 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void Server::joinChannels(const std::string &param, int fd, Client &client) {
   while (pos != std::string::npos) {
     std::string channelName = param.substr(start, pos - start);
 
-    if (isChannelValid(channelName, fd, client)) {
+    if (isChannelValid(channelName, client)) {
       #ifdef TEST
         std::cout << "client: " << fd << " joins channel " << channelName << std::endl;
       #endif
@@ -46,7 +46,7 @@ void Server::joinChannels(const std::string &param, int fd, Client &client) {
 
   // Gérer le dernier canal en dehors de la boucle
   std::string lastChannel = param.substr(start);
-  if (isChannelValid(lastChannel, fd, client)) {
+  if (isChannelValid(lastChannel, client)) {
     #ifdef TEST
       std::cout << "client: " << fd << " joins last channel " << lastChannel << std::endl;
     #endif
@@ -68,7 +68,7 @@ bool Server::goodChannelName(const std::string &param) {
   return isValidLength(param) && hasNoSpaces(param);
 }
 
-bool Server::isChannelValid(const std::string &param, int fd, Client &client) {
+bool Server::isChannelValid(const std::string &param, Client &client) {
  if (param.empty()) {
 #ifdef TEST
     std::cout << "client: " << fd << RED" has no channel name" RESET<< std::endl;
@@ -76,13 +76,13 @@ bool Server::isChannelValid(const std::string &param, int fd, Client &client) {
 #endif
     send461NeedMoreParams(client, "JOIN");
   }
-  } else if (!goodChannelName(param)) {
+  else if (!goodChannelName(param)) {
 #ifdef TEST
     std::cout << "client: " << fd << RED" has a bad channel name"RESET << std::endl;
     return false;
 #endif
     send476BadChanMask(client, param);
-  } else if (client.getChannelsCount() >= gConfig->getLimit("CHANLIMIT"))
+  } else if (static_cast<size_t>(client.getChannelsCount()) >= gConfig->getLimit("CHANLIMIT"))
   {
 #ifdef TEST
     std::cout << "client: " << fd << RED " has too many channels" RESET << std::endl;
@@ -96,7 +96,7 @@ bool Server::isChannelValid(const std::string &param, int fd, Client &client) {
 void Server::executeJoin(int fd, Client &client,
                          const std::string &channelName) {
   addChanneltoServer(channelName);
-  _channels[channelName].addClientToChannelMap(client);
+  _channels[channelName].addClientToChannelMap(&client);
   client.incrementChannelsCount();
 #ifdef TEST
   std::cout << "client: " << fd << " has joined the Channel "
@@ -105,11 +105,11 @@ void Server::executeJoin(int fd, Client &client,
   return;
 #endif
   std::string nick = client.getNickname();
-  sendJoinMessageToClient(fd, nick, channelName);
-  send353Namreply(fd, nick, _channels[channelName]);
+  sendJoinMessageToClient(fd, nick, channelName, client);
+  send353Namreply(client, _channels[channelName]);
   std::cout << " _channels[channelName] " << _channels[channelName].getName()
             << std::endl;
-  send366Endofnames(client, channelName);
+  send366Endofnames(client, _channels[channelName]);
   broadcastJoinMessage(fd, nick, channelName);
 }
 
@@ -121,32 +121,37 @@ void Server::addChanneltoServer(const std::string &channelName) {
 }
 
 void Server::sendJoinMessageToClient(int fd, const std::string &nick,
-                                     const std::string &channelName) {
+                                     const std::string &channelName, const Client &client) {
   std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
   if (send(fd, joinMessage.c_str(), joinMessage.length(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
   if (_channels[channelName].getTopic().topic.empty())
-    send331Notopic(fd, nick, _channels[channelName]);
+    send331Notopic(client, _channels[channelName]);
   else
-    send332Topic(fd, nick, _channels[channelName]);
+    send332Topic(client, _channels[channelName]);
 }
+
+#include "Server.hpp"
+#include "Client.hpp" // Assurez-vous que Client est défini ici
+#include <stdexcept>
+#include <iostream>
 
 void Server::broadcastJoinMessage(int fd, const std::string &nick,
                                   const std::string &channelName) {
   std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
-  const clientsMap &clientsInChannel =
-      _channels[channelName].getClientsInChannel();
-  clientsMap::const_iterator it = clientsInChannel.begin();
-  clientsMap::const_iterator ite = clientsInChannel.end();
+  const std::map<int, Client*> &clientsInChannel = _channels[channelName].getClientsInChannel();
+  std::map<int, Client*>::const_iterator it = clientsInChannel.begin();
+  std::map<int, Client*>::const_iterator ite = clientsInChannel.end();
 
-  for (it = clientsInChannel.begin(); it != ite; ++it) {
+  for (; it != ite; ++it) {
     if (it->first != fd) {
-      if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) == -1)
-        throw std::runtime_error(RUNTIME_ERROR);
+      if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) == -1) {
+        throw std::runtime_error("Runtime error: send failed");
+      }
     }
   }
 #ifdef DEBUG
-  std::cout << GREY "broadcastJoinMessage ok " << nick
-            << " joined channel " RESET << channelName << std::endl;
+  std::cout << "broadcastJoinMessage: " << joinMessage << std::endl;
 #endif
 }
+
