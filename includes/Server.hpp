@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 11:38:09 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 12:04:19 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,8 @@ class Server {
   /* Join */
   void handleCommand(const std::string &command, std::string &argument, int fd,
                      Client &client);
-  void joinChannel(const std::string &channelName, int fd);
-  void executeJoin(int fd, const Client &client,
+  void joinChannel(const std::string &channelName, int fd, Client &client);
+  void executeJoin(int fd, Client &client,
                    const std::string &channelName);
   // Sub-functions for joinChannel
   void addChanneltoServer(const std::string &channelName);
@@ -116,7 +116,7 @@ class Server {
                                const std::string &channelName);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
-  bool canEnterChannel(const std::string &argument);
+  bool GoodChannelName(const std::string &argument);
 
   // Other methods
   void sendToAllClients(const std::string &message);
