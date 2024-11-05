@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/31 14:08:00 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/05 10:51:18 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ class Client {
  private:
   int _fd;
   std::string _ip;
-  std::string _nickName;
+  std::string _hostName;
+  std::string _nickname;
   std::string _userName;
   std::string _realName;
   bool _nicknameSet;
@@ -44,25 +45,25 @@ class Client {
   uint8_t _nbPassAttempts;
 
  public:
-  explicit Client(int fd = -1, const std::string& ip = "");
-
-  // void sendNumericReply(int code, const std::string& message);
+  explicit Client(int fd = -1, const std::string& ip = "", \
+                  const std::string& hostName = "");
+  // explicit Client(int fd = -1, const std::string& ip = "");
 
   /* Getters */
   int getFd(void) const;
   std::string getIp(void) const;
-  const std::string& getNickName(void) const;
-  const std::string& getUserName(void) const;
+  const std::string &getHostName(void) const;
+  const std::string &getNickname(void) const;
+  const std::string &getUserName(void) const;
+  const std::string &getRealName(void) const;
+  const UserModes &getUserModes(void) const;
+  const std::string getUserModesFlag(void) const;
   bool isNicknameSet(void) const;
   bool isUsernameSet(void) const;
   bool isRealnameSet(void) const;
   bool isPasswordGiven(void) const;
   bool isAccepted(void) const;
   bool isCapSend(void) const;
-
-  const std::string& getRealName(void) const;
-  const UserModes& getUserModes(void) const;
-  const std::string getUserModesFlag(void) const;
   uint8_t getNbPassAttempts(void) const;
 
   /* Setters */
@@ -71,6 +72,7 @@ class Client {
   void setUserName(const std::string& username);
   void setRealName(const std::string& realname);
   void setIp(const std::string& ip);
+  void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
 
   void declareAccepted(void);

@@ -6,12 +6,12 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/31 12:09:02 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/02 22:31:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Parser.hpp"
-#include "../includes/colors.hpp"
+#include "../../includes/Parser.hpp"
+#include "../../includes/colors.hpp"
 
 static std::vector<std::string> fillUserVectorString(const std::string &str) {
   if (str.empty()) return (std::vector<std::string>());
@@ -63,22 +63,22 @@ static bool realnameIsInvalid(const std::string realname) {
 
 bool Parser::verifyUser(std::string user, Client &client, clientsMap cltMap) {
   if (client.isUsernameSet()) {
-    send462AlreadyRegistered(client.getFd(), client.getNickName());
+    send462AlreadyRegistered(client);
     return (false);
   }
   std::vector<std::string> fields = fillUserVectorString(user);
   if (user.empty() || fields.size() != 4) {
-    send461NeedMoreParams(client.getFd(), client.getNickName(), "USER");
+    send461NeedMoreParams(client, "USER");
     return (false);
   }
   if (usernameIsInvalid(fields[0]) || realnameIsInvalid(fields[3])) {
-    send432ErroneusNickname(client.getFd(), client.getNickName());
+    send432ErroneusNickname(client);
     return (false);
   }
   clientsMap::iterator itEnd = cltMap.end();
   for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
     if (it->second.getUserName() == user) {
-      send462AlreadyRegistered(client.getFd(), client.getNickName());
+      send462AlreadyRegistered(client);
       return (false);
     }
   }

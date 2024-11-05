@@ -6,7 +6,7 @@
 #    By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/04 08:56:06 by mbernard         ###   ########.fr        #
+#    Updated: 2024/11/05 10:49:11 by mbernard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,8 +19,9 @@ RMDIR = rm -rf
 # ---------------------------------- Sources --------------------------------- #
 vpath %.cpp src src/commands
 
-HEADERS_LIST = colors Server Client Channel Parser numericReplies utils serverConfig
-SRCS = main Server Client Channel Parser numericReplies messageManagement utils \
+HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils
+SRCS = main Server Client Channel Parser Config \
+       numericReplies messageManagement utils \
        pass nick user quit invite mode ping topic
 
 # ---------------------------------- Repertories ----------------------------- #
@@ -41,16 +42,17 @@ ${OBJS_DIR}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR}
 	${C} ${CFLAGS} ${INCLUDES} -c $< -o $@
 
 -include ${DEPS}
-# ---------------------------------- Create Repertory ---------------------- #
+
+# ---------------------------------- Create Repertory ------------------------ #
 ${OBJS_DIR}:
 			${MKDIR} ${OBJS_DIR}
 
-## ---------------------------------- Debug ----------------------------------- #
+# ---------------------------------- Debug ----------------------------------- #
 
 debug: CFLAGS += -DDEBUG
 debug: fclean $(OBJS_DIR) $(NAME)
 
-## ---------------------------------- Clean ----------------------------------- #
+# ---------------------------------- Clean ----------------------------------- #
 clean:
 	${RMDIR} ${OBJS_DIR}
 

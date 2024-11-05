@@ -6,26 +6,26 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/04 09:38:11 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:02:52 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Client.hpp"
-#include "../includes/Parser.hpp"
-#include "../includes/colors.hpp"
+#include "../../includes/Client.hpp"
+#include "../../includes/Parser.hpp"
+#include "../../includes/colors.hpp"
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client& client) {
   client.incrementNbPassAttempts();
   if (client.isPasswordGiven()) {
-    send462AlreadyRegistered(client.getFd(), client.getNickName());
+    send462AlreadyRegistered(client);
     return (false);
   }
   if (arg.empty()) {
-    send461NeedMoreParams(client.getFd(), "*", "PASS");
+    send461NeedMoreParams(client, "PASS");
     return (false);
   }
   if (arg != psd) {
-    send464PasswdMismatch(client.getFd(), "*");
+    send464PasswdMismatch(client);
     return (false);
   }
   client.declarePasswordGiven();

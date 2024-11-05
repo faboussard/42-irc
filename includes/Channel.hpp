@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 10:36:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/02 23:13:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,16 @@
 #include <string>
 
 #include "../includes/Client.hpp"
+#include "../includes/Config.hpp"
 
-typedef std::map<int, Client> clientsMap;
+extern Config *gConfig;
+
+#define REG_CHAN "#"     // regular channel prefix
+#define PUBLIC_CHAN "="  // public channel symbol
+#define CHAN_OP "@"      // channel operator prefix
+
+// typedef std::map<int, Client> clientsMap;
+typedef std::map<int, Client*> clientPMap;
 
 typedef struct Topic {
   std::string topic;
@@ -39,12 +47,16 @@ typedef struct Mode {
 class Channel {
  private:
   std::string _name;
+  std::string _type;
+  std::string _nameWithPrefix;
   std::string _creationTime;
-  Topic _topic;
-  Mode _mode;
+  Topic       _topic;
+  Mode        _mode;
 
-  clientsMap _clientsInChannel;
-  clientsMap _channelOperators;
+  // clientsMap _clientsInChannel;
+  // clientsMap _channelOperators;
+  clientPMap _clientsInChannel;
+  clientPMap _channelOperators;
 
  public:
   explicit Channel(const std::string &name = "");
@@ -54,8 +66,8 @@ class Channel {
   const std::string &getName() const;
   const std::string getNameWithPrefix() const;
   const std::string &getCreationTime() const;
-  const clientsMap &getClientsInChannel() const;
-  const clientsMap &getChannelOperators() const;
+  const clientPMap &getClientsInChannel() const;
+  const clientPMap &getChannelOperators() const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
   const std::string getChannelModeFlag(void) const;
@@ -67,18 +79,21 @@ class Channel {
   void setTopic(const std::string &topic, const std::string &author);
   void setInviteOnlyMode(void);
   void setTopicSettableByOpsOnlyMode(void);
-  // void setKey(const std::string &key, const Client &cli);
   // void setLimit(int limit, const Client &cli);
 
   /* Member Functions */
 
   void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
+  // void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
+  void acceptClientInTheChannel(Client *client);
   void receiveMessageInTheChannel(int fd);
 
-  void activateKeyMode(const std::string &key, const Client &cli);
+  void addOperator(Client *client);
+
+  void updateKey(const std::string &key);
+  void activateKeyMode(const std::string &key, const Client &client);
   void deactivateKeyMode(void);
-  void activateLimitMode(int limit, const Client &cli);
+  void activateLimitMode(int limit, const Client &client);
   void deactivateLimitMode(void);
 };
 

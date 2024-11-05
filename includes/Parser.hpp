@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/04 09:14:40 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/05 10:52:10 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,10 @@
 #include <string>
 #include <vector>
 
+#include "../includes/Config.hpp"
 #include "../includes/Server.hpp"
+
+extern Config *gConfig;
 
 typedef std::vector<std::pair<std::string, std::string> > commandVectorPairs;
 class Parser {
