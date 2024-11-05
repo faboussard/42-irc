@@ -6,14 +6,15 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 11:39:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/05 10:58:30 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../includes/Client.hpp"
 
 #include <cerrno>
 #include <cstring>
 
-#include "../includes/Client.hpp"
 #include "../includes/colors.hpp"
 
 /*============================================================================*/
@@ -24,7 +25,8 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
   : _fd(fd), _ip(ip), _hostName(hostName),
     _nickname("*"), _userName("*"), _realName("*"),
     _nicknameSet(false), _usernameSet(false), _realnameSet(false),
-    _passwordGiven(false), _accepted(false), _CapSend(false) {
+    _passwordGiven(false), _accepted(false), _CapSend(false),
+    _nbPassAttempts(0) {
   _uModes.invisible = false;
   _uModes.operatorOfServer = false;
   _uModes.registered = false;
@@ -76,6 +78,8 @@ bool Client::isAccepted(void) const { return (_accepted); }
 
 bool Client::isCapSend(void) const { return (_CapSend); }
 
+uint8_t Client::getNbPassAttempts(void) const { return (_nbPassAttempts); }
+
 /*============================================================================*/
 /*       Setters                                                              */
 /*============================================================================*/
@@ -119,6 +123,7 @@ void Client::declareAccepted(void) { _accepted = true; }
 
 void Client::declarePasswordGiven(void) { _passwordGiven = true; }
 
+void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 
 /*============================================================================*/
 /*       Messages handling                                                    */

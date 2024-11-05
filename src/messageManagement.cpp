@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 09:13:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/05 13:56:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "../includes/colors.hpp"
 
 static bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
-                   size_t vecSize) {
+                       size_t vecSize) {
   while (it < vecSize && splittedPair[it].first != "PASS") {
     ++it;
   }
@@ -26,16 +26,29 @@ static bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
 }
 
 static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
-                   size_t vecSize) {
-  while (it < vecSize && splittedPair[it].first != "NICK" \
-         && splittedPair[it].first != "USER") {
+                       size_t vecSize) {
+  while (it < vecSize && splittedPair[it].first != "NICK" &&
+         splittedPair[it].first != "USER") {
     ++it;
   }
-  if ( it >= vecSize || splittedPair[it].first == "USER") {
+  if (it >= vecSize || splittedPair[it].first == "USER") {
     return (true);
   }
   return (false);
 }
+
+// To delete later --------------------------------------------------------->//
+#ifdef DEBUG
+static void clientIsAcceptedMessageToDelete(Client &client,
+                                            std::string &command) {
+  std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
+            << std::endl;
+  std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
+  std::cout << "UserName: " << client.getUserName() << std::endl;
+  std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
+}
+#endif
+// <-------------------------------------------------------------------------//
 
 void Server::handleInitialMessage(Client &client, const std::string &message) {
   commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
@@ -48,66 +61,48 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     std::cout << "Message: " << argument << RESET << std::endl;
 
     if (command == "QUIT") {
-      // lancer la commande QUIT avec les arguments : quit(client, argument);
-      clearClient(client.getFd());
+      quit(argument, client, _clients);
       return;
     }
-    if (command == "CAP" && client.isCapSend() == false &&
-        client.isPasswordGiven() == false) {
-      client.setCapSend(true);
-      continue;
-    }
-    if (command == "PASS") {
+    if (client.isAccepted()) {
+#ifdef DEBUG
+      clientIsAcceptedMessageToDelete(client, command);
+#endif
+      handleCommand(command, argument, client.getFd());
+    } else if (command == "CAP" && client.isCapSend() == false &&
+               client.isPasswordGiven() == false) {
+      if (client.isCapSend() == false) client.setCapSend(true);
+    } else if (command == "PASS") {
       if (isLastPass(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyPassword(argument, _password, client) == false) {
-          clearClient(client.getFd());
-          return;
+          if (client.getNbPassAttempts() >= 3) {
+            clearClient(client.getFd());
+            return;
+          }
         }
       }
     } else if (client.isPasswordGiven() == false) {
       send461NeedMoreParams(client, "PASS");
-      clearClient(client.getFd());
-      return;
     } else if (command == "NICK") {
-      if (isLastNick(splittedPair, it + 1, vecSize)) {
-        if (Parser::verifyNick(argument, client, _clients) == false) {
-          clearClient(client.getFd());
-          return;
+      if (isLastNick(splittedPair, it + 1, vecSize))
+        if (Parser::verifyNick(argument, client, _clients) == true &&
+            client.isAccepted() == false && client.isUsernameSet()) {
+          client.declareAccepted();
+          sendConnectionMessage(client);
         }
-      }
-    } else if (command == "USER" && client.isNicknameSet()) {
-      if (Parser::verifyUser(argument, client, _clients) == false) {
-        clearClient(client.getFd());
-        return;
-      }
-    } else if (client.isNicknameSet() == false) {
-      send431NoNicknameGiven(client);
-      clearClient(client.getFd());
-      return;
-    } else if (client.isUsernameSet() == false) {
-      send461NeedMoreParams(client, "USER");
-      clearClient(client.getFd());
-      return;
-    } else if (client.isAccepted()) {
-      std::cout << BRIGHT_YELLOW "CLIENT ACCEPTED !!!!!!!  " << command << std::endl;
-      std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
-      std::cout << "UserName: " << client.getUserName() << std::endl;
-      std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
-      std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
-                << "\nargument = " << argument << RESET << std::endl;
-      handleCommand(command, argument, client.getFd());
-    }
-    if (client.isPasswordGiven() && client.isNicknameSet() &&
-        client.isUsernameSet()) {
-      client.declareAccepted();
-      std::cout << GREEN "Client IS ACCEPTED !!!!" RESET << std::endl;
-      if (client.isAccepted()) {
-        std::cout << GREEN "Client IS REEEALLLYYY ACCEPTED !!!!" RESET << std::endl;
+    } else if (command == "USER") {
+      if (Parser::verifyUser(argument, client, _clients) == true &&
+          client.isAccepted() == false && client.isNicknameSet()) {
+        client.declareAccepted();
         sendConnectionMessage(client);
       #ifdef TESTNUMERICR
         testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
-      #endif
+#endif
       }
+    } else if (client.isAccepted() == false) {
+      if (client.isNicknameSet() == false) send431NoNicknameGiven(client);
+      if (client.isUsernameSet() == false)
+        send461NeedMoreParams(client, "USER");
     }
   }
 }
@@ -191,7 +186,7 @@ void Server::handleCommand(const std::string &command, std::string &argument,
   } else if (command == "PRIVMSG") {
     // Envoyer un message privé
   } else if (command == "QUIT") {
-    // Déconnecter le client
+    quit(argument, _clients[fd], _clients);
   } else if (command == "PING") {
     ping(&_clients[fd], argument);
   } else if (command == "PASS" || command == "USER") {
