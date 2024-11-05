@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/02 22:31:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/05 13:55:14 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static std::vector<std::string> fillUserVectorString(const std::string &str) {
     result.clear();
     return (result);
   }
-  std::string lastToken = str.substr(str.find_first_of(":"));
+  std::string lastToken = str.substr(str.find_first_of(":") + 1);
   if (lastToken.empty() || lastToken.size() > 100)
     result.clear();
   else
