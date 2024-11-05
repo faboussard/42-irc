@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:35:32 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
   _realnameSet = false;
   _passwordGiven = false;
   _accepted = false;
+  _channelsCount = 0;
 }
 
 /*============================================================================*/
@@ -35,6 +36,11 @@ Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
 std::string const& Client::getNickName() const { return (_nickName); }
 
 std::string const& Client::getUserName() const { return (_userName); }
+
+int Client::getChannelsCount() const{
+  return (_channelsCount);
+}
+
 
 int Client::getFd(void) const { return (_fd); }
 
@@ -133,3 +139,9 @@ std::string Client::shareMessage(void) {
   buffer[bytesRead] = '\0';
   return (std::string(buffer));
 }
+
+/*============================================================================*/
+/*       Channel  handling                                                    */
+/*============================================================================*/
+
+void Client::incrementChannelsCount(void) { _channelsCount++; }

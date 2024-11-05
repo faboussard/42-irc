@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 14:17:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:20:38 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 class Test
 {
     public:
+    void testAll(Server &server);
+    
     /* join */
     void testJoinChannel(Server &server);
     

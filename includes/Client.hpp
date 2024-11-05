@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 11:16:57 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:35:11 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class Client {
   bool _passwordGiven;
   bool _accepted;
   UserModes _uModes;
+  int _channelsCount;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "");
@@ -57,6 +58,7 @@ class Client {
   bool isAccepted() const;  const std::string &getRealName() const;
   const UserModes &getUserModes() const;
   const std::string getUserModesFlag() const;
+  int getChannelsCount() const;
 
   /* Setters */
   void setFd(int fd);
@@ -73,6 +75,9 @@ class Client {
   /* Messages handling */
   void receiveMessage(const std::string& message);
   std::string shareMessage();
+
+  /* Channels handling */
+  void incrementChannelsCount();
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 17:03:02 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:42:01 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 void Test::testJoinChannel(Server &server) {
     
-        int fd1 = 1;
+    int fd1 = 1;
     int fd2 = 2;
     
     Client newClient1(fd1, "Nick1");
@@ -45,8 +45,10 @@ void Test::testJoinChannel(Server &server) {
 
     // Test de la limite de canaux si une limite est implémentée (par exemple, 2 canaux max)
     std::cout << "Testing channel limit" << std::endl;
-    std::string channel4 = "#channelC";
+    std::cout << "Chanlimit is " << CHANLIMIT_ << std::endl;
+    std::cout << "fd1 is in " << server.getClientByFd(fd1).getChannelsCount() << " channels" << std::endl;
     server.joinChannel(channel3, fd1);  // Cette tentative doit être rejetée si le nombre de canaux est limité
+    std::cout << "fd1 is in " << server.getClientByFd(fd1).getChannelsCount() << " channels" << std::endl;
 
     // Test de JOIN 0 pour quitter tous les canaux
     std::cout << "Testing JOIN 0 to leave all channels" << std::endl;

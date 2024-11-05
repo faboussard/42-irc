@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/10/30 15:03:39 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:38:12 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ Server::Server(int port, const std::string &password) {
 
 /* -------------------------  Getters ----------------------------------- */
 
-const Client &Server::getClientByFd(int fd) const {
-  clientsMap::const_iterator it = _clients.find(fd);
+Client &Server::getClientByFd(int fd) {
+  clientsMap::iterator it = _clients.find(fd);
   if (it == _clients.end()) {
     std::cerr << "Client not found with the given file descriptor" << std::endl;
     throw std::runtime_error("Client not found");
@@ -201,7 +201,7 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
       } else {
         std::cout << CYAN << "OTHER COMMAND ! \ncommand = " << command
                   << "\nargument = " << argument << RESET << std::endl;
-        handleCommand(command, argument, client.getFd());
+        handleCommand(command, argument, client.getFd(), client);
       }
     }
     if (client.isPasswordGiven() && client.isNicknameSet() &&
@@ -228,7 +228,7 @@ void Server::handleOtherMessage(Client &client, const std::string &message) {
     } else if (cmd == CAP) {
       continue;
     } else {
-      handleCommand(command, argument, client.getFd());
+      handleCommand(command, argument, client.getFd(), client);
     }
   }
 }
@@ -371,7 +371,7 @@ void Server::clearClient(int fd) {
     }
 /*  Commands management */
 
-void Server::handleCommand(const std::string &command, std::string &argument, int fd) {
+void Server::handleCommand(const std::string &command, std::string &argument, int fd, Client &client) {
   if (command.empty()) {
     return;
   } else if (command == "JOIN") {
@@ -379,7 +379,7 @@ void Server::handleCommand(const std::string &command, std::string &argument, in
     std::cout << GREY "JOIN command received" RESET << std::endl;
     std::cout << GREY "argument: " RESET << argument << std::endl;
   #endif
-    if (canEnterChannel(argument))
+    if (canEnterChannel(argument) && client.getChannelsCount() < CHANLIMIT_)
       joinChannel(argument, fd);
     else
       send476BadChanMask(fd, getClientByFd(fd).getNickName(), argument);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 17:23:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:38:37 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,21 +48,26 @@ JOIN 0 = part all channels
 
 //gerer que on q #pqrqm pui si virgule, on doit fqire join sur le deuxieme #param. si espqce -> key.
 bool Server::canEnterChannel(const std::string &param) {
-  return                 // Ensure param length is greater than 1
-      param.length() < 51  // Channel name should be less than 51 characters
-      && param.find(" ") == std::string::npos  // No spaces in param
+  return 
+                 
+      param.length() < 51
+      && param.find(" ") == std::string::npos
       &&
-      param[0] == CHAN_PREFIX_CHAR || (param.length() == 1 && param[0] == 0 );  // Check if first character is the channel prefix
+      (param[0] == CHAN_PREFIX_CHAR || (param.length() == 1 && param[0] == 0 ));  // Check if first character is the channel prefix
 }
 
-void Server::joinChannel(std::string &param, int fd) {
-  std::string channelNameNoSymbol;
-  channelNameNoSymbol = param.substr(1);
-  addChanneltoServer
-(channelNameNoSymbol);
-  const Client &client = getClientByFd(fd);
-  _channels[channelNameNoSymbol].addClientToChannelMap(client);
-  executeJoin(fd, client, channelNameNoSymbol);
+void Server::joinChannel(const std::string &param, int fd) {
+  addChanneltoServer(param);
+  
+  Client &client = getClientByFd(fd);
+  _channels[param].addClientToChannelMap(client);
+  client.incrementChannelsCount();
+    #ifdef TEST
+      std::cout << "client: " << fd <<  " has joined the Channel " <<   _channels[param].getName() << std::endl;
+    std::cout << std::endl;
+    return;
+#endif
+  executeJoin(fd, client, param);
 }
 
 void Server::executeJoin(int fd, const Client &client,

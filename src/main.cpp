@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 17:58:05 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:36:11 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,31 @@ void checkArgs(int port, const std::string& password) {
               << std::endl;
     exit(EXIT_FAILURE);
   }
-  if (password.length() > 1000) { 
+  if (password.length() > 1000) {
     std::cerr << "Password too long" << std::endl;
     exit(EXIT_FAILURE);
   }
 }
 
 int main(int ac, char** argv) {
+  {
+  /* ------------------------ unitary tests ------------------------*/
+/* join */
+#ifdef TEST
+  Test test;
+  int port = std::atoi(argv[1]);
+  std::string password = argv[2];
+  Server ser(port, password);
+
+  if (ac > 3 && std::string(argv[3]) == "join") {
+    test.testJoinChannel(ser);
+  } else
+    test.testAll(ser);
+  exit(EXIT_SUCCESS);
+
+#endif
+  /* ------------------------ end of unitary tests ------------------------*/
+  }
   if (ac != 3) {
     std::cerr << "Usage: ./ircserv <port> <password>" << std::endl;
     exit(EXIT_FAILURE);
@@ -36,14 +54,7 @@ int main(int ac, char** argv) {
   std::string password = argv[2];
   checkArgs(port, password);
   Server ser(port, password);
-      /* ------------------------ unitary tests ------------------------*/
-/* join */
-#ifdef TEST
-      Test test;
-      test.testJoinChannel(ser);
-      exit(EXIT_SUCCESS);
-#endif
-    /* ------------------------ end of unitary tests ------------------------*/
+
   try {
     signal(SIGINT, Server::signalHandler);
     signal(SIGQUIT, Server::signalHandler);
