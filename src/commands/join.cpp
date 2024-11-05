@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 17:52:04 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 18:32:38 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "../includes/serverConfig.hpp"
 
 
-void Server::joinChannels(const std::string &param, int fd, Client &client) {
+void Server::joinChannel(const std::string &param, int fd,const Client &client) {
   if (isJoinZero(param)) {
     #ifdef TEST
       std::cout << "client: " << fd << RED" has parted all channels " << std::endl;
@@ -37,9 +37,11 @@ void Server::joinChannels(const std::string &param, int fd, Client &client) {
       #ifdef TEST
         std::cout << "client: " << fd << " joins channel " << channelName << std::endl;
       #endif
+      #ifdef DEBUG
+      std::cout << "OK" << std::endl;
+      #endif
       executeJoin(fd, client, channelName);  // Exécution de la commande JOIN
     }
-
     start = pos + 1;
     pos = param.find(",", start);
   }
@@ -62,13 +64,17 @@ bool Server::hasNoSpaces(const std::string &param) {
   return param.find(" ") == std::string::npos;
 }
 
+bool Server::isValidPrefix(const std::string &param) {
+  return param[0] ==  atoi(CHAN_PREFIX);
+}
+
 bool Server::isJoinZero(const std::string &param) { return param == "0"; }
 
 bool Server::goodChannelName(const std::string &param) {
-  return isValidLength(param) && hasNoSpaces(param);
+  return isValidLength(param) && hasNoSpaces(param) && isValidPrefix(param);
 }
 
-bool Server::isChannelValid(const std::string &param, Client &client) {
+bool Server::isChannelValid(const std::string &param,const Client &client) {
  if (param.empty()) {
 #ifdef TEST
     std::cout << "client: " << fd << RED" has no channel name" RESET<< std::endl;
@@ -93,11 +99,13 @@ bool Server::isChannelValid(const std::string &param, Client &client) {
   return true;
 }
 
-void Server::executeJoin(int fd, Client &client,
+void Server::executeJoin(int fd,const Client &client,
                          const std::string &channelName) {
+
   addChanneltoServer(channelName);
-  _channels[channelName].addClientToChannelMap(&client);
-  client.incrementChannelsCount();
+_channels[channelName].addClientToChannelMap(const_cast<Client*>(&client));
+  const_cast<Client&>(client).incrementChannelsCount();
+
 #ifdef TEST
   std::cout << "client: " << fd << " has joined the Channel "
             << _channels[channelName].getName() << std::endl;

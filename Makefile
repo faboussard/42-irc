@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/05 17:17:12 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/05 17:53:33 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils t
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
        join pass nick user quit invite mode ping topic \
-		join unitTestsgeneral
+		joinTest generalTest \
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/

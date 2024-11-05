@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 17:52:14 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 18:18:59 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,15 +115,14 @@ class Server {
   /*--------- Commands --------------*/
   /* Join */
   void handleCommand(const std::string &command, std::string &argument, int fd,const Client &client);
-  void joinChannel(const std::string &channelName, int fd,const Client &client);
-  void executeJoin(int fd, Client &client, const std::string &channelName);
+  void executeJoin(int fd,const Client &client, const std::string &channelName);
   bool goodChannelName(const std::string &argument);
   bool isValidPrefix(const std::string &param);
   bool isValidLength(const std::string &param);
   bool hasNoSpaces(const std::string &param);
   bool isJoinZero(const std::string &param);
-  void joinChannels(const std::string &param, int fd, Client &client);
-  bool isChannelValid(const std::string &param, Client &client);
+  void joinChannel(const std::string &param, int fd,const Client &client);
+  bool isChannelValid(const std::string &param,const Client &client);
 
   // Sub-functions for joinChannel
   void addChanneltoServer(const std::string &channelName);
@@ -140,7 +139,7 @@ class Server {
   void closeClient(int fd);
 
   /* Tests */
-  void addClient(int fd, const Client &client);
+  void addClient(int fd,const Client &client);
 
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client& client, clientsMap &cltMap);
