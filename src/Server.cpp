@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 11:00:21 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/05 15:55:59 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ void Server::closeServer(void) {
     _socketFd = -1;
   }
   _pollFds.clear();
-  shrink_to_fit(_pollFds);
+  shrink_to_fit(&_pollFds);
 }
 
 /*============================================================================*/
