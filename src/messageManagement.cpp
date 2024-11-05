@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 16:02:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 16:23:34 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static void clientIsAcceptedMessageToDelete(Client &client,
 #endif
 // <-------------------------------------------------------------------------//
 
-void Server::handleInitialMessage(Client &client, const std::string &message) {
+void Server::handleInitialMessage( Client &client, const std::string &message) {
   commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
   size_t vecSize = splittedPair.size();
 
@@ -68,7 +68,7 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
 #ifdef DEBUG
       clientIsAcceptedMessageToDelete(client, command);
 #endif
-      handleCommand(command, argument, client.getFd());
+      handleCommand(command, argument, client.getFd(), client);
     } else if (command == "CAP" && client.isCapSend() == false &&
                client.isPasswordGiven() == false) {
       if (client.isCapSend() == false) client.setCapSend(true);
@@ -163,7 +163,7 @@ void Server::handleClientMessage(int fd) {
 /*============================================================================*/
 
 void Server::handleCommand(const std::string &command, std::string &argument,
-                           int fd) {
+                           int fd, Client &client) {
   if (command.empty()) return;
   if (command == "JOIN") {
     // joinChannel(argument, fd);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 15:50:49 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 17:14:34 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "../includes/colors.hpp"
 #include "../includes/numericReplies.hpp"
 #include "../includes/utils.hpp"
+#include "../includes/serverConfig.hpp"
+
 
 void Server::joinChannels(const std::string &param, int fd, Client &client) {
   if (isJoinZero(param)) {
@@ -60,10 +62,6 @@ bool Server::hasNoSpaces(const std::string &param) {
   return param.find(" ") == std::string::npos;
 }
 
-bool Server::isValidPrefix(const std::string &param) {
-  return param[0] == CHAN_PREFIX_CHAR;
-}
-
 bool Server::isJoinZero(const std::string &param) { return param == "0"; }
 
 bool Server::goodChannelName(const std::string &param) {
@@ -76,27 +74,21 @@ bool Server::isChannelValid(const std::string &param, int fd, Client &client) {
     std::cout << "client: " << fd << RED" has no channel name" RESET<< std::endl;
     return false;
 #endif
-    send461NeedMoreParams(fd, client.getNickName(), "JOIN");
+    send461NeedMoreParams(client, "JOIN");
   }
-  else if (!isValidPrefix(param)) {
-#ifdef TEST
-    std::cout << "client: " << fd << RED" has a bad prefix"RESET << std::endl;
-    return false;
-#endif
-    send475BadChannelKey(fd, client.getNickName(), param);
   } else if (!goodChannelName(param)) {
 #ifdef TEST
     std::cout << "client: " << fd << RED" has a bad channel name"RESET << std::endl;
     return false;
 #endif
-    send476BadChanMask(fd, getClientByFd(fd).getNickName(), param);
-  } else if (client.getChannelsCount() >= CHANLIMIT_)  // else if or if ?
+    send476BadChanMask(client, param);
+  } else if (client.getChannelsCount() >= gConfig->getLimit("CHANLIMIT"))
   {
 #ifdef TEST
     std::cout << "client: " << fd << RED " has too many channels" RESET << std::endl;
     return false;
 #endif
-    send405TooManyChannels(fd, client.getNickName());
+    send405TooManyChannels(client);
   }
   return true;
 }
@@ -112,12 +104,12 @@ void Server::executeJoin(int fd, Client &client,
   std::cout << std::endl;
   return;
 #endif
-  std::string nick = client.getNickName();
+  std::string nick = client.getNickname();
   sendJoinMessageToClient(fd, nick, channelName);
   send353Namreply(fd, nick, _channels[channelName]);
   std::cout << " _channels[channelName] " << _channels[channelName].getName()
             << std::endl;
-  send366Endofnames(fd, nick, channelName);
+  send366Endofnames(client, channelName);
   broadcastJoinMessage(fd, nick, channelName);
 }
 
