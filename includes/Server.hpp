@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 13:53:57 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/05 17:32:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,8 +101,8 @@ class Server {
   void receiveMessage(int fd);
 
   /* Clients message handling */
-  void handleInitialMessage(Client &client, const std::string &message);
-  void handleOtherMessage(Client &client, const std::string &message);
+  void handleInitialMessage(Client *client, const std::string &message);
+  void handleOtherMessage(Client *client, const std::string &message);
   void handleClientMessage(int fd);
 
   /* Clear and Close */
@@ -112,7 +112,7 @@ class Server {
   void closeClient(int fd);
 
   /* Commands handling */
-  void handleCommand(const std::string &command, std::string &argument, int fd);
+  void handleCommand(const std::string &command, std::string *argument, int fd);
   void sendToAllClients(const std::string &message);  // Broadcast
 
   /*-------- QUIT --------*/
