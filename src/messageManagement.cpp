@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 11:39:31 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/05 13:45:01 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     }
     if (client.isAccepted()) {
 #ifdef DEBUG
-      clientIsAcceptedMessageToDelete(client, command, argument);
+      clientIsAcceptedMessageToDelete(client, command);
 #endif
       handleCommand(command, argument, client.getFd());
     } else if (command == "CAP" && client.isCapSend() == false &&
