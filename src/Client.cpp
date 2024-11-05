@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:58:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:39:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,31 +20,43 @@
 /*       Constructors                                                         */
 /*============================================================================*/
 
-Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
-  _nicknameSet = false;
-  _usernameSet = false;
-  _realnameSet = false;
-  _passwordGiven = false;
-  _accepted = false;
+Client::Client(int fd, const std::string& ip, const std::string& hostName)
+  : _fd(fd), _ip(ip), _hostName(hostName),
+    _nickname("*"), _userName("*"), _realName("*"),
+    _nicknameSet(false), _usernameSet(false), _realnameSet(false),
+    _passwordGiven(false), _accepted(false), _CapSend(false) {
+  _uModes.invisible = false;
+  _uModes.operatorOfServer = false;
+  _uModes.registered = false;
 }
+
+// Client::Client(int fd, const std::string& ip) : _fd(fd), _ip(ip) {
+//   _nicknameSet = false;
+//   _usernameSet = false;
+//   _realnameSet = false;
+//   _passwordGiven = false;
+//   _accepted = false;
+// }
 
 /*============================================================================*/
 /*       Getters                                                              */
 /*============================================================================*/
 
-std::string const& Client::getNickName() const { return (_nickName); }
+std::string const& Client::getNickname(void) const { return (_nickname); }
 
-std::string const& Client::getUserName() const { return (_userName); }
+std::string const& Client::getUserName(void) const { return (_userName); }
 
 int Client::getFd(void) const { return (_fd); }
 
 std::string Client::getIp(void) const { return (_ip); }
 
-std::string const& Client::getRealName() const { return (_realName); }
+std::string const& Client::getHostName(void) const { return (_hostName); }
 
-UserModes const& Client::getUserModes() const { return (_uModes); }
+std::string const& Client::getRealName(void) const { return (_realName); }
 
-const std::string Client::getUserModesFlag() const {
+UserModes const& Client::getUserModes(void) const { return (_uModes); }
+
+const std::string Client::getUserModesFlag(void) const {
   std::string flags = "+";
   if (_uModes.invisible) flags += "i";
   if (_uModes.operatorOfServer) flags += "o";
@@ -62,12 +74,14 @@ bool Client::isPasswordGiven(void) const { return (_passwordGiven); }
 
 bool Client::isAccepted(void) const { return (_accepted); }
 
+bool Client::isCapSend(void) const { return (_CapSend); }
+
 /*============================================================================*/
 /*       Setters                                                              */
 /*============================================================================*/
 
 void Client::setNickname(const std::string& nickname) {
-  _nickName = nickname;
+  _nickname = nickname;
   _nicknameSet = true;
 }
 
@@ -85,6 +99,10 @@ void Client::setFd(int fd) { _fd = fd; }
 
 void Client::setIp(const std::string& ip) { _ip = ip; }
 
+void Client::setHostName(const std::string& hostname) { _hostName = hostname; }
+
+void Client::setCapSend(bool yes) { _CapSend = yes; }
+
 void Client::setUInvisibleMode(bool isInvisible) {
   _uModes.invisible = isInvisible;
 }
@@ -101,6 +119,7 @@ void Client::declareAccepted(void) { _accepted = true; }
 
 void Client::declarePasswordGiven(void) { _passwordGiven = true; }
 
+
 /*============================================================================*/
 /*       Messages handling                                                    */
 /*============================================================================*/
@@ -109,7 +128,7 @@ void Client::receiveMessage(const std::string& message) {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {
-      std::cerr << RED "Error while sending message to fd " RESET << _fd << ": "
+      std::cerr << RED "Error while sending message to fd " << _fd << ": "
                 << strerror(errno) << RESET << std::endl;
     }
   } else {

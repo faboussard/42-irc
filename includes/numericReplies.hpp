@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 15:32:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:19:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,34 +17,40 @@
 
 #include "./Channel.hpp"
 #include "./Client.hpp"
-#include "./serverConfig.hpp"
+#include "./Config.hpp"
+#include "./Server.hpp"
+#include "./utils.hpp"
 
-#define FROM_SERVER std::string(":") + SRV_NAME + " "
+extern Config *gConfig;
+
+#define FROM_SERVER (std::string(":") + SRV_NAME + " ")
 #define RUNTIME_ERROR "Failed to send numeric reply"
 
 /* Messages definition */
 
 /*------ Connection registration ---------------------------------------------*/
 
-#define _001_RPL_WELCOME(nick, user, host)                            \
-  (FROM_SERVER + "001 " + nick + " :Welcome to the " + NETWORK_NAME + \
-  " Network, " + nick + "!" + user + "@" + host + "\r\n")
+#define _001_RPL_WELCOME(nick, user, host)                                 \
+  (FROM_SERVER + "001 " + nick + " :Welcome to the " +                     \
+  gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user + "@" + \
+  host + "\r\n")
 
-#define _002_RPL_YOURHOST(nick)                                       \
+#define _002_RPL_YOURHOST(nick)                                 \
   (FROM_SERVER + "002 " + nick + " :Your host is " + SRV_NAME + \
   ", running version " + SRV_VERSION + "\r\n")
 
-#define _003_RPL_CREATED(nick, starttime)         \
+#define _003_RPL_CREATED(nick, starttime)                                      \
   (FROM_SERVER + "003 " + nick + " :This server was created on " + starttime + \
   "\r\n")
 
-#define _004_RPL_MYINFO(nick)                                            \
+#define _004_RPL_MYINFO(nick)                                                \
   (FROM_SERVER + "004 " + nick + " :" + SRV_NAME + " " + SRV_VERSION + " " + \
-  USER_MODES + " " + CHANNEL_MODES + "\r\n")
+  gConfig->getParam("USERMODES") + " " + gConfig->getSupportedChanModes() +   \
+  "\r\n")
 
-#define _005_RPL_ISUPPORT(nick, tokens) \
-  (FROM_SERVER + "005 " + nick + " :" + tokens + \
-  " :are supported by this server\r\n")
+#define _005_RPL_ISUPPORT(nick)                                      \
+  (FROM_SERVER + "005 " + nick + " :" + gConfig->getIsupportParamToken() + \
+  ":are supported by this server\r\n")
 // Inform clients about the server-supported features and settings
 
 /*------ User related messages -----------------------------------------------*/
@@ -65,9 +71,9 @@
 #define _323_RPL_LISTEND(nick) \
   (FROM_SERVER + "323 " + nick + " :End of /LIST\r\n")
 
-#define _324_RPL_CHANNELMODEIS(nick, chanName, modeFlag, modeArgs) \
-  (FROM_SERVER + "324 " + nick + " " + chanName + " " + modeFlag + " " \
-  + modeArgs + "\r\n")
+#define _324_RPL_CHANNELMODEIS(nick, chanName, modeFlag, modeArgs)       \
+  (FROM_SERVER + "324 " + nick + " " + chanName + " " + modeFlag + " " + \
+  modeArgs + "\r\n")
 // Channel mode is displayed with arguments associated with the modes.
 // Reply to MODE <prefix><channel>
 
@@ -75,7 +81,7 @@
   (FROM_SERVER + "329 " + nick + " " + chanName + " " + creationTime + "\r\n")
 // creation time of a channel. Reply to MODE <prefix><channel>
 
-# define _331_RPL_NOTOPIC(nick, chanName) \
+#define _331_RPL_NOTOPIC(nick, chanName) \
   (FROM_SERVER + "331 " + nick + " " + chanName + " :No topic is set\r\n")
 // Indicates that the channel has no topic set.
 
@@ -83,9 +89,9 @@
   (FROM_SERVER + "332 " + nick + " " + chanName + " :" + topic + "\r\n")
 // Current topic of the channel.
 
-#define _333_RPL_TOPICWHOTIME(nick, chanName, author, setTime) \
-  (FROM_SERVER + "333 " + nick + " " + chanName + " " + author + " " + setTime \
-  + "\r\n")
+#define _333_RPL_TOPICWHOTIME(nick, chanName, author, setTime)         \
+  (FROM_SERVER + "333 " + nick + " " + chanName + " " + author + " " + \
+  setTime + "\r\n")
 // By whom and when(unix timestamp) is the topic set. Sent with 332
 
 #define _336_RPL_INVITELIST(nick, chanName) \
@@ -96,11 +102,11 @@
   (FROM_SERVER + "337 " + nick + " :End of /INVITE list\r\n")
 
 #define _341_RPL_INVITING(nick, invitedNick, chanName) \
-  (FROM_SERVER + "341 " + nick + + " " + invitedNick + " " + chanName + "\r\n")
+  (FROM_SERVER + "341 " + nick + +" " + invitedNick + " " + chanName + "\r\n")
 // Confirms the user has been invited to the channel.
 // Sent as a reply to the INVITE command.
 
-#define _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames) \
+#define _353_RPL_NAMREPLY(nick, chanNameWithSymbol, nicknames)                 \
   (FROM_SERVER + "353 " + nick + " " + chanNameWithSymbol + " :" + nicknames + \
   "\r\n")
 // : List of users in the channel.
@@ -130,7 +136,7 @@
   (FROM_SERVER + "409 " + nick + " :No origin specified\r\n")
 
 #define _411_ERR_NORECIPIENT(nick, command) \
-  (FROM_SERVER + "411 " + nick + " :No recipient given("  + command + ")\r\n")
+  (FROM_SERVER + "411 " + nick + " :No recipient given(" + command + ")\r\n")
 // Client tries to send a command that requires a recipient
 // (such as PRIVMSG or NOTICE) but does not specify one.
 
@@ -155,7 +161,7 @@
   (FROM_SERVER + "432 " + nick + " :Erroneus nickname\r\n")
 // The desired nickname contains characters that are disallowed by the server.
 
-#define _433_ERR_NICKNAMEINUSE(nick)              \
+#define _433_ERR_NICKNAMEINUSE(nick) \
   (FROM_SERVER + "433 " + nick + " :Nickname is already in use\r\n")
 
 #define _442_ERR_NOTONCHANNEL(nick, chanName)     \
@@ -166,7 +172,7 @@
   (FROM_SERVER + "443 " + nick + " " + invitedNick + " " + chanName + \
   " :is already on channel\r\n")
 
-#define _441_ERR_USERNOTINCHANNEL(nick, targetNick, chanName) \
+#define _441_ERR_USERNOTINCHANNEL(nick, targetNick, chanName)        \
   (FROM_SERVER + "441 " + nick + " " + targetNick + " " + chanName + \
   " :They aren't on that channel\r\n")
 // Returned when a client tries to perform a channel+nick affecting command,
@@ -176,9 +182,8 @@
   (FROM_SERVER + "451 " + nick + " :You have not registered\r\n")
 // Returned when a client tries to send a message before registering.
 
-#define _461_ERR_NEEDMOREPARAMS(nick, command)   \
-  (FROM_SERVER + "461 " + nick + " " + command + \
-  " :Not enough parameters\r\n")
+#define _461_ERR_NEEDMOREPARAMS(nick, command) \
+  (FROM_SERVER + "461 " + nick + " " + command + " :Not enough parameters\r\n")
 // Command cannot be parsed because not enough parameters were supplied.
 
 #define _462_ERR_ALREADYREGISTERED(nick) \
@@ -217,8 +222,8 @@
   (FROM_SERVER + "481 " + nick +    \
   " :Permission Denied- You're not an IRC operator\r\n")
 
-#define _482_ERR_CHANOPRIVSNEEDED(nick, chanName)  \
-  (FROM_SERVER + "482 " + nick + " "  + chanName + \
+#define _482_ERR_CHANOPRIVSNEEDED(nick, chanName) \
+  (FROM_SERVER + "482 " + nick + " " + chanName + \
   " :You're not a channel operator\r\n")
 
 #define _501_ERR_UMODEUNKNOWNFLAG(nick) \
@@ -232,114 +237,109 @@
 
 /*------ Welcome messages ----------------------------------------------------*/
 
-void send001Welcome(int fd, std::string const &nick,
-                    std::string const &user, std::string const &host);
-void send002Yourhost(int fd, const std::string &nick);
-void send003Created(int fd, const std::string &nick,
+void send001Welcome(int fd, std::string const &nick, std::string const &user,
+                    std::string const &host);
+void send002Yourhost(int fd, std::string const &nick);
+void send003Created(int fd, std::string const &nick,
                     const std::string &startTime);
-void send104Myinfo(int fd, const std::string &nick);
-void send005Isupport(int fd, const std::string &nick, const std::string &toks);
-void sendWelcome(int fd, const std::string &nick);
+void send104Myinfo(int fd, std::string const &nick);
+void send005Isupport(int fd, std::string const &nick);
+void sendWelcome(int fd, std::string const &nick);
 
 /*------ User related replies ------------------------------------------------*/
 
-void send221Umodeis(int fd, const Client &client);
+void send221Umodeis(const Client &client);
 
 /*------ Channel related replies ---------------------------------------------*/
 
-void send321Liststart(int fd, const std::string &nick);
-void send322List(int fd, const std::string &nick, const Channel &channel);
-void send323Listend(int fd, const std::string &nick);
-void send324Channelmodeis(int fd, const std::string &nick,
+void send321Liststart(const Client &client);
+void send322List(const Client &client, const Channel &channel);
+void send323Listend(const Client &client);
+void send324Channelmodeis(const Client &client,
                           const Channel &channel);
-void send329Creationtime(int fd, const std::string &nick,
+void send329Creationtime(const Client &client,
                          const Channel &channel);
-void send331Notopic(int fd, const std::string &nick, const Channel &channel);
-void send332Topic(int fd, const std::string &nick, const Channel &channel);
-void send333Topicwhotime(int fd, const std::string &nick,
+void send331Notopic(const Client &client, const Channel &channel);
+void send332Topic(const Client &client, const Channel &channel);
+void send333Topicwhotime(const Client &client,
                          const Channel &channel);
-void send336Invitelist(int fd, const std::string &nick,
-                       const std::string &chanName);
-void send337Endofinvitelist(int fd, const std::string &nick);
-void send341Inviting(int fd, const std::string &nick,
-                     const std::string &invitedNick,
-                     const std::string &chanName);
-void send353Namreply(int fd, const std::string &nick, const Channel &channel);
-void send366Endofnames(int fd, const std::string &nick,
-                       const std::string &chanName);
+void send336Invitelist(const Client &client, const Channel &channel);
+void send337Endofinvitelist(const Client &client);
+void send341Inviting(const Client &client,
+                     const std::string &invitedNick, const Channel &channel);
+void send353Namreply(const Client &client, const Channel &channel);
+void send366Endofnames(const Client &client, const Channel &channel);
 
 /*------ Error messages ------------------------------------------------------*/
 
-void send401NoSuchNick(int fd, const std::string &nick,
+void send401NoSuchNick(const Client &client,
                        const std::string &targetNick);
-void send403NoSuchChannel(int fd, const std::string &nick,
+void send403NoSuchChannel(const Client &client,
                           const std::string &chanName);
-void send404CannotSendToChan(int fd, const std::string &nick,
-                             const std::string &chanName);
-void send405TooManyChannels(int fd, const std::string &nick);
-void send409NoOrigin(int fd, const std::string &nick);
-void send411NoRecipient(int fd, const std::string &nick,
+void send404CannotSendToChan(const Client &client,
+                             const Channel &channel);
+void send405TooManyChannels(const Client &client);
+void send409NoOrigin(const Client &client);
+void send411NoRecipient(const Client &client,
                         const std::string &command);
-void send412NoTextToSend(int fd, const std::string &nick);
-void send417InputTooLong(int fd, const std::string &nick);
-void send421UnknownCommand(int fd, const std::string &nick,
+void send412NoTextToSend(const Client &client);
+void send417InputTooLong(const Client &client);
+void send421UnknownCommand(const Client &client,
                            const std::string &command);
-void send431NoNicknameGiven(int fd, const std::string &nick);
-void send432ErroneusNickname(int fd, const std::string &nick);
-void send433NickAlreadyInUse(int fd, const std::string &nick);
-void send441UserNotInChannel(int fd, const std::string &nick,
+void send431NoNicknameGiven(const Client &client);
+void send432ErroneusNickname(const Client &client);
+void send433NickAlreadyInUse(const Client &client);
+void send441UserNotInChannel(const Client &client,
                              const std::string &targetNick,
-                             const std::string &chanName);
-void send442NotOnChannel(int fd, const std::string &nick,
-                         const std::string &chanName);
-void send443UserOnChannel(int fd, const std::string &nick,
+                             const Channel &channel);
+void send442NotOnChannel(const Client &client,
+                         const Channel &channel);
+void send443UserOnChannel(const Client &client,
                           const std::string &invitedNick,
-                          const std::string &chanName);
-void send451NotRegistered(int fd, const std::string &nick);
-void send461NeedMoreParams(int fd, const std::string &nick,
+                          const Channel &channel);
+void send451NotRegistered(const Client &client);
+void send461NeedMoreParams(const Client &client,
                            const std::string &command);
-void send462AlreadyRegistered(int fd, const std::string &nick);
-void send464PasswdMismatch(int fd, const std::string &nick);
-void send471ChannelIsFull(int fd, const std::string &nick,
-                          const std::string &chanName);
-void send472UnknownMode(int fd, const std::string &nick,
+void send462AlreadyRegistered(const Client &client);
+void send464PasswdMismatch(const Client &client);
+void send471ChannelIsFull(const Client &client,
+                          const Channel &channel);
+void send472UnknownMode(const Client &client,
                         const std::string &modeChar);
-void send473InviteOnlyChan(int fd, const std::string &nick,
-                           const std::string &chanName);
-void send475BadChannelKey(int fd, const std::string &nick,
-                          const std::string &chanName);
-void send476BadChanMask(int fd, const std::string &nick,
-                        const std::string &chanName);
-void send481NoPrivileges(int fd, const std::string &nick);
-void send482ChanOPrivsNeeded(int fd, const std::string &nick,
-                             const std::string &chanName);
-void send501UmodeUnknownFlag(int fd, const std::string &nick);
-void send525InvalidKey(int fd, const std::string &nick,
-                       const std::string &chanName);
+void send473InviteOnlyChan(const Client &client,
+                           const Channel &channel);
+void send475BadChannelKey(const Client &client,
+                          const Channel &channel);
+void send476BadChanMask(const Client &client,
+                        const Channel &channel);
+void send481NoPrivileges(const Client &client);
+void send482ChanOPrivsNeeded(const Client &client,
+                             const Channel &channel);
+void send501UmodeUnknownFlag(const Client &client);
+void send525InvalidKey(const Client &client, const Channel &channel);
 
-/* Just for test */
+/*--------- Test -------------------------------------------------------------*/
+
 void testAllNumericReplies(const std::string &serverStartTime,
-                           const Client &target,
-                           const std::string &command,
+                           const Client &client, const std::string &command,
                            const std::string &targetNick);
 
 /*--------- Just for fun -----------------------------------------------------*/
 
-#define _WELCOME(nick) \
-  (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" + \
-"────────────────────────────────────────────────────────────────────\n" + \
-"────────────────────────────────────────────────────────────────────\n" + \
-"─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + \
-"────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" + \
-"───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + \
-"───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " + \
-"/\\_/\\" + " ────\n" + \
-"───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + "( o.o )" + \
-" ───\n" + \
-"────────────────────────────────────────────────────────  " + "> ^ <" + \
-" ────\n" + \
-"───────────────── powered by faboussa, mbernard & yusengok with " + "♥" + \
-" ──" + "\n\r\n" )
+#define _WELCOME(nick)                                                         \
+  (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" +                  \
+  "────────────────────────────────────────────────────────────────────\n" +  \
+  "────────────────────────────────────────────────────────────────────\n" +  \
+  "─────── d 888 ─ ,8\"88e ─── 888 ── 888 88e ─── e88'Y88 ──────────────\n" + \
+  "────── d8 888 ─ 8  888D ── 888 ── 888 888D ─ d888  'Y ──────────────\n" +  \
+  "───── d88 888e ─── 88P ─── 888 ── 888 88\" ─ 88888 ──────────────────\n" + \
+  "───── \"\"\" 888\" ── d*\" ──── 888 ── 888 b, ─── Y888  ,d ──  " +         \
+  "/\\_/\\" + " ────\n" +                                                     \
+  "───────── 888 ─ 8888888 ── 888 ── 888 88bb, ─ \"88,d88 ── " + "( o.o )" +  \
+  " ───\n" + "────────────────────────────────────────────────────────  " +   \
+  "> ^ <" + " ────\n" +                                                       \
+  "───────────────── powered by faboussa, mbernard & yusengok with " + "♥" +  \
+  " ──" + "\n\r\n")
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_
 

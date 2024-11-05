@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/10/30 10:57:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:57:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
@@ -32,12 +33,18 @@
 #include <string>
 #include <vector>
 
+#include "../includes/Config.hpp"
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/numericReplies.hpp"
 
+#define SRV_NAME "ircserv.localhost"
+#define SRV_VERSION "1.0.0"
+
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
+
+extern Config *gConfig;
 
 enum Command {
   JOIN,
@@ -62,8 +69,7 @@ class Server {
   static bool                _signal;
   int                        _socketFd;
   int                        _port;
-//  std::string _name;
-  std::string _startTime;
+  std::string                _startTime;
   std::string                _password;
   clientsMap                 _clients;
   struct sockaddr_in         _address;
@@ -74,46 +80,60 @@ class Server {
   explicit Server(int port, std::string password);
 
   /* Getters */
-
-  int getSocketFd() const;
-  int getPort() const;
-  // const std::string &getStartTime(void) const;
-  const std::string &getPassword() const;
+  int getSocketFd(void) const;
+  int getPort(void) const;
+  const std::string &getPassword(void) const;
   const Client &getClientByFd(int fd) const;
   Channel &getChannelByName(const std::string &name);
-  // const std::string &getServerName() const;
 
   /* Server Mounting */
-  void runServer();
-  void createSocket();
-  void createPoll();
-  std::string fetchStartTime();
+  void runServer(void);
+  void createSocket(void);
+  void createPoll(void);
+  void fetchStartTime(void);
   void monitorConnections();
   static void signalHandler(int signal);
 
   /* Clients Management */
-
   void acceptNewClient();
   void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
+
+  /* Clients message handling */
+  void handleInitialMessage(Client &client, const std::string &message);
+  void handleOtherMessage(Client &client, const std::string &message);
   void handleClientMessage(int fd);
 
   /* Clear and Close */
-
   void closeServer();
   void clearClient(int fd);
   void closeClient(int fd);
 
-  /* Commands Management */
+  /* Commands handling */
   void handleCommand(const std::string &command, std::string &argument, int fd);
+  void sendToAllClients(const std::string &message);  // Broadcast
+
+  /*-------- QUIT --------*/
+
+  /*-------- JOIN --------*/
   // void joinChannel(std::string &channelName, int fd);
 
-  // for channel, list, ","
-  void sendToAllClients(const std::string &message);
-  // void handlePassword(int fd);
+  /*-------- KICK --------*/
 
-	void handleInitialMessage(Client &client, const std::string &message);
-  void handleOtherMessage(Client &client, const std::string &message);
+  /*-------- INVITE --------*/
+
+  /*-------- TOPIC --------*/
+
+  /*-------- MODE --------*/
+
+  /*-------- LIST --------*/
+
+  /*-------- NOTICE --------*/
+
+  /*-------- PRIVMSG --------*/
+
+  /*-------- PING --------*/
+  void ping(Client *client, const std::string &token);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
