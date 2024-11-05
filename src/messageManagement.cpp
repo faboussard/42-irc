@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 11:17:13 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:20:20 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
     if (client.isAccepted()) {
       std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
                 << std::endl;
-      std::cout << BLUE "NickName: " << client.getNickName() << std::endl;
+      std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
       std::cout << "UserName: " << client.getUserName() << std::endl;
       std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
       handleCommand(command, argument, client.getFd());
@@ -88,9 +88,9 @@ void Server::handleInitialMessage(Client &client, const std::string &message) {
         handleCommand(command, argument, client.getFd());
       } else {
         if (client.isNicknameSet() == false)
-          send431NoNicknameGiven(client.getFd(), "");
+          send431NoNicknameGiven(client);
         if (client.isUsernameSet() == false)
-          send461NeedMoreParams(client.getFd(), client.getNickName(), "USER");
+          send461NeedMoreParams(client, "USER");
       }
     }
   }
