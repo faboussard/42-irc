@@ -186,3 +186,5 @@ raccourci cpplint : ctrl shift i
 ## **issues encontered and solved**
 
 s :End of /NAMES list: 
+
+// que se pqsse til si on a join #channelA, 0 ? 

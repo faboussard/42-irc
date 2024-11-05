@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 12:35:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 14:36:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,107 +15,90 @@
 #include "../includes/numericReplies.hpp"
 #include "../includes/utils.hpp"
 
-/* join several channels */
-// Servers MUST process the parameters of this command as lists on incoming
-// commands from clients, with the first <key>
-//  being used for the first <channel>, the second <key> being used for the
-//  second <channel>, etc.
+void Server::joinChannels(const std::string &param, int fd, Client &client) {
+  if (isJoinZero(param)) {
+    #ifdef TEST
+      std::cout << "client: " << fd << RED" has parted all channels " << std::endl;
+    #endif
+    // Appel à une fonction pour quitter tous les canaux
+    //partAllChannels(fd, client); // fonction qui gère le PART
+    return;
+  }
 
-/* join an existing channel */
+  std::string::size_type start = 0;
+  std::string::size_type pos = param.find(",");
 
-/*
-While a client is joined to a channel,
-they receive all relevant information about that channel including the
-JOIN, PART, KICK, and MODE messages affecting the channel.
-They receive all PRIVMSG and NOTICE messages sent to the
- channel, and they also receive QUIT messages from other clients
- joined to the same channel (to let them know those users have left
-  the channel and the network). This allows them to keep track of other
-   channel members and channel modes.*/
+  while (pos != std::string::npos) {
+    std::string channelName = param.substr(start, pos - start);
 
-/*
-  tackle the channels modes.
+    if (isChannelValid(channelName, fd, client)) {
+      #ifdef TEST
+        std::cout << "client: " << fd << " joins channel " << channelName << std::endl;
+      #endif
+      executeJoin(fd, client, channelName);  // Exécution de la commande JOIN
+    }
 
-*/
+    start = pos + 1;
+    pos = param.find(",", start);
+  }
 
-/*
-JOIN 0 = part all channels
-*/
+  // Gérer le dernier canal en dehors de la boucle
+  std::string lastChannel = param.substr(start);
+  if (isChannelValid(lastChannel, fd, client)) {
+    #ifdef TEST
+      std::cout << "client: " << fd << " joins last channel " << lastChannel << std::endl;
+    #endif
+    executeJoin(fd, client, lastChannel);
+  }
+}
 
-// gerer que on q #pqrqm pui si virgule, on doit fqire join sur le deuxieme
-// #param. si espqce -> key.
-
-bool isValidLength(const std::string &param) {
+bool Server::isValidLength(const std::string &param) {
   return param.length() < 51;
 }
 
-bool hasNoSpaces(const std::string &param) {
+bool Server::hasNoSpaces(const std::string &param) {
   return param.find(" ") == std::string::npos;
 }
 
-bool isValidPrefix(const std::string &param) {
+bool Server::isValidPrefix(const std::string &param) {
   return param[0] == CHAN_PREFIX_CHAR;
 }
 
-bool isZero(const std::string &param) {
-  return param == "0";
-}
+bool Server::isJoinZero(const std::string &param) { return param == "0"; }
 
-bool GoodChannelName(const std::string &param) {
+bool Server::goodChannelName(const std::string &param) {
   return isValidLength(param) && hasNoSpaces(param);
 }
 
-void Server::joinChannel(const std::string &param, int fd, Client &client) {
-  if (isZero(param))
-  {
-    #ifdef TEST
-    std::cout << "client: " << fd << " has parted all channels " << std::endl;
-  return;
+bool Server::isChannelValid(const std::string &param, int fd, Client &client) {
+ if (param.empty()) {
+#ifdef TEST
+    std::cout << "client: " << fd << RED" has no channel name" RESET<< std::endl;
+    return false;
 #endif
-    // part all channels
-    // send part message to all channels
-    // remove client from all channels
-    // send part message to client
-    // remove client from server
-    return;
+    send461NeedMoreParams(fd, client.getNickName(), "JOIN");
   }
-  else if (param.empty())
+  else if (!isValidPrefix(param)) {
+#ifdef TEST
+    std::cout << "client: " << fd << RED" has a bad prefix"RESET << std::endl;
+    return false;
+#endif
+    send475BadChannelKey(fd, client.getNickName(), param);
+  } else if (!goodChannelName(param)) {
+#ifdef TEST
+    std::cout << "client: " << fd << RED" has a bad channel name"RESET << std::endl;
+    return false;
+#endif
+    send476BadChanMask(fd, getClientByFd(fd).getNickName(), param);
+  } else if (client.getChannelsCount() >= CHANLIMIT_)  // else if or if ?
   {
 #ifdef TEST
-    std::cout << "client: " << fd << " has no channel name" << std::endl;
-  return;
+    std::cout << "client: " << fd << RED " has too many channels" RESET << std::endl;
+    return false;
 #endif
-  send461NeedMoreParams(fd, client.getNickName(), "JOIN");
+    send405TooManyChannels(fd, client.getNickName());
   }
-  else if (!isValidPrefix(param))
-  {
-#ifdef TEST
-    std::cout << "client: " << fd << " has a bad prefix" << std::endl;
-  return;
-#endif
-  send475BadChannelKey(fd, client.getNickName(), param);
-  }
-  else
-  if (!GoodChannelName(param))
-  {
-#ifdef TEST
-    std::cout << "client: " << fd << " has a bad channel name" << std::endl;
-  return;
-#endif
-  send476BadChanMask(fd, getClientByFd(fd).getNickName(), param);
-  }
-  else if (client.getChannelsCount() >= CHANLIMIT_) // else if or if ? 
-  {
-#ifdef TEST
-    std::cout << "client: " << fd << " has too many channels" << std::endl;
-  return;
-#endif
-  send405TooManyChannels(fd, client.getNickName());
-  }
-  else 
-  {
-    executeJoin(fd, client, param);
-  }
+  return true;
 }
 
 void Server::executeJoin(int fd, Client &client,

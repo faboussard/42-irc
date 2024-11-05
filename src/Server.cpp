@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/11/05 12:01:04 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/05 14:10:53 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -379,7 +379,7 @@ void Server::handleCommand(const std::string &command, std::string &argument, in
     std::cout << GREY "JOIN command received" RESET << std::endl;
     std::cout << GREY "argument: " RESET << argument << std::endl;
   #endif
-      joinChannel(argument, fd, client);
+    joinChannels(argument, fd, client);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
