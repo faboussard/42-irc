@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/04 12:37:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/05 09:12:37 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,7 +197,7 @@ void Server::acceptNewClient(void) {
   else
     hostName = host->h_name;
   Client cli(newClientFd, clientIp, hostName);
-  #ifdef DEBUG
+  #ifdef TESTNUMERICR
     std::cout << "New client IP " << cli.getIp() << std::endl;
     std::cout << "New client host name " << cli.getHostName() << std::endl;
   #endif

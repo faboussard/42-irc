@@ -52,6 +52,14 @@ ${OBJS_DIR}:
 debug: CFLAGS += -DDEBUG
 debug: fclean $(OBJS_DIR) $(NAME)
 
+# ---------------------------------- Tests ----------------------------------- #
+
+testnumericr: CFLAGS += -DTESTNUMERICR
+testnumericr: fclean $(OBJS_DIR) $(NAME)
+
+testlist: CFLAGS += -DTESTLIST
+testlist: fclean $(OBJS_DIR) $(NAME)
+
 # ---------------------------------- Clean ----------------------------------- #
 clean:
 	${RMDIR} ${OBJS_DIR}
