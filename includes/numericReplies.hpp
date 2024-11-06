@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/05 17:17:20 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:46:27 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,9 +320,9 @@ void send525InvalidKey(const Client &client, const Channel &channel);
 
 /*--------- Test -------------------------------------------------------------*/
 
-void testAllNumericReplies(const std::string &serverStartTime,
-                           const Client &client, const std::string &command,
-                           const std::string &targetNick);
+// void testAllNumericReplies(const std::string &serverStartTime,
+//                            const Client &client, const std::string &command,
+//                            const std::string &targetNick);
 
 /*--------- Just for fun -----------------------------------------------------*/
 

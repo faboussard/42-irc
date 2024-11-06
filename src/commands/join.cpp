@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 13:26:23 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 14:19:03 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,33 +22,35 @@ void Server::joinChannel(const std::string &param, int fd,const Client &client) 
     #ifdef TEST
       std::cout << "client: " << fd << RED" has parted all channels " << std::endl;
     #endif
-    // Appel à une fonction pour quitter tous les canaux
-    //partAllChannels(fd, client); // fonction qui gère le PART
+    //TODO: Appel à une fonction pour quitter tous les canaux
+    //TODO: partAllChannels(fd, client); // fonction qui gère le PART
     return;
   }
 
   std::string::size_type start = 0;
   std::string::size_type pos = param.find(",");
 
-  while (pos != std::string::npos) {
+  while (pos != std::string::npos && pos != ' ') {
     std::string channelName = param.substr(start, pos - start);
-
-    if (isChannelValid(channelName, client)) {
+    std::string ChannelNameWithoutPrefix = channelName.substr(1);
+    //TODO: if space = the key is following . stop the while if there is a space
+    if (isChannelValid(ChannelNameWithoutPrefix, client)) {
       #ifdef DEBUG
-        std::cout << "client: " << fd << " joins channel " << channelName << std::endl;
+        std::cout << "client: " << fd << " joins channel " << ChannelNameWithoutPrefix << std::endl;
       #endif
-      executeJoin(fd, client, channelName);  // Exécution de la commande JOIN
+      executeJoin(fd, client, ChannelNameWithoutPrefix);
     }
     start = pos + 1;
     pos = param.find(",", start);
   }
 
   std::string lastChannel = param.substr(start);
-  if (isChannelValid(lastChannel, client)) {
+    std::string ChannelNameWithoutPrefix = lastChannel.substr(1);
+  if (isChannelValid(ChannelNameWithoutPrefix, client)) {
     #ifdef DEBUG
-      std::cout << "client: " << fd << " joins last channel " << lastChannel << std::endl;
+      std::cout << "client: " << fd << " joins last channel " << ChannelNameWithoutPrefix << std::endl;
     #endif
-    executeJoin(fd, client, lastChannel);
+    executeJoin(fd, client, ChannelNameWithoutPrefix);
   }
 }
 

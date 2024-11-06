@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/05 17:34:18 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:52:32 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -384,94 +384,94 @@ void send525InvalidKey(const Client &client, const Channel &channel) {
 /*============================================================================*/
 
 // testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
-void testAllNumericReplies(const std::string &serverStartTime,
-                           const Client &client, const std::string &command,
-                           const std::string &targetNick) {
-  int fd = client.getFd();
-  Client testClient(fd, client.getIp(), client.getHostName());
-  testClient.setNickname("testClient");
-  testClient.setUserName("testUser");
-  testClient.setRealName("Test User");
-  testClient.setUInvisibleMode(true);
-  testClient.setUOperatorMode(false);
-  testClient.setURegisteredMode(true);
-  std::string nick = testClient.getNickname();
-  std::string user = testClient.getUserName();
-  std::string host = testClient.getHostName();
+// void testAllNumericReplies(const std::string &serverStartTime,
+//                            const Client &client, const std::string &command,
+//                            const std::string &targetNick) {
+//   int fd = client.getFd();
+//   Client testClient(fd, client.getIp(), client.getHostName());
+//   testClient.setNickname("testClient");
+//   testClient.setUserName("testUser");
+//   testClient.setRealName("Test User");
+//   testClient.setUInvisibleMode(true);
+//   testClient.setUOperatorMode(false);
+//   testClient.setURegisteredMode(true);
+//   std::string nick = testClient.getNickname();
+//   std::string user = testClient.getUserName();
+//   std::string host = testClient.getHostName();
 
-  Channel testChannel("testChannel");
-  Client testOp(4, "127.0.0.1", "localhost");
-  testOp.setNickname("testOp");
-  testChannel.addClientToChannelMap(&testClient);
-  testChannel.addOperator(&testOp);
-  Client testNonOPClient(42, "127.0.0.1", "localhost");
-  testNonOPClient.setNickname("testNonOPClient");
-  testChannel.addClientToChannelMap(&testNonOPClient);
-  testChannel.activateLimitMode(42, testClient);
-  testChannel.setTopic("This is the topic of a test channel", "Author");
-  Channel invitedChannel("testInvited");
-  invitedChannel.setTopic("This is a test channel", "Author");
-  Channel kModeChannel("kModeChannel");
-  kModeChannel.activateKeyMode("password", client);
+//   Channel testChannel("testChannel");
+//   Client testOp(4, "127.0.0.1", "localhost");
+//   testOp.setNickname("testOp");
+//   testChannel.addClientToChannelMap(&testClient);
+//   testChannel.addOperator(&testOp);
+//   Client testNonOPClient(42, "127.0.0.1", "localhost");
+//   testNonOPClient.setNickname("testNonOPClient");
+//   testChannel.addClientToChannelMap(&testNonOPClient);
+//   testChannel.activateLimitMode(42, testClient);
+//   testChannel.setTopic("This is the topic of a test channel", "Author");
+//   Channel invitedChannel("testInvited");
+//   invitedChannel.setTopic("This is a test channel", "Author");
+//   Channel kModeChannel("kModeChannel");
+//   kModeChannel.activateKeyMode("password", client);
 
-  std::string testBegin =
-      FROM_SERVER + " NOTICE " + nick + " :\n" +
-      "=========== This is a Numeric replies Test ===========\n";
-  std::string testEnd =
-      FROM_SERVER + " NOTICE " + nick + " :\n" +
-      "==================== End of Test =====================\n\n";
+//   std::string testBegin =
+//       FROM_SERVER + " NOTICE " + nick + " :\n" +
+//       "=========== This is a Numeric replies Test ===========\n";
+//   std::string testEnd =
+//       FROM_SERVER + " NOTICE " + nick + " :\n" +
+//       "==================== End of Test =====================\n\n";
 
-  send(fd, testBegin.c_str(), testBegin.size(), 0);
-  /* Welcome */
-  send001Welcome(fd, nick, user, host);
-  send002Yourhost(fd, nick);
-  send003Created(fd, nick, serverStartTime);
-  send104Myinfo(fd, nick);
-  send005Isupport(fd, nick);
-  /* User */
-  send221Umodeis(client);
-  /* Channel */
-  send321Liststart(fd, nick);
-  send322List(fd, nick, testChannel);
-  send323Listend(fd, nick);
-  send324Channelmodeis(client, testChannel);
-  send329Creationtime(client, testChannel);
-  send331Notopic(client, testChannel);
-  send332Topic(client, testChannel);
-  send333Topicwhotime(client, testChannel);
-  send341Inviting(client, targetNick, invitedChannel);
-  send336Invitelist(client, invitedChannel);
-  send337Endofinvitelist(client);
-  send353Namreply(client, testChannel);
-  send366Endofnames(client, testChannel);
-  /* Errors */
-  send401NoSuchNick(client, targetNick);
-  send403NoSuchChannel(client, "notExistingChannel");
-  send404CannotSendToChan(client, testChannel);
-  send405TooManyChannels(client);
-  send409NoOrigin(client);
-  send411NoRecipient(client, command);
-  send412NoTextToSend(client);
-  send417InputTooLong(client);
-  send421UnknownCommand(client, command);
-  send431NoNicknameGiven(client);
-  send432ErroneusNickname(client);
-  send433NickAlreadyInUse(client);
-  send441UserNotInChannel(client, targetNick, testChannel);
-  send442NotOnChannel(client, testChannel);
-  send443UserOnChannel(client, targetNick, invitedChannel);
-  send451NotRegistered(client);
-  send461NeedMoreParams(client, command);
-  send462AlreadyRegistered(client);
-  send464PasswdMismatch(client);
-  send471ChannelIsFull(client, testChannel);
-  send472UnknownMode(client, "x");
-  send473InviteOnlyChan(client, kModeChannel);
-  send475BadChannelKey(client, kModeChannel);
-  send476BadChanMask(client, "&testChannel");
-  send481NoPrivileges(client);
-  send482ChanOPrivsNeeded(client, kModeChannel);
-  send501UmodeUnknownFlag(client);
-  send525InvalidKey(client, kModeChannel);
-  send(fd, testEnd.c_str(), testEnd.size(), 0);
-}
+//   send(fd, testBegin.c_str(), testBegin.size(), 0);
+//   /* Welcome */
+//   send001Welcome(fd, nick, user, host);
+//   send002Yourhost(fd, nick);
+//   send003Created(fd, nick, serverStartTime);
+//   send104Myinfo(fd, nick);
+//   send005Isupport(fd, nick);
+//   /* User */
+//   send221Umodeis(client);
+//   /* Channel */
+//   send321Liststart(fd, nick);
+//   send322List(fd, nick, testChannel);
+//   send323Listend(fd, nick);
+//   send324Channelmodeis(client, testChannel);
+//   send329Creationtime(client, testChannel);
+//   send331Notopic(client, testChannel);
+//   send332Topic(client, testChannel);
+//   send333Topicwhotime(client, testChannel);
+//   send341Inviting(client, targetNick, invitedChannel);
+//   send336Invitelist(client, invitedChannel);
+//   send337Endofinvitelist(client);
+//   send353Namreply(client, testChannel);
+//   send366Endofnames(client, testChannel);
+//   /* Errors */
+//   send401NoSuchNick(client, targetNick);
+//   send403NoSuchChannel(client, "notExistingChannel");
+//   send404CannotSendToChan(client, testChannel);
+//   send405TooManyChannels(client);
+//   send409NoOrigin(client);
+//   send411NoRecipient(client, command);
+//   send412NoTextToSend(client);
+//   send417InputTooLong(client);
+//   send421UnknownCommand(client, command);
+//   send431NoNicknameGiven(client);
+//   send432ErroneusNickname(client);
+//   send433NickAlreadyInUse(client);
+//   send441UserNotInChannel(client, targetNick, testChannel);
+//   send442NotOnChannel(client, testChannel);
+//   send443UserOnChannel(client, targetNick, invitedChannel);
+//   send451NotRegistered(client);
+//   send461NeedMoreParams(client, command);
+//   send462AlreadyRegistered(client);
+//   send464PasswdMismatch(client);
+//   send471ChannelIsFull(client, testChannel);
+//   send472UnknownMode(client, "x");
+//   send473InviteOnlyChan(client, kModeChannel);
+//   send475BadChannelKey(client, kModeChannel);
+//   send476BadChanMask(client, "&testChannel");
+//   send481NoPrivileges(client);
+//   send482ChanOPrivsNeeded(client, kModeChannel);
+//   send501UmodeUnknownFlag(client);
+//   send525InvalidKey(client, kModeChannel);
+//   send(fd, testEnd.c_str(), testEnd.size(), 0);
+// }

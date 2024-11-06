@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 13:35:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:46:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,16 @@ static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
 }
 
 // To delete later --------------------------------------------------------->//
-#ifdef DEBUG
-static void clientIsAcceptedMessageToDelete(const Client &client,
-                                            const std::string &command) {
-  std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
-            << std::endl;
-  std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
-  std::cout << "UserName: " << client.getUserName() << std::endl;
-  std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
-}
-#endif
+// #ifdef DEBUG
+// static void clientIsAcceptedMessageToDelete(const Client &client,
+//                                             const std::string &command) {
+//   std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
+//             << std::endl;
+//   std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
+//   std::cout << "UserName: " << client.getUserName() << std::endl;
+//   std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
+// }
+// #endif
 // <-------------------------------------------------------------------------//
 
 void Server::handleInitialMessage(Client *client, const std::string &msg) {
@@ -65,9 +65,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       return;
     }
     if (client->isAccepted()) {
-#ifdef DEBUG
-      clientIsAcceptedMessageToDelete(client, command);
-#endif
+// #ifdef DEBUG
+//       clientIsAcceptedMessageToDelete(client, command);
+// #endif
       handleCommand(command, argument, client->getFd(), *client);
     } else if (command == "CAP" && client->isCapSend() == false &&
                client->isPasswordGiven() == false) {
@@ -96,9 +96,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
         sendConnectionMessage(*client);
-#ifdef DEBUG
-        testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
-#endif
+// #ifdef DEBUG
+//         testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
+// #endif
       }
     } else if (client->isAccepted() == false) {
       if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);
