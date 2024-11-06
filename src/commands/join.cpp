@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 17:37:03 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 18:51:12 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ bool Server::isLeaveAllChannelsRequest(const std::string &param) {
 }
 
 bool Server::isChannelValid(const std::string &param, const Client &client) {
+  std::cout << " param Length: " << param.length() << std::endl;
   if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
 #ifdef TEST
     std::cout << "client: " << fd << RED " has no channel name" RESET
@@ -167,7 +168,7 @@ void Server::sendJoinMessageToClient(int fd, const std::string &nick,
 
 void Server::broadcastJoinMessage(int fd, const std::string &nick,
                                   const std::string &channelName) {
-  std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
+  std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
   const std::map<int, Client *> &clientsInChannel =
       _channels[channelName].getChannelClients();
   std::map<int, Client *>::const_iterator it = clientsInChannel.begin();

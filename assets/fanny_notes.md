@@ -188,3 +188,39 @@ raccourci cpplint : ctrl shift i
 s :End of /NAMES list: 
 
 // que se pqsse til si on a join #channelA, 0 ? 
+
+
+
+Summary:
+
+Join function with Channel management implemented. 
+
+Tests conducted:
+JOIN + blank spaces
+=> 461 > not enough parameters
+
+JOIN #
+=> 461 > not enough parameters
+
+JOIN + 0
+=> TODO (part from all channels)
+
+JOIN #channelA,#channelB
+=> join 2 channels
+
+JOIN ##
+=> join 1 channel
+
+if a user has already joined the channel, no numeric reply is sent
+
+broadcast message to all channels when a user joins a channel
+
+Known bugs :
+if NC joins a channel, Hexchat wont know about it.
+JOIN by itself-> misses a numeric reply because not empty
+
+TODO:
+PART command ( Join + 0)
+KEY MANAGEMENT : I have started to implement it but it is not finished yet as we miss MODE 
+
+
