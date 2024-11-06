@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 17:34:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 08:19:16 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,8 @@ void Server::handleInitialMessage(Client *client, const std::string &message) {
         client->declareAccepted();
         sendConnectionMessage(*client);
       #ifdef TESTNUMERICR
-        testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
-#endif
+        testAllNumericReplies(_startTime, *client, "COMMAND", "puppy");
+      #endif
       }
     } else if (client->isAccepted() == false) {
       if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);

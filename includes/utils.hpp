@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/04 21:09:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 08:46:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-void shrink_to_fit(std::vector<struct pollfd>& vec);
+void shrink_to_fit(std::vector<struct pollfd> *vec);
 
 bool isNumeric(const std::string& str);
 

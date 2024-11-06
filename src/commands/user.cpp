@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/02 22:31:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 08:36:11 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ bool Parser::verifyUser(std::string user, Client &client, clientsMap cltMap) {
     return (false);
   }
   if (usernameIsInvalid(fields[0]) || realnameIsInvalid(fields[3])) {
-    send432ErroneusNickname(client);
+    send432ErroneusNickname(client, client.getNickname());
     return (false);
   }
   clientsMap::iterator itEnd = cltMap.end();

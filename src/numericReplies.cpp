@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/04 17:27:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 08:37:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,8 @@ void send321Liststart(int fd, const std::string &nick) {
 
 void send322List(int fd, const std::string &nick, const Channel &channel) {
   std::string numUsers = toString(channel.getClientsInChannel().size());
-  std::string message =
-      _322_RPL_LIST(nick, channel.getNameWithPrefix(), numUsers,
-                    channel.getTopic().topic);
+  std::string message = _322_RPL_LIST(nick, channel.getNameWithPrefix(),
+                                      numUsers, channel.getTopic().topic);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -257,14 +256,18 @@ void send431NoNicknameGiven(const Client &client) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send432ErroneusNickname(const Client &client) {
-  std::string message = _432_ERR_ERRONEUSNICKNAME(client.getNickname());
+void send432ErroneusNickname(const Client &client,
+                             const std::string &erroneusNick) {
+  std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
+  std::string message = _432_ERR_ERRONEUSNICKNAME(nick, erroneusNick);
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send433NickAlreadyInUse(const Client &client) {
-  std::string message = _433_ERR_NICKNAMEINUSE(client.getNickname());
+void send433NickAlreadyInUse(const Client &client,
+                             const std::string &nickInUse) {
+  std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
+  std::string message = _433_ERR_NICKNAMEINUSE(nick, nickInUse);
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -345,7 +348,7 @@ void send475BadChannelKey(const Client &client, const Channel &channel) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send476BadChanMask(const Client &client, \
+void send476BadChanMask(const Client &client,
                         const std::string &chanNameWithBadMask) {
   std::string message =
       _476_ERR_BADCHANMASK(client.getNickname(), chanNameWithBadMask);
@@ -455,8 +458,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send417InputTooLong(client);
   send421UnknownCommand(client, command);
   send431NoNicknameGiven(client);
-  send432ErroneusNickname(client);
-  send433NickAlreadyInUse(client);
+  send432ErroneusNickname(client, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  send433NickAlreadyInUse(client, "nickInUse");
   send441UserNotInChannel(client, targetNick, testChannel);
   send442NotOnChannel(client, testChannel);
   send443UserOnChannel(client, targetNick, invitedChannel);
