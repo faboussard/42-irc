@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 18:39:06 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 12:53:34 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ void Server::joinChannel(const std::string &param, int fd,const Client &client) 
     pos = param.find(",", start);
   }
 
-  // Gérer le dernier canal en dehors de la boucle
   std::string lastChannel = param.substr(start);
   if (isChannelValid(lastChannel, client)) {
     #ifdef TEST

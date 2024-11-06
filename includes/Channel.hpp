@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 18:23:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:09:34 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ typedef struct Mode {
   bool topicSettableByOpsOnly;
   bool keyRequired;
   bool limitSet;
-  std::string key;
-  int limit;
 } Mode;
 
 class Channel {
@@ -51,6 +49,8 @@ class Channel {
   std::string _creationTime;
   Topic       _topic;
   Mode        _mode;
+  std::string _key;
+  int         limit;
 
 std::map<int, Client*> _clientsInChannel;
  std::map<int, Client*> _channelOperators;
