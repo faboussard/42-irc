@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-void shrink_to_fit(std::vector<struct pollfd>& vec);
+void shrink_to_fit(std::vector<struct pollfd> *vec);
 
 bool isNumeric(const std::string& str);
 

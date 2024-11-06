@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 12:53:34 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:26:23 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,8 @@ void Server::joinChannel(const std::string &param, int fd,const Client &client) 
     std::string channelName = param.substr(start, pos - start);
 
     if (isChannelValid(channelName, client)) {
-      #ifdef TEST
-        std::cout << "client: " << fd << " joins channel " << channelName << std::endl;
-      #endif
       #ifdef DEBUG
-      std::cout << "OK" << std::endl;
+        std::cout << "client: " << fd << " joins channel " << channelName << std::endl;
       #endif
       executeJoin(fd, client, channelName);  // Exécution de la commande JOIN
     }
@@ -48,7 +45,7 @@ void Server::joinChannel(const std::string &param, int fd,const Client &client) 
 
   std::string lastChannel = param.substr(start);
   if (isChannelValid(lastChannel, client)) {
-    #ifdef TEST
+    #ifdef DEBUG
       std::cout << "client: " << fd << " joins last channel " << lastChannel << std::endl;
     #endif
     executeJoin(fd, client, lastChannel);
@@ -81,7 +78,6 @@ bool Server::isChannelValid(const std::string &param,const Client &client) {
 #endif
     send461NeedMoreParams(client, "JOIN");
     return false;
-
   }
   else if (!isValidLength(param) && !hasNoSpaces(param) && !isValidPrefix(param)) {
 #ifdef TEST

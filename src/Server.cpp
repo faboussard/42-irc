@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 17:24:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:28:49 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ void Server::closeServer(void) {
     _socketFd = -1;
   }
   _pollFds.clear();
-  shrink_to_fit(_pollFds);
+  shrink_to_fit(&_pollFds);
   _channels.clear();
 }
 

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 18:18:59 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:27:47 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,8 @@ class Server {
   void receiveMessage(int fd);
 
   /* Clients message handling */
-  void handleInitialMessage(Client &client, const std::string &message);
-  void handleOtherMessage(Client &client, const std::string &message);
+  void handleInitialMessage(Client *client, const std::string &msg);
+  void handleOtherMessage(const Client &client, const std::string &msg);
   void handleClientMessage(int fd);
   
   /* Server Mounting */
@@ -140,9 +140,12 @@ class Server {
 
   /* Tests */
   void addClient(int fd,const Client &client);
+  /* Commands handling */
+  void handleCommand(const std::string &command,
+                     const std::string &argument, int fd);
 
   /*-------- QUIT --------*/
-  void quit(const std::string &argument, Client& client, clientsMap &cltMap);
+  void quit(const std::string &argument, Client *client, clientsMap *cltMap);
 
   /*-------- JOIN --------*/
   // void joinChannel(std::string &channelName, int fd);

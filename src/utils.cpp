@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 08:43:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:23:28 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 #include "../includes/Server.hpp"
 
-void shrink_to_fit(std::vector<struct pollfd> &vec) {
-  std::vector<struct pollfd>(vec).swap(vec);
+void shrink_to_fit(std::vector<struct pollfd> *vec) {
+  std::vector<struct pollfd>(*vec).swap(*vec);
 }
 
 bool isNumeric(const std::string &str) {
