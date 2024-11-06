@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 17:25:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 17:37:03 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,10 @@
 
 void Server::joinChannel(const std::string &param, int fd) {
   // Check if the user is attempting to leave all channels (using "0" as param)
-  if (isJoinZero(param)) {
+  if (isLeaveAllChannelsRequest(param)) {
 #ifdef TEST
-    std::cout << "client: " << fd << RED " has parted all channels" << RESET << std::endl;
+    std::cout << "client: " << fd << RED " has parted all channels" << RESET
+              << std::endl;
 #endif
     // partAllChannels(fd); // Leave all channels function
     return;
@@ -33,12 +34,13 @@ void Server::joinChannel(const std::string &param, int fd) {
   Client client = getClientByFd(fd);
   std::string::size_type spacePos = param.find(" ");
   std::string channelsPart = param.substr(0, spacePos);
-  std::string keysPart = (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
+  std::string keysPart =
+      (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
   stringVector channels;
-  splitByComma(channelsPart, &channels);  
+  splitByComma(channelsPart, &channels);
   stringVector keys;
   splitByComma(keysPart, &keys);
-  
+
   for (size_t i = 0; i < channels.size(); ++i) {
     std::string channelName = channels[i];
 
@@ -48,13 +50,13 @@ void Server::joinChannel(const std::string &param, int fd) {
     }
 
     std::string channelNameWithoutPrefix = channelName.substr(1);
-    
+
     if (!isChannelValid(channelName, client)) {
       continue;
     }
 
     if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
-      registerChannel(&client, channelNameWithoutPrefix);
+      createAndRegisterChannel(&client, channelNameWithoutPrefix);
     }
 
     std::string key = (i < keys.size()) ? keys[i] : "";
@@ -65,26 +67,32 @@ void Server::joinChannel(const std::string &param, int fd) {
       continue;
     }
 
-    executeJoin(fd, client, channelNameWithoutPrefix);
+    handleJoinRequest(fd, client, channelNameWithoutPrefix);
 #ifdef DEBUG
-    std::cout << "client: " << fd << " joins channel " << channelNameWithoutPrefix << std::endl;
+    std::cout << "client: " << fd << " joins channel "
+              << channelNameWithoutPrefix << std::endl;
 #endif
   }
 }
 
-
-bool Server::isValidLength(const std::string &param) {
+bool Server::isValidChannelNameLength(const std::string &param) {
   return param.length() >= 1 && param.length() < 51;
 }
 
-bool Server::isValidPrefix(const std::string &param) {
+bool Server::isValidChannelPrefix(const std::string &param) {
   return param[0] == REG_CHAN;
 }
 
-bool Server::isJoinZero(const std::string &param) { return param == "0"; }
+bool Server::isSingleCharacterChannelPrefix(const std::string &param) {
+  return param.length() == 1 && param[0] == REG_CHAN;
+}
+
+bool Server::isLeaveAllChannelsRequest(const std::string &param) {
+  return param == "0";
+}
 
 bool Server::isChannelValid(const std::string &param, const Client &client) {
-  if (param.empty()) {
+  if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
 #ifdef TEST
     std::cout << "client: " << fd << RED " has no channel name" RESET
               << std::endl;
@@ -92,7 +100,7 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
 #endif
     send461NeedMoreParams(client, "JOIN");
     return false;
-  } else if (!isValidLength(param) || !isValidPrefix(param)) {
+  } else if (!isValidChannelNameLength(param) || !isValidChannelPrefix(param)) {
 #ifdef TEST
     std::cout << "client: " << fd << RED " has a bad channel name" RESET
               << std::endl;
@@ -113,15 +121,16 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
   return true;
 }
 
-void Server::registerChannel(Client *client, const std::string &channelName) {
-  addChanneltoServer(channelName);
+void Server::createAndRegisterChannel(Client *client,
+                                      const std::string &channelName) {
+  addChanneltoServerIfNoExist(channelName);
   _channels[channelName].addClientToChannelMap(client);
   _channels[channelName].addOperatorsToChannelMap(client);
   client->incrementChannelsCount();
 }
 
-void Server::executeJoin(int fd, const Client &client,
-                         const std::string &channelName) {
+void Server::handleJoinRequest(int fd, const Client &client,
+                               const std::string &channelName) {
 #ifdef TEST
   std::cout << "client: " << fd << " has joined the Channel "
             << _channels[channelName].getName() << std::endl;
@@ -137,7 +146,7 @@ void Server::executeJoin(int fd, const Client &client,
   broadcastJoinMessage(fd, nick, channelName);
 }
 
-void Server::addChanneltoServer(const std::string &channelName) {
+void Server::addChanneltoServerIfNoExist(const std::string &channelName) {
   if (_channels.find(channelName) == _channels.end()) {
     Channel newChannel(channelName);
     _channels[channelName] = newChannel;

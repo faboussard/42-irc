@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 15:43:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 17:37:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,18 +46,18 @@ class Client {
   int _channelsCount;
 
  public:
-  explicit Client(int fd = -1, const std::string& ip = "", \
+  explicit Client(int fd = -1, const std::string& ip = "",
                   const std::string& hostName = "");
   // explicit Client(int fd = -1, const std::string& ip = "");
 
   /* Getters */
   int getFd(void) const;
   std::string getIp(void) const;
-  const std::string &getHostName(void) const;
-  const std::string &getNickname(void) const;
-  const std::string &getUserName(void) const;
-  const std::string &getRealName(void) const;
-  const UserModes &getUserModes(void) const;
+  const std::string& getHostName(void) const;
+  const std::string& getNickname(void) const;
+  const std::string& getUserName(void) const;
+  const std::string& getRealName(void) const;
+  const UserModes& getUserModes(void) const;
   const std::string getUserModesFlag(void) const;
   bool isNicknameSet(void) const;
   bool isUsernameSet(void) const;
