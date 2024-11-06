@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 15:52:09 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 09:17:30 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,8 @@ void Server::handleInitialMessage(Client *client, const std::string &message) {
     } else if (client->isAccepted() == false) {
       if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);
       if (client->isUsernameSet() == false)
-        send461NeedMoreParams(*client, "USER");
+        // send461NeedMoreParams(*client, "USER");
+        send451NotRegistered(*client);
     }
   }
 }
