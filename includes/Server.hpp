@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 12:30:42 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:02:34 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,8 @@ class Server {
   void receiveMessage(int fd);
 
   /* Clients message handling */
-  void handleInitialMessage(Client &client, const std::string &message);
-  void handleOtherMessage(Client &client, const std::string &message);
+  void handleInitialMessage(Client *client, const std::string &msg);
+  void handleOtherMessage(const Client &client, const std::string &msg);
   void handleClientMessage(int fd);
 
   /* Clear and Close */
@@ -111,11 +111,12 @@ class Server {
   void closeClient(int fd);
 
   /* Commands handling */
-  void handleCommand(const std::string &command, std::string &argument, int fd);
+  void handleCommand(const std::string &command,
+                     const std::string &argument, int fd);
   void sendToAllClients(const std::string &message);  // Broadcast
 
   /*-------- QUIT --------*/
-  void quit(const std::string &argument, Client& client, clientsMap &cltMap);
+  void quit(const std::string &argument, Client *client, clientsMap *cltMap);
 
   /*-------- JOIN --------*/
   // void joinChannel(std::string &channelName, int fd);

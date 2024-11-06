@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 10:52:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 12:54:05 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "../includes/Config.hpp"
 #include "../includes/Server.hpp"
@@ -27,7 +28,7 @@ extern Config *gConfig;
 typedef std::vector<std::pair<std::string, std::string> > commandVectorPairs;
 class Parser {
  private:
-  explicit Parser(void);
+  Parser(void);
 
  public:
   static Command                  choseCommand(const std::string& command);
@@ -38,9 +39,11 @@ class Parser {
   /*=========================================================================*/
   /*       Commands                                                          */
   /*=========================================================================*/
-  static bool verifyPassword(std::string arg, std::string psd, Client& client);
-  static bool verifyNick(std::string nick, Client& client, clientsMap cltMap);
-  static bool verifyUser(std::string user, Client& client, clientsMap cltMap);
+  static bool verifyPassword(std::string arg, std::string psd, Client *client);
+  static bool verifyNick(const std::string &nick,
+                         Client *client, clientsMap *cltMap);
+  static bool verifyUser(const std::string &user,
+                         Client *client, clientsMap *cltMap);
 };
 
 #endif  // INCLUDES_PARSER_HPP_
