@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 15:20:49 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 16:33:24 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ void Server::handleCommand(const std::string &command, std::string &argument,
   } else if (command == "MODE") {
     // Changer le sujet du canal
   } else if (command == "LIST") {
-    // list(_clients[fd], argument);
+    list(_clients[fd], argument);
   } else if (command == "NOTICE") {
     // Notice}
   } else if (command == "NICK") {

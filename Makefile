@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/05 17:53:33 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/06 16:30:13 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,8 +22,8 @@ vpath %.cpp src src/commands src/unitTests
 HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils tests
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
-       join pass nick user quit invite mode ping topic \
-		joinTest generalTest \
+       join pass nick user quit invite mode ping topic list \
+		# joinTest generalTest \
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/

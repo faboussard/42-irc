@@ -17,12 +17,19 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "../includes/Server.hpp"
+
+typedef std::vector<std::string> stringVector;
+
 
 void shrink_to_fit(std::vector<struct pollfd> *vec);
 
 bool isNumeric(const std::string& str);
 
 std::string trimWhiteSpaces(const std::string &str);
+
+void splitByComma(const std::string &argument, stringVector *channels);
+
 
 template <typename T>
 std::string toString(const T& value) {

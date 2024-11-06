@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 15:22:43 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 17:09:42 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,6 @@ void registerChannel(Client *client, const std::string &channelName);
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
 
   /*-------- JOIN --------*/
-  // void joinChannel(std::string &channelName, int fd);
 
   /*-------- KICK --------*/
 
@@ -157,10 +156,10 @@ void registerChannel(Client *client, const std::string &channelName);
   /*-------- MODE --------*/
 
   /*-------- LIST --------*/
-  // void list(const Client &client, const std::string &argument);
-  // void listAllChannels(int fd, const std::string &nick);
-  // void listChannels(const stringVector &channels, const Client &client);
-  // bool findChannel(const std::string &channel);
+  void list(const Client &client, const std::string &argument);
+  void listAllChannels(int fd, const std::string &nick);
+  void listChannels(const stringVector &channels, const Client &client);
+  bool findChannel(const std::string &channel);
 
   /*-------- NOTICE --------*/
 

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 15:58:47 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 17:25:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,57 +21,57 @@
 #include "../includes/utils.hpp"
 
 void Server::joinChannel(const std::string &param, int fd) {
+  // Check if the user is attempting to leave all channels (using "0" as param)
   if (isJoinZero(param)) {
 #ifdef TEST
-    std::cout << "client: " << fd << RED " has parted all channels "
-              << std::endl;
+    std::cout << "client: " << fd << RED " has parted all channels" << RESET << std::endl;
 #endif
-    // TODO: Appel à une fonction pour quitter tous les canaux
-    // TODO: partAllChannels(fd, client); // fonction qui gère le PART
+    // partAllChannels(fd); // Leave all channels function
     return;
   }
-  Client client = getClientByFd(fd);
-  std::string::size_type start = 0;
-  std::string::size_type pos = param.find(",");
-  std::string ChannelNameWithoutPrefix;
-  while (pos != std::string::npos) {
-    if (pos == ',') {
-      if (isChannelValid(param, client)) {
-#ifdef DEBUG
-        std::cout << "client: " << fd << " joins channel "
-                  << ChannelNameWithoutPrefix << std::endl;
-#endif
-        std::string channelName = param.substr(start, pos - start);
-        ChannelNameWithoutPrefix = channelName.substr(1);
-        registerChannel(&client, ChannelNameWithoutPrefix);
-      }
-    }
-    // on gere les keys qui sont apres les espaces
-    else if (isValidLength(param)) {
-      std::string key = param.substr(0, 1);
-#ifdef DEBUG
-      std::cout << "client: " << fd << " has a key " << key << std::endl;
-#endif
-      if (_channels[ChannelNameWithoutPrefix].getMode().keyRequired)
-        if (key != _channels[ChannelNameWithoutPrefix].getKey())
-          send475BadChannelKey(client, _channels[ChannelNameWithoutPrefix]);
-      return;
-    }
-    executeJoin(fd, client, ChannelNameWithoutPrefix);
-    start = pos + 1;
-    pos = param.find(",", start);
-  }
 
-  std::string lastChannel = param.substr(start);
-  std::string ChannelNameWithoutPrefix = lastChannel.substr(1);
-  if (isChannelValid(ChannelNameWithoutPrefix, client)) {
+  Client client = getClientByFd(fd);
+  std::string::size_type spacePos = param.find(" ");
+  std::string channelsPart = param.substr(0, spacePos);
+  std::string keysPart = (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
+  stringVector channels;
+  splitByComma(channelsPart, &channels);  
+  stringVector keys;
+  splitByComma(keysPart, &keys);
+  
+  for (size_t i = 0; i < channels.size(); ++i) {
+    std::string channelName = channels[i];
+
+    if (channelName.empty()) {
+      std::cout << "Empty channel name detected, skipping." << std::endl;
+      continue;
+    }
+
+    std::string channelNameWithoutPrefix = channelName.substr(1);
+    
+    if (!isChannelValid(channelName, client)) {
+      continue;
+    }
+
+    if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
+      registerChannel(&client, channelNameWithoutPrefix);
+    }
+
+    std::string key = (i < keys.size()) ? keys[i] : "";
+    Channel &channel = _channels[channelNameWithoutPrefix];
+
+    if (channel.getMode().keyRequired && key != channel.getKey()) {
+      send475BadChannelKey(client, channel);
+      continue;
+    }
+
+    executeJoin(fd, client, channelNameWithoutPrefix);
 #ifdef DEBUG
-    std::cout << "client: " << fd << " joins last channel "
-              << ChannelNameWithoutPrefix << std::endl;
+    std::cout << "client: " << fd << " joins channel " << channelNameWithoutPrefix << std::endl;
 #endif
-    executeJoin(fd, client, ChannelNameWithoutPrefix);
   }
 }
+
 
 bool Server::isValidLength(const std::string &param) {
   return param.length() >= 1 && param.length() < 51;
@@ -92,7 +92,7 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
 #endif
     send461NeedMoreParams(client, "JOIN");
     return false;
-  } else if (!isValidLength(param) && !isValidPrefix(param)) {
+  } else if (!isValidLength(param) || !isValidPrefix(param)) {
 #ifdef TEST
     std::cout << "client: " << fd << RED " has a bad channel name" RESET
               << std::endl;
