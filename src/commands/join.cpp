@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 18:51:12 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:18:30 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,6 @@
 void Server::joinChannel(const std::string &param, int fd) {
   // Check if the user is attempting to leave all channels (using "0" as param)
   if (isLeaveAllChannelsRequest(param)) {
-#ifdef TEST
-    std::cout << "client: " << fd << RED " has parted all channels" << RESET
-              << std::endl;
-#endif
     // partAllChannels(fd); // Leave all channels function
     return;
   }
@@ -41,12 +37,18 @@ void Server::joinChannel(const std::string &param, int fd) {
   stringVector keys;
   splitByComma(keysPart, &keys);
 
+    if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
+    send461NeedMoreParams(client, "JOIN");
+    return;
+    }
+
   for (size_t i = 0; i < channels.size(); ++i) {
     std::string channelName = channels[i];
 
-    if (channelName.empty()) {
-      std::cout << "Empty channel name detected, skipping." << std::endl;
-      continue;
+
+  if (channelName.empty() || (channelName.length() == 1 && channelName[0] == REG_CHAN)) {
+    send461NeedMoreParams(client, "JOIN");
+    continue;
     }
 
     std::string channelNameWithoutPrefix = channelName.substr(1);
@@ -68,10 +70,6 @@ void Server::joinChannel(const std::string &param, int fd) {
     }
 
     handleJoinRequest(fd, client, channelNameWithoutPrefix);
-#ifdef DEBUG
-    std::cout << "client: " << fd << " joins channel "
-              << channelNameWithoutPrefix << std::endl;
-#endif
   }
 }
 
@@ -93,29 +91,11 @@ bool Server::isLeaveAllChannelsRequest(const std::string &param) {
 
 bool Server::isChannelValid(const std::string &param, const Client &client) {
   std::cout << " param Length: " << param.length() << std::endl;
-  if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
-#ifdef TEST
-    std::cout << "client: " << fd << RED " has no channel name" RESET
-              << std::endl;
-    return false;
-#endif
-    send461NeedMoreParams(client, "JOIN");
-    return false;
-  } else if (!isValidChannelNameLength(param) || !isValidChannelPrefix(param)) {
-#ifdef TEST
-    std::cout << "client: " << fd << RED " has a bad channel name" RESET
-              << std::endl;
-    return false;
-#endif
+   if (!isValidChannelNameLength(param) || !isValidChannelPrefix(param)) {
     send476BadChanMask(client, param);
     return false;
   } else if (static_cast<size_t>(client.getChannelsCount()) >=
              gConfig->getLimit("CHANLIMIT")) {
-#ifdef TEST
-    std::cout << "client: " << fd << RED " has too many channels" RESET
-              << std::endl;
-    return false;
-#endif
     send405TooManyChannels(client);
     return false;
   }
@@ -132,12 +112,6 @@ void Server::createAndRegisterChannel(Client *client,
 
 void Server::handleJoinRequest(int fd, const Client &client,
                                const std::string &channelName) {
-#ifdef TEST
-  std::cout << "client: " << fd << " has joined the Channel "
-            << _channels[channelName].getName() << std::endl;
-  std::cout << std::endl;
-  return;
-#endif
   std::string nick = client.getNickname();
   sendJoinMessageToClient(fd, nick, channelName, client);
   send353Namreply(client, _channels[channelName]);
@@ -157,7 +131,7 @@ void Server::addChanneltoServerIfNoExist(const std::string &channelName) {
 void Server::sendJoinMessageToClient(int fd, const std::string &nick,
                                      const std::string &channelName,
                                      const Client &client) {
-  std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
+  std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
   if (send(fd, joinMessage.c_str(), joinMessage.length(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
   if (_channels[channelName].getTopic().topic.empty())
@@ -181,7 +155,4 @@ void Server::broadcastJoinMessage(int fd, const std::string &nick,
       }
     }
   }
-#ifdef DEBUG
-  std::cout << "broadcastJoinMessage: " << joinMessage << std::endl;
-#endif
 }

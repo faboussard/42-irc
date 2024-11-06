@@ -193,7 +193,9 @@ s :End of /NAMES list:
 
 Summary:
 
-Join function with Channel management implemented. 
+Join function with Channel management implemented.
+
+HexChat and Netcat will both receive the Join messages sent by the server.
 
 Tests conducted:
 JOIN + blank spaces
@@ -216,8 +218,7 @@ if a user has already joined the channel, no numeric reply is sent
 broadcast message to all channels when a user joins a channel
 
 Known bugs :
-if NC joins a channel, Hexchat wont know about it.
-JOIN by itself-> misses a numeric reply because not empty
+JOIN #s,  ,#g = SEGFAULT basic_string::_M_create
 
 TODO:
 PART command ( Join + 0)
