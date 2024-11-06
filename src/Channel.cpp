@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 15:24:05 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:29:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,13 @@ void Channel::removeClientFromTheChannel(int fd) {
 void Channel::addClientToChannelMap(Client *client) {
   _channelClients[client->getFd()] = client;
   std::cout << "Client " << client->getFd() << " added to channel " << _name
+            << std::endl;
+}
+
+
+void Channel::addOperatorsToChannelMap(Client *client) {
+  _channelClients[client->getFd()] = client;
+  std::cout << "Operator " << client->getFd() << " added to channel " << _name
             << std::endl;
 }
 

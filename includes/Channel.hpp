@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 15:23:52 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:28:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ class Channel {
 
   void removeClientFromTheChannel(int fd);
   void addClientToChannelMap(Client *client); 
+  void addOperatorsToChannelMap(Client *client);
   void receiveMessageInTheChannel(int fd);
 
   /* Modes handling */

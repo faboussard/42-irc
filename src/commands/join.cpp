@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 15:25:06 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:38:21 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,24 +34,24 @@ void Server::joinChannel(const std::string &param, int fd) {
   std::string::size_type start = 0;
   std::string::size_type pos = param.find(",");
   int count = 0;
-
+std::string ChannelNameWithoutPrefix;
   while (pos != std::string::npos) {
     count++;
-    if (pos == ',' || count == 1) {
+    // on va jusqua la virgule et on gere le nom de channel
+    if ((pos == ',' || count == 1)) {
       if (isChannelValid(param, client)) {
 #ifdef DEBUG
         std::cout << "client: " << fd << " joins channel "
                   << ChannelNameWithoutPrefix << std::endl;
 #endif
     std::string channelName = param.substr(start, pos - start);
-    std::string ChannelNameWithoutPrefix = channelName.substr(1);
+    ChannelNameWithoutPrefix = channelName.substr(1);
         registerChannel(&client, ChannelNameWithoutPrefix);
       }
     }
-    // Si le channel commence par un autre char et qu'il vient en deuxième place
-    // suivi d'un espace
-    else if (channelName.length() > 1 && channelName[0] == ' ' && count > 1) {
-      std::string key = channelName.substr(0, 1);  // Stocker le premier caractère en tant que clé
+    // on gere les keys qui sont apres les espaces 
+    else if (isValidLength(param)) {
+      std::string key = param.substr(0, 1); 
 #ifdef DEBUG
       std::cout << "client: " << fd << " has a key " << key << std::endl;
 #endif
@@ -77,7 +77,7 @@ void Server::joinChannel(const std::string &param, int fd) {
 }
 
 bool Server::isValidLength(const std::string &param) {
-  return param.length() < 51;
+  return param.length() >= 1 && param.length() < 51;
 }
 
 bool Server::isValidPrefix(const std::string &param) {
@@ -120,7 +120,7 @@ void Server::registerChannel(Client *client,
                              const std::string &channelName) {
   addChanneltoServer(channelName);
   _channels[channelName].addClientToChannelMap(client);
-  
+  _channels[channelName].addOperatorsToChannelMap(client);
   client->incrementChannelsCount();
 }
 
