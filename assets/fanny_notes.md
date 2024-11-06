@@ -195,7 +195,19 @@ Summary:
 
 Join function with Channel management implemented.
 
+
 HexChat and Netcat will both receive the Join messages sent by the server.
+data registed in right structure (channel in server, user in channel, operator in channel when channel creation)
+no valgrind tested yet
+Lists can be tested.
+
+Known bugs :
+JOIN #s,  ,#g = SEGFAULT basic_string::_M_create
+if a user has already joined the channel, no numeric reply is sent (probably to be manged in the handleJoinRequest function)
+
+TODO:
+PART command ( Join + 0)
+KEY MANAGEMENT : I have started to implement it but it is not finished yet as we miss MODE 
 
 Tests conducted:
 JOIN + blank spaces
@@ -213,15 +225,9 @@ JOIN #channelA,#channelB
 JOIN ##
 => join 1 channel
 
-if a user has already joined the channel, no numeric reply is sent
+ 
 
-broadcast message to all channels when a user joins a channel
 
-Known bugs :
-JOIN #s,  ,#g = SEGFAULT basic_string::_M_create
 
-TODO:
-PART command ( Join + 0)
-KEY MANAGEMENT : I have started to implement it but it is not finished yet as we miss MODE 
 
 
