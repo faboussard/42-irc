@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 08:46:54 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:33:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ void Server::closeServer(void) {
     closeClient(it->second.getFd());
   }
   _clients.clear();
-
+  _channels.clear();
   // Fermer le socket principal
   if (_socketFd != -1) {
     std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET
@@ -155,7 +155,6 @@ void Server::closeServer(void) {
   }
   _pollFds.clear();
   shrink_to_fit(&_pollFds);
-  _channels.clear();
 }
 
 /*============================================================================*/
