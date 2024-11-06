@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/06 08:37:03 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 12:38:42 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ void send341Inviting(const Client &client, const std::string &invitedNick,
 
 void send353Namreply(const Client &client, const Channel &channel) {
   std::string chanNameWithSymbol =
-      REG_CHAN + std::string(" ") + channel.getNameWithPrefix();
+      channel.getType() + std::string(" ") + channel.getNameWithPrefix();
 
   std::string nicknames = "";
   clientPMap chanOps = channel.getChannelOperators();

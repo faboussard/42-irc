@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/05 15:43:53 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 12:37:17 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void Server::listChannels(const stringVector &channels, const Client &client) {
   stringVector::const_iterator itEnd = channels.end();
   for (stringVector::const_iterator it = channels.begin(); it != itEnd; ++it) {
     char prefix = (*it)[0];
-    if (prefix == '#') {
+    if (prefix == REG_CHAN) {
       std::string toFind = std::string((*it).begin() + 1, (*it).end());
       channelsMap::iterator itChannel = _channels.find(toFind);
       if (itChannel != _channels.end())
