@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/06 17:09:11 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:27:22 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void Server::listChannels(const stringVector &channels, const Client &client) {
         if (findChannel(*it))
           send476BadChanMask(client, *it);
         else
-          send403NoSuchChannel(client, *it);  
+          send403NoSuchChannel(client, *it);
     } else {
         send476BadChanMask(client, *it);
     }

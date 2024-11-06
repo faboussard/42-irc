@@ -194,12 +194,12 @@ s :End of /NAMES list:
 Summary:
 
 Join function with Channel management implemented.
-
+splitByComma in utils.
 
 HexChat and Netcat will both receive the Join messages sent by the server.
 data registed in right structure (channel in server, user in channel, operator in channel when channel creation)
-no valgrind tested yet
-Lists can be tested.
+
+List command can be tested.
 
 Known bugs :
 JOIN #s,  ,#g = SEGFAULT basic_string::_M_create
@@ -210,6 +210,9 @@ PART command ( Join + 0)
 KEY MANAGEMENT : I have started to implement it but it is not finished yet as we miss MODE 
 
 Tests conducted:
+
+valgrind tested = no leaks. 
+
 JOIN + blank spaces
 => 461 > not enough parameters
 

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 17:09:02 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:27:49 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,18 @@ bool isNumeric(const std::string &str) {
 }
 
 std::string trimWhiteSpaces(const std::string &str) {
-  std::string::const_iterator it = str.begin();
-  while (it != str.end() && std::isspace(*it))
+  std::string::const_iterator itBegin = str.begin();
+  std::string::const_iterator itEnd = str.end();
+  std::string::const_iterator it = itBegin;
+
+  while (it != itEnd && std::isspace(*it))
     ++it;
-  std::string::const_reverse_iterator rit = str.rbegin();
-  while (rit.base() != str.begin() && std::isspace(*rit))
-    ++rit;
-  return (std::string(it, rit.base()));
+  // std::string::const_reverse_iterator rit = str.rbegin();
+  // while (rit.base() != itBegin && std::isspace(*rit))
+  //   ++rit;
+  while (itEnd != itBegin && std::isspace(*itEnd))
+    --itEnd;
+  return (std::string(it, itEnd));
 }
 
 void splitByComma(const std::string &argument, stringVector *channels) {
