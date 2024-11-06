@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/05 15:43:53 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 14:05:16 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,15 @@ void Server::list(const Client &client, const std::string &argument) {
   _channels.insert(std::make_pair("chan1", chan1));
   _channels.insert(std::make_pair("chan2", chan2));
   _channels["chan1"].setTopic("This is a test channel for chan1", "AuthorName");
+  Client client1(4, "127.0.0.1", "localhost");
+  client1.setNickname("client1");
+  Client client2(5, "127.0.0.1", "localhost");
+  client2.setNickname("client2");
+  Client client3(6, "127.0.0.1", "localhost");
+  client3.setNickname("client3");
+  _channels["chan1"].acceptClientInTheChannel(&client1);
+  _channels["chan1"].acceptClientInTheChannel(&client2);
+  _channels["chan1"].acceptClientInTheChannel(&client3);
 #endif
   int fd = client.getFd();
   std::string nick = client.getNickname();
@@ -47,7 +56,7 @@ void Server::listChannels(const stringVector &channels, const Client &client) {
   stringVector::const_iterator itEnd = channels.end();
   for (stringVector::const_iterator it = channels.begin(); it != itEnd; ++it) {
     char prefix = (*it)[0];
-    if (prefix == '#') {
+    if (prefix == REG_CHAN) {
       std::string toFind = std::string((*it).begin() + 1, (*it).end());
       channelsMap::iterator itChannel = _channels.find(toFind);
       if (itChannel != _channels.end())

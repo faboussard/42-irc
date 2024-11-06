@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 13:46:31 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:20:49 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 // #ifdef DEBUG
 //       clientIsAcceptedMessageToDelete(client, command);
 // #endif
-      handleCommand(command, argument, client->getFd(), *client);
+      handleCommand(command, argument, client->getFd());
     } else if (command == "CAP" && client->isCapSend() == false &&
                client->isPasswordGiven() == false) {
       if (client->isCapSend() == false) client->setCapSend(true);
@@ -124,7 +124,7 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
       continue;
     }
     if (cmd == CAP) continue;
-    handleCommand(command, argument, client.getFd(), client);
+    handleCommand(command, argument, client.getFd());
   }
 }
 
@@ -164,10 +164,10 @@ void Server::handleClientMessage(int fd) {
 /*============================================================================*/
 
 void Server::handleCommand(const std::string &command, std::string &argument,
-                           int fd,const Client &client) {
+                           int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
-     joinChannel(argument, fd, client);
+     joinChannel(argument, fd);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {

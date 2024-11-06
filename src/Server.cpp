@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 13:28:49 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:24:17 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ void Server::closeServer(void) {
     closeClient(it->second.getFd());
   }
   _clients.clear();
-
+  _channels.clear();
   // Fermer le socket principal
   if (_socketFd != -1) {
     std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET
@@ -270,7 +270,7 @@ void Server::sendToAllClients(const std::string &message) {
 //     = " + channelName + " :";
 
 //     const clientsMap &clientsInChannel =
-//     _channels[channelName].getClientsInChannel(); for
+//     _channels[channelName].getChannelClients(); for
 //     (clientsMap::const_iterator it = clientsInChannel.begin(); it !=
 //     clientsInChannel.end(); ++it) {
 //         nameReply += getClientByFd(it->first).getNickName() + " ";

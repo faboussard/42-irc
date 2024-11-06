@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/06 13:52:32 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:24:11 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,9 @@ void send321Liststart(int fd, const std::string &nick) {
 }
 
 void send322List(int fd, const std::string &nick, const Channel &channel) {
-  std::string numUsers = toString(channel.getClientsInChannel().size());
-  std::string message =
-      _322_RPL_LIST(nick, channel.getNameWithPrefix(), numUsers,
-                    channel.getTopic().topic);
+  std::string numUsers = toString(channel.getChannelClients().size());
+  std::string message = _322_RPL_LIST(nick, channel.getNameWithPrefix(),
+                                      numUsers, channel.getTopic().topic);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -161,7 +160,7 @@ void send341Inviting(const Client &client, const std::string &invitedNick,
 
 void send353Namreply(const Client &client, const Channel &channel) {
   std::string chanNameWithSymbol =
-      REG_CHAN + std::string(" ") + channel.getNameWithPrefix();
+      channel.getType() + std::string(" ") + channel.getNameWithPrefix();
 
   std::string nicknames = "";
   clientPMap chanOps = channel.getChannelOperators();
@@ -170,7 +169,7 @@ void send353Namreply(const Client &client, const Channel &channel) {
   for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
     nicknames += CHAN_OP + it->second->getNickname() + " ";
   }
-  clientPMap chanClients = channel.getClientsInChannel();
+  clientPMap chanClients = channel.getChannelClients();
   itBegin = chanClients.begin();
   itEnd = chanClients.end();
   for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
@@ -257,14 +256,18 @@ void send431NoNicknameGiven(const Client &client) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send432ErroneusNickname(const Client &client) {
-  std::string message = _432_ERR_ERRONEUSNICKNAME(client.getNickname());
+void send432ErroneusNickname(const Client &client,
+                             const std::string &erroneusNick) {
+  std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
+  std::string message = _432_ERR_ERRONEUSNICKNAME(nick, erroneusNick);
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send433NickAlreadyInUse(const Client &client) {
-  std::string message = _433_ERR_NICKNAMEINUSE(client.getNickname());
+void send433NickAlreadyInUse(const Client &client,
+                             const std::string &nickInUse) {
+  std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
+  std::string message = _433_ERR_NICKNAMEINUSE(nick, nickInUse);
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -345,7 +348,7 @@ void send475BadChannelKey(const Client &client, const Channel &channel) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send476BadChanMask(const Client &client, \
+void send476BadChanMask(const Client &client,
                         const std::string &chanNameWithBadMask) {
   std::string message =
       _476_ERR_BADCHANMASK(client.getNickname(), chanNameWithBadMask);

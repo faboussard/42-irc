@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 13:27:47 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:22:43 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,16 +114,14 @@ class Server {
 
   /*--------- Commands --------------*/
   /* Join */
-  void handleCommand(const std::string &command, std::string &argument, int fd,const Client &client);
+  void handleCommand(const std::string &command, std::string &argument, int fd);
   void executeJoin(int fd,const Client &client, const std::string &channelName);
-  bool goodChannelName(const std::string &argument);
   bool isValidPrefix(const std::string &param);
   bool isValidLength(const std::string &param);
-  bool hasNoSpaces(const std::string &param);
   bool isJoinZero(const std::string &param);
-  void joinChannel(const std::string &param, int fd,const Client &client);
+  void joinChannel(const std::string &param, int fd);
   bool isChannelValid(const std::string &param,const Client &client);
-
+void registerChannel(Client *client, const std::string &channelName);
   // Sub-functions for joinChannel
   void addChanneltoServer(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick, const std::string &channelName, const Client &client);
