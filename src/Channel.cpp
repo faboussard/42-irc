@@ -6,16 +6,19 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 17:50:03 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:39:29 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
 
+#include <string>
+#include <iostream>
+
 #include "../includes/colors.hpp"
 #include "../includes/numericReplies.hpp"
-#include "../includes/utils.hpp"
 #include "../includes/serverConfig.hpp"
+#include "../includes/utils.hpp"
 
 /*============================================================================*/
 /*       Constructors                                                         */
@@ -110,7 +113,6 @@ void Channel::addClientToChannelMap(Client *client) {
   std::cout << "Client " << client->getFd() << " added to channel " << _name
             << std::endl;
 }
-
 
 void Channel::addOperatorsToChannelMap(Client *client) {
   _channelClients[client->getFd()] = client;

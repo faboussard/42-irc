@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 15:28:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:38:26 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
 
-typedef std::map<int, Client*> clientPMap;
+typedef std::map<int, Client *> clientPMap;
 
 extern Config *gConfig;
 
@@ -47,17 +47,17 @@ class Channel {
   std::string _type;
   std::string _nameWithPrefix;
   std::string _creationTime;
-  Topic       _topic;
-  Mode        _mode;
+  Topic _topic;
+  Mode _mode;
   std::string _key;
-  int         _limit;
+  int _limit;
 
   clientPMap _channelClients;
   clientPMap _channelOperators;
 
  public:
   explicit Channel(const std::string &name = "");
-  bool isSecret; // sera remplacé dans la strcuture de Yuko. 
+  bool isSecret;  // sera remplacé dans la strcuture de Yuko.
 
   /* Getters */
 
@@ -80,7 +80,7 @@ class Channel {
   /* Member Functions */
 
   void removeClientFromTheChannel(int fd);
-  void addClientToChannelMap(Client *client); 
+  void addClientToChannelMap(Client *client);
   void addOperatorsToChannelMap(Client *client);
   void receiveMessageInTheChannel(int fd);
 

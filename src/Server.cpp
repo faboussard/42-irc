@@ -6,11 +6,14 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 15:24:17 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:41:59 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
+
+#include <iostream>
+#include <string>
 
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"

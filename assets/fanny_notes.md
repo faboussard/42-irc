@@ -228,6 +228,56 @@ JOIN #channelA,#channelB
 JOIN ##
 => join 1 channel
 
+
+
+
+**Summary:**
+_**Implemented Features:**_
+
+1. JOIN command functionality with proper channel and user management.
+Server successfully sends JOIN messages to clients (HexChat and Netcat tested).
+`2. splitByComma` function moved to  utils to handle comma-separated values.
+
+
+**Channel data structure now includes:**
+Channels on the server.
+Users in each channel.
+Operators in a channel upon creation.
+
+ LIST command is ready for testing.
+
+**Known Issues:**
+
+- SEGFAULT occurs with` JOIN #s, ,#g` due to basic_string::_M_create error.
+
+- No numeric reply should be sent if a user re-joins an already joined channel (likely to be handled in handleJoinRequest).
+
+- User cannot join a channel already created (expected behavior : he can, he does not have to enter # again)
+```
+JOIN #s
+:admin JOIN :#s
+:ircserv.localhost 331 admin #s :No topic is set
+:ircserv.localhost 353 admin #s :admin 
+:ircserv.localhost 366 admin #s :End of \NAMES list
+JOIN s
+:ircserv.localhost 476 admin s :Bad Channel mask
+```
+
+
+**TODOs: future enhancements needed **
+
+Implement PART command (triggered by JOIN + 0).
+Finalize key management functionality (currently pending MODE command integration).
+Tests Conducted:
+Valgrind Results: No memory leaks.
+Command Tests:
+JOIN + blank spaces → 461 Error: Not enough parameters.
+JOIN # → 461 Error: Not enough parameters.
+JOIN + 0 → TODO (expected to PART from all channels).
+JOIN #channelA,#channelB → Joins two channels.
+JOIN ## → Joins one channel.
+
+
  
 
 

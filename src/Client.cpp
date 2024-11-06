@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 17:23:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:39:55 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,19 @@
 /*============================================================================*/
 
 Client::Client(int fd, const std::string& ip, const std::string& hostName)
-  : _fd(fd), _ip(ip), _hostName(hostName),
-    _nickname("*"), _userName("*"), _realName("*"),
-    _nicknameSet(false), _usernameSet(false), _realnameSet(false),
-    _passwordGiven(false), _accepted(false), _CapSend(false),
-    _nbPassAttempts(0) {
+    : _fd(fd),
+      _ip(ip),
+      _hostName(hostName),
+      _nickname("*"),
+      _userName("*"),
+      _realName("*"),
+      _nicknameSet(false),
+      _usernameSet(false),
+      _realnameSet(false),
+      _passwordGiven(false),
+      _accepted(false),
+      _CapSend(false),
+      _nbPassAttempts(0) {
   _uModes.invisible = false;
   _uModes.operatorOfServer = false;
   _uModes.registered = false;
@@ -40,10 +48,7 @@ std::string const& Client::getNickname(void) const { return (_nickname); }
 
 std::string const& Client::getUserName(void) const { return (_userName); }
 
-int Client::getChannelsCount() const{
-  return (_channelsCount);
-}
-
+int Client::getChannelsCount() const { return (_channelsCount); }
 
 int Client::getFd(void) const { return (_fd); }
 
@@ -159,5 +164,4 @@ std::string Client::shareMessage(void) {
 /*       Channel  handling                                                    */
 /*============================================================================*/
 
-void Client::incrementChannelsCount(void) {getChannelsCount();
- }
+void Client::incrementChannelsCount(void) { getChannelsCount(); }

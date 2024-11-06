@@ -6,12 +6,14 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 19:18:30 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:43:19 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
+#include <map>
 #include <stdexcept>
+#include <string>
 
 #include "../includes/Client.hpp"
 #include "../includes/Server.hpp"
@@ -37,18 +39,18 @@ void Server::joinChannel(const std::string &param, int fd) {
   stringVector keys;
   splitByComma(keysPart, &keys);
 
-    if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
+  if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
     return;
-    }
+  }
 
   for (size_t i = 0; i < channels.size(); ++i) {
     std::string channelName = channels[i];
 
-
-  if (channelName.empty() || (channelName.length() == 1 && channelName[0] == REG_CHAN)) {
-    send461NeedMoreParams(client, "JOIN");
-    continue;
+    if (channelName.empty() ||
+        (channelName.length() == 1 && channelName[0] == REG_CHAN)) {
+      send461NeedMoreParams(client, "JOIN");
+      continue;
     }
 
     std::string channelNameWithoutPrefix = channelName.substr(1);
@@ -91,7 +93,7 @@ bool Server::isLeaveAllChannelsRequest(const std::string &param) {
 
 bool Server::isChannelValid(const std::string &param, const Client &client) {
   std::cout << " param Length: " << param.length() << std::endl;
-   if (!isValidChannelNameLength(param) || !isValidChannelPrefix(param)) {
+  if (!isValidChannelNameLength(param) || !isValidChannelPrefix(param)) {
     send476BadChanMask(client, param);
     return false;
   } else if (static_cast<size_t>(client.getChannelsCount()) >=

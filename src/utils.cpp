@@ -6,11 +6,14 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 19:27:49 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:41:06 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/utils.hpp"
+
+#include <string>
+#include <vector>
 
 #include "../includes/Server.hpp"
 
@@ -30,13 +33,11 @@ std::string trimWhiteSpaces(const std::string &str) {
   std::string::const_iterator itEnd = str.end();
   std::string::const_iterator it = itBegin;
 
-  while (it != itEnd && std::isspace(*it))
-    ++it;
+  while (it != itEnd && std::isspace(*it)) ++it;
   // std::string::const_reverse_iterator rit = str.rbegin();
   // while (rit.base() != itBegin && std::isspace(*rit))
   //   ++rit;
-  while (itEnd != itBegin && std::isspace(*itEnd))
-    --itEnd;
+  while (itEnd != itBegin && std::isspace(*itEnd)) --itEnd;
   return (std::string(it, itEnd));
 }
 
