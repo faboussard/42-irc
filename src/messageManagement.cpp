@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 13:02:32 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:42:53 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
         sendConnectionMessage(*client);
-#ifdef DEBUG
-        testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
-#endif
+      #ifdef TESTNUMERICR
+        testAllNumericReplies(_startTime, *client, "COMMAND", "puppy");
+      #endif
       }
     } else if (client->isAccepted() == false) {
       if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);
@@ -177,7 +177,7 @@ void Server::handleCommand(const std::string &command,
   } else if (command == "MODE") {
     // Changer le sujet du canal
   } else if (command == "LIST") {
-    // Lister les canaux
+    list(_clients[fd], argument);
   } else if (command == "NOTICE") {
     // Notice}
   } else if (command == "NICK") {

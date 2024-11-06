@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 15:55:59 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:33:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,6 @@ bool Server::_signal = false;
 
 Server::Server(int port, std::string password)
 : _socketFd(-1), _port(port), _password(password) { _signal = false; }
-  // _port = port;
-  // _password = password;
-  // _socketFd = -1;
 
 /*============================================================================*/
 /*       Getters                                                              */
@@ -148,7 +145,7 @@ void Server::closeServer(void) {
     closeClient(it->second.getFd());
   }
   _clients.clear();
-
+  _channels.clear();
   // Fermer le socket principal
   if (_socketFd != -1) {
     std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET
@@ -184,10 +181,6 @@ void Server::acceptNewClient(void) {
   newPoll.events = POLLIN;
   newPoll.revents = 0;
 
-  // Client cli;
-  // cli.setFd(newClientFd);
-  // cli.setIp(inet_ntoa(cliadd.sin_addr));  // inet_ntoa = convertit l'adresse
-                                          // IP en une chaîne de caractères
   std::string clientIp = inet_ntoa(cliadd.sin_addr);
   struct hostent* host = gethostbyaddr(&cliadd.sin_addr, \
   sizeof(cliadd.sin_addr), AF_INET);

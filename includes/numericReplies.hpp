@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/04 09:19:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 08:42:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ extern Config *gConfig;
 
 #define _001_RPL_WELCOME(nick, user, host)                                 \
   (FROM_SERVER + "001 " + nick + " :Welcome to the " +                     \
-  gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user + "@" + \
+  gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user + "@" +  \
   host + "\r\n")
 
 #define _002_RPL_YOURHOST(nick)                                 \
@@ -43,12 +43,12 @@ extern Config *gConfig;
   (FROM_SERVER + "003 " + nick + " :This server was created on " + starttime + \
   "\r\n")
 
-#define _004_RPL_MYINFO(nick)                                                \
-  (FROM_SERVER + "004 " + nick + " :" + SRV_NAME + " " + SRV_VERSION + " " + \
+#define _004_RPL_MYINFO(nick)                                                 \
+  (FROM_SERVER + "004 " + nick + " :" + SRV_NAME + " " + SRV_VERSION + " " +  \
   gConfig->getParam("USERMODES") + " " + gConfig->getSupportedChanModes() +   \
   "\r\n")
 
-#define _005_RPL_ISUPPORT(nick)                                      \
+#define _005_RPL_ISUPPORT(nick)                                            \
   (FROM_SERVER + "005 " + nick + " :" + gConfig->getIsupportParamToken() + \
   ":are supported by this server\r\n")
 // Inform clients about the server-supported features and settings
@@ -157,12 +157,13 @@ extern Config *gConfig;
   (FROM_SERVER + "431 " + nick + " :No nickname given\r\n")
 // Returned when a nickname parameter is expected for a command but isn’t given.
 
-#define _432_ERR_ERRONEUSNICKNAME(nick) \
-  (FROM_SERVER + "432 " + nick + " :Erroneus nickname\r\n")
+#define _432_ERR_ERRONEUSNICKNAME(nick, erroneusNick) \
+  (FROM_SERVER + "432 " + nick + " " + erroneusNick + " :Erroneus nickname\r\n")
 // The desired nickname contains characters that are disallowed by the server.
 
-#define _433_ERR_NICKNAMEINUSE(nick) \
-  (FROM_SERVER + "433 " + nick + " :Nickname is already in use\r\n")
+#define _433_ERR_NICKNAMEINUSE(nick, nickInUse)    \
+  (FROM_SERVER + "433 " + nick + " " + nickInUse + \
+  " :Nickname is already in use\r\n")
 
 #define _442_ERR_NOTONCHANNEL(nick, chanName)     \
   (FROM_SERVER + "442 " + nick + " " + chanName + \
@@ -252,69 +253,55 @@ void send221Umodeis(const Client &client);
 
 /*------ Channel related replies ---------------------------------------------*/
 
-void send321Liststart(const Client &client);
-void send322List(const Client &client, const Channel &channel);
-void send323Listend(const Client &client);
-void send324Channelmodeis(const Client &client,
-                          const Channel &channel);
-void send329Creationtime(const Client &client,
-                         const Channel &channel);
+void send321Liststart(int fd, const std::string &nick);
+void send322List(int fd, const std::string &nick, const Channel &channel);
+void send323Listend(int fd, const std::string &nick);
+void send324Channelmodeis(const Client &client, const Channel &channel);
+void send329Creationtime(const Client &client, const Channel &channel);
 void send331Notopic(const Client &client, const Channel &channel);
 void send332Topic(const Client &client, const Channel &channel);
-void send333Topicwhotime(const Client &client,
-                         const Channel &channel);
+void send333Topicwhotime(const Client &client, const Channel &channel);
 void send336Invitelist(const Client &client, const Channel &channel);
 void send337Endofinvitelist(const Client &client);
-void send341Inviting(const Client &client,
-                     const std::string &invitedNick, const Channel &channel);
+void send341Inviting(const Client &client, const std::string &invitedNick,
+                     const Channel &channel);
 void send353Namreply(const Client &client, const Channel &channel);
 void send366Endofnames(const Client &client, const Channel &channel);
 
 /*------ Error messages ------------------------------------------------------*/
 
-void send401NoSuchNick(const Client &client,
-                       const std::string &targetNick);
-void send403NoSuchChannel(const Client &client,
-                          const std::string &chanName);
-void send404CannotSendToChan(const Client &client,
-                             const Channel &channel);
+void send401NoSuchNick(const Client &client, const std::string &targetNick);
+void send403NoSuchChannel(const Client &client, const std::string &chanName);
+void send404CannotSendToChan(const Client &client, const Channel &channel);
 void send405TooManyChannels(const Client &client);
 void send409NoOrigin(const Client &client);
-void send411NoRecipient(const Client &client,
-                        const std::string &command);
+void send411NoRecipient(const Client &client, const std::string &command);
 void send412NoTextToSend(const Client &client);
 void send417InputTooLong(const Client &client);
-void send421UnknownCommand(const Client &client,
-                           const std::string &command);
+void send421UnknownCommand(const Client &client, const std::string &command);
 void send431NoNicknameGiven(const Client &client);
-void send432ErroneusNickname(const Client &client);
-void send433NickAlreadyInUse(const Client &client);
+void send432ErroneusNickname(const Client &client,
+                             const std::string &erroneusNick);
+void send433NickAlreadyInUse(const Client &client,
+                             const std::string &nickInUse);
 void send441UserNotInChannel(const Client &client,
                              const std::string &targetNick,
                              const Channel &channel);
-void send442NotOnChannel(const Client &client,
-                         const Channel &channel);
-void send443UserOnChannel(const Client &client,
-                          const std::string &invitedNick,
+void send442NotOnChannel(const Client &client, const Channel &channel);
+void send443UserOnChannel(const Client &client, const std::string &invitedNick,
                           const Channel &channel);
 void send451NotRegistered(const Client &client);
-void send461NeedMoreParams(const Client &client,
-                           const std::string &command);
+void send461NeedMoreParams(const Client &client, const std::string &command);
 void send462AlreadyRegistered(const Client &client);
 void send464PasswdMismatch(const Client &client);
-void send471ChannelIsFull(const Client &client,
-                          const Channel &channel);
-void send472UnknownMode(const Client &client,
-                        const std::string &modeChar);
-void send473InviteOnlyChan(const Client &client,
-                           const Channel &channel);
-void send475BadChannelKey(const Client &client,
-                          const Channel &channel);
+void send471ChannelIsFull(const Client &client, const Channel &channel);
+void send472UnknownMode(const Client &client, const std::string &modeChar);
+void send473InviteOnlyChan(const Client &client, const Channel &channel);
+void send475BadChannelKey(const Client &client, const Channel &channel);
 void send476BadChanMask(const Client &client,
-                        const Channel &channel);
+                        const std::string &chanNameWithBadMask);
 void send481NoPrivileges(const Client &client);
-void send482ChanOPrivsNeeded(const Client &client,
-                             const Channel &channel);
+void send482ChanOPrivsNeeded(const Client &client, const Channel &channel);
 void send501UmodeUnknownFlag(const Client &client);
 void send525InvalidKey(const Client &client, const Channel &channel);
 
