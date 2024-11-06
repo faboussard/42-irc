@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 15:45:30 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:06:15 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
     return (false);
   }
   client->declarePasswordGiven();
-  std::cout << BRIGHT_YELLOW "Password IS ACCEPTED !!!!! : " << arg << RESET << std::endl;
+  std::cout << BRIGHT_YELLOW "Password IS ACCEPTED !!!!! : "
+            << arg << RESET << std::endl;
   return (true);
 }

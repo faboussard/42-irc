@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 09:17:30 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:02:32 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ static void clientIsAcceptedMessageToDelete(const Client &client,
 #endif
 // <-------------------------------------------------------------------------//
 
-void Server::handleInitialMessage(Client *client, const std::string &message) {
-  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
+void Server::handleInitialMessage(Client *client, const std::string &msg) {
+  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
 
   for (size_t it = 0; it < vecSize; ++it) {
@@ -61,7 +61,7 @@ void Server::handleInitialMessage(Client *client, const std::string &message) {
     std::cout << "Message: " << argument << RESET << std::endl;
 
     if (command == "QUIT") {
-      quit(argument, client, _clients);
+      quit(argument, client, &_clients);
       return;
     }
     if (client->isAccepted()) {
@@ -85,14 +85,14 @@ void Server::handleInitialMessage(Client *client, const std::string &message) {
       send461NeedMoreParams(*client, "PASS");
     } else if (command == "NICK") {
       if (isLastNick(splittedPair, it + 1, vecSize)) {
-        if (Parser::verifyNick(argument, *client, _clients) == true &&
+        if (Parser::verifyNick(argument, client, &_clients) == true &&
             client->isAccepted() == false && client->isUsernameSet()) {
           client->declareAccepted();
           sendConnectionMessage(*client);
         }
       }
     } else if (command == "USER") {
-      if (Parser::verifyUser(argument, *client, _clients) == true &&
+      if (Parser::verifyUser(argument, client, &_clients) == true &&
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
         sendConnectionMessage(*client);
@@ -103,14 +103,13 @@ void Server::handleInitialMessage(Client *client, const std::string &message) {
     } else if (client->isAccepted() == false) {
       if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);
       if (client->isUsernameSet() == false)
-        // send461NeedMoreParams(*client, "USER");
         send451NotRegistered(*client);
     }
   }
 }
 
-void Server::handleOtherMessage(Client &client, const std::string &message) {
-  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(message);
+void Server::handleOtherMessage(const Client &client, const std::string &msg) {
+  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
   for (size_t it = 0; it < vecSize; ++it) {
     std::string command = splittedPair[it].first;
@@ -164,8 +163,8 @@ void Server::handleClientMessage(int fd) {
 /*       Commands management                                                  */
 /*============================================================================*/
 
-void Server::handleCommand(const std::string &command, std::string &argument,
-                           int fd) {
+void Server::handleCommand(const std::string &command,
+                           const std::string &argument, int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
     // joinChannel(argument, fd);
@@ -182,13 +181,13 @@ void Server::handleCommand(const std::string &command, std::string &argument,
   } else if (command == "NOTICE") {
     // Notice}
   } else if (command == "NICK") {
-    Parser::verifyNick(argument, _clients[fd], _clients);
+    Parser::verifyNick(argument, &_clients[fd], &_clients);
   } else if (command == "USER") {
-    Parser::verifyUser(argument, _clients[fd], _clients);
+    Parser::verifyUser(argument, &_clients[fd], &_clients);
   } else if (command == "PRIVMSG") {
     // Envoyer un message privé
   } else if (command == "QUIT") {
-    quit(argument, &_clients[fd], _clients);
+    quit(argument, &_clients[fd], &_clients);
   } else if (command == "PING") {
     ping(&_clients[fd], argument);
   } else if (command == "PASS" || command == "USER") {

@@ -6,14 +6,14 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 10:10:53 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 11:36:11 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 11:40:17 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Parser.hpp"
 
 void Server::quit(const std::string &argument, Client *client,
-                  clientsMap &cltMap) {
+                  clientsMap *cltMap) {
   if (client->isAccepted() == false) {
     clearClient(client->getFd());
     return;
@@ -38,8 +38,8 @@ void Server::quit(const std::string &argument, Client *client,
   message += " ; User " + client->getRealName() + " has quit IRC.";
   message += "\r\n";
   clearClient(client->getFd());
-  clientsMap::iterator itEnd = cltMap.end();
-  for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
+  clientsMap::iterator itEnd = cltMap->end();
+  for (clientsMap::iterator it = cltMap->begin(); it != itEnd; ++it) {
     it->second.receiveMessage(message);
   }
 }
