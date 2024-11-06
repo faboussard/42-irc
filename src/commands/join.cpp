@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 15:38:21 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:58:47 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,25 +33,22 @@ void Server::joinChannel(const std::string &param, int fd) {
   Client client = getClientByFd(fd);
   std::string::size_type start = 0;
   std::string::size_type pos = param.find(",");
-  int count = 0;
-std::string ChannelNameWithoutPrefix;
+  std::string ChannelNameWithoutPrefix;
   while (pos != std::string::npos) {
-    count++;
-    // on va jusqua la virgule et on gere le nom de channel
-    if ((pos == ',' || count == 1)) {
+    if (pos == ',') {
       if (isChannelValid(param, client)) {
 #ifdef DEBUG
         std::cout << "client: " << fd << " joins channel "
                   << ChannelNameWithoutPrefix << std::endl;
 #endif
-    std::string channelName = param.substr(start, pos - start);
-    ChannelNameWithoutPrefix = channelName.substr(1);
+        std::string channelName = param.substr(start, pos - start);
+        ChannelNameWithoutPrefix = channelName.substr(1);
         registerChannel(&client, ChannelNameWithoutPrefix);
       }
     }
-    // on gere les keys qui sont apres les espaces 
+    // on gere les keys qui sont apres les espaces
     else if (isValidLength(param)) {
-      std::string key = param.substr(0, 1); 
+      std::string key = param.substr(0, 1);
 #ifdef DEBUG
       std::cout << "client: " << fd << " has a key " << key << std::endl;
 #endif
@@ -116,8 +113,7 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
   return true;
 }
 
-void Server::registerChannel(Client *client,
-                             const std::string &channelName) {
+void Server::registerChannel(Client *client, const std::string &channelName) {
   addChanneltoServer(channelName);
   _channels[channelName].addClientToChannelMap(client);
   _channels[channelName].addOperatorsToChannelMap(client);
