@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 19:25:22 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 20:57:06 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,15 @@ void Server::joinChannel(const std::string &param, int fd) {
       continue;
     }
     if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
-      createAndRegisterChannel(&client, channelNameWithoutPrefix);
+        addChanneltoServerIfNoExist(channelName);
+      _channels[channelName].addOperator(&client);
     }
 
       const clientPMap &clientsInChannel = _channels[channelName].getChannelClients();
 
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     client.incrementChannelsCount();
+    client.addChannelToClientMap(getChannelByName(channelNameWithoutPrefix));
     _channels[channelName].addClientToChannelMap(&client);
     std::string key = (i < keys.size()) ? keys[i] : "";
     Channel &channel = _channels[channelNameWithoutPrefix];
@@ -86,10 +88,6 @@ bool Server::isValidChannelPrefix(const std::string &param) {
   return param[0] == REG_CHAN;
 }
 
-bool Server::isSingleCharacterChannelPrefix(const std::string &param) {
-  return param.length() == 1 && param[0] == REG_CHAN;
-}
-
 bool Server::isLeaveAllChannelsRequest(const std::string &param) {
   return param == "0";
 }
@@ -106,13 +104,6 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
   return true;
 }
 
-void Server::createAndRegisterChannel(Client *client,
-                                      const std::string &channelName) {
-std::cout << "Creating and registering channel " << channelName << std::endl;
-  addChanneltoServerIfNoExist(channelName);
-  _channels[channelName].addOperator(client);
-
-}
 void Server::handleJoinRequest(int fd, const Client &client, const std::string &channelName) {
   std::string nick = client.getNickname();
   

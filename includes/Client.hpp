@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 18:28:31 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 21:01:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 
 class Channel;
 
-typedef std::map<int, Channel*> channelPMap;
+typedef std::map<std::string, Channel*> channelPMap;
 
 typedef struct UserModes {
   bool invisible;
@@ -96,6 +96,8 @@ class Client {
 /*       Member functions                                                     */
 /*============================================================================*/
 
+  /* Modes */
+
   void declareAccepted(void);
   void declarePasswordGiven(void);
   void incrementNbPassAttempts(void);
@@ -110,6 +112,7 @@ class Client {
   /* Channels handling */
   void incrementChannelsCount();
   void decrementChannelsCount();
+  void addChannelToClientMap(Channel *channel);
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

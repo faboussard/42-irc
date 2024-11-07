@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 18:30:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 20:56:46 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,11 @@ class Server {
 
  public:
   explicit Server(int port, const std::string &password);
-#ifdef TEST
-  Server() {};
-#endif
-  /* Getters */
+
+/*============================================================================*/
+/*       Getters                                                              */
+/*============================================================================*/
+
   int getSocketFd() const;
   int getPort() const;
   const std::string &getPassword() const;
@@ -91,6 +92,11 @@ class Server {
   const Channel &getChannelByName(const std::string &name) const;
   const channelsMap &getChannels() const;
   const clientsMap &getClients() const;
+
+//  Channel* getChannelByName(const std::string &name);
+  /*============================================================================*/
+/*       Member functions                                                     */
+/*============================================================================*/
 
   /* Clients Management */
   void acceptNewClient(void);
@@ -123,22 +129,28 @@ class Server {
   void handleCommand(const std::string &command, const std::string &argument,
                      int fd);
 
+/*============================================================================*/
+/*      Commands                                                              */
+/*============================================================================*/
+
   /*-------- JOIN --------*/
-  void handleJoinRequest(int fd, const Client &client,
-                         const std::string &channelName);
+
   bool isValidChannelPrefix(const std::string &param);
   bool isValidChannelNameLength(const std::string &param);
   bool isLeaveAllChannelsRequest(const std::string &param);
-  bool isSingleCharacterChannelPrefix(const std::string &param);
-  void joinChannel(const std::string &param, int fd);
   bool isChannelValid(const std::string &param, const Client &client);
-  void createAndRegisterChannel(Client *client, const std::string &channelName);
+
+  void joinChannel(const std::string &param, int fd);
+  void handleJoinRequest(int fd, const Client &client,
+                         const std::string &channelName);
   void addChanneltoServerIfNoExist(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
+  void handleEmptyParams(const Client &client, const std::string &param);
+  void handlePartRequest(int fd, const std::string &param);
 
   /*-------- PART --------*/
   
@@ -174,9 +186,6 @@ class Server {
 
   /*-------- PING --------*/
   void ping(Client *client, const std::string &token);
-
-  /* Tests */
-  void addClient(int fd, const Client &client);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

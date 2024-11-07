@@ -31,9 +31,10 @@ void Server::quitChannel(int fd) {
     sendPartMessageToClient(fd, client->getNickname(), it->second->getName());
 
     broadcastPartMessage(fd, client->getNickname(), it->second->getName());
-        channel->removeClientFromTheChannel(fd);
+    channel->removeClientFromTheChannel(fd);
     client->decrementChannelsCount(); 
   }
+  mutableChannels.clear();
 }
 
 

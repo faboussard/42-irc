@@ -278,6 +278,18 @@ JOIN #channelA,#channelB → Joins two channels.
 JOIN ## → Joins one channel.
 
 
+DEBUG 
+
+
+gdb ./bin/ircserv -tui
+b function_name + tab
+run 6667 pass 
+say no to debuging info 
+connect to NC
+enter joining info ( pass, nick ...) 
+enter commands : if i want to process it i type c 
+n to continue 
+enter + emptyline will process the previous command 
  
 
 
