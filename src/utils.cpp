@@ -17,7 +17,7 @@ void shrink_to_fit(std::vector<struct pollfd> *vec) {
   std::vector<struct pollfd>(*vec).swap(*vec);
 }
 
-bool isNumeric(const std::string& str) {
+bool isNumeric(const std::string &str) {
   for (size_t i = 0; i < str.length(); i++) {
     if (!std::isdigit(str[i])) return false;
   }
@@ -31,4 +31,17 @@ void strToUpper(std::string *str) {
     (*str)[i] = std::toupper((*str)[i]);
     ++i;
   }
+}
+
+std::string trimWhiteSpaces(const std::string &str) {
+  std::string::const_iterator itBegin = str.begin();
+  std::string::const_iterator itEnd = str.end();
+  std::string::const_iterator it = itBegin;
+
+  while (it != itEnd && std::isspace(*it))
+    ++it;
+  std::string::const_reverse_iterator rit = str.rbegin();
+  while (rit.base() != itBegin && std::isspace(*rit))
+     ++rit;
+  return (std::string(it, rit.base()));
 }

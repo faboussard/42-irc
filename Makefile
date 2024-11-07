@@ -22,7 +22,7 @@ vpath %.cpp src src/commands
 HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
-       pass nick user quit invite mode ping topic
+       list pass nick user quit invite mode ping topic
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/
@@ -51,6 +51,14 @@ ${OBJS_DIR}:
 
 debug: CFLAGS += -DDEBUG
 debug: fclean $(OBJS_DIR) $(NAME)
+
+# ---------------------------------- Tests ----------------------------------- #
+
+testnumericr: CFLAGS += -DTESTNUMERICR
+testnumericr: fclean $(OBJS_DIR) $(NAME)
+
+testlist: CFLAGS += -g3 -DTESTLIST
+testlist: fclean $(OBJS_DIR) $(NAME)
 
 # ---------------------------------- Clean ----------------------------------- #
 clean:

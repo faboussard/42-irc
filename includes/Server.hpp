@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 13:02:34 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:31:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@
 
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
+typedef std::vector<std::string> stringVector;
 
 extern Config *gConfig;
 
@@ -130,6 +131,10 @@ class Server {
   /*-------- MODE --------*/
 
   /*-------- LIST --------*/
+  void list(const Client &client, const std::string &argument);
+  void listAllChannels(int fd, const std::string &nick);
+  void listChannels(const stringVector &channels, const Client &client);
+  bool findChannel(const std::string &channel);
 
   /*-------- NOTICE --------*/
 
