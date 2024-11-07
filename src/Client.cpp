@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 08:24:38 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 09:17:44 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _passwordGiven(false),
       _accepted(false),
       _CapSend(false),
-      _channelsCount(0),
-      _nbPassAttempts(0) {
+      _nbPassAttempts(0),
+      _channelsCount(0) {
   _uModes.invisible = false;
   _uModes.operatorOfServer = false;
   _uModes.registered = false;
