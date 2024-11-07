@@ -1,18 +1,18 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 14:18:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:35:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // ======== MODE <prefix><channel> =============================================
 // Replies:
-// -- 324 RPL_CHANNELMODEIS: 
+// -- 324 RPL_CHANNELMODEIS:
 // :<server> 324 <client> <channel> <modestring> <mode arguments>...
 // e.g. :irc.example.com 324 Alice #chatroom +itkl secretpass 25
 

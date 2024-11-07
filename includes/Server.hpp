@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 14:45:01 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:48:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@
 #include <string>
 #include <vector>
 
-#include "../includes/Config.hpp"
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
+#include "../includes/Config.hpp"
 #include "../includes/numericReplies.hpp"
 
 #define SRV_NAME "ircserv.localhost"
@@ -68,36 +68,32 @@ enum Command {
 
 class Server {
  private:
-  static bool                _signal;
-  int                        _socketFd;
-  int                        _port;
-  std::string                _startTime;
-  std::string                _password;
-  clientsMap                 _clients;
-  struct sockaddr_in         _address;
+  static bool _signal;
+  int _socketFd;
+  int _port;
+  std::string _startTime;
+  std::string _password;
+  clientsMap _clients;
+  struct sockaddr_in _address;
   std::vector<struct pollfd> _pollFds;
-  channelsMap                _channels;
+  channelsMap _channels;
 
  public:
-  explicit Server(int port, std::string password);
-
+  explicit Server(int port, const std::string &password);
+#ifdef TEST
+  Server() {};
+#endif
   /* Getters */
-  int getSocketFd(void) const;
-  int getPort(void) const;
-  const std::string &getPassword(void) const;
-  const Client &getClientByFd(int fd) const;
-  Channel &getChannelByName(const std::string &name);
-
-  /* Server Mounting */
-  void runServer(void);
-  void createSocket(void);
-  void createPoll(void);
-  void fetchStartTime(void);
-  void monitorConnections();
-  static void signalHandler(int signal);
+  int getSocketFd() const;
+  int getPort() const;
+  const std::string &getPassword() const;
+  Client &getClientByFd(int fd);
+  const Channel &getChannelByName(const std::string &name) const;
+  const channelsMap &getChannels() const;
+  const clientsMap &getClients() const;
 
   /* Clients Management */
-  void acceptNewClient();
+  void acceptNewClient(void);
   void sendConnectionMessage(const Client &client) const;
   void receiveMessage(int fd);
 
@@ -106,22 +102,53 @@ class Server {
   void handleOtherMessage(const Client &client, const std::string &msg);
   void handleClientMessage(int fd);
 
-  /* Clear and Close */
+  /* Server Mounting */
+  void runServer(void);
+  void createSocket(void);
+  void createPoll(void);
+  void fetchStartTime(void);
+  static void signalHandler(int signal);
+  void acceptAndChat(void);
 
+  /*--------- Commands --------------*/
+  /* Join */
+  void handleCommand(const std::string &command, const std::string &argument,
+                     int fd);
+  void handleJoinRequest(int fd, const Client &client,
+                         const std::string &channelName);
+  bool isValidChannelPrefix(const std::string &param);
+  bool isValidChannelNameLength(const std::string &param);
+  bool isLeaveAllChannelsRequest(const std::string &param);
+  bool isSingleCharacterChannelPrefix(const std::string &param);
+  void joinChannel(const std::string &param, int fd);
+  bool isChannelValid(const std::string &param, const Client &client);
+  void createAndRegisterChannel(Client *client, const std::string &channelName);
+  void addChanneltoServerIfNoExist(const std::string &channelName);
+  void sendJoinMessageToClient(int fd, const std::string &nick,
+                               const std::string &channelName,
+                               const Client &client);
+  void broadcastJoinMessage(int fd, const std::string &nick,
+                            const std::string &channelName);
+
+  /* Other methods */
+  void sendToAllClients(const std::string &message);
+  void handlePassword(int fd);
+
+  /* Clear and Close */
   void closeServer(void);
   void clearClient(int fd);
   void closeClient(int fd);
 
+  /* Tests */
+  void addClient(int fd, const Client &client);
   /* Commands handling */
-  void handleCommand(const std::string &command,
-                     const std::string &argument, int fd);
-  void sendToAllClients(const std::string &message);  // Broadcast
+  void handleCommand(const std::string &command, const std::string &argument,
+                     int fd);
 
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
 
   /*-------- JOIN --------*/
-  // void joinChannel(std::string &channelName, int fd);
 
   /*-------- KICK --------*/
 

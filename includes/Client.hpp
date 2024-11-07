@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/05 10:51:18 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:36:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,21 @@ class Client {
   bool _CapSend;
   UserModes _uModes;
   uint8_t _nbPassAttempts;
+  int _channelsCount;
 
  public:
-  explicit Client(int fd = -1, const std::string& ip = "", \
+  explicit Client(int fd = -1, const std::string& ip = "",
                   const std::string& hostName = "");
   // explicit Client(int fd = -1, const std::string& ip = "");
 
   /* Getters */
   int getFd(void) const;
   std::string getIp(void) const;
-  const std::string &getHostName(void) const;
-  const std::string &getNickname(void) const;
-  const std::string &getUserName(void) const;
-  const std::string &getRealName(void) const;
-  const UserModes &getUserModes(void) const;
+  const std::string& getHostName(void) const;
+  const std::string& getNickname(void) const;
+  const std::string& getUserName(void) const;
+  const std::string& getRealName(void) const;
+  const UserModes& getUserModes(void) const;
   const std::string getUserModesFlag(void) const;
   bool isNicknameSet(void) const;
   bool isUsernameSet(void) const;
@@ -65,6 +66,7 @@ class Client {
   bool isAccepted(void) const;
   bool isCapSend(void) const;
   uint8_t getNbPassAttempts(void) const;
+  int getChannelsCount() const;
 
   /* Setters */
   void setFd(int fd);
@@ -84,7 +86,10 @@ class Client {
 
   /* Messages handling */
   void receiveMessage(const std::string& message);
-  std::string shareMessage(void);
+  std::string shareMessage();
+
+  /* Channels handling */
+  void incrementChannelsCount();
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

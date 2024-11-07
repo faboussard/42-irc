@@ -1,4 +1,4 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.cpp                                 :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 15:04:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:33:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void send315EndOfWho(const Client &client, const Channel &channel) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send352Whoreply(const Client &client, const Client &clientInChannel, 
+void send352Whoreply(const Client &client, const Client &clientInChannel,
                      const Channel &channel) {
   std::string message = _352_RPL_WHOREPLY(client.getNickname(),
                                           channel.getNameWithPrefix(),
@@ -96,7 +96,7 @@ void send321Liststart(int fd, const std::string &nick) {
 }
 
 void send322List(int fd, const std::string &nick, const Channel &channel) {
-  std::string numUsers = toString(channel.getClientsInChannel().size());
+  std::string numUsers = toString(channel.getChannelClients().size());
   std::string message = _322_RPL_LIST(nick, channel.getNameWithPrefix(),
                                       numUsers, channel.getTopic().topic);
   if (send(fd, message.c_str(), message.size(), 0) == -1)
@@ -176,8 +176,7 @@ void send341Inviting(const Client &client, const std::string &invitedNick,
 }
 
 void send353Namreply(const Client &client, const Channel &channel) {
-  std::string chanNameWithSymbol =
-      channel.getType() + std::string(" ") + channel.getNameWithPrefix();
+  std::string chanNameWithSymbol = channel.getNameWithPrefix();
 
   std::string nicknames = "";
   clientPMap chanOps = channel.getChannelOperators();
@@ -186,7 +185,7 @@ void send353Namreply(const Client &client, const Channel &channel) {
   for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
     nicknames += CHAN_OP + it->second->getNickname() + " ";
   }
-  clientPMap chanClients = channel.getClientsInChannel();
+  clientPMap chanClients = channel.getChannelClients();
   itBegin = chanClients.begin();
   itEnd = chanClients.end();
   for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
@@ -422,11 +421,11 @@ void testAllNumericReplies(const std::string &serverStartTime,
   Channel testChannel("testChannel");
   Client testOp(4, "127.0.0.1", "localhost");
   testOp.setNickname("testOp");
-  testChannel.acceptClientInTheChannel(&testClient);
+  testChannel.addClientToChannelMap(&testClient);
   testChannel.addOperator(&testOp);
   Client testNonOPClient(42, "127.0.0.1", "localhost");
   testNonOPClient.setNickname("testNonOPClient");
-  testChannel.acceptClientInTheChannel(&testNonOPClient);
+  testChannel.addClientToChannelMap(&testNonOPClient);
   testChannel.activateLimitMode(42, testClient);
   testChannel.setTopic("This is the topic of a test channel", "Author");
   Channel invitedChannel("testInvited");

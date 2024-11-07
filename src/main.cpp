@@ -1,18 +1,22 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/30 23:09:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:44:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <iostream>
+#include <string>
 
 #include "../includes/Config.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/tests.hpp"
 
 void checkArgs(int port, const std::string& password) {
   if (port <= 1080 || port > 65535) {
@@ -47,7 +51,6 @@ int main(int ac, char** argv) {
     ser.closeServer();
     exit(EXIT_FAILURE);
   }
-
   ser.closeServer();
   std::cout << "The Server is closed" << std::endl;
   delete gConfig;

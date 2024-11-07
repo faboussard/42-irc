@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 15:04:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:19:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ extern Config *gConfig;
 // : List of users in the channel.
 
 #define _366_RPL_ENDOFNAMES(nick, chanName) \
-  (FROM_SERVER + "366 " + nick + " " + chanName + " :End of /NAMES list\r\n")
+  (FROM_SERVER + "366 " + nick + " " + chanName + " :End of \\NAMES list\r\n")
 
 /*------ Error messages ------------------------------------------------------*/
 
@@ -320,9 +320,9 @@ void send525InvalidKey(const Client &client, const Channel &channel);
 
 /*--------- Test -------------------------------------------------------------*/
 
-void testAllNumericReplies(const std::string &serverStartTime,
-                           const Client &client, const std::string &command,
-                           const std::string &targetNick);
+// void testAllNumericReplies(const std::string &serverStartTime,
+//                            const Client &client, const std::string &command,
+//                            const std::string &targetNick);
 
 /*--------- Just for fun -----------------------------------------------------*/
 

@@ -1,17 +1,19 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 13:33:57 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:41:59 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "../includes/Server.hpp"
+
+#include <iostream>
+#include <string>
 
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
@@ -23,15 +25,17 @@ bool Server::_signal = false;
 /*       Constructors                                                         */
 /*============================================================================*/
 
-Server::Server(int port, std::string password)
-: _socketFd(-1), _port(port), _password(password) { _signal = false; }
+Server::Server(int port, const std::string &password)
+    : _socketFd(-1), _port(port), _password(password) {
+  _signal = false;
+}
 
 /*============================================================================*/
 /*       Getters                                                              */
 /*============================================================================*/
 
-const Client &Server::getClientByFd(int fd) const {
-  clientsMap::const_iterator it = _clients.find(fd);
+Client &Server::getClientByFd(int fd) {
+  clientsMap::iterator it = _clients.find(fd);
   if (it == _clients.end()) {
     std::cerr << "Client not found with the given file descriptor" << std::endl;
     throw std::runtime_error("Client not found");
@@ -39,8 +43,12 @@ const Client &Server::getClientByFd(int fd) const {
   return it->second;
 }
 
-Channel &Server::getChannelByName(const std::string &name) {
-  channelsMap::iterator it = _channels.find(name);
+const clientsMap &Server::getClients() const { return _clients; }
+
+const channelsMap &Server::getChannels() const { return _channels; }
+
+const Channel &Server::getChannelByName(const std::string &name) const {
+  channelsMap::const_iterator it = _channels.find(name);
   if (it == _channels.end()) {
     std::cerr << "Channel not found with the given name" << std::endl;
     throw std::runtime_error("Channel not found");
@@ -62,7 +70,7 @@ void Server::runServer(void) {
   createSocket();
   std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   fetchStartTime();
-  monitorConnections();
+  acceptAndChat();
 }
 
 void Server::createSocket(void) {
@@ -104,7 +112,7 @@ void Server::fetchStartTime(void) {
   _startTime = startTime;
 }
 
-void Server::monitorConnections(void) {
+void Server::acceptAndChat(void) {
   struct pollfd newPoll;
   newPoll.fd = _socketFd;
   newPoll.events = POLLIN;
@@ -155,6 +163,7 @@ void Server::closeServer(void) {
   }
   _pollFds.clear();
   shrink_to_fit(&_pollFds);
+  _channels.clear();
 }
 
 /*============================================================================*/
@@ -163,8 +172,8 @@ void Server::closeServer(void) {
 
 void Server::acceptNewClient(void) {
   struct sockaddr_in cliadd;
-  socklen_t          len = sizeof(cliadd);
-  struct pollfd      newPoll;
+  socklen_t len = sizeof(cliadd);
+  struct pollfd newPoll;
 
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
@@ -182,19 +191,19 @@ void Server::acceptNewClient(void) {
   newPoll.revents = 0;
 
   std::string clientIp = inet_ntoa(cliadd.sin_addr);
-  struct hostent* host = gethostbyaddr(&cliadd.sin_addr, \
-  sizeof(cliadd.sin_addr), AF_INET);
+  struct hostent *host =
+      gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
   std::string hostName;
   if (host->h_name == NULL || sizeof(host->h_name) == 0 ||
-      static_cast<size_t> (host->h_length) > gConfig->getLimit("HOSTLEN"))
+      static_cast<size_t>(host->h_length) > gConfig->getLimit("HOSTLEN"))
     hostName = clientIp;
   else
     hostName = host->h_name;
   Client cli(newClientFd, clientIp, hostName);
-  #ifdef DEBUG
-    std::cout << "New client IP " << cli.getIp() << std::endl;
-    std::cout << "New client host name " << cli.getHostName() << std::endl;
-  #endif
+#ifdef DEBUG
+  std::cout << "New client IP " << cli.getIp() << std::endl;
+  std::cout << "New client host name " << cli.getHostName() << std::endl;
+#endif
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 }
@@ -242,14 +251,6 @@ void Server::sendToAllClients(const std::string &message) {
   }
 }
 
-// void Server::joinChannel(std::string &channelName, int fd) {
-//     channelName = channelName.substr(1);
-
-//     if (_channels.find(channelName) == _channels.end()) {
-//         Channel newChannel(channelName);
-//         _channels[channelName] = newChannel;
-//     }
-
 //     // Récupérer l'instance du client avant de l'accepter dans le canal
 //     const Client &client = getClientByFd(fd);
 //     _channels[channelName].acceptClientInTheChannel(client);
@@ -272,7 +273,7 @@ void Server::sendToAllClients(const std::string &message) {
 //     = " + channelName + " :";
 
 //     const clientsMap &clientsInChannel =
-//     _channels[channelName].getClientsInChannel(); for
+//     _channels[channelName].getChannelClients(); for
 //     (clientsMap::const_iterator it = clientsInChannel.begin(); it !=
 //     clientsInChannel.end(); ++it) {
 //         nameReply += getClientByFd(it->first).getNickName() + " ";

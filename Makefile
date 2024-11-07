@@ -1,39 +1,41 @@
-#  Copyright 2024 <mbernard>************************************************** #
+#  Copyright 2024 <faboussa>************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+         #
+#    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/05 10:49:11 by mbernard         ###   ########.fr        #
+#    Updated: 2024/11/07 14:06:09 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 C = c++
 NAME = ircserv
-CFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98
+CFLAGS = -Wall -Wextra -Werror -Wuninitialized -MMD -MP -std=c++98
 MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-vpath %.cpp src src/commands
+vpath %.cpp src src/commands src/unitTests
 
-HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils
+HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils tests
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
-       list pass nick user quit invite mode ping topic who
+       join pass nick user quit invite mode ping topic who list \
+		# joinTest generalTest \ 
 
-# ---------------------------------- Repertories ----------------------------- #
+# ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
 OBJS_DIR = .objs/
 OBJS = $(addprefix ${OBJS_DIR}, $(addsuffix .o, ${SRCS}))
-HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADERS_LIST}))
+HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADER_LIST}))
 INCLUDES = -I ${HEADERS_DIR}
 DEPS = ${OBJS:.o=.d}
+HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADERS_LIST}))
 
 # ---------------------------------- Compilation ----------------------------- #
-all: ${NAME} ${OBJS} | ${OBJS_DIR} Makefile
+all: create_dirs ${NAME}
 
 ${NAME}: ${OBJS} Makefile
 	${C} ${CFLAGS} ${OBJS} ${INCLUDES} -o $@
@@ -41,16 +43,27 @@ ${NAME}: ${OBJS} Makefile
 ${OBJS_DIR}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR}
 	${C} ${CFLAGS} ${INCLUDES} -c $< -o $@
 
+create_dirs:
+	@$(foreach dir, $(sort $(dir $(OBJS))), ${MKDIR} ${dir};)
+
 -include ${DEPS}
+
 
 # ---------------------------------- Create Repertory ------------------------ #
 ${OBJS_DIR}:
 			${MKDIR} ${OBJS_DIR}
 
 # ---------------------------------- Debug ----------------------------------- #
+debug: CFLAGS := $(filter-out -Werror, $(CFLAGS))
+debug: C = g++
+debug: CFLAGS += -DDEBUG -g3
+debug: clean create_dirs ${NAME}
 
-debug: CFLAGS += -DDEBUG
-debug: fclean $(OBJS_DIR) $(NAME)
+# ---------------------------------- Test ----------------------------------- #
+test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
+test: CFLAGS += -DTEST
+test: clean create_dirs ${NAME}
+
 
 # ---------------------------------- Tests ----------------------------------- #
 
@@ -67,8 +80,7 @@ clean:
 fclean: clean
 	${RM} ${NAME}
 
-re:    fclean
-	${MAKE} ${NAME}
+re: fclean all
 
 # ---------------------------------- Phony ----------------------------------- #
 .PHONY: all clean fclean re
