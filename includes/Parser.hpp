@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 12:54:05 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 12:26:51 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Parser {
  public:
   static Command                  choseCommand(const std::string& command);
   static std::vector<std::string> splitCommand(const std::string& command);
-  static commandVectorPairs       parseCommandIntoPairs(std::string command);
+  static commandVectorPairs       parseCommandIntoPairs(const std::string &command);
   //  static std::string parseCommand(const std::vector<std::string> command);
   //  static std::string returnMessage(const std::string& command);
   /*=========================================================================*/
