@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 13:02:32 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/06 14:51:46 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,33 +132,103 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 /*       Clients management                                                   */
 /*============================================================================*/
 
+// void Server::handleClientMessage(int fd) {
+//   static std::map<int, std::string> messageBuffer;
+//   char buffer[1024] = {0};
+//   std::memset(buffer, 0, sizeof(buffer));
+//   int valread = recv(fd, buffer, sizeof(buffer), 0);
+
+//   switch (valread) {
+//     case -1:
+//       std::cerr << RED "Error while receiving message" RESET << std::endl;
+//       // fallthrough
+//     case 0:
+//       std::cout << "Client " << fd << " disconnected" << std::endl;
+//       clearClient(fd);
+//       return;
+//   }
+//   messageBuffer[fd] += std::string(buffer, valread);
+//   if (messageBuffer[fd].find("\n") == std::string::npos) return;
+//   // std::string message = messageBuffer[fd];
+//   std::string message(buffer, valread);
+//   std::cout << "Received message from client " << fd << ": " << message
+//             << std::endl;
+
+//   Client &client = _clients[fd];
+//   if (client.isAccepted() == false) {
+//     handleInitialMessage(&client, message);
+//   } else {
+//     // sendToAllClients(message);
+//     handleOtherMessage(client, message);
+//   }
+// }
+// void Server::handleClientMessage(int fd) {
+//   static std::map<int, std::string> messageAccumulators;
+//   char buffer[1024] = {0};
+//   int valread = recv(fd, buffer, sizeof(buffer), 0);
+
+//   switch (valread) {
+//     case -1:
+//       std::cerr << RED "Error while receiving message" RESET << std::endl;
+//       return;
+//     case 0:
+//       std::cout << "Client " << fd << " disconnected" << std::endl;
+//       clearClient(fd);
+//       return;
+//   }
+
+//   // Accumuler les données reçues
+//   messageAccumulators[fd] += std::string(buffer, valread);
+
+//   // Vérifier si le message est complet (par exemple, contient une nouvelle ligne)
+//   size_t pos;
+//   while ((pos = messageAccumulators[fd].find('\n')) != std::string::npos) {
+//     std::string message = messageAccumulators[fd].substr(0, pos);
+//     messageAccumulators[fd].erase(0, pos + 1);
+
+//     std::cout << "Received message from client " << fd << ": " << message << std::endl;
+
+//     Client &client = _clients[fd];
+//     if (client.isAccepted() == false) {
+//       handleInitialMessage(&client, message);
+//     } else {
+//       handleOtherMessage(client, message);
+//     }
+//   }
+// }
 void Server::handleClientMessage(int fd) {
-  char buffer[1024] = {0};
-  std::memset(buffer, 0, sizeof(buffer));
-  int valread = recv(fd, buffer, sizeof(buffer), 0);
+    static std::map<int, std::string> messageBuffer;
+    char buffer[1024] = {0};
+    int valread = recv(fd, buffer, sizeof(buffer), 0);
 
-  switch (valread) {
-    case -1:
-      std::cerr << RED "Error while receiving message" RESET << std::endl;
-      // fallthrough
-    case 0:
-      std::cout << "Client " << fd << " disconnected" << std::endl;
-      clearClient(fd);
-      return;
-  }
-  std::string message(buffer, valread);
-  std::cout << "Received message from client " << fd << ": " << message
-            << std::endl;
+    if (valread == -1) {
+        std::cerr << RED "Error while receiving message" RESET << std::endl;
+        return;
+    } else if (valread == 0) {
+        std::cout << "Client " << fd << " disconnected" << std::endl;
+        clearClient(fd);
+        return;
+    }
 
-  Client &client = _clients[fd];
-  if (client.isAccepted() == false) {
-    handleInitialMessage(&client, message);
-  } else {
-    // sendToAllClients(message);
-    handleOtherMessage(client, message);
-  }
+    // Accumuler les données reçues
+    messageBuffer[fd] += std::string(buffer, valread);
+
+    // Vérifier si le message est complet (par exemple, contient une nouvelle ligne)
+    size_t pos;
+    while ((pos = messageBuffer[fd].find('\n')) != std::string::npos) {
+        std::string message = messageBuffer[fd].substr(0, pos);
+        messageBuffer[fd].erase(0, pos + 1);
+
+        std::cout << "Received message from client " << fd << ": " << message << std::endl;
+
+        Client &client = _clients[fd];
+        if (client.isAccepted() == false) {
+            handleInitialMessage(&client, message);
+        } else {
+            handleOtherMessage(client, message);
+        }
+    }
 }
-
 /*============================================================================*/
 /*       Commands management                                                  */
 /*============================================================================*/
