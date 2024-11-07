@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 12:38:45 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:57:35 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static std::string trimBeginWithChar(const std::string &str, const char c) {
 
   while (it != itEnd && (*it == c || std::isspace(*it)))
     ++it;
-  
+
   return (std::string(it, itEnd));
 }
 

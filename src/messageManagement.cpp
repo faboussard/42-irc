@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 16:37:57 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:55:55 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,13 +109,13 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 
 #ifdef DEBUG
 static void clientNameUserCommandMessage(
-    const Client *client, const std::string &command,
-    const std::string &argument, const int *fd) {
+    const Client *client, const std::string *command,
+    const std::string *argument, const int *fd) {
 
   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
   std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
-  std::cout << MAGENTA "Message: " << argument << RESET << std::endl;
+  std::cout << BRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
+  std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
 }
 #endif
 
