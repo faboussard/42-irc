@@ -6,13 +6,13 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/06 16:30:13 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/07 14:06:09 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 C = c++
 NAME = ircserv
-CFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98
+CFLAGS = -Wall -Wextra -Werror -Wuninitialized -MMD -MP -std=c++98
 MKDIR = mkdir -p
 RMDIR = rm -rf
 

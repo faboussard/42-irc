@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 19:39:29 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 13:55:04 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
 }
 
 /*============================================================================*/
-/*                                                                            */
+/*                           add/remove client                                                 */
 /*============================================================================*/
 
 void Channel::removeClientFromTheChannel(int fd) {
@@ -111,12 +111,6 @@ void Channel::removeClientFromTheChannel(int fd) {
 void Channel::addClientToChannelMap(Client *client) {
   _channelClients[client->getFd()] = client;
   std::cout << "Client " << client->getFd() << " added to channel " << _name
-            << std::endl;
-}
-
-void Channel::addOperatorsToChannelMap(Client *client) {
-  _channelClients[client->getFd()] = client;
-  std::cout << "Operator " << client->getFd() << " added to channel " << _name
             << std::endl;
 }
 

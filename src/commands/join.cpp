@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 09:23:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:16:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void Server::joinChannel(const std::string &param, int fd) {
     return;
   }
 
-  Client client = getClientByFd(fd);
+  Client &client = _clients.at(fd);
   std::string::size_type spacePos = param.find(" ");
   std::string channelsPart = param.substr(0, spacePos);
   std::string keysPart =
@@ -92,7 +92,6 @@ bool Server::isLeaveAllChannelsRequest(const std::string &param) {
 }
 
 bool Server::isChannelValid(const std::string &param, const Client &client) {
-  std::cout << " param Length: " << param.length() << std::endl;
   if (!isValidChannelNameLength(param) || !isValidChannelPrefix(param)) {
     send476BadChanMask(client, param);
     return false;
@@ -108,7 +107,7 @@ void Server::createAndRegisterChannel(Client *client,
                                       const std::string &channelName) {
   addChanneltoServerIfNoExist(channelName);
   _channels[channelName].addClientToChannelMap(client);
-  _channels[channelName].addOperatorsToChannelMap(client);
+  _channels[channelName].addOperator(client);
   client->incrementChannelsCount();
 }
 
@@ -117,8 +116,6 @@ void Server::handleJoinRequest(int fd, const Client &client,
   std::string nick = client.getNickname();
   sendJoinMessageToClient(fd, nick, channelName, client);
   send353Namreply(client, _channels[channelName]);
-  std::cout << " _channels[channelName] " << _channels[channelName].getName()
-            << std::endl;
   send366Endofnames(client, _channels[channelName]);
   broadcastJoinMessage(fd, nick, channelName);
 }

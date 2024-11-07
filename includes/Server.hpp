@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 17:37:07 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:01:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,6 @@ class Server {
   const Channel &getChannelByName(const std::string &name) const;
   const channelsMap &getChannels() const;
   const clientsMap &getClients() const;
-
-  /* Setters */
-  void setStartTime(void);
 
   /* Clients Management */
   void acceptNewClient(void);
