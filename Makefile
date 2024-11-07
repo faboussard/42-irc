@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/07 15:33:32 by mbernard         ###   ########.fr        #
+#    Updated: 2024/11/07 16:08:57 by mbernard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,6 +63,7 @@ debug: clean create_dirs ${NAME}
 fsan:
 	$(RMDIR) $(DIR_OBJS)
 	$(MAKE) CFLAGS="-g3 -fsanitize=address"
+	$(MAKE) clean
 
 # ---------------------------------- Test ------------------------------------ #
 test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
