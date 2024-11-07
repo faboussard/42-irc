@@ -1,17 +1,20 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 12:37:49 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:02:06 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/utils.hpp"
 #include "../includes/Server.hpp"
+
+#include <string>
+#include <vector>
 
 void shrink_to_fit(std::vector<struct pollfd> *vec) {
   std::vector<struct pollfd>(*vec).swap(*vec);
@@ -38,10 +41,17 @@ std::string trimWhiteSpaces(const std::string &str) {
   std::string::const_iterator itEnd = str.end();
   std::string::const_iterator it = itBegin;
 
-  while (it != itEnd && std::isspace(*it))
-    ++it;
+  while (it != itEnd && std::isspace(*it)) ++it;
   std::string::const_reverse_iterator rit = str.rbegin();
   while (rit.base() != itBegin && std::isspace(*rit))
-     ++rit;
+    ++rit;
   return (std::string(it, rit.base()));
+}
+
+void splitByCommaAndTrim(const std::string &argument, stringVector *args) {
+  std::stringstream ss(argument);
+  std::string token;
+  while (std::getline(ss, token, ',')) {
+    args->push_back(trimWhiteSpaces(token));
+  }
 }

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 12:26:10 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:05:46 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,14 @@ static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
 
 // To delete later --------------------------------------------------------->//
 #ifdef DEBUG
-static void clientIsAcceptedMessageToDelete(const Client &client,
+static void clientIsAcceptedMessageToDelete(const Client *client,
                                             const std::string &command) {
   std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
-            << std::endl;
-  std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
-  std::cout << "UserName: " << client.getUserName() << std::endl;
+             << std::endl;
+  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
+  std::cout << "UserName: " << client->getUserName() << std::endl;
   std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
-}
+ }
 #endif
 // <-------------------------------------------------------------------------//
 
@@ -66,7 +66,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     }
     if (client->isAccepted()) {
 #ifdef DEBUG
-      clientIsAcceptedMessageToDelete(client, command);
+       clientIsAcceptedMessageToDelete(client, command);
 #endif
       handleCommand(command, argument, client->getFd());
     } else if (command == "CAP" && client->isCapSend() == false &&
@@ -96,9 +96,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
         sendConnectionMessage(*client);
-      #ifdef TESTNUMERICR
-        testAllNumericReplies(_startTime, *client, "COMMAND", "puppy");
-      #endif
+#ifdef DEBUG
+//         testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
+#endif
       }
     } else if (client->isAccepted() == false) {
       if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);
@@ -173,11 +173,11 @@ void Server::handleClientMessage(int fd) {
 /*       Commands management                                                  */
 /*============================================================================*/
 
-void Server::handleCommand(const std::string &command,
-                           const std::string &argument, int fd) {
+void Server::handleCommand(const std::string &command, std::string &argument,
+                           int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
-    // joinChannel(argument, fd);
+     joinChannel(argument, fd);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
