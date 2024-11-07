@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 16:25:43 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 18:21:03 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include <string>
 
 #include "../includes/Channel.hpp"
+
+class Channel;
 
 typedef std::map<int, Channel*> channelPMap;
 

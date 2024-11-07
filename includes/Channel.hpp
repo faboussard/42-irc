@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 16:16:23 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 18:21:21 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
+
+class Client;
 
 typedef std::map<int, Client *> clientPMap;
 

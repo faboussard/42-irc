@@ -19,43 +19,38 @@ void Server::quitChannel(int fd) {
   channelPMap::iterator itEnd = mutableChannels.end();
 
   for (channelPMap::iterator it = itBegin; it != itEnd; ++it) {
+    // Accéder à l'objet Channel à partir de la map (c'est un pointeur)
     Channel *channel = it->second;
+
+    // Retirer le client du canal
     channel->removeClientFromTheChannel(fd);
+
+    // Décrémenter le nombre de canaux du client
     client->decrementChannelsCount();
-    sendPartMessageToClient(fd, client->getNickname(), const_cast<channelPMap&>(getChannelByName(it->second)));
-    broadcastPartMessage(fd, client->getNickname(), getChannelByName(it->second));
+
+    // Envoyer un message de départ au client et aux autres membres du canal
+      sendPartMessageToClient(fd, client->getNickname(), it->second->getName());
+
+    broadcastPartMessage(fd, client->getNickname(), it->second->getName());
   }
 }
 
-void Server::sendJoinMessageToClient(int fd, const std::string &nick,
-                                     const std::string &channelName,
-                                     const Client &client) {
-  std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
-  if (send(fd, joinMessage.c_str(), joinMessage.length(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
-  if (_channels[channelName].getTopic().topic.empty())
-    send331Notopic(client, _channels[channelName]);
-  else
-    send332Topic(client, _channels[channelName]);
-}
 
-
-  void Server::broadcastPartMessage(int fd, const std::string &nick,
-                                    const std::string &channelName) {
+void Server::broadcastPartMessage(int fd, const std::string &nick, const std::string &channelName) {
     std::string partMessage = ":" + nick + " PART :#" + channelName + "\r\n";
-    std::map<int, Client *> clientsInChannel = getChannelByName(channelName).getChannelClients();
-    std::map<int, Client *>::const_iterator it = clientsInChannel.begin();
-    std::map<int, Client *>::const_iterator ite = clientsInChannel.end();
-
-    for (; it != ite; ++it) {
-      if (it->first != fd) {
-        if (send(it->first, partMessage.c_str(), partMessage.length(), 0) ==
-            -1) {
-          throw std::runtime_error("Runtime error: send failed");
+    
+    // On récupère une référence constante à la map des clients dans le canal
+    clientPMap clientsInChannel = getChannelByName(channelName).getChannelClients();
+    
+    // Utilisation d'un const_iterator pour itérer sur une map constante
+    for (clientPMap::iterator it = clientsInChannel.begin(); it != clientsInChannel.end(); ++it) {
+        if (it->first != fd) {  // Ne pas envoyer au client qui quitte
+            if (send(it->first, partMessage.c_str(), partMessage.length(), 0) == -1) {
+                throw std::runtime_error("Runtime error: send failed");
+            }
         }
-      }
     }
-  }
+}
 
   void Server::sendPartMessageToClient(int fd, const std::string &nick, const std::string &channelName) {
   std::string partMessage = ":" + nick + " PART :#" + channelName + "\r\n";

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 16:56:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 18:16:48 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 #include "../includes/colors.hpp"
 #include "../includes/numericReplies.hpp"
 #include "../includes/utils.hpp"
-
 
 void Server::joinChannel(const std::string &param, int fd) {
   if (isLeaveAllChannelsRequest(param)) {
@@ -142,13 +141,13 @@ void Server::sendJoinMessageToClient(int fd, const std::string &nick,
 void Server::broadcastJoinMessage(int fd, const std::string &nick,
                                   const std::string &channelName) {
   std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
-  const std::map<int, Client *> &clientsInChannel =
-      _channels[channelName].getChannelClients();
-  std::map<int, Client *>::const_iterator it = clientsInChannel.begin();
-  std::map<int, Client *>::const_iterator ite = clientsInChannel.end();
 
-  for (; it != ite; ++it) {
-    if (it->first != fd) {
+  clientPMap clientsInChannel =
+      getChannelByName(channelName).getChannelClients();
+
+  for (clientPMap::iterator it = clientsInChannel.begin();
+       it != clientsInChannel.end(); ++it) {
+    if (it->first != fd) {  // Ne pas envoyer au client qui quitte
       if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) == -1) {
         throw std::runtime_error("Runtime error: send failed");
       }
