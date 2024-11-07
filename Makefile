@@ -22,7 +22,7 @@ vpath %.cpp src src/commands
 HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
-       list pass nick user quit invite mode ping topic
+       list pass nick user quit invite mode ping topic who
 
 # ---------------------------------- Repertories ----------------------------- #
 HEADERS_DIR = includes/

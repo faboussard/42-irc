@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/06 12:38:42 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 12:34:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,21 @@ void send221Umodeis(const Client &client) {
   std::string message = _221_RPL_UMODEIS(nick, uModes);
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send315Endofwho(const Client &client, const Channel &channel) {
+  std::string message = _315_RPL_ENDOFWHO(client.getNickname(),
+                                          channel.getNameWithPrefix());
+  if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send352Whoreply(const Client &client, const Channel &channel) {
+  std::string message = _352_RPL_WHOREPLY(client.getNickname(),
+                                          channel.getNameWithPrefix(),
+                                          client.getUserName(),
+                                          client.getHostName(),
+                                          client.getRealName());
 }
 
 /*============================================================================*/
@@ -433,6 +448,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send005Isupport(fd, nick);
   /* User */
   send221Umodeis(client);
+  send352Whoreply(client, testChannel);
+  send315Endofwho(client, testChannel);
   /* Channel */
   send321Liststart(fd, nick);
   send322List(fd, nick, testChannel);

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 13:42:53 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 11:35:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,8 +176,10 @@ void Server::handleCommand(const std::string &command,
     // Changer le sujet du canal
   } else if (command == "MODE") {
     // Changer le sujet du canal
+  } else if (command == "WHO") {
+    who(_clients.at(fd), argument);
   } else if (command == "LIST") {
-    list(_clients[fd], argument);
+    list(_clients.at(fd), argument);
   } else if (command == "NOTICE") {
     // Notice}
   } else if (command == "NICK") {
@@ -189,7 +191,7 @@ void Server::handleCommand(const std::string &command,
   } else if (command == "QUIT") {
     quit(argument, &_clients[fd], &_clients);
   } else if (command == "PING") {
-    ping(&_clients[fd], argument);
+    ping(&_clients.at(fd), argument);
   } else if (command == "PASS" || command == "USER") {
     if (argument.empty())
       send461NeedMoreParams(_clients[fd], command);
