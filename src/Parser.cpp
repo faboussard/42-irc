@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 10:58:53 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:46:52 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ Command Parser::choseCommand(const std::string& command) {
     return (USER);
   } else if (command == "PASS") {
     return (PASS);
+  } else if (command == "WHO") {
+    return (WHO);
   }
   return (UNKNOWN);
 }

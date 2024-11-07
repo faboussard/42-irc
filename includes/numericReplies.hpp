@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 12:20:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:23:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,10 @@ extern Config *gConfig;
   (FROM_SERVER + "221 " + nick + " " + modes + "\r\n")
 // Informs client's currently-set user modes. (Reply to MODE <nick> command)
 
-#define _352_RPL_WHOREPLY(nick, chanName, userName, hostName, realName)        \
-  (FROM_SERVER + "352 " + nick + " " + chanName + " " + userName + " " +       \
-  hostName + " " + SRV_NAME +  " " + nick + " " + HERE + " :" + HOPCOUNT + " " \
-  + realName + "\r\n")
+#define _352_RPL_WHOREPLY(targetNick, chanName, userN, hostN, nick, realN)     \
+  (FROM_SERVER + "352 " + targetNick + " " + chanName + " " + userN + " " +    \
+  hostN + " " + SRV_NAME +  " " + nick + " " + HERE + " :" + HOPCOUNT + " " +  \
+  realN + "\r\n")
 
 #define _315_RPL_ENDOFWHO(nick, chanName) \
   (FROM_SERVER + "315 " + nick + " " + chanName + " :End of /WHO list\r\n")
@@ -261,7 +261,8 @@ void sendWelcome(int fd, std::string const &nick);
 
 void send221Umodeis(const Client &client);
 void send315Endofwho(const Client &client, const Channel &channel);
-void send352Whoreply(const Client &client, const Channel &channel);
+void send352Whoreply(const Client &client, const Client &clientInChannel, \
+                     const Channel &channel);
 
 /*------ Channel related replies ---------------------------------------------*/
 

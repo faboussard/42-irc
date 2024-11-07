@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 11:35:03 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:45:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ enum Command {
   CAP,
   USER,
   PASS,
+  WHO,
   UNKNOWN
 };
 
@@ -132,6 +133,7 @@ class Server {
 
   /*-------- WHO --------*/
   void who(const Client &client, const std::string &arg);
+  void sendClientsListInChannel(const Client &client, const Channel &channel);
 
   /*-------- LIST --------*/
   void list(const Client &client, const std::string &argument);
