@@ -19,10 +19,13 @@ void Server::quitChannel(int fd) {
   channelPMap::iterator itEnd = mutableChannels.end();
 
   for (channelPMap::iterator it = itBegin; it != itEnd; ++it) {
+
+    // To delete later --------------------------------------------------------->//
     #ifdef DEBUG
       std::cout << "Client " << client->getNickname() << " is leaving channel " << it->second->getName() << std::endl;
     #endif
-    // Accéder à l'objet Channel à partir de la map (c'est un pointeur)
+// <-------------------------------------------------------------------------//
+
     Channel *channel = it->second;
 
     sendPartMessageToClient(fd, client->getNickname(), it->second->getName());

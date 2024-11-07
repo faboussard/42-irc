@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 18:30:12 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 19:25:22 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,10 @@ void Server::joinChannel(const std::string &param, int fd) {
     if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
       createAndRegisterChannel(&client, channelNameWithoutPrefix);
     }
+
+      const clientPMap &clientsInChannel = _channels[channelName].getChannelClients();
+
+  if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     client.incrementChannelsCount();
     _channels[channelName].addClientToChannelMap(&client);
     std::string key = (i < keys.size()) ? keys[i] : "";
@@ -70,6 +74,7 @@ void Server::joinChannel(const std::string &param, int fd) {
     }
 
     handleJoinRequest(fd, client, channelNameWithoutPrefix);
+  }
   }
 }
 
@@ -108,15 +113,15 @@ std::cout << "Creating and registering channel " << channelName << std::endl;
   _channels[channelName].addOperator(client);
 
 }
-
-void Server::handleJoinRequest(int fd, const Client &client,
-                               const std::string &channelName) {
+void Server::handleJoinRequest(int fd, const Client &client, const std::string &channelName) {
   std::string nick = client.getNickname();
-  sendJoinMessageToClient(fd, nick, channelName, client);
-  send353Namreply(client, _channels[channelName]);
-  send366Endofnames(client, _channels[channelName]);
-  broadcastJoinMessage(fd, nick, channelName);
-}
+  
+
+    sendJoinMessageToClient(fd, nick, channelName, client);
+    send353Namreply(client, _channels[channelName]);
+    send366Endofnames(client, _channels[channelName]);
+    broadcastJoinMessage(fd, nick, channelName);
+  }
 
 void Server::addChanneltoServerIfNoExist(const std::string &channelName) {
   if (_channels.find(channelName) == _channels.end()) {
