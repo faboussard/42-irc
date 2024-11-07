@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 19:39:55 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 08:24:38 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _passwordGiven(false),
       _accepted(false),
       _CapSend(false),
+      _channelsCount(0),
       _nbPassAttempts(0) {
   _uModes.invisible = false;
   _uModes.operatorOfServer = false;
