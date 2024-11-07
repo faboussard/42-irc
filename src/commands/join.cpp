@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 14:16:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:56:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,12 @@
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/numericReplies.hpp"
-#include "../includes/serverConfig.hpp"
 #include "../includes/utils.hpp"
 
+
 void Server::joinChannel(const std::string &param, int fd) {
-  // Check if the user is attempting to leave all channels (using "0" as param)
   if (isLeaveAllChannelsRequest(param)) {
-    // partAllChannels(fd); // Leave all channels function
+    quitChannel(fd);
     return;
   }
 
@@ -106,8 +105,9 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
 void Server::createAndRegisterChannel(Client *client,
                                       const std::string &channelName) {
   addChanneltoServerIfNoExist(channelName);
-  _channels[channelName].addClientToChannelMap(client);
   _channels[channelName].addOperator(client);
+
+  _channels[channelName].addClientToChannelMap(client);
   client->incrementChannelsCount();
 }
 

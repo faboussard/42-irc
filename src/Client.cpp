@@ -1,21 +1,22 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 09:17:44 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:24:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Client.hpp"
 
 #include <cerrno>
 #include <cstring>
 
 #include "../includes/colors.hpp"
+#include "../includes/Client.hpp"
+
 
 /*============================================================================*/
 /*       Constructors                                                         */
@@ -35,7 +36,7 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _accepted(false),
       _CapSend(false),
       _nbPassAttempts(0),
-      _channelsCount(0) {
+      _channelsCount(0){
   _uModes.invisible = false;
   _uModes.operatorOfServer = false;
   _uModes.registered = false;
@@ -50,6 +51,8 @@ std::string const& Client::getNickname(void) const { return (_nickname); }
 std::string const& Client::getUserName(void) const { return (_userName); }
 
 int Client::getChannelsCount() const { return (_channelsCount); }
+
+const channelPMap &Client::getChannels() const { return _clientChannels; }
 
 int Client::getFd(void) const { return (_fd); }
 
@@ -165,4 +168,7 @@ std::string Client::shareMessage(void) {
 /*       Channel  handling                                                    */
 /*============================================================================*/
 
-void Client::incrementChannelsCount(void) { getChannelsCount(); }
+void Client::incrementChannelsCount(void) { _channelsCount++; }
+
+void Client::decrementChannelsCount(void) { _channelsCount--; }
+

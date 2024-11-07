@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 19:42:16 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:25:43 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,13 @@
 #include <sys/types.h>
 
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
+
+#include "../includes/Channel.hpp"
+
+typedef std::map<int, Channel*> channelPMap;
 
 typedef struct UserModes {
   bool invisible;
@@ -44,13 +49,17 @@ class Client {
   UserModes _uModes;
   uint8_t _nbPassAttempts;
   int _channelsCount;
+  channelPMap _clientChannels;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "",
                   const std::string& hostName = "");
-  // explicit Client(int fd = -1, const std::string& ip = "");
 
-  /* Getters */
+
+/*============================================================================*/
+/*       Getters                                                              */
+/*============================================================================*/
+
   int getFd(void) const;
   std::string getIp(void) const;
   const std::string& getHostName(void) const;
@@ -67,8 +76,12 @@ class Client {
   bool isCapSend(void) const;
   uint8_t getNbPassAttempts(void) const;
   int getChannelsCount() const;
+  const channelPMap &getChannels() const;
 
-  /* Setters */
+
+/*============================================================================*/
+/*       Setters                                                              */
+/*============================================================================*/
   void setFd(int fd);
   void setNickname(const std::string& nickname);
   void setUserName(const std::string& username);
@@ -76,6 +89,10 @@ class Client {
   void setIp(const std::string& ip);
   void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
+
+  /*============================================================================*/
+/*       Member functions                                                     */
+/*============================================================================*/
 
   void declareAccepted(void);
   void declarePasswordGiven(void);
@@ -90,6 +107,7 @@ class Client {
 
   /* Channels handling */
   void incrementChannelsCount();
+  void decrementChannelsCount();
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

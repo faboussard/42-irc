@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 13:55:04 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:03:37 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 #include "../includes/colors.hpp"
 #include "../includes/numericReplies.hpp"
-#include "../includes/serverConfig.hpp"
 #include "../includes/utils.hpp"
 
 /*============================================================================*/
@@ -27,7 +26,6 @@
 Channel::Channel(const std::string &name) : _name(name), _key(""), _limit(0) {
   time_t now = time(0);
   _creationTime = toString(now);
-
   _type = toString(REG_CHAN);
   _nameWithPrefix = _type + _name;
   _mode.inviteOnly = false;
@@ -92,7 +90,7 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
 }
 
 /*============================================================================*/
-/*                           add/remove client                                                 */
+/*         add/remove client                                                 */
 /*============================================================================*/
 
 void Channel::removeClientFromTheChannel(int fd) {
