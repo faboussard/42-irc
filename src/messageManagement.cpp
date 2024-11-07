@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 15:33:17 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:04:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,8 +173,8 @@ void Server::handleClientMessage(int fd) {
 /*       Commands management                                                  */
 /*============================================================================*/
 
-void Server::handleCommand(const std::string &command, std::string &argument,
-                           int fd) {
+void Server::handleCommand(const std::string &command, 
+                           const std::string &argument, int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
      joinChannel(argument, fd);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 15:48:57 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:01:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,10 +110,23 @@ class Server {
   static void signalHandler(int signal);
   void acceptAndChat(void);
 
-  /*--------- Commands --------------*/
-  /* Join */
+  /* Other methods */
+  void sendToAllClients(const std::string &message);
+  void handlePassword(int fd);
+
+  /* Clear and Close */
+  void closeServer(void);
+  void clearClient(int fd);
+  void closeClient(int fd);
+
+  /* Commands handling */
   void handleCommand(const std::string &command, const std::string &argument,
                      int fd);
+
+  /*-------- QUIT --------*/
+  void quit(const std::string &argument, Client *client, clientsMap *cltMap);
+
+  /*-------- JOIN --------*/
   void handleJoinRequest(int fd, const Client &client,
                          const std::string &channelName);
   bool isValidChannelPrefix(const std::string &param);
@@ -129,26 +142,6 @@ class Server {
                                const Client &client);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
-
-  /* Other methods */
-  void sendToAllClients(const std::string &message);
-  void handlePassword(int fd);
-
-  /* Clear and Close */
-  void closeServer(void);
-  void clearClient(int fd);
-  void closeClient(int fd);
-
-  /* Tests */
-  void addClient(int fd, const Client &client);
-  /* Commands handling */
-  void handleCommand(const std::string &command, const std::string &argument,
-                     int fd);
-
-  /*-------- QUIT --------*/
-  void quit(const std::string &argument, Client *client, clientsMap *cltMap);
-
-  /*-------- JOIN --------*/
 
   /*-------- KICK --------*/
 
@@ -174,6 +167,9 @@ class Server {
 
   /*-------- PING --------*/
   void ping(Client *client, const std::string &token);
+
+  /* Tests */
+  void addClient(int fd, const Client &client);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 15:50:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:55:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,6 @@ class Parser {
   static commandVectorPairs parseCommandIntoPairs(const std::string &command);
   //  static std::string parseCommand(const std::vector<std::string> command);
   //  static std::string returnMessage(const std::string& command);
-  /*=========================================================================*/
-  /*       Commands                                                          */
-  /*=========================================================================*/
   static bool verifyPassword(std::string arg, std::string psd, Client *client);
   static bool verifyNick(const std::string &nick,
                          Client *client, clientsMap *cltMap);

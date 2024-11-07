@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 15:31:01 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:03:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 
 #include "../includes/colors.hpp"
 #include "../includes/numericReplies.hpp"
-#include "../includes/serverConfig.hpp"
 #include "../includes/utils.hpp"
 
 /*============================================================================*/

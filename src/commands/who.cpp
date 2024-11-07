@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 15:37:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:43:30 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,6 @@
 // After JOIN #chanName --> Hexchat sends MODE #chanName & WHO #chanName
 
 void Server::who(const Client &client, const std::string &arg) {
-#ifdef DEBUG
-  Channel chan1("chan1");
-  Channel chan2("chan2");
-  _channels.insert(std::make_pair("chan1", chan1));
-  _channels.insert(std::make_pair("chan2", chan2));
-  Client client1(4, "127.0.0.1", "localhost");
-  client1.setNickname("client1");
-  Client client2(5, "127.0.0.1", "localhost");
-  client2.setNickname("client2");
-  Client client3(6, "127.0.0.1", "localhost");
-  client3.setNickname("client3");
-  _channels["chan1"].acceptClientInTheChannel(&client1);
-  _channels["chan1"].acceptClientInTheChannel(&client2);
-  _channels["chan1"].acceptClientInTheChannel(&client3);
-#endif
   if (arg.empty()) {
 #ifdef DEBUG
     std::cout << "Listing all clients for each Channel..." << std::endl;
@@ -67,6 +52,10 @@ void Server::sendClientsListInChannel(const Client &client,
                                       const Channel &channel) {
   const clientPMap &clientsInChannel = channel.getChannelClients();
   clientPMap::const_iterator itEnd = clientsInChannel.end();
+#ifdef DEBUG
+   std::cout << "Number of clients in " << channel.getName() << ": "
+			 << clientsInChannel.size() << std::endl;
+#endif
   for (clientPMap::const_iterator it = clientsInChannel.begin(); it != itEnd;
        ++it) {
 #ifdef DEBUG

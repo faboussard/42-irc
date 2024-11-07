@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 15:33:36 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:58:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ void send352Whoreply(const Client &client, const Client &clientInChannel,
                                           clientInChannel.getHostName(),
                                           clientInChannel.getNickname(),
                                           clientInChannel.getRealName());
+  if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
 }
 
 /*============================================================================*/
