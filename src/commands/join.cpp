@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 19:43:19 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 09:23:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ void Server::joinChannel(const std::string &param, int fd) {
   std::string keysPart =
       (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
   stringVector channels;
-  splitByComma(channelsPart, &channels);
+  splitByCommaAndTrim(channelsPart, &channels);
   stringVector keys;
-  splitByComma(keysPart, &keys);
+  splitByCommaAndTrim(keysPart, &keys);
 
   if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");

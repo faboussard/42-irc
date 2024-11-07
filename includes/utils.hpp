@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 08:46:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 09:23:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ bool isNumeric(const std::string &str);
 
 std::string trimWhiteSpaces(const std::string &str);
 
-void splitByComma(const std::string &argument, stringVector *channels);
+void splitByCommaAndTrim(const std::string &argument, stringVector *args);
 
 template <typename T>
 std::string toString(const T &value) {
