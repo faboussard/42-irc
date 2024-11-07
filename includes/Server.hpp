@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 17:59:01 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 18:30:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ enum Command {
   CAP,
   USER,
   PASS,
+  WHO,
   UNKNOWN
 };
 
@@ -109,9 +110,20 @@ class Server {
   static void signalHandler(int signal);
   void acceptAndChat(void);
 
-  /*--------- Commands --------------*/
-  /* Join */
-  void handleCommand(const std::string &command, std::string &argument, int fd);
+  /* Other methods */
+  void sendToAllClients(const std::string &message);
+  void handlePassword(int fd);
+
+  /* Clear and Close */
+  void closeServer(void);
+  void clearClient(int fd);
+  void closeClient(int fd);
+
+  /* Commands handling */
+  void handleCommand(const std::string &command, const std::string &argument,
+                     int fd);
+
+  /*-------- JOIN --------*/
   void handleJoinRequest(int fd, const Client &client,
                          const std::string &channelName);
   bool isValidChannelPrefix(const std::string &param);
@@ -127,21 +139,6 @@ class Server {
                                const Client &client);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
-
-  /* Other methods */
-  void sendToAllClients(const std::string &message);
-  void handlePassword(int fd);
-
-  /* Clear and Close */
-  void closeServer(void);
-  void clearClient(int fd);
-  void closeClient(int fd);
-
-  /* Tests */
-  void addClient(int fd, const Client &client);
-  /* Commands handling */
-  void handleCommand(const std::string &command, const std::string &argument,
-                     int fd);
 
   /*-------- PART --------*/
   
@@ -161,6 +158,10 @@ class Server {
 
   /*-------- MODE --------*/
 
+  /*-------- WHO --------*/
+  void who(const Client &client, const std::string &arg);
+  void sendClientsListInChannel(const Client &client, const Channel &channel);
+
   /*-------- LIST --------*/
   void list(const Client &client, const std::string &argument);
   void listAllChannels(int fd, const std::string &nick);
@@ -173,6 +174,9 @@ class Server {
 
   /*-------- PING --------*/
   void ping(Client *client, const std::string &token);
+
+  /* Tests */
+  void addClient(int fd, const Client &client);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

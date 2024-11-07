@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 16:24:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 18:30:34 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ std::string Client::shareMessage(void) {
 }
 
 /*============================================================================*/
-/*       Channel  handling                                                    */
+/*       Channel handling                                                     */
 /*============================================================================*/
 
 void Client::incrementChannelsCount(void) { _channelsCount++; }

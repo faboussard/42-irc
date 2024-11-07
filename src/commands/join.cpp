@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 18:16:48 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 18:30:12 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,11 @@ void Server::joinChannel(const std::string &param, int fd) {
     if (!isChannelValid(channelName, client)) {
       continue;
     }
-
     if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
       createAndRegisterChannel(&client, channelNameWithoutPrefix);
     }
-
+    client.incrementChannelsCount();
+    _channels[channelName].addClientToChannelMap(&client);
     std::string key = (i < keys.size()) ? keys[i] : "";
     Channel &channel = _channels[channelNameWithoutPrefix];
 
@@ -103,11 +103,10 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
 
 void Server::createAndRegisterChannel(Client *client,
                                       const std::string &channelName) {
+std::cout << "Creating and registering channel " << channelName << std::endl;
   addChanneltoServerIfNoExist(channelName);
   _channels[channelName].addOperator(client);
 
-  _channels[channelName].addClientToChannelMap(client);
-  client->incrementChannelsCount();
 }
 
 void Server::handleJoinRequest(int fd, const Client &client,

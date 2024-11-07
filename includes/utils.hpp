@@ -23,6 +23,7 @@
 typedef std::vector<std::string> stringVector;
 
 void shrink_to_fit(std::vector<struct pollfd> *vec);
+void strToUpper(std::string *str);
 
 bool isNumeric(const std::string &str);
 
