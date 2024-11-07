@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 19:41:06 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:00:36 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ std::string trimWhiteSpaces(const std::string &str) {
   return (std::string(it, itEnd));
 }
 
-void splitByComma(const std::string &argument, stringVector *channels) {
+void splitByCommaAndTrim(const std::string &argument, stringVector *channels) {
   std::stringstream ss(argument);
   std::string token;
   while (std::getline(ss, token, ',')) {

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/06 19:27:22 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:00:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void Server::list(const Client &client, const std::string &argument) {
     listAllChannels(fd, nick);
   } else {
     stringVector channels;
-    splitByComma(argument, &channels);
+    splitByCommaAndTrim(argument, &channels);
     listChannels(channels, client);
   }
   send323Listend(fd, nick);

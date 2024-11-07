@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/06 19:43:19 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 14:00:39 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,15 @@ void Server::joinChannel(const std::string &param, int fd) {
     return;
   }
 
-  Client client = getClientByFd(fd);
+  Client &client = _clients.at(fd);
   std::string::size_type spacePos = param.find(" ");
   std::string channelsPart = param.substr(0, spacePos);
   std::string keysPart =
       (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
   stringVector channels;
-  splitByComma(channelsPart, &channels);
+  splitByCommaAndTrim(channelsPart, &channels);
   stringVector keys;
-  splitByComma(keysPart, &keys);
+  splitByCommaAndTrim(keysPart, &keys);
 
   if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
@@ -108,7 +108,7 @@ void Server::createAndRegisterChannel(Client *client,
                                       const std::string &channelName) {
   addChanneltoServerIfNoExist(channelName);
   _channels[channelName].addClientToChannelMap(client);
-  _channels[channelName].addOperatorsToChannelMap(client);
+  _channels[channelName].addOperator(client);
   client->incrementChannelsCount();
 }
 

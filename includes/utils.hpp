@@ -28,7 +28,7 @@ bool isNumeric(const std::string &str);
 
 std::string trimWhiteSpaces(const std::string &str);
 
-void splitByComma(const std::string &argument, stringVector *channels);
+void splitByCommaAndTrim(const std::string &argument, stringVector *channels);
 
 template <typename T>
 std::string toString(const T &value) {
