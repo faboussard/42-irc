@@ -19,19 +19,17 @@ void Server::quitChannel(int fd) {
   channelPMap::iterator itEnd = mutableChannels.end();
 
   for (channelPMap::iterator it = itBegin; it != itEnd; ++it) {
+    #ifdef DEBUG
+      std::cout << "Client " << client->getNickname() << " is leaving channel " << it->second->getName() << std::endl;
+    #endif
     // Accéder à l'objet Channel à partir de la map (c'est un pointeur)
     Channel *channel = it->second;
 
-    // Retirer le client du canal
-    channel->removeClientFromTheChannel(fd);
-
-    // Décrémenter le nombre de canaux du client
-    client->decrementChannelsCount();
-
-    // Envoyer un message de départ au client et aux autres membres du canal
-      sendPartMessageToClient(fd, client->getNickname(), it->second->getName());
+    sendPartMessageToClient(fd, client->getNickname(), it->second->getName());
 
     broadcastPartMessage(fd, client->getNickname(), it->second->getName());
+        channel->removeClientFromTheChannel(fd);
+    client->decrementChannelsCount(); 
   }
 }
 
