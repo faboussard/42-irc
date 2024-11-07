@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   messageManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 14:13:57 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:05:46 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,16 @@ static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
 }
 
 // To delete later --------------------------------------------------------->//
-// #ifdef DEBUG
-// static void clientIsAcceptedMessageToDelete(const Client &client,
-//                                             const std::string &command) {
-//   std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
-//             << std::endl;
-//   std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
-//   std::cout << "UserName: " << client.getUserName() << std::endl;
-//   std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
-// }
-// #endif
+#ifdef DEBUG
+static void clientIsAcceptedMessageToDelete(const Client *client,
+                                            const std::string &command) {
+  std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
+             << std::endl;
+  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
+  std::cout << "UserName: " << client->getUserName() << std::endl;
+  std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
+ }
+#endif
 // <-------------------------------------------------------------------------//
 
 void Server::handleInitialMessage(Client *client, const std::string &msg) {
@@ -65,9 +65,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       return;
     }
     if (client->isAccepted()) {
-// #ifdef DEBUG
-//       clientIsAcceptedMessageToDelete(client, command);
-// #endif
+#ifdef DEBUG
+       clientIsAcceptedMessageToDelete(client, command);
+#endif
       handleCommand(command, argument, client->getFd());
     } else if (command == "CAP" && client->isCapSend() == false &&
                client->isPasswordGiven() == false) {
@@ -96,14 +96,13 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
         sendConnectionMessage(*client);
-// #ifdef DEBUG
+#ifdef DEBUG
 //         testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
-// #endif
+#endif
       }
     } else if (client->isAccepted() == false) {
       if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);
-      if (client->isUsernameSet() == false)
-        send451NotRegistered(*client);
+      if (client->isUsernameSet() == false) send451NotRegistered(*client);
     }
   }
 }
@@ -133,32 +132,43 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 /*============================================================================*/
 
 void Server::handleClientMessage(int fd) {
+  static std::map<int, std::string> messageBuffer;
   char buffer[1024] = {0};
   std::memset(buffer, 0, sizeof(buffer));
   int valread = recv(fd, buffer, sizeof(buffer), 0);
 
-  switch (valread) {
-    case -1:
-      std::cerr << RED "Error while receiving message" RESET << std::endl;
-      // fallthrough
-    case 0:
-      std::cout << "Client " << fd << " disconnected" << std::endl;
-      clearClient(fd);
-      return;
+  if (valread == -1) {
+    std::cerr << RED "Error while receiving message" RESET << std::endl;
+    return;
+  } else if (valread == 0) {
+    std::cout << "Client " << fd << " disconnected" << std::endl;
+    clearClient(fd);
+    return;
   }
-  std::string message(buffer, valread);
-  std::cout << "Received message from client " << fd << ": " << message
-            << std::endl;
 
-  Client &client = _clients[fd];
-  if (client.isAccepted() == false) {
-    handleInitialMessage(&client, message);
-  } else {
-    // sendToAllClients(message);
-    handleOtherMessage(client, message);
+  // Accumuler les données reçues
+  messageBuffer[fd] += std::string(buffer, valread);
+
+  // Vérifier si le message est complet (par exemple, contient une nouvelle
+  // ligne)
+  size_t pos;
+  std::string message = "";
+  while ((pos = messageBuffer[fd].find("\r\n")) != std::string::npos) {
+    message += messageBuffer[fd].substr(0, pos + 2);
+    messageBuffer[fd].erase(0, pos + 1);
   }
+    std::cout << "Received message from client " << fd << ", nickname: " 
+              << _clients[fd].getNickname() << ": " << message
+              << std::endl;
+
+    Client &client = _clients[fd];
+    if (client.isAccepted() == false) {
+      handleInitialMessage(&client, message);
+    } else {
+      handleOtherMessage(client, message);
+    }
+  // }
 }
-
 /*============================================================================*/
 /*       Commands management                                                  */
 /*============================================================================*/

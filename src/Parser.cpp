@@ -6,12 +6,12 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/05 10:58:53 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 12:38:45 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../includes/utils.hpp"
 #include "../includes/Parser.hpp"
-
 #include "../includes/colors.hpp"
 
 Command Parser::choseCommand(const std::string& command) {
@@ -59,33 +59,42 @@ std::vector<std::string> Parser::splitCommand(const std::string& command) {
   return (message);
 }
 
-std::vector<std::string> split(const std::string& str, char delim1,
-                               char delim2) {
-  std::vector<std::string> result;
-  std::string strWithoutDelim2 = str;
-  size_t size = str.size();
+static std::string trimBeginWithChar(const std::string &str, const char c) {
+  std::string::const_iterator it = str.begin();
+  std::string::const_iterator itEnd = str.end();
 
-  for (size_t i = 0; i < size; ++i) {
-    if (strWithoutDelim2[i] == delim2) {
-      strWithoutDelim2[i] = delim1;
-    }
-  }
-  std::stringstream ss(strWithoutDelim2);
-  std::string item;
-
-  while (getline(ss, item, delim1)) {
-    if (item.empty()) continue;
-    while (std::isspace(item[0])) {
-      item.erase(0, 1);
-    }
-    if (item.empty()) continue;
-    result.push_back(item);
-  }
-  return (result);
+  while (it != itEnd && (*it == c || std::isspace(*it)))
+    ++it;
+  
+  return (std::string(it, itEnd));
 }
 
-commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
-  std::vector<std::string> cmds = split(command, '\n', '\r');
+std::vector<std::string> split(const std::string& str, const std::string& delim) {
+    std::vector<std::string> result;
+    size_t start = 0;
+    size_t end = str.find(delim);
+    size_t delimLen = delim.length();
+std::cout << str << std::endl;
+    while (end != std::string::npos) {
+        std::string token = str.substr(start, end - start);
+        token = trimBeginWithChar(token, '\n');
+        if (!token.empty()) {
+            result.push_back(token);
+        }
+        start = end + delimLen;
+        end = str.find(delim, start);
+    }
+    std::string token = trimBeginWithChar(str.substr(start), '\n');
+    // std::string token = str.substr(start);
+    if (!token.empty()) {
+        result.push_back(token);
+    }
+    return (result);
+}
+
+commandVectorPairs Parser::parseCommandIntoPairs(const std::string &command) {
+  std::vector<std::string> cmds = split(command, "\r\n");
+  // std::vector<std::string> cmds = split(command, '\n', '\r');
   commandVectorPairs result;
   std::string token;
   std::pair<std::string, std::string> pair;
@@ -99,6 +108,7 @@ commandVectorPairs Parser::parseCommandIntoPairs(std::string command) {
       secondPart = cmds[i].substr(cmds[i].find_first_of(" ") + 1);
     else
       secondPart = "";
+    strToUpper(&firstPart);
     pair = std::make_pair(firstPart, secondPart);
     std::cout << CYAN "pair.first : " << pair.first << std::endl;
     std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;

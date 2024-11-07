@@ -6,16 +6,15 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 14:12:04 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:02:06 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/utils.hpp"
+#include "../includes/Server.hpp"
 
 #include <string>
 #include <vector>
-
-#include "../includes/Server.hpp"
 
 void shrink_to_fit(std::vector<struct pollfd> *vec) {
   std::vector<struct pollfd>(*vec).swap(*vec);
@@ -26,6 +25,15 @@ bool isNumeric(const std::string &str) {
     if (!std::isdigit(str[i])) return false;
   }
   return true;
+}
+
+void strToUpper(std::string *str) {
+  size_t i = 0;
+  size_t len = str->length();
+  while (i < len) {
+    (*str)[i] = std::toupper((*str)[i]);
+    ++i;
+  }
 }
 
 std::string trimWhiteSpaces(const std::string &str) {
