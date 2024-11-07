@@ -6,7 +6,7 @@
 /*   By: yusengok <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 14:23:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:04:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,7 +260,7 @@ void sendWelcome(int fd, std::string const &nick);
 /*------ User related replies ------------------------------------------------*/
 
 void send221Umodeis(const Client &client);
-void send315Endofwho(const Client &client, const Channel &channel);
+void send315EndOfWho(const Client &client, const Channel &channel);
 void send352Whoreply(const Client &client, const Client &clientInChannel, \
                      const Channel &channel);
 

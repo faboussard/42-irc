@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 14:19:52 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:04:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void send221Umodeis(const Client &client) {
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
-void send315Endofwho(const Client &client, const Channel &channel) {
+void send315EndOfWho(const Client &client, const Channel &channel) {
   std::string message = _315_RPL_ENDOFWHO(client.getNickname(),
                                           channel.getNameWithPrefix());
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
@@ -451,7 +451,7 @@ void testAllNumericReplies(const std::string &serverStartTime,
   /* User */
   send221Umodeis(client);
   send352Whoreply(client, testOp, testChannel);
-  send315Endofwho(client, testChannel);
+  send315EndOfWho(client, testChannel);
   /* Channel */
   send321Liststart(fd, nick);
   send322List(fd, nick, testChannel);

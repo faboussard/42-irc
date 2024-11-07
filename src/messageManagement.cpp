@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 11:35:21 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:06:41 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
 
 // To delete later --------------------------------------------------------->//
 #ifdef DEBUG
-static void clientIsAcceptedMessageToDelete(const Client &client,
+static void clientIsAcceptedMessageToDelete(const Client *client,
                                             const std::string &command) {
   std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
             << std::endl;
-  std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
-  std::cout << "UserName: " << client.getUserName() << std::endl;
+  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
+  std::cout << "UserName: " << client->getUserName() << std::endl;
   std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
 }
 #endif
