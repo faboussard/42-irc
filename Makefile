@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/07 14:06:09 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/07 15:33:32 by mbernard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,7 +59,12 @@ debug: C = g++
 debug: CFLAGS += -DDEBUG -g3
 debug: clean create_dirs ${NAME}
 
-# ---------------------------------- Test ----------------------------------- #
+#----------------------------------- Fsanitize ------------------------------- #
+fsan:
+	$(RMDIR) $(DIR_OBJS)
+	$(MAKE) CFLAGS="-g3 -fsanitize=address"
+
+# ---------------------------------- Test ------------------------------------ #
 test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 test: CFLAGS += -DTEST
 test: clean create_dirs ${NAME}
@@ -83,4 +88,4 @@ fclean: clean
 re: fclean all
 
 # ---------------------------------- Phony ----------------------------------- #
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re debug fsan test testnumerirc testlist
