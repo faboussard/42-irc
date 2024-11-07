@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 13:23:57 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/06 19:38:26 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
 
+typedef std::map<int, Client *> clientPMap;
+
 extern Config *gConfig;
 
 #define REG_CHAN '#'     // regular channel prefix
 #define PUBLIC_CHAN "="  // public channel symbol
 #define CHAN_OP "@"      // channel operator prefix
-
-typedef std::map<int, Client*> clientPMap;
 
 typedef struct Topic {
   std::string topic;
@@ -47,16 +47,17 @@ class Channel {
   std::string _type;
   std::string _nameWithPrefix;
   std::string _creationTime;
-  Topic       _topic;
-  Mode        _mode;
+  Topic _topic;
+  Mode _mode;
   std::string _key;
-  int         _limit;
+  int _limit;
 
-  clientPMap _clientsInChannel;
+  clientPMap _channelClients;
   clientPMap _channelOperators;
 
  public:
   explicit Channel(const std::string &name = "");
+  bool isSecret;  // sera remplacé dans la strcuture de Yuko.
 
   /* Getters */
 
@@ -64,7 +65,7 @@ class Channel {
   const std::string &getType(void) const;
   const std::string getNameWithPrefix(void) const;
   const std::string &getCreationTime(void) const;
-  const clientPMap &getClientsInChannel(void) const;
+  const clientPMap &getChannelClients(void) const;
   const clientPMap &getChannelOperators(void) const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
@@ -79,8 +80,8 @@ class Channel {
   /* Member Functions */
 
   void removeClientFromTheChannel(int fd);
-  // void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
-  void acceptClientInTheChannel(Client *client);
+  void addClientToChannelMap(Client *client);
+  void addOperatorsToChannelMap(Client *client);
   void receiveMessageInTheChannel(int fd);
 
   /* Modes handling */

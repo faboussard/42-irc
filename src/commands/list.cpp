@@ -1,18 +1,18 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   list.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/06 14:40:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 09:23:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Server.hpp"
+#include "../../includes/utils.hpp"
 
-void parseArgument(const std::string &argument, stringVector *channels);
 
 void Server::list(const Client &client, const std::string &argument) {
 #ifdef TESTLIST
@@ -38,7 +38,7 @@ void Server::list(const Client &client, const std::string &argument) {
     listAllChannels(fd, nick);
   } else {
     stringVector channels;
-    parseArgument(argument, &channels);
+    splitByCommaAndTrim(argument, &channels);
     listChannels(channels, client);
   }
   send323Listend(fd, nick);
@@ -47,7 +47,10 @@ void Server::list(const Client &client, const std::string &argument) {
 void Server::listAllChannels(int fd, const std::string &nick) {
   channelsMap::iterator itEnd = _channels.end();
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it)
+  {
+    std::cout << "Channel name: " << it->first << std::endl;
     send322List(fd, nick, it->second);
+  }
 }
 
 void Server::listChannels(const stringVector &channels, const Client &client) {
@@ -83,10 +86,3 @@ bool Server::findChannel(const std::string &channel) {
   return (false);
 }
 
-void parseArgument(const std::string &argument, stringVector *channels) {
-  std::stringstream ss(argument);
-  std::string token;
-  while (std::getline(ss, token, ',')) {
-    channels->push_back(trimWhiteSpaces(token));
-  }
-}
