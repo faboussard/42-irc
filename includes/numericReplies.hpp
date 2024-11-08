@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 15:19:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 07:48:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,7 +342,3 @@ void send525InvalidKey(const Client &client, const Channel &channel);
   " ──" + "\n\r\n")
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_
-
-//  /\_/\     /\_/\     /\_/\
-// ( o.o )   ( o.o )   ( o.o )
-//  > ^ <     > ^ <     > ^ <

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 12:39:33 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 14:08:51 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,12 +165,16 @@ class Server {
   /*-------- JOIN --------*/
 
   /*-------- KICK --------*/
+  void kick(int fd, const std::string &arg);
 
   /*-------- INVITE --------*/
+  void invite(int fd, const std::string &arg);
 
   /*-------- TOPIC --------*/
+  void topic(int fd, const std::string &arg);
 
   /*-------- MODE --------*/
+  void mode(int fd, const std::string &arg);
 
   /*-------- WHO --------*/
   void who(const Client &client, const std::string &arg);
@@ -183,8 +187,10 @@ class Server {
   bool findChannel(const std::string &channel);
 
   /*-------- NOTICE --------*/
+  void notice(int fd, const std::string &arg);
 
   /*-------- PRIVMSG --------*/
+  void privmsg(int fd, const std::string &arg);
 
   /*-------- PING --------*/
   void ping(Client *client, const std::string &token);

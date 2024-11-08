@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 16:43:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:37:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 // Supports only 2 patterns:
 // WHO
 // WHO <#channel>
-
-// After JOIN #chanName --> Hexchat sends MODE #chanName & WHO #chanName
 
 void Server::who(const Client &client, const std::string &arg) {
   if (arg.empty()) {
@@ -39,9 +37,7 @@ void Server::who(const Client &client, const std::string &arg) {
 #ifdef DEBUG
       std::cout << "Listing all clients for " << arg << "..." << std::endl;
 #endif
-      std::string::const_iterator it = arg.begin();
-      const Channel &channel = getChannelByName(std::string(it + 1, arg.end()));
-      sendClientsListInChannel(client, channel);
+      sendClientsListInChannel(client, getChannelByName(arg.substr(1)));
     } else {
       send403NoSuchChannel(client, arg);
     }
@@ -53,8 +49,8 @@ void Server::sendClientsListInChannel(const Client &client,
   const clientPMap &clientsInChannel = channel.getChannelClients();
   clientPMap::const_iterator itEnd = clientsInChannel.end();
 #ifdef DEBUG
-   std::cout << "Number of clients in " << channel.getName() << ": "
-			 << clientsInChannel.size() << std::endl;
+  std::cout << "Number of clients in " << channel.getNameWithPrefix() << ": "
+  << clientsInChannel.size() << std::endl;
 #endif
   for (clientPMap::const_iterator it = clientsInChannel.begin(); it != itEnd;
        ++it) {
