@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 17:21:23 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:47:18 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,6 @@ void Server::quitChannel(int fd) {
     if (channel->getChannelOperators().find(fd) !=
         channel->getChannelOperators().end()) {
       channel->removeOperator(client);
-      if (channel->getChannelOperators().empty()) {
-        channel->deactivateTopicOpsOnlyMode();
-      }
     }
   }
 }
