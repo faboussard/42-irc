@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 16:43:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 07:50:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void Server::sendClientsListInChannel(const Client &client,
   const clientPMap &clientsInChannel = channel.getChannelClients();
   clientPMap::const_iterator itEnd = clientsInChannel.end();
 #ifdef DEBUG
-   std::cout << "Number of clients in " << channel.getName() << ": "
+   std::cout << "Number of clients in " << channel.getNameWithPrefix() << ": "
 			 << clientsInChannel.size() << std::endl;
 #endif
   for (clientPMap::const_iterator it = clientsInChannel.begin(); it != itEnd;

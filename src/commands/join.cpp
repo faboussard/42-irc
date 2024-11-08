@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 16:56:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 08:03:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,8 @@ void Server::joinChannel(const std::string &param, int fd) {
     if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
       createAndRegisterChannel(&client, channelNameWithoutPrefix);
     }
+    _channels.at(channelNameWithoutPrefix).addClientToChannelMap(&client);
     client.incrementChannelsCount();
-    _channels[channelName].addClientToChannelMap(&client);
     std::string key = (i < keys.size()) ? keys[i] : "";
     Channel &channel = _channels[channelNameWithoutPrefix];
 
@@ -107,8 +107,6 @@ void Server::createAndRegisterChannel(Client *client,
 std::cout << "Creating and registering channel " << channelName << std::endl;
   addChanneltoServerIfNoExist(channelName);
   _channels[channelName].addOperator(client);
-
-
 }
 
 void Server::handleJoinRequest(int fd, const Client &client,
