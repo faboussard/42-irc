@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 14:08:51 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 15:39:32 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,11 +149,10 @@ class Server {
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
   void processJoinRequest(int fd, Client *client, const std::string &channelName, const std::vector<std::string> &keys, size_t i);
-  void handleEmptyParams(const Client &client, const std::string &param);
   void handlePartRequest(int fd, const std::string &param);
-  void parseJoinParams(const std::string &param, stringVector *channels, stringVector *keys);
   void handleKey(Client *client, const Channel &channel, const std::string &key);
-
+void checkChannelsCorrectness(const stringVector &channels);
+void checkKeysCorrectness(const stringVector &keys);
   /*-------- PART --------*/
   
   void quitChannel(int fd);

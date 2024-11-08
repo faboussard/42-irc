@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 14:08:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 15:40:18 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,38 @@
 #include "../includes/utils.hpp"
 
 void Server::joinChannel(const std::string &param, int fd) {
+  if (param.find_first_of(" \t\n\r\f\v") != std::string::npos) {
+    std::cout << RED
+        "ERROR FROM EDITORS : channel name cannot or key contain "
+        "whitespaces" RESET
+              << std::endl;
+    return;
+  }
   if (isLeaveAllChannelsRequest(param)) {
     quitChannel(fd);
     return;
   }
-
   Client &client = _clients.at(fd);
-  stringVector channels;
-  stringVector keys;
-  parseJoinParams(param, &channels, &keys);
-
   if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
     return;
   }
-  // pour chaque channel
+  std::cout << "HERE 1" << std::endl;
+  stringVector channels;
+  std::string::size_type spacePos = param.find(" ");
+  std::string channelsPart = param.substr(0, spacePos);
+
+  std::cout << "HERE 2" << channelsPart << std::endl;
+
+  splitByCommaAndTrim(channelsPart, &channels);
+  checkChannelsCorrectness(channels);
+
+  if (channels.empty()) {
+    send461NeedMoreParams(client, "JOIN");
+    return;
+  }
+  std::cout << "HERE 3" << channelsPart << std::endl;
+
   for (size_t i = 0; i < channels.size(); ++i) {
     std::string channelName = channels[i];
 
@@ -48,34 +65,54 @@ void Server::joinChannel(const std::string &param, int fd) {
     if (!isChannelValid(channelName, client)) {
       continue;
     }
+    stringVector keys;
+    std::string keysPart =
+        (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
+    splitByCommaAndTrim(keysPart, &keys);
+    checkKeysCorrectness(keys);
+    std::cout << "HERE 4" << channelsPart << std::endl;
+    if (!keys.empty()) {
+      send525InvalidKey(client, getChannelByName(channelName));
+      return;
+    }
     processJoinRequest(fd, &client, channelName, keys, i);
   }
 }
 
-void Server::parseJoinParams(const std::string &param, stringVector *channels,
-                             stringVector *keys) {
-  // comment enelver au prealable si on a  "#channel1,   ,#channel2 key1,key2"
-  // =>ERROR
-  //  ex : "#channel1,#channel2 key1,key2"; - trouve la
-  //  position du space apres channel2.
-  std::string::size_type spacePos = param.find(" ");
-  std::string channelsPart = param.substr(0, spacePos);
-  std::string keysPart =
-      (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
-  splitByCommaAndTrim(channelsPart, channels);
-  splitByCommaAndTrim(keysPart, keys);
+void Server::checkChannelsCorrectness(const stringVector &channels) {
+  stringVector::const_iterator it = channels.begin();
+  stringVector::const_iterator itEnd = channels.end();
+  for (; it != itEnd; ++it) {
+    if (it->empty() || it->find_first_of(" \t\n\r\f\v") != std::string::npos) {
+      std::cout << RED
+          "ERROR FROM EDITORS : channel name cannot contain whitespaces or be "
+          "empty" RESET
+                << std::endl;
+      return;
+    }
+  }
+}
+
+void Server::checkKeysCorrectness(const stringVector &keys) {
+  stringVector::const_iterator it = keys.begin();
+  stringVector::const_iterator itEnd = keys.end();
+  for (; it != itEnd; ++it) {
+    if (it->find_first_of(" \t\n\r\f\v") != std::string::npos) {
+      std::cout << RED
+          "ERROR FROM EDITORS : channel name cannot contain whitespaces or be "
+          "empty" RESET
+                << std::endl;
+      return;
+    }
+  }
 }
 
 // tester avec Client &client
-void Server::processJoinRequest(int fd, Client *client, const std::string &channelName,
+void Server::processJoinRequest(int fd, Client *client,
+                                const std::string &channelName,
                                 const std::vector<std::string> &keys,
                                 size_t i) {
   std::string channelNameWithoutPrefix = channelName.substr(1);
-
-#ifdef DEBUG
-  std::cout << "ENTERED PROCESS JOIN REQUEST: " << channelNameWithoutPrefix
-            << std::endl;
-#endif
 
   // si le channel n'existe pas on l'ajoute
   if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
@@ -86,26 +123,23 @@ void Server::processJoinRequest(int fd, Client *client, const std::string &chann
   const clientPMap &clientsInChannel =
       _channels[channelNameWithoutPrefix].getChannelClients();
   Channel &channel = _channels.at(channelNameWithoutPrefix);
-
-#ifdef DEBUG
-  std::cout << "HERE 1: " << channelNameWithoutPrefix << std::endl;
-#endif
+  if (!keys.empty()) handleKey(client, channel, keys[i]);
 
   // si le client n'est pas déjà dans le channel
+  std::string nick = client->getNickname();
+
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     client->incrementChannelsCount();
     channel.addClientToChannelMap(client);
+    sendJoinMessageToClient(fd, nick, channelName, *client);
+    send353Namreply(*client, _channels[channelName]);
+    send366Endofnames(*client, _channels[channelName]);
   }
-
-#ifdef DEBUG
-  std::cout << "HERE 2: " << channelNameWithoutPrefix << std::endl;
-#endif
-  if (!keys.empty())
-    handleKey(client, channel, keys[i]);
-  sendJoinMessage(fd, *client, channelNameWithoutPrefix);
+  broadcastJoinMessage(fd, nick, channelName);
 }
 
-void Server::handleKey(Client *client, const Channel &channel, const std::string &key) {
+void Server::handleKey(Client *client, const Channel &channel,
+                       const std::string &key) {
   if (channel.getMode().keyRequired && key != channel.getKey()) {
     send475BadChannelKey(*client, channel);
     return;
@@ -135,17 +169,6 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
   return true;
 }
 
-void Server::sendJoinMessage(int fd, const Client &client,
-                               const std::string &channelName) {
-
-  // regarder ICI SEGFAULT ICI 
-  std::string nick = client.getNickname();
-  sendJoinMessageToClient(fd, nick, channelName, client);
-  send353Namreply(client, _channels[channelName]);
-  send366Endofnames(client, _channels[channelName]);
-  broadcastJoinMessage(fd, nick, channelName);
-}
-
 void Server::addChanneltoServerIfNoExist(const std::string &channelName) {
   if (_channels.find(channelName) == _channels.end()) {
     Channel newChannel(channelName);
@@ -171,10 +194,9 @@ void Server::broadcastJoinMessage(int fd, const std::string &nick,
 
   clientPMap clientsInChannel =
       getChannelByName(channelName).getChannelClients();
-
   clientPMap::iterator itEnd = clientsInChannel.end();
-  clientPMap::iterator itBegin = clientsInChannel.begin();
-  for (clientPMap::iterator it = itBegin; itBegin != itEnd; ++it) {
+  clientPMap::iterator it = clientsInChannel.begin();
+  for (; it != itEnd; ++it) {
     if (it->first != fd) {  // Ne pas envoyer au client qui join
       if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) == -1) {
         throw std::runtime_error("Runtime error: send failed");

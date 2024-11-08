@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 10:53:43 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 15:23:35 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,7 @@ const channelsMap &Server::getChannels() const { return _channels; }
 const Channel &Server::getChannelByName(const std::string &name) const {
   channelsMap::const_iterator it = _channels.find(name);
   if (it == _channels.end()) {
-    std::cerr << "Channel not found with the given name" << std::endl;
-    throw std::runtime_error("Channel not found");
+    throw std::runtime_error("Channel not found with the given name");
   }
   return it->second;
 }
