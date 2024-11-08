@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/08 17:23:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:31:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,4 @@
 //   void testJoinChannel(Server &server);
 // };
 
-// #endif  //  INCLUDES_TESTS_HPP_
+#endif  //  INCLUDES_TESTS_HPP_

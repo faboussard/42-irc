@@ -189,7 +189,9 @@ NExT PR
 _**Implemented Features:**_
 
 
-1. Added the preprocessors needed in all files to be cpplint compliant (except in commands i did not managed because they are not ready yet)
+1. Format:
+- Added the preprocessors needed in all files to be cpplint compliant (except in commands i did not managed because they are not ready yet)
+- added the formating for the GETTERS, SETTERS "headers"
 
 2. JOIN command functionality fixed
 
