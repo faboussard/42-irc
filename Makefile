@@ -6,13 +6,13 @@
 #    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/07 18:31:10 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/08 11:56:56 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 C = c++
 NAME = ircserv
-CFLAGS = -Wall -Wextra -Werror -Wuninitialized -MMD -MP -std=c++98
+CFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98 -g
 MKDIR = mkdir -p
 RMDIR = rm -rf
 
@@ -59,6 +59,11 @@ debug: C = g++
 debug: CFLAGS += -DDEBUG -g3
 debug: clean create_dirs ${NAME}
 
+# ---------------------------------- valgrind ----------------------------------- #
+
+valgrind: $(NAME)
+			valgrind --track-fds=yes --trace-children=yes --leak-check=full --show-leak-kinds=all ./$(NAME) 6667 pass
+
 # ---------------------------------- Test ----------------------------------- #
 test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 test: CFLAGS += -DTEST
@@ -83,4 +88,4 @@ fclean: clean
 re: fclean all
 
 # ---------------------------------- Phony ----------------------------------- #
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re sanitize debug

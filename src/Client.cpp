@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 21:01:02 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 11:24:09 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _accepted(false),
       _CapSend(false),
       _nbPassAttempts(0),
-      _channelsCount(0){
+      _channelsCount(0) {
   _uModes.invisible = false;
   _uModes.operatorOfServer = false;
   _uModes.registered = false;
@@ -50,9 +50,7 @@ std::string const& Client::getNickname(void) const { return (_nickname); }
 
 std::string const& Client::getUserName(void) const { return (_userName); }
 
-int Client::getChannelsCount() const { return (_channelsCount); }
-
-const channelPMap &Client::getChannels() const { return _clientChannels; }
+size_t Client::getChannelsCount() const { return (_channelsCount); }
 
 int Client::getFd(void) const { return (_fd); }
 
@@ -171,10 +169,3 @@ std::string Client::shareMessage(void) {
 void Client::incrementChannelsCount(void) { _channelsCount++; }
 
 void Client::decrementChannelsCount(void) { _channelsCount--; }
-
-void Client::addChannelToClientMap(Channel *channel) {
-  _clientChannels[channel->getName()] = channel;
-  std::cout << "Client " << _nickname << " added to channel " << channel->getName()
-            << std::endl;
-}
-

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 21:01:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 11:06:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@
 #include "../includes/Channel.hpp"
 
 class Channel;
-
-typedef std::map<std::string, Channel*> channelPMap;
 
 typedef struct UserModes {
   bool invisible;
@@ -50,8 +48,7 @@ class Client {
   bool _CapSend;
   UserModes _uModes;
   uint8_t _nbPassAttempts;
-  int _channelsCount;
-  channelPMap _clientChannels;
+  size_t _channelsCount;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "",
@@ -77,8 +74,7 @@ class Client {
   bool isAccepted(void) const;
   bool isCapSend(void) const;
   uint8_t getNbPassAttempts(void) const;
-  int getChannelsCount() const;
-  const channelPMap &getChannels() const;
+  size_t getChannelsCount() const;
 
 
 /*============================================================================*/
