@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 14:11:41 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:52:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,7 @@ void Server::list(const Client &client, const std::string &argument) {
 
 void Server::listAllChannels(int fd, const std::string &nick) {
   channelsMap::iterator itEnd = _channels.end();
-  for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it)
-  {
+  for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
     std::cout << "Channel name: " << it->first << std::endl;
     send322List(fd, nick, it->second);
   }

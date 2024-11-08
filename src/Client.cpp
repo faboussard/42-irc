@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 09:17:44 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:32:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ std::string Client::shareMessage(void) {
 }
 
 /*============================================================================*/
-/*       Channel  handling                                                    */
+/*       Channel handling                                                     */
 /*============================================================================*/
 
 void Client::incrementChannelsCount(void) { getChannelsCount(); }

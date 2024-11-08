@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 15:05:46 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:55:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void clientIsAcceptedMessageToDelete(const Client *client,
   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
   std::cout << "UserName: " << client->getUserName() << std::endl;
   std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
- }
+}
 #endif
 // <-------------------------------------------------------------------------//
 
@@ -96,8 +96,8 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
         sendConnectionMessage(*client);
-#ifdef DEBUG
-//         testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
+#ifdef TESTNUMERICR
+        testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
 #endif
       }
     } else if (client->isAccepted() == false) {
@@ -157,7 +157,7 @@ void Server::handleClientMessage(int fd) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
-    std::cout << "Received message from client " << fd << ", nickname: " 
+    std::cout << "Received message from client " << fd << ", nickname: "
               << _clients[fd].getNickname() << ": " << message
               << std::endl;
 
@@ -173,33 +173,35 @@ void Server::handleClientMessage(int fd) {
 /*       Commands management                                                  */
 /*============================================================================*/
 
-void Server::handleCommand(const std::string &command, std::string &argument,
-                           int fd) {
+void Server::handleCommand(const std::string &command,
+                           const std::string &argument, int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
-     joinChannel(argument, fd);
+    joinChannel(argument, fd);
   } else if (command == "KICK") {
-    // Exclure un client du canal
+    kick(fd, argument);
   } else if (command == "INVITE") {
-    // Notice
+    invite(fd, argument);
   } else if (command == "TOPIC") {
-    // Changer le sujet du canal
+    topic(fd, argument);
   } else if (command == "MODE") {
-    // Changer le sujet du canal
+    mode(fd, argument);
+  } else if (command == "WHO") {
+    who(_clients.at(fd), argument);
   } else if (command == "LIST") {
-    list(_clients[fd], argument);
+    list(_clients.at(fd), argument);
   } else if (command == "NOTICE") {
-    // Notice}
+    notice(fd, argument);
   } else if (command == "NICK") {
     Parser::verifyNick(argument, &_clients[fd], &_clients);
   } else if (command == "USER") {
     Parser::verifyUser(argument, &_clients[fd], &_clients);
   } else if (command == "PRIVMSG") {
-    // Envoyer un message privé
+    privmsg(fd, argument);
   } else if (command == "QUIT") {
     quit(argument, &_clients[fd], &_clients);
   } else if (command == "PING") {
-    ping(&_clients[fd], argument);
+    ping(&_clients.at(fd), argument);
   } else if (command == "PASS" || command == "USER") {
     if (argument.empty())
       send461NeedMoreParams(_clients[fd], command);

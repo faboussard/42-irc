@@ -6,16 +6,27 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 14:48:41 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 08:44:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:50:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../../includes/Server.hpp"
+
+void Server::invite(int fd, const std::string &arg) {
+/*--- To remove ---*/
+  (void)fd;
+  (void)arg;
+/*-----------------*/
+}
 
 // ======== INVITE (without parameters) ========================================
 // Replies:
 // -- 336 RPL_INVITELIST:
-// Indicate a channel the client was invited to. 
-// If the client is invited to multiple channels, the server sends multiple replies.
-// If there is no channel to which the client was invited, the server sends only 337.
+// Indicate a channel the client was invited to.
+// If the client is invited to multiple channels,
+// the server sends multiple replies.
+// If there is no channel to which the client was invited,
+// the server sends only 337.
 
 // -- 337 RPL_ENDOFINVITELIST:
 
@@ -28,7 +39,7 @@
 // The channel does not exist.
 
 // -- 442 ERR_NOTONCHANNEL:
-// Only members of the channel are allowed to invite other users. 
+// Only members of the channel are allowed to invite other users.
 // Otherwise, the server MUST reject the command with 442.
 
 // -- 443 ERR_USERONCHANNEL:

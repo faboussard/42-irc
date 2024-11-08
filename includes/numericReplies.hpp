@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/06 14:26:22 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 07:48:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ extern Config *gConfig;
 
 #define FROM_SERVER (std::string(":") + SRV_NAME + " ")
 #define RUNTIME_ERROR "Failed to send numeric reply"
+#define HERE "H"  // Our server doesn't support G(Gone) status
+#define HOPCOUNT "0"
 
 /* Messages definition */
 
@@ -58,6 +60,14 @@ extern Config *gConfig;
 #define _221_RPL_UMODEIS(nick, modes) \
   (FROM_SERVER + "221 " + nick + " " + modes + "\r\n")
 // Informs client's currently-set user modes. (Reply to MODE <nick> command)
+
+#define _352_RPL_WHOREPLY(targetNick, chanName, userN, hostN, nick, realN)     \
+  (FROM_SERVER + "352 " + targetNick + " " + chanName + " " + userN + " " +    \
+  hostN + " " + SRV_NAME +  " " + nick + " " + HERE + " :" + HOPCOUNT + " " +  \
+  realN + "\r\n")
+
+#define _315_RPL_ENDOFWHO(nick, chanName) \
+  (FROM_SERVER + "315 " + nick + " " + chanName + " :End of /WHO list\r\n")
 
 /*------ Channel related messages --------------------------------------------*/
 
@@ -250,6 +260,9 @@ void sendWelcome(int fd, std::string const &nick);
 /*------ User related replies ------------------------------------------------*/
 
 void send221Umodeis(const Client &client);
+void send315EndOfWho(const Client &client, const Channel &channel);
+void send352Whoreply(const Client &client, const Client &clientInChannel, \
+                     const Channel &channel);
 
 /*------ Channel related replies ---------------------------------------------*/
 
@@ -329,7 +342,3 @@ void send525InvalidKey(const Client &client, const Channel &channel);
   " ──" + "\n\r\n")
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_
-
-//  /\_/\     /\_/\     /\_/\
-// ( o.o )   ( o.o )   ( o.o )
-//  > ^ <     > ^ <     > ^ <
