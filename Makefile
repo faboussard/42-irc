@@ -29,11 +29,11 @@ SRCS = main Server Client Channel Parser Config \
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
 OBJS_DIR = .objs/
-OBJS = $(addprefix ${OBJS_DIR}, $(addsuffix .o, ${SRCS}))
-HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADER_LIST}))
+OBJS = ${addprefix ${OBJS_DIR}, ${addsuffix .o, ${SRCS}}}
+HEADERS = ${addprefix ${HEADERS_DIR}, ${addsuffix .hpp, ${HEADER_LIST}}}
 INCLUDES = -I ${HEADERS_DIR}
 DEPS = ${OBJS:.o=.d}
-HEADERS = $(addprefix ${HEADERS_DIR}, $(addsuffix .hpp, ${HEADERS_LIST}))
+HEADERS = ${addprefix ${HEADERS_DIR}, ${addsuffix .hpp, ${HEADERS_LIST}}}
 
 # ---------------------------------- Compilation ----------------------------- #
 all: create_dirs ${NAME}
@@ -45,34 +45,41 @@ ${OBJS_DIR}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR}
 	${C} ${CFLAGS} ${INCLUDES} -c $< -o $@
 
 create_dirs:
-	@$(foreach dir, $(sort $(dir $(OBJS))), ${MKDIR} ${dir};)
+	@${foreach dir, ${sort ${dir ${OBJS}}}, ${MKDIR} ${dir};}
 
 -include ${DEPS}
-
 
 # ---------------------------------- Create Repertory ------------------------ #
 ${OBJS_DIR}:
 			${MKDIR} ${OBJS_DIR}
 
 # ---------------------------------- Debug ----------------------------------- #
-debug: CFLAGS := $(filter-out -Werror, $(CFLAGS))
+debug: CFLAGS := ${filter-out -Werror, ${CFLAGS}}
 debug: C = g++
 debug: CFLAGS += -DDEBUG -g3
 debug: clean create_dirs ${NAME}
 
+# ---------------------------------- valgrind -------------------------------- #
+valgrind: ${NAME}
+			valgrind --track-fds=yes --trace-children=yes --leak-check=full \
+			--show-leak-kinds=all ./${NAME} 6667 pass
+
+# ---------------------------------- fsanitize ------------------------------- #
+fsanitize: C = g++
+fsanitize: CFLAGS += -fsanitize=address -g
+fsanitize: clean create_dirs ${NAME}
+
 # ---------------------------------- Test ----------------------------------- #
-test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
+test: CFLAGS := ${filter-out -Werror, ${CFLAGS}}
 test: CFLAGS += -DTEST
 test: clean create_dirs ${NAME}
 
-
 # ---------------------------------- Tests ----------------------------------- #
-
 testnumericr: CFLAGS += -DTESTNUMERICR
-testnumericr: fclean $(OBJS_DIR) $(NAME)
+testnumericr: fclean ${OBJS_DIR} ${NAME}
 
 testlist: CFLAGS += -g3 -DTESTLIST
-testlist: fclean $(OBJS_DIR) $(NAME)
+testlist: fclean ${OBJS_DIR} ${NAME}
 
 # ---------------------------------- Clean ----------------------------------- #
 clean:

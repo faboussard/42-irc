@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 13:55:16 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 15:54:14 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,10 +78,12 @@ class Channel {
   void setTopic(const std::string &topic, const std::string &author);
 
   /* Member Functions */
+  bool isClientInChannel(int fd) const;
+  void receiveMessageInTheChannel(int fd);
 
+  /* Add/remove client */
   void removeClientFromTheChannel(int fd);
   void addClientToChannelMap(Client *client);
-  void receiveMessageInTheChannel(int fd);
 
   /* Modes handling */
 
@@ -98,9 +100,10 @@ class Channel {
   void activateKeyMode(const std::string &key, const Client &client);
   void deactivateKeyMode(void);
 
-  // add/remove operator (o)
+  // operator (o)
   void addOperator(Client *client);
   void removeOperator(Client *client);
+  bool isOperator(const Client &client) const;
 
   // limit-mode (l)
   void activateLimitMode(int limit, const Client &client);

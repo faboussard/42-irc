@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 09:55:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 14:59:35 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cctype>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
@@ -151,6 +152,10 @@ class Server {
 
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);
+  void sendTopic(const Client &client, const Channel &channel);
+  void updateTopic(const Client &client, Channel *channel,
+                   const std::string &newTopic);
+  void broadcastTopic(const Client &client, const Channel &channel);
 
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
