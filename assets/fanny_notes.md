@@ -199,6 +199,7 @@ _**Implemented Features:**_
 tested:  JOIN #s, ,#g and other variants 
 - chan limit works fine.
 - No numeric reply ssent if a user re-joins an already joined channel
+- everything refactored
 
 3. PART command functionnal for join 0 only (no need for others)
 - join 0 is functionnal.
@@ -218,7 +219,7 @@ std::string trimWhiteSpaces(const std::string &input) {
   return result;
 }
 
-
+4. Added the steps for server mounting in the documentation 
 
 
 DEBUG GDB
