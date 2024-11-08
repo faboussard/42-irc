@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 11:51:32 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 12:05:28 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "../includes/numericReplies.hpp"
 #include "../includes/utils.hpp"
 
+
 void Server::joinChannel(const std::string &param, int fd) {
   if (isLeaveAllChannelsRequest(param)) {
     quitChannel(fd);
@@ -30,6 +31,7 @@ void Server::joinChannel(const std::string &param, int fd) {
   Client &client = _clients.at(fd);
   stringVector channels;
   stringVector keys;
+  parseJoinParams(param, channels, keys);
 
   if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
@@ -58,7 +60,6 @@ void Server::parseJoinParams(const std::string &param, stringVector &channels, s
   std::string::size_type spacePos = param.find(" ");
   std::string channelsPart = param.substr(0, spacePos);
   std::string keysPart = (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
-
   splitByCommaAndTrim(channelsPart, &channels);
   splitByCommaAndTrim(keysPart, &keys);
 }
