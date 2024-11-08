@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 16:01:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 08:36:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,7 @@ class Server {
   /*-------- INVITE --------*/
 
   /*-------- TOPIC --------*/
+  void topic(int fd, const std::string &arg);
 
   /*-------- MODE --------*/
 

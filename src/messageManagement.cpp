@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 16:04:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:35:11 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,17 +173,17 @@ void Server::handleClientMessage(int fd) {
 /*       Commands management                                                  */
 /*============================================================================*/
 
-void Server::handleCommand(const std::string &command, 
+void Server::handleCommand(const std::string &command,
                            const std::string &argument, int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
-     joinChannel(argument, fd);
+    joinChannel(argument, fd);
   } else if (command == "KICK") {
     // Exclure un client du canal
   } else if (command == "INVITE") {
     // Notice
   } else if (command == "TOPIC") {
-    // Changer le sujet du canal
+    topic(fd, argument);
   } else if (command == "MODE") {
     // Changer le sujet du canal
   } else if (command == "WHO") {
