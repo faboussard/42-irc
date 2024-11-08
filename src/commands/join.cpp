@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 12:05:28 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 12:43:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 #include "../includes/numericReplies.hpp"
 #include "../includes/utils.hpp"
 
-
 void Server::joinChannel(const std::string &param, int fd) {
   if (isLeaveAllChannelsRequest(param)) {
     quitChannel(fd);
@@ -31,7 +30,7 @@ void Server::joinChannel(const std::string &param, int fd) {
   Client &client = _clients.at(fd);
   stringVector channels;
   stringVector keys;
-  parseJoinParams(param, channels, keys);
+  parseJoinParams(param, &channels, &keys);
 
   if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
@@ -46,26 +45,37 @@ void Server::joinChannel(const std::string &param, int fd) {
       send461NeedMoreParams(client, "JOIN");
       continue;
     }
-      if (!isChannelValid(channelName, client)) {
+    if (!isChannelValid(channelName, client)) {
       continue;
     }
     processJoinRequest(fd, &client, channelName, keys, i);
   }
 }
 
-void Server::parseJoinParams(const std::string &param, stringVector &channels, stringVector &keys) {
-    // comment enelver au prealable si on a  "#channel1,   ,#channel2 key1,key2"
-   //  ex : "#channel1,#channel2 key1,key2"; - trouve la
+void Server::parseJoinParams(const std::string &param, stringVector *channels,
+                             stringVector *keys) {
+  // comment enelver au prealable si on a  "#channel1,   ,#channel2 key1,key2"
+  // =>ERROR
+  //  ex : "#channel1,#channel2 key1,key2"; - trouve la
   //  position du space apres channel2.
   std::string::size_type spacePos = param.find(" ");
   std::string channelsPart = param.substr(0, spacePos);
-  std::string keysPart = (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
-  splitByCommaAndTrim(channelsPart, &channels);
-  splitByCommaAndTrim(keysPart, &keys);
+  std::string keysPart =
+      (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
+  splitByCommaAndTrim(channelsPart, channels);
+  splitByCommaAndTrim(keysPart, keys);
 }
 
-void Server::processJoinRequest(int fd, Client *client, std::string channelName, const std::vector<std::string> &keys, size_t i) {
+// tester avec Client &client
+void Server::processJoinRequest(int fd, Client *client, const std::string &channelName,
+                                const std::vector<std::string> &keys,
+                                size_t i) {
   std::string channelNameWithoutPrefix = channelName.substr(1);
+
+#ifdef DEBUG
+  std::cout << "ENTERED PROCESS JOIN REQUEST: " << channelNameWithoutPrefix
+            << std::endl;
+#endif
 
   // si le channel n'existe pas on l'ajoute
   if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
@@ -73,8 +83,13 @@ void Server::processJoinRequest(int fd, Client *client, std::string channelName,
     _channels.at(channelNameWithoutPrefix).addOperator(client);
   }
 
-  const clientPMap &clientsInChannel = _channels[channelNameWithoutPrefix].getChannelClients();
+  const clientPMap &clientsInChannel =
+      _channels[channelNameWithoutPrefix].getChannelClients();
   Channel &channel = _channels.at(channelNameWithoutPrefix);
+
+#ifdef DEBUG
+  std::cout << "HERE 1: " << channelNameWithoutPrefix << std::endl;
+#endif
 
   // si le client n'est pas déjà dans le channel
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
@@ -82,14 +97,19 @@ void Server::processJoinRequest(int fd, Client *client, std::string channelName,
     channel.addClientToChannelMap(client);
   }
 
-  // assignation d'une clef vide si pas de clef
-  std::string key = (i < keys.size()) ? keys[i] : "";
+#ifdef DEBUG
+  std::cout << "HERE 2: " << channelNameWithoutPrefix << std::endl;
+#endif
+  if (!keys.empty())
+    handleKey(client, channel, keys[i]);
+  sendJoinMessage(fd, *client, channelNameWithoutPrefix);
+}
 
+void Server::handleKey(Client *client, const Channel &channel, const std::string &key) {
   if (channel.getMode().keyRequired && key != channel.getKey()) {
     send475BadChannelKey(*client, channel);
     return;
   }
-  handleJoinRequest(fd, *client, channelNameWithoutPrefix);
 }
 
 bool Server::isValidChannelNameLength(const std::string &param) {
@@ -115,8 +135,10 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
   return true;
 }
 
-void Server::handleJoinRequest(int fd, const Client &client,
+void Server::sendJoinMessage(int fd, const Client &client,
                                const std::string &channelName) {
+
+  // regarder ICI SEGFAULT ICI 
   std::string nick = client.getNickname();
   sendJoinMessageToClient(fd, nick, channelName, client);
   send353Namreply(client, _channels[channelName]);

@@ -278,7 +278,7 @@ JOIN #channelA,#channelB → Joins two channels.
 JOIN ## → Joins one channel.
 
 
-DEBUG 
+DEBUG GDB
 
 
 gdb ./bin/ircserv -tui

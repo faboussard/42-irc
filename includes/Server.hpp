@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 11:51:45 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 12:39:33 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ class Server {
   bool isChannelValid(const std::string &param, const Client &client);
 
   void joinChannel(const std::string &param, int fd);
-  void handleJoinRequest(int fd, const Client &client,
+  void sendJoinMessage(int fd, const Client &client,
                          const std::string &channelName);
   void addChanneltoServerIfNoExist(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
@@ -148,10 +148,11 @@ class Server {
                                const Client &client);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
-  void processJoinRequest(int fd, Client *client, std::string channelName, const std::vector<std::string> &keys, size_t i);
+  void processJoinRequest(int fd, Client *client, const std::string &channelName, const std::vector<std::string> &keys, size_t i);
   void handleEmptyParams(const Client &client, const std::string &param);
   void handlePartRequest(int fd, const std::string &param);
-  void parseJoinParams(const std::string &param, stringVector &channels, stringVector &keys);
+  void parseJoinParams(const std::string &param, stringVector *channels, stringVector *keys);
+  void handleKey(Client *client, const Channel &channel, const std::string &key);
 
   /*-------- PART --------*/
   
