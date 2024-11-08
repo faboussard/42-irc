@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 15:39:32 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 16:05:08 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,10 +134,8 @@ class Server {
 
   /*-------- JOIN --------*/
 
-  bool isValidChannelPrefix(const std::string &param);
-  bool isValidChannelNameLength(const std::string &param);
   bool isLeaveAllChannelsRequest(const std::string &param);
-  bool isChannelValid(const std::string &param, const Client &client);
+  bool isChannelsCorrect(const stringVector &channels, const Client &client);
 
   void joinChannel(const std::string &param, int fd);
   void sendJoinMessage(int fd, const Client &client,
@@ -151,7 +149,7 @@ class Server {
   void processJoinRequest(int fd, Client *client, const std::string &channelName, const std::vector<std::string> &keys, size_t i);
   void handlePartRequest(int fd, const std::string &param);
   void handleKey(Client *client, const Channel &channel, const std::string &key);
-void checkChannelsCorrectness(const stringVector &channels);
+void checkChannelsCorrectness(const stringVector &channels, const Client &client);
 void checkKeysCorrectness(const stringVector &keys);
   /*-------- PART --------*/
   

@@ -6,11 +6,11 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 14:09:07 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 15:56:29 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
+//ajout fonction is client in channel 
 
 #include <map>
 #include <stdexcept>
