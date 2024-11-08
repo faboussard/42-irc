@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/08 09:35:11 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:55:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,25 +179,25 @@ void Server::handleCommand(const std::string &command,
   if (command == "JOIN") {
     joinChannel(argument, fd);
   } else if (command == "KICK") {
-    // Exclure un client du canal
+    kick(fd, argument);
   } else if (command == "INVITE") {
-    // Notice
+    invite(fd, argument);
   } else if (command == "TOPIC") {
     topic(fd, argument);
   } else if (command == "MODE") {
-    // Changer le sujet du canal
+    mode(fd, argument);
   } else if (command == "WHO") {
     who(_clients.at(fd), argument);
   } else if (command == "LIST") {
     list(_clients.at(fd), argument);
   } else if (command == "NOTICE") {
-    // Notice}
+    notice(fd, argument);
   } else if (command == "NICK") {
     Parser::verifyNick(argument, &_clients[fd], &_clients);
   } else if (command == "USER") {
     Parser::verifyUser(argument, &_clients[fd], &_clients);
   } else if (command == "PRIVMSG") {
-    // Envoyer un message privé
+    privmsg(fd, argument);
   } else if (command == "QUIT") {
     quit(argument, &_clients[fd], &_clients);
   } else if (command == "PING") {

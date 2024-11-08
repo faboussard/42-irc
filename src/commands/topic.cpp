@@ -6,16 +6,21 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/08 09:36:34 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:51:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Server.hpp"
 
-// void Server::topic(int fd, const std::string &arg) {
+void Server::topic(int fd, const std::string &arg) {
+/*--- To remove ---*/
+  (void)fd;
+  (void)arg;
+/*-----------------*/
+
 //   const Client &client = _clients.at(fd);
 //   stringVector params;
-// }
+}
 
 // ======= TOPIC from a client who is not on the channel =======================
 // Reply:

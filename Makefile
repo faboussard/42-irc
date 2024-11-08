@@ -22,7 +22,8 @@ vpath %.cpp src src/commands src/unitTests
 HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils tests
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
-       join pass nick user quit invite mode ping topic who list \
+       pass nick user \
+	   invite join kick list mode notice part ping privmsg quit topic who \
 		# joinTest generalTest \ 
 
 # ---------------------------------- Répertoires ----------------------------- #

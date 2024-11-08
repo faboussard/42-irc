@@ -6,9 +6,18 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 14:48:41 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/08 09:38:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:50:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "../../includes/Server.hpp"
+
+void Server::invite(int fd, const std::string &arg) {
+/*--- To remove ---*/
+  (void)fd;
+  (void)arg;
+/*-----------------*/
+}
 
 // ======== INVITE (without parameters) ========================================
 // Replies:
