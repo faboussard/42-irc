@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 20:47:53 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 16:55:46 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ class Channel {
 
                 /* Clients Management */
 
-  void removeClientFromTheChannel(int fd);
+  void removeClientFromChannelMap(Client *client);
   void addClientToChannelMap(Client *client);
   void receiveMessageInTheChannel(int fd);
 

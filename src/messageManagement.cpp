@@ -6,9 +6,13 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/08 14:09:20 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:25:53 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <iostream>
+#include <map>
+#include <string>
 
 #include "../includes/Parser.hpp"
 #include "../includes/Server.hpp"
@@ -42,7 +46,7 @@ static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
 static void clientIsAcceptedMessageToDelete(const Client *client,
                                             const std::string &command) {
   std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
-             << std::endl;
+            << std::endl;
   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
   std::cout << "UserName: " << client->getUserName() << std::endl;
   std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
@@ -66,7 +70,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     }
     if (client->isAccepted()) {
 #ifdef DEBUG
-       clientIsAcceptedMessageToDelete(client, command);
+      clientIsAcceptedMessageToDelete(client, command);
 #endif
       handleCommand(command, argument, client->getFd());
     } else if (command == "CAP" && client->isCapSend() == false &&
@@ -157,16 +161,16 @@ void Server::handleClientMessage(int fd) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
-    std::cout << "Received message from client " << fd << ", nickname: "
-              << _clients[fd].getNickname() << ": " << message
-              << std::endl;
+  std::cout << "Received message from client " << fd
+            << ", nickname: " << _clients[fd].getNickname() << ": " << message
+            << std::endl;
 
-    Client &client = _clients[fd];
-    if (client.isAccepted() == false) {
-      handleInitialMessage(&client, message);
-    } else {
-      handleOtherMessage(client, message);
-    }
+  Client &client = _clients[fd];
+  if (client.isAccepted() == false) {
+    handleInitialMessage(&client, message);
+  } else {
+    handleOtherMessage(client, message);
+  }
   // }
 }
 /*============================================================================*/

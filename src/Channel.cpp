@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 18:30:22 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:11:02 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,40 +93,17 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
 /*       Add/remove client                                                    */
 /*============================================================================*/
 
-void Channel::removeClientFromTheChannel(int fd) {
-  if (_channelClients.find(fd) != _channelClients.end()) {
-    _channelClients[fd]->receiveMessage(
-        "You have been removed from the channel");
-    _channelClients.erase(fd);
-    std::cout << "Client " << fd << " removed from channel " << _name
-              << std::endl;
-  } else {
-    std::cerr << RED "Client " RESET << fd << " not found in channel " << _name
-              << RESET << std::endl;
-  }
-}
 
 void Channel::addClientToChannelMap(Client *client) {
   _channelClients[client->getFd()] = client;
-  std::cout << "Client " << client->getFd() << " added to channel " << _name
-            << std::endl;
+  std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
+            << " added in channel " << _name << std::endl;
 }
 
-void Channel::receiveMessageInTheChannel(int fd) {
-  if (_channelClients.find(fd) != _channelClients.end()) {
-    std::string message = _channelClients[fd]->shareMessage();
-    if (!message.empty()) {
-      std::cout << "Message received in channel " << _name << " from client "
-                << fd << ": " << message << std::endl;
-      clientPMap::iterator itBegin = _channelClients.begin();
-      clientPMap::iterator itEnd = _channelClients.end();
-      for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {
-        if (it->first != fd) {
-          it->second->receiveMessage(message);
-        }
-      }
-    }
-  }
+void Channel::removeClientFromChannelMap(Client *client) {
+  _channelClients.erase(client->getFd());
+  std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
+            << " removed from channel " << _name << std::endl;
 }
 
 /*============================================================================*/
@@ -212,4 +189,26 @@ void Channel::deactivateLimitMode(void) {
   _limit = 0;
   std::cout << "[" << _nameWithPrefix << "] Limit mode desactivated"
             << std::endl;
+}
+
+
+/*============================================================================*/
+/*       Others                                                               */
+/*============================================================================*/
+
+void Channel::receiveMessageInTheChannel(int fd) {
+  if (_channelClients.find(fd) != _channelClients.end()) {
+    std::string message = _channelClients[fd]->shareMessage();
+    if (!message.empty()) {
+      std::cout << "Message received in channel " << _name << " from client "
+                << fd << ": " << message << std::endl;
+      clientPMap::iterator itBegin = _channelClients.begin();
+      clientPMap::iterator itEnd = _channelClients.end();
+      for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {
+        if (it->first != fd) {
+          it->second->receiveMessage(message);
+        }
+      }
+    }
+  }
 }

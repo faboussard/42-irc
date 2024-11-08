@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 16:18:35 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:28:48 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "../includes/Client.hpp"
 #include "../includes/Server.hpp"
@@ -65,7 +66,8 @@ bool Server::isChannelsCorrect(const stringVector &channels,
     }
     if (it->find_first_of(" \t\n\r\f\v,") != std::string::npos) {
       std::cout << RED
-          "ERROR FROM EDITORS : channel name cannot contain whitespaces or comma or be empty" RESET
+          "ERROR : channel name cannot contain whitespaces or commas or be "
+          "empty" RESET
                 << std::endl;
       return false;
     }
@@ -84,11 +86,9 @@ void Server::checkKeysCorrectness(const stringVector &keys) {
   stringVector::const_iterator it = keys.begin();
   stringVector::const_iterator itEnd = keys.end();
   for (; it != itEnd; ++it) {
-    if (it->find_first_of(" \t\n\r\f\v") != std::string::npos) {
+    if (it->find_first_of(" \t\n\r\f\v,") != std::string::npos) {
       std::cout << RED
-          "ERROR FROM EDITORS : channel name cannot contain whitespaces or "
-          "be "
-          "empty" RESET
+          "ERROR : keys cannot contain whitespaces or commas or be empty" RESET
                 << std::endl;
       return;
     }
@@ -100,7 +100,6 @@ void Server::processJoinRequest(int fd, Client *client,
                                 const std::string &channelName,
                                 const std::vector<std::string> &keys,
                                 size_t i) {
-
   // si le channel n'existe pas on l'ajoute
   if (_channels.find(channelName) == _channels.end()) {
     addChanneltoServerIfNoExist(channelName);

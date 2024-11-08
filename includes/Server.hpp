@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 16:05:08 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:23:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ class Server {
   const channelsMap &getChannels() const;
   const clientsMap &getClients() const;
 
-  /*============================================================================*/
+/*============================================================================*/
 /*       Member functions                                                     */
 /*============================================================================*/
 
@@ -129,7 +129,7 @@ class Server {
                      int fd);
 
 /*============================================================================*/
-/*      Commands                                                              */
+/*      Command                                                               */
 /*============================================================================*/
 
   /*-------- JOIN --------*/
@@ -139,23 +139,29 @@ class Server {
 
   void joinChannel(const std::string &param, int fd);
   void sendJoinMessage(int fd, const Client &client,
-                         const std::string &channelName);
+                       const std::string &channelName);
   void addChanneltoServerIfNoExist(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
-  void processJoinRequest(int fd, Client *client, const std::string &channelName, const std::vector<std::string> &keys, size_t i);
+  void processJoinRequest(int fd, Client *client,
+                          const std::string &channelName,
+                          const std::vector<std::string> &keys, size_t i);
   void handlePartRequest(int fd, const std::string &param);
-  void handleKey(Client *client, const Channel &channel, const std::string &key);
-void checkChannelsCorrectness(const stringVector &channels, const Client &client);
-void checkKeysCorrectness(const stringVector &keys);
+  void handleKey(Client *client, const Channel &channel,
+                 const std::string &key);
+  void checkChannelsCorrectness(const stringVector &channels,
+                                const Client &client);
+  void checkKeysCorrectness(const stringVector &keys);
   /*-------- PART --------*/
-  
+
   void quitChannel(int fd);
-  void broadcastPartMessage(int fd, const std::string &nick, const std::string &channelName);
-  void sendPartMessageToClient(int fd, const std::string &nick, const std::string &channelName);
+  void broadcastPartMessage(int fd, const std::string &nick,
+                            const std::string &channelName);
+  void sendPartMessageToClient(int fd, const std::string &nick,
+                               const std::string &channelName);
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
 

@@ -6,13 +6,15 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 11:24:09 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:24:24 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include <cerrno>
 #include <cstring>
+#include <iostream>
+#include <string>
 
 #include "../includes/colors.hpp"
 #include "../includes/Client.hpp"

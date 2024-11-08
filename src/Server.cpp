@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 15:23:35 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:25:27 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,8 +150,7 @@ void Server::closeServer(void) {
   // Fermer tous les clients
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
     closeClient(it->second.getFd());
-    
-  }
+    }
   _clients.clear();
   _channels.clear();
   // Fermer le socket principal
