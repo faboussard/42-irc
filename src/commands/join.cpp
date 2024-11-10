@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 09:30:34 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/10 16:59:30 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void Server::joinChannel(const std::string &param, int fd) {
       createAndRegisterChannel(&client, channelNameWithoutPrefix);
     }
     const clientPMap &clientsInChannel =
-        _channels[channelName].getChannelClients();
+        _channels.at(channelNameWithoutPrefix).getChannelClients();
     if (clientsInChannel.find(fd) == clientsInChannel.end()) {
       _channels.at(channelNameWithoutPrefix).addClientToChannelMap(&client);
       client.incrementChannelsCount();
