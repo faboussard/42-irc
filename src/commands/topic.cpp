@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/08 15:54:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 18:45:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ bool splitByFirstSpaces(const std::string &arg, stringVector *params,
 }
 
 void Server::topic(int fd, const std::string &arg) {
-  const Client &client = _clients[fd];
+  Client &client = _clients[fd];
 #ifdef DEBUG
   std::cout << "TOPIC command from " << client.getNickname() << std::endl;
 #endif
@@ -94,22 +94,30 @@ void Server::updateTopic(const Client &client, Channel *channel,
       !channel->isOperator(client)) {
     send482ChanOPrivsNeeded(client, *channel);
     return;
-  } else {
-    channel->setTopic(newTopic, client.getNickname());
   }
-  broadcastTopic(client, *channel);
+  if (newTopic.size() > gConfig->getLimit(TOPICLEN)) {
+    send476BadChanMask(client, channel->getNameWithPrefix());
+    client.receiveMessage(FROM_SERVER + "NOTICE " +
+                          "Topic is too long, limit is " + \
+                          gConfig->getParam(TOPICLEN) + " characters.\r\n");
+    return;
+  }
+  channel->setTopic(newTopic, client.getNickname());
+  // broadcastTopic(client, *channel);
+  broadcastInChannel(client, *channel, "TOPIC", newTopic);
 }
 
-void Server::broadcastTopic(const Client &client, const Channel &channel) {
-  std::string message = ":" + client.getNickname() + " TOPIC " +
-                        channel.getNameWithPrefix() + " :" +
-                        channel.getTopic().topic + "\r\n";
-  const clientPMap &clients = channel.getChannelClients();
-  clientPMap::const_iterator itEnd = clients.end();
-  for (clientPMap::const_iterator it = clients.begin(); it != itEnd; ++it) {
-    it->second->receiveMessage(message);
-  }
-}
+// void Server::broadcastTopic(const Client &client, const Channel &channel) {
+//   std::string message = ":" + client.getNickname() + " TOPIC " +
+//                         channel.getNameWithPrefix() + " :" +
+//                         channel.getTopic().topic + "\r\n";
+//   const clientPMap &clients = channel.getChannelClients();
+//   clientPMap::const_iterator itEnd = clients.end();
+//   for (clientPMap::const_iterator it = clients.begin(); it != itEnd; ++it) {
+//     it->second->receiveMessage(message);
+//   }
+// }
+
 // :<client who sent TOPIC> TOPIC <prefix><channel> : <new topic>
 
 // ======= TOPIC from a client who is not on the channel =======================
