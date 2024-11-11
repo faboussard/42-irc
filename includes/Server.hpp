@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 14:59:35 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 18:33:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,9 @@ class Server {
   /* Commands handling */
   void handleCommand(const std::string &command, const std::string &argument,
                      int fd);
+  void broadcastInChannel(const Client &client, const Channel &channel,
+                          const std::string &command, 
+                          const std::string &content);
 
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
@@ -155,7 +158,7 @@ class Server {
   void sendTopic(const Client &client, const Channel &channel);
   void updateTopic(const Client &client, Channel *channel,
                    const std::string &newTopic);
-  void broadcastTopic(const Client &client, const Channel &channel);
+  // void broadcastTopic(const Client &client, const Channel &channel);
 
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
@@ -177,7 +180,7 @@ class Server {
   void privmsg(int fd, const std::string &arg);
 
   /*-------- PING --------*/
-  void ping(Client *client, const std::string &token);
+  void ping(const Client &client, const std::string &token);
 
   /* Tests */
   void addClient(int fd, const Client &client);

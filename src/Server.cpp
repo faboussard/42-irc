@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/10 15:35:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 17:03:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,8 @@ void Server::acceptNewClient(void) {
       gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
   std::string hostName;
   if (host->h_name == NULL || sizeof(host->h_name) == 0 ||
-      static_cast<size_t>(host->h_length) > gConfig->getLimit("HOSTLEN"))
+      // static_cast<size_t>(host->h_length) > gConfig->getLimit("HOSTLEN"))
+      static_cast<size_t>(host->h_length) > gConfig->getLimit(HOSTLEN))
     hostName = clientIp;
   else
     hostName = host->h_name;
@@ -249,6 +250,18 @@ void Server::sendConnectionMessage(const Client &client) const {
 void Server::sendToAllClients(const std::string &message) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
     if (it->second.isAccepted()) it->second.receiveMessage(message);
+  }
+}
+
+void Server::broadcastInChannel(const Client &client, const Channel &channel,
+                                const std::string &command, 
+                                const std::string &content) {
+  std::string message = ":" + client.getNickname() + " " + command + " " +
+                          channel.getNameWithPrefix() + " :" + content + "\r\n";
+  const clientPMap &allClients = channel.getChannelClients();
+  clientPMap::const_iterator itEnd = allClients.end();
+  for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
+    it->second->receiveMessage(message);
   }
 }
 
