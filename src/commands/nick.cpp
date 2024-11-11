@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/10 20:43:44 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 17:08:07 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ bool Parser::verifyNick(const std::string &nick, Client *client,
     return (false);
   }
   size_t size = nick.size();
-  if (size > gConfig->getLimit("NICKLEN") || std::isdigit(nick[0])) {
+  // if (size > gConfig->getLimit("NICKLEN") || std::isdigit(nick[0])) {
+    if (size > gConfig->getLimit(NICKLEN) || std::isdigit(nick[0])) {
     send432ErroneusNickname(*client, nick);
     return (false);
   }

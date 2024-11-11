@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/10 16:59:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 17:09:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,8 @@ bool Server::isChannelValid(const std::string &param, const Client &client) {
     send476BadChanMask(client, param);
     return false;
   } else if (static_cast<size_t>(client.getChannelsCount()) >=
-             gConfig->getLimit("CHANLIMIT")) {
+            //  gConfig->getLimit("CHANLIMIT")) {
+             gConfig->getLimit(CHANLIMIT)) {
     send405TooManyChannels(client);
     return false;
   }

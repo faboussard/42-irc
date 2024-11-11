@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/08 09:55:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 18:44:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,7 +201,7 @@ void Server::handleCommand(const std::string &command,
   } else if (command == "QUIT") {
     quit(argument, &_clients[fd], &_clients);
   } else if (command == "PING") {
-    ping(&_clients.at(fd), argument);
+    ping(_clients.at(fd), argument);
   } else if (command == "PASS" || command == "USER") {
     if (argument.empty())
       send461NeedMoreParams(_clients[fd], command);

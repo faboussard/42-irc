@@ -1,4 +1,4 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <yusengok> ************************************************ */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:50:36 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/10 23:52:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 18:00:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,40 +22,29 @@
 
 #include "./colors.hpp"
 
-// enum eConfig {
-//   NETWORK,
-//   CHANLIMIT,
-//   CHANNELLEN,
-//   MAXTARGETS,
-//   NICKLEN,
-//   HOSTLEN,
-//   KICKLEN,
-//   TOPICLEN,
-//   USERLEN,
-//   CASEMAPPING,
-//   CHANMODES,
-//   CHANTYPES,
-//   PREFIX,
-//   MODES,
-//   USERMODES
-// };
+enum eConfigKey {
+  NETWORK,
+  CHANLIMIT,
+  CHANNELLEN,
+  MAXTARGETS,
+  NICKLEN,
+  HOSTLEN,
+  KICKLEN,
+  TOPICLEN,
+  USERLEN,
+  CASEMAPPING,
+  CHANMODES,
+  CHANTYPES,
+  PREFIX,
+  MODES,
+  USERMODES,
+  UNKNOWN_CONFIG
+};
 
-// enum eLimits {
-//   CHANLIMIT,
-//   CHANNELLEN,
-//   MAXTARGETS,
-//   NICKLEN,
-//   HOSTLEN,
-//   KICKLEN,
-//   TOPICLEN,
-//   USERLEN,
-//   MODES,
-// };
-
-typedef std::map<std::string, std::string> parametersMap;
-typedef std::map<std::string, size_t> numParametersMap;
-// typedef std::map<eConfig, std::string> parametersMap;
-// typedef std::map<eLimits, size_t> numParametersMap;
+// typedef std::map<std::string, std::string> parametersMap;
+// typedef std::map<std::string, size_t> numParametersMap;
+typedef std::map<eConfigKey, std::string> parametersMap;
+typedef std::map<eConfigKey, size_t> numParametersMap;
 typedef std::set<std::string> stringSet;
 
 /* Default config */
@@ -114,22 +103,30 @@ class Config {
 
   void parseConfigFile(const std::string& pathToConfigFile);
   void applyAllDefaultValues(void);
-  void assignMissingConfigurations(void);
+  // void assignMissingConfigurations(void);
   void setNumericParameters(void);
   void initializeSupportedChanModes(void);
   void generateIsupportParamToken(void);
 
   /* Helper functions */
-  std::string _getDefaultValue(const std::string &key) const;
-  bool isWithinLimit(const std::string &key, size_t value) const;
-  void initializeRequiredParams(void);
-  void initializeRequiredLimits(void);
+  eConfigKey identifyKey(const std::string &keyStr) const;
+  std::string keyToString(eConfigKey key) const;
+  bool isNumericLimitConfig(eConfigKey key);
+  std::string _getDefaultValue(eConfigKey key) const;
+  bool isWithinLimit(eConfigKey key, size_t value) const;
+
+  // std::string _getDefaultValue(const std::string &key) const;
+  // bool isWithinLimit(const std::string &key, size_t value) const;
+  // void initializeRequiredParams(void);
+  // void initializeRequiredLimits(void);
 
  public:
   explicit Config(const std::string& pathToConfigFile);
 
-  size_t getLimit(const std::string& key) const;
-  const std::string& getParam(const std::string& key) const;
+  // size_t getLimit(const std::string& key) const;
+  // const std::string& getParam(const std::string& key) const;
+  size_t getLimit(eConfigKey key) const;
+  const std::string& getParam(eConfigKey key) const;
 
   const std::string& getSupportedChanModes(void) const;
   const std::string& getIsupportParamToken(void) const;
