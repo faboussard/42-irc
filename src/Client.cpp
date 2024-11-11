@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 15:32:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 18:31:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 /*       Messages handling                                                    */
 /*============================================================================*/
 
-void Client::receiveMessage(const std::string& message) {
+void Client::receiveMessage(const std::string& message) const {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {

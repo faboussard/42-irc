@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 15:36:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 18:30:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ class Client {
   void setURegisteredMode(bool isRegistered);
 
   /* Messages handling */
-  void receiveMessage(const std::string& message);
+  void receiveMessage(const std::string& message) const;
   std::string shareMessage();
 
   /* Channels handling */
