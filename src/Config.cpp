@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:55:24 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/11 18:00:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 18:57:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ Config::Config(const std::string& pathToConfigFile) : _notDefined("") {
   parseConfigFile(pathToConfigFile);
   initializeSupportedChanModes();
   generateIsupportParamToken();
-  std::cout << "ISUPPORT: " << _isupportParamTokens << std::endl;
 }
 
 /*============================================================================*/
@@ -131,7 +130,7 @@ void Config::setNumericParameters(void) {
       size_t value = std::strtoul(it->second.c_str(), &end, 10);
       if (errno == ERANGE || *end != '\0' || !isWithinLimit(it->first, value)) {
         std::cerr << INVALID_VALUE(keyToString(it->first)) << std::endl;
-        std::string defaultValue = _getDefaultValue(it->first);
+        std::string defaultValue = getDefaultValue(it->first);
         value = std::strtoul(defaultValue.c_str(), &end, 10);
         _parameters.at(it->first) = defaultValue;
       }
@@ -206,7 +205,7 @@ std::string Config::keyToString(eConfigKey key) const {
   return ("");
 }
 
-std::string Config::_getDefaultValue(eConfigKey key) const {
+std::string Config::getDefaultValue(eConfigKey key) const {
   if (key == NETWORK) return (DEFAULT_NETWORK);
   if (key == CHANLIMIT) return (DEFAULT_CHANLIMIT);
   if (key == CHANNELLEN) return (DEFAULT_CHANNELLEN);

@@ -6,21 +6,19 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:50:36 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/11 18:00:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/11 19:00:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INCLUDES_CONFIG_HPP_
 #define INCLUDES_CONFIG_HPP_
 
-#define CONFIG_FILE_PATH "./server.conf"
-
-#include <stdint.h>
 #include <map>
-#include <set>
 #include <string>
 
 #include "./colors.hpp"
+
+#define CONFIG_FILE_PATH "./server.conf"
 
 enum eConfigKey {
   NETWORK,
@@ -41,11 +39,8 @@ enum eConfigKey {
   UNKNOWN_CONFIG
 };
 
-// typedef std::map<std::string, std::string> parametersMap;
-// typedef std::map<std::string, size_t> numParametersMap;
 typedef std::map<eConfigKey, std::string> parametersMap;
 typedef std::map<eConfigKey, size_t> numParametersMap;
-typedef std::set<std::string> stringSet;
 
 /* Default config */
 #define DEFAULT_NETWORK "42IRC"
@@ -97,8 +92,8 @@ class Config {
   std::string        _supportedChanModes;
   std::string        _isupportParamTokens;
 
-  stringSet _requiredParams;
-  stringSet _requiredLimits;
+  // stringSet _requiredParams;
+  // stringSet _requiredLimits;
   const std::string  _notDefined;
 
   void parseConfigFile(const std::string& pathToConfigFile);
@@ -110,12 +105,12 @@ class Config {
 
   /* Helper functions */
   eConfigKey identifyKey(const std::string &keyStr) const;
+  std::string getDefaultValue(eConfigKey key) const;
   std::string keyToString(eConfigKey key) const;
   bool isNumericLimitConfig(eConfigKey key);
-  std::string _getDefaultValue(eConfigKey key) const;
   bool isWithinLimit(eConfigKey key, size_t value) const;
 
-  // std::string _getDefaultValue(const std::string &key) const;
+  // std::string getDefaultValue(const std::string &key) const;
   // bool isWithinLimit(const std::string &key, size_t value) const;
   // void initializeRequiredParams(void);
   // void initializeRequiredLimits(void);
