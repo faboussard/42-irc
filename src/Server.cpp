@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/11 17:03:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:40:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,7 @@ void Server::closeServer(void) {
   _pollFds.clear();
   shrink_to_fit(&_pollFds);
   _channels.clear();
+  delete gConfig;
 }
 
 /*============================================================================*/
@@ -264,49 +265,3 @@ void Server::broadcastInChannel(const Client &client, const Channel &channel,
     it->second->receiveMessage(message);
   }
 }
-
-//     // Récupérer l'instance du client avant de l'accepter dans le canal
-//     const Client &client = getClientByFd(fd);
-//     _channels[channelName].acceptClientInTheChannel(client);
-
-//     // Envoyer la réponse JOIN au client
-//     // client._nick = "faboussa"; //
-//     std::cout << "Client " << client.getNickName() << " joined channel " <<
-//     channelName << std::endl;
-
-//     std::string nick = client.getNickName();
-//     #ifdef DEBUG
-//       std::cout << "Client " << nick << " joined channel " << channelName <<
-//       std::endl;
-//     #endif
-//     std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
-//     send(fd, joinMessage.c_str(), joinMessage.length(), 0);
-
-//     // Préparer et envoyer la liste des utilisateurs dans le canal (353
-//     RPL_NAMREPLY) std::string nameReply = ":" + SRV_NAME + " 353 " + nick + "
-//     = " + channelName + " :";
-
-//     const clientsMap &clientsInChannel =
-//     _channels[channelName].getChannelClients(); for
-//     (clientsMap::const_iterator it = clientsInChannel.begin(); it !=
-//     clientsInChannel.end(); ++it) {
-//         nameReply += getClientByFd(it->first).getNickName() + " ";
-//     }
-
-//     // Terminer le message de liste avec un retour à la ligne
-//     nameReply += "\r\n";
-//     send(fd, nameReply.c_str(), nameReply.length(), 0);
-
-//     // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms
-//     est terminée std::string endOfNames = ":" + SRV_NAME + " 366 " + nick + "
-//     " + channelName + " :End of /NAMES list\r\n"; send(fd,
-//     endOfNames.c_str(), endOfNames.length(), 0);
-
-//     // Informer les autres clients dans le canal que quelqu'un a rejoint
-//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it !=
-//     clientsInChannel.end(); ++it) {
-//         if (it->first != fd) { // Évitez d'envoyer au client qui a rejoint
-//             send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
-//         }
-//     }
-// }
