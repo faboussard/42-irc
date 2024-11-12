@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 12:35:45 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:15:57 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ class Channel {
   void removeClientFromChannelMap(Client *client);
   void addClientToChannelMap(Client *client);
   void receiveMessageInTheChannel(int fd);
-
+  void checkAndremoveClientFromTheChannel(int fd);
   /* Modes handling */
   // invite-only (i)
   void activateInviteOnlyMode(void);

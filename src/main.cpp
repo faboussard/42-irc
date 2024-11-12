@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:54:05 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:13:47 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,12 @@ int main(int ac, char** argv) {
     signal(SIGQUIT, Server::signalHandler);
     initServerConfig();
     ser.runServer();
-  } catch (const std::exception& e) {
+  } catch (const std::runtime_error& e) {
     std::cerr << RED << e.what() << RESET << '\n';
     ser.closeServer();
-    exit(EXIT_FAILURE);
+    return (EXIT_FAILURE);
   }
   ser.closeServer();
   std::cout << "The Server is closed" << std::endl;
-  delete gConfig;
-  exit(EXIT_SUCCESS);
+  return (EXIT_SUCCESS);
 }

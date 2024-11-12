@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:54:03 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:15:27 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,19 @@ void Channel::removeClientFromChannelMap(Client *client) {
   _channelClients.erase(client->getFd());
   std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
             << " removed from channel " << _name << std::endl;
+}
+
+void Channel::checkAndremoveClientFromTheChannel(int fd) {
+  if (_channelClients.find(fd) != _channelClients.end()) {
+    _channelClients[fd]->receiveMessage(
+        "You have been removed from the channel");
+    _channelClients.erase(fd);
+    std::cout << "Client " << fd << " removed from channel " << _name
+              << std::endl;
+  } else {
+    std::cerr << RED "Client " RESET << fd << " not found in channel " << _name
+              << RESET << std::endl;
+  }
 }
 
 /*============================================================================*/

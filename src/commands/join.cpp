@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 16:11:43 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:21:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void Server::joinChannel(const std::string &param, int fd) {
   std::string keysPart =
       (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
   splitByCommaAndTrim(keysPart, &keys);
-  #ifdef DEBUG
+#ifdef DEBUG
   std::cout << "Before split and trim key: " << keysPart << std::endl;
   std::cout << "After split and trim key: ";
   for (size_t i = 0; i < keys.size(); ++i) std::cout << keys[i] << "|";
@@ -71,6 +71,14 @@ bool Server::isChannelValid(const std::string &channelToCheck,
 #ifdef DEBUG
   std::cout << "channel to check " << channelToCheck << std::endl;
 #endif
+#ifdef DEBUG
+    std::cout << "channelToCheck.length() " << channelToCheck.length() << std::endl;
+    std::cout << " gConfig->getLimit("CHANNELLEN") " <<  gConfig->getLimit("CHANNELLEN")  << std::endl;
+#endif
+#ifdef DEBUG
+    std::cout << "client.getChannelsCount() " << client.getChannelsCount() << std::endl;
+    std::cout << " gConfig->getLimit("CHANLIMIT"" <<  gConfig->getLimit("CHANLIMIT")  << std::endl;
+#endif
   if (channelToCheck.empty() ||
       (channelToCheck.length() == 1 && channelToCheck[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
@@ -82,7 +90,7 @@ bool Server::isChannelValid(const std::string &channelToCheck,
   } else if (client.getChannelsCount() >= gConfig->getLimit("CHANLIMIT")) {
     send405TooManyChannels(client);
     return (false);
-  } 
+  }
   return (true);
 }
 
@@ -105,19 +113,19 @@ void Server::processJoinRequest(int fd, Client *client,
     }
   }
   if (keyHandled || keys.empty()) {
-  const clientPMap &clientsInChannel =
-      _channels[channelName].getChannelClients();
-  Channel &channel = _channels.at(channelName);
-  // si le client n'est pas déjà dans le channel
-  std::string nick = client->getNickname();
-  if (clientsInChannel.find(fd) == clientsInChannel.end()) {
-    client->incrementChannelsCount();
-    channel.addClientToChannelMap(client);
-    sendJoinMessageToClient(fd, nick, channelName, *client);
-    send353Namreply(*client, _channels[channelName]);
-    send366Endofnames(*client, _channels[channelName]);
-  }
-  broadcastJoinMessage(fd, nick, channelName);
+    const clientPMap &clientsInChannel =
+        _channels[channelName].getChannelClients();
+    Channel &channel = _channels.at(channelName);
+    // si le client n'est pas déjà dans le channel
+    std::string nick = client->getNickname();
+    if (clientsInChannel.find(fd) == clientsInChannel.end()) {
+      client->incrementChannelsCount();
+      channel.addClientToChannelMap(client);
+      sendJoinMessageToClient(fd, nick, channelName, *client);
+      send353Namreply(*client, _channels[channelName]);
+      send366Endofnames(*client, _channels[channelName]);
+    }
+    broadcastJoinMessage(fd, nick, channelName);
   }
 }
 
