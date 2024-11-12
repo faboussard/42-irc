@@ -1,5 +1,5 @@
 **IRC communication Diagram**
-![alt text](image.png)
+![IRC communication diagram](/assets/IRC_communication_diagram.png)
 
 1. **Create the Server Socket (Listening):** ⚙️
    - Create a socket with the `socket()` system call. It will be used for the client to connect to the server, which will use `accept()`. 🖧
