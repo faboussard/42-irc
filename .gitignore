@@ -47,3 +47,4 @@ test-results/
 # Ignorer les fichiers de sauvegarde
 *~
 *.bak
+ft_irc-tester
