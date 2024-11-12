@@ -12,14 +12,15 @@
 
 C = c++
 NAME = ircserv
-CFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98 -g
+CFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98
 MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
 vpath %.cpp src src/commands src/unitTests
 
-HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils tests
+HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils \
+               tests
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
        pass nick user \
@@ -60,12 +61,13 @@ debug: C = g++
 debug: CFLAGS += -DDEBUG -g3
 debug: clean create_dirs ${NAME}
 
-# ---------------------------------- valgrind ----------------------------------- #
+# ---------------------------------- valgrind -------------------------------- #
 
 valgrind: $(NAME)
-			valgrind --track-fds=yes --trace-children=yes --leak-check=full --show-leak-kinds=all ./$(NAME) 6667 pass
+			valgrind --track-fds=yes --trace-children=yes --leak-check=full \
+			--show-leak-kinds=all ./$(NAME) 6667 pass
 
-# ---------------------------------- Test ----------------------------------- #
+# ---------------------------------- Test ------------------------------------ #
 test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 test: CFLAGS += -DTEST
 test: clean create_dirs ${NAME}

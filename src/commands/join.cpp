@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 17:28:48 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 10:10:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@
 #include <string>
 #include <vector>
 
-#include "../includes/Client.hpp"
-#include "../includes/Server.hpp"
-#include "../includes/colors.hpp"
-#include "../includes/numericReplies.hpp"
-#include "../includes/utils.hpp"
+#include "../../includes/Client.hpp"
+#include "../../includes/Server.hpp"
+#include "../../includes/colors.hpp"
+#include "../../includes/numericReplies.hpp"
+#include "../../includes/utils.hpp"
 
 void Server::joinChannel(const std::string &param, int fd) {
   Client &client = _clients.at(fd);
@@ -37,6 +37,13 @@ void Server::joinChannel(const std::string &param, int fd) {
   std::string::size_type spacePos = param.find(" ");
   std::string channelsPart = param.substr(0, spacePos);
   splitByCommaAndTrim(channelsPart, &channels);
+#ifdef DEBUG
+  std::cout << "Before split and trim: " << channelsPart << std::endl;
+  std::cout << "Before split and trim: ";
+  for (size_t i = 0; i < channels.size(); ++i)
+    std::cout << channels[i] << "|";
+  std::cout << std::endl;
+#endif
   if (isChannelsCorrect(channels, client)) {
     for (size_t i = 0; i < channels.size(); ++i) {
       std::string channelNameWithoutPrefix = channels[i].substr(1);
@@ -62,24 +69,24 @@ bool Server::isChannelsCorrect(const stringVector &channels,
   for (; it != itEnd; ++it) {
     if (it->empty() || (it->length() == 1 && (*it)[0] == REG_CHAN)) {
       send461NeedMoreParams(client, "JOIN");
-      return false;
+      return (false);
     }
     if (it->find_first_of(" \t\n\r\f\v,") != std::string::npos) {
       std::cout << RED
           "ERROR : channel name cannot contain whitespaces or commas or be "
           "empty" RESET
                 << std::endl;
-      return false;
+      return (false);
     }
     if (it->length() > 20 || it->length() < 2 || (*it)[0] != REG_CHAN) {
       send476BadChanMask(client, it->substr(1));
       return false;
     } else if (client.getChannelsCount() >= gConfig->getLimit("CHANLIMIT")) {
       send405TooManyChannels(client);
-      return false;
+      return (false);
     }
   }
-  return true;
+  return (true);
 }
 
 void Server::checkKeysCorrectness(const stringVector &keys) {

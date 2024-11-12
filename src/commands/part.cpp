@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 17:47:18 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 09:05:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,17 @@
 #include <stdexcept>
 #include <string>
 
-#include "../includes/Client.hpp"
-#include "../includes/Server.hpp"
-#include "../includes/colors.hpp"
-#include "../includes/numericReplies.hpp"
-#include "../includes/utils.hpp"
+#include "../../includes/Client.hpp"
+#include "../../includes/Server.hpp"
+#include "../../includes/colors.hpp"
+#include "../../includes/numericReplies.hpp"
+#include "../../includes/utils.hpp"
 
 void Server::quitChannel(int fd) {
   Client *client = &_clients.at(fd);
 
   channelsMap::iterator itEnd = _channels.end();
-  channelsMap::iterator itBegin = _channels.begin();
-  for (channelsMap::iterator it = itBegin; it != itEnd; ++it) {
+  for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
     Channel *channel = &it->second;
     if (channel->getChannelClients().find(fd) !=
         channel->getChannelClients().end()) {

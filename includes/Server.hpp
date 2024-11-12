@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 17:23:31 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 08:29:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,9 +81,7 @@ class Server {
  public:
   explicit Server(int port, const std::string &password);
 
-/*============================================================================*/
-/*       Getters                                                              */
-/*============================================================================*/
+/*  Getters                                                                   */
 
   int getSocketFd() const;
   int getPort() const;
@@ -93,9 +91,7 @@ class Server {
   const channelsMap &getChannels() const;
   const clientsMap &getClients() const;
 
-/*============================================================================*/
-/*       Member functions                                                     */
-/*============================================================================*/
+/* Member functions                                                           */
 
   /* Clients Management */
   void acceptNewClient(void);
@@ -117,7 +113,6 @@ class Server {
 
   /* Other methods */
   void sendToAllClients(const std::string &message);
-  void handlePassword(int fd);
 
   /* Clear and Close */
   void closeServer(void);
@@ -128,9 +123,7 @@ class Server {
   void handleCommand(const std::string &command, const std::string &argument,
                      int fd);
 
-/*============================================================================*/
-/*      Command                                                               */
-/*============================================================================*/
+  /*  Command  */
 
   /*-------- JOIN --------*/
 
@@ -155,13 +148,14 @@ class Server {
   void checkChannelsCorrectness(const stringVector &channels,
                                 const Client &client);
   void checkKeysCorrectness(const stringVector &keys);
-  /*-------- PART --------*/
 
+  /*-------- PART --------*/
   void quitChannel(int fd);
   void broadcastPartMessage(int fd, const std::string &nick,
                             const std::string &channelName);
   void sendPartMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName);
+
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
 

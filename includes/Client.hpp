@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 17:22:48 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 08:22:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@
 #include <map>
 #include <sstream>
 #include <string>
-
-#include "../includes/Channel.hpp"
 
 class Channel;
 
@@ -54,10 +52,7 @@ class Client {
   explicit Client(int fd = -1, const std::string& ip = "",
                   const std::string& hostName = "");
 
-
-/*============================================================================*/
-/*       Getters                                                              */
-/*============================================================================*/
+/* Getters                                                                    */
 
   int getFd(void) const;
   std::string getIp(void) const;
@@ -76,10 +71,8 @@ class Client {
   uint8_t getNbPassAttempts(void) const;
   size_t getChannelsCount() const;
 
+/* Setters                                                                    */
 
-/*============================================================================*/
-/*       Setters                                                              */
-/*============================================================================*/
   void setFd(int fd);
   void setNickname(const std::string& nickname);
   void setUserName(const std::string& username);
@@ -88,12 +81,9 @@ class Client {
   void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
 
-/*============================================================================*/
-/*       Member functions                                                     */
-/*============================================================================*/
+/* Member functions                                                           */
 
-  /* Modes */
-
+  /* Client status */
   void declareAccepted(void);
   void declarePasswordGiven(void);
   void incrementNbPassAttempts(void);
@@ -108,7 +98,6 @@ class Client {
   /* Channels handling */
   void incrementChannelsCount();
   void decrementChannelsCount();
-  void addChannelToClientMap(Channel *channel);
 };
 
 #endif  // INCLUDES_CLIENT_HPP_
