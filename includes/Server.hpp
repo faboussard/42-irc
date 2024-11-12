@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 12:52:49 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 15:59:33 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,10 +139,9 @@ class Server {
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
   void processJoinRequest(int fd, Client *client,
-                          const std::string &channelName,
-                          const std::string &key);
+                          const std::string &channelName, const stringVector &keys, size_t channelIndex);
   void handlePartRequest(int fd, const std::string &param);
-  void handleKey(Client *client, const Channel &channel,
+  bool handleKey(Client *client, const Channel &channel,
                  const std::string &key);
   bool isKeyValid(const std::string &keyToCheck);
 
