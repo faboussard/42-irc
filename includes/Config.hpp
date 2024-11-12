@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Config.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:50:36 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 16:24:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:20:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,8 @@ typedef std::map<eConfigKey, size_t> numParametersMap;
 #define LIMIT_USERLEN 20
 
 /* Messages */
-#define WARNING_CONFIG (std::string(YELLOW) + "WARNING [IRC server configurations]: " \
+#define WARNING_CONFIG (std::string(YELLOW) + \
+                       "WARNING [IRC server configurations]: " \
                        + RESET)
 #define MISSING_CONFIG_FILE (WARNING_CONFIG + \
                             "Failed to open config file. " + \

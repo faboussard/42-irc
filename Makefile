@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
+#    By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/07 14:06:09 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/12 11:58:54 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,8 @@ RMDIR = rm -rf
 # ---------------------------------- Sources --------------------------------- #
 vpath %.cpp src src/commands src/unitTests
 
-HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils tests
+HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils \
+               tests
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
        pass nick user \
@@ -60,17 +61,17 @@ debug: CFLAGS += -DDEBUG -g3
 debug: clean create_dirs ${NAME}
 
 # ---------------------------------- valgrind -------------------------------- #
-valgrind: ${NAME}
-			valgrind --track-fds=yes --trace-children=yes --leak-check=full \
-			--show-leak-kinds=all ./${NAME} 6667 pass
+valgrind: $(NAME) debug
+			valgrind --track-fds=yes --leak-check=full \
+			--show-leak-kinds=all -s ./$(NAME) 6667 pass
 
 # ---------------------------------- fsanitize ------------------------------- #
 fsanitize: C = g++
 fsanitize: CFLAGS += -fsanitize=address -g
 fsanitize: clean create_dirs ${NAME}
 
-# ---------------------------------- Test ----------------------------------- #
-test: CFLAGS := ${filter-out -Werror, ${CFLAGS}}
+# ---------------------------------- Test ------------------------------------ #
+test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
 test: CFLAGS += -DTEST
 test: clean create_dirs ${NAME}
 
@@ -91,4 +92,4 @@ fclean: clean
 re: fclean all
 
 # ---------------------------------- Phony ----------------------------------- #
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re debug fsanitize valgrind

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/11 18:33:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:20:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,10 +81,8 @@ class Server {
 
  public:
   explicit Server(int port, const std::string &password);
-#ifdef TEST
-  Server() {};
-#endif
-  /* Getters */
+
+  /*  Getters */
   int getSocketFd() const;
   int getPort() const;
   const std::string &getPassword() const;
@@ -113,7 +111,6 @@ class Server {
 
   /* Other methods */
   void sendToAllClients(const std::string &message);
-  void handlePassword(int fd);
 
   /* Clear and Close */
   void closeServer(void);
@@ -124,28 +121,43 @@ class Server {
   void handleCommand(const std::string &command, const std::string &argument,
                      int fd);
   void broadcastInChannel(const Client &client, const Channel &channel,
-                          const std::string &command, 
+                          const std::string &command,
                           const std::string &content);
 
-  /*-------- QUIT --------*/
-  void quit(const std::string &argument, Client *client, clientsMap *cltMap);
+  /*  Command  */
 
   /*-------- JOIN --------*/
-  void handleJoinRequest(int fd, const Client &client,
-                         const std::string &channelName);
-  bool isValidChannelPrefix(const std::string &param);
-  bool isValidChannelNameLength(const std::string &param);
+
   bool isLeaveAllChannelsRequest(const std::string &param);
-  bool isSingleCharacterChannelPrefix(const std::string &param);
+  bool isChannelValid(const std::string &channelToCheck, const Client &client);
+
   void joinChannel(const std::string &param, int fd);
-  bool isChannelValid(const std::string &param, const Client &client);
-  void createAndRegisterChannel(Client *client, const std::string &channelName);
+
   void addChanneltoServerIfNoExist(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
+  void processJoinRequest(int fd, Client *client,
+                          const std::string &channelName,
+                          const stringVector &keys, size_t channelIndex);
+  void handlePartRequest(int fd, const std::string &param);
+  bool handleKey(Client *client, const Channel &channel,
+                 const std::string &key);
+  bool isKeyValid(const std::string &keyToCheck);
+
+  /*-------- PART --------*/
+  void quitAllChannels(int fd);
+  void broadcastPartMessage(int fd, const std::string &nick,
+                            const std::string &channelName);
+  void sendPartMessageToClient(int fd, const std::string &nick,
+                               const std::string &channelName);
+
+  /*-------- QUIT --------*/
+  void quit(const std::string &argument, Client *client, clientsMap *cltMap);
+
+  /*-------- JOIN --------*/
 
   /*-------- KICK --------*/
   void kick(int fd, const std::string &arg);

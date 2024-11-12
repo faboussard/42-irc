@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/08 15:54:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:22:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@
 Channel::Channel(const std::string &name) : _name(name), _key(""), _limit(0) {
   time_t now = time(0);
   _creationTime = toString(now);
-
   _type = toString(REG_CHAN);
   _nameWithPrefix = _type + _name;
   _mode.inviteOnly = false;
@@ -91,38 +90,22 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
 }
 
 /*============================================================================*/
-/*       Member functions                                                     */
+/*       Clients management                                                   */
 /*============================================================================*/
 
-bool Channel::isClientInChannel(int fd) const {
-  if (_channelClients.find(fd) != _channelClients.end()) {
-    return (true);
-  }
-  return (false);
+void Channel::addClientToChannelMap(Client *client) {
+  _channelClients[client->getFd()] = client;
+  std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
+            << " added in channel " << _name << std::endl;
 }
 
-void Channel::receiveMessageInTheChannel(int fd) {
-  if (_channelClients.find(fd) != _channelClients.end()) {
-    std::string message = _channelClients[fd]->shareMessage();
-    if (!message.empty()) {
-      std::cout << "Message received in channel " << _name << " from client "
-                << fd << ": " << message << std::endl;
-      clientPMap::iterator itBegin = _channelClients.begin();
-      clientPMap::iterator itEnd = _channelClients.end();
-      for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {
-        if (it->first != fd) {
-          it->second->receiveMessage(message);
-        }
-      }
-    }
-  }
+void Channel::removeClientFromChannelMap(Client *client) {
+  _channelClients.erase(client->getFd());
+  std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
+            << " removed from channel " << _name << std::endl;
 }
 
-/*============================================================================*/
-/*       Add/remove client                                                    */
-/*============================================================================*/
-
-void Channel::removeClientFromTheChannel(int fd) {
+void Channel::checkAndremoveClientFromTheChannel(int fd) {
   if (_channelClients.find(fd) != _channelClients.end()) {
     _channelClients[fd]->receiveMessage(
         "You have been removed from the channel");
@@ -135,10 +118,11 @@ void Channel::removeClientFromTheChannel(int fd) {
   }
 }
 
-void Channel::addClientToChannelMap(Client *client) {
-  _channelClients[client->getFd()] = client;
-  std::cout << "Client " << client->getFd() << " added to channel " << _name
-            << std::endl;
+bool Channel::isClientInChannel(int fd) const {
+  if (_channelClients.find(fd) != _channelClients.end()) {
+    return (true);
+  }
+  return (false);
 }
 
 /*============================================================================*/
@@ -230,4 +214,26 @@ void Channel::deactivateLimitMode(void) {
   _limit = 0;
   std::cout << "[" << _nameWithPrefix << "] Limit mode desactivated"
             << std::endl;
+}
+
+
+/*============================================================================*/
+/*       Others                                                               */
+/*============================================================================*/
+
+void Channel::receiveMessageInTheChannel(int fd) {
+  if (_channelClients.find(fd) != _channelClients.end()) {
+    std::string message = _channelClients[fd]->shareMessage();
+    if (!message.empty()) {
+      std::cout << "Message received in channel " << _name << " from client "
+                << fd << ": " << message << std::endl;
+      clientPMap::iterator itBegin = _channelClients.begin();
+      clientPMap::iterator itEnd = _channelClients.end();
+      for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {
+        if (it->first != fd) {
+          it->second->receiveMessage(message);
+        }
+      }
+    }
+  }
 }

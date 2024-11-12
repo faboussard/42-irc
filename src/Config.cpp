@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:55:24 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 16:38:39 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:18:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ bool Config::isValidConfigValue(eConfigKey key, const std::string& keyStr,
     if ((key == CASEMAPPING && value != DEFAULT_CASEMAPPING) ||
         (key == CHANMODES && value != DEFAULT_CHANMODES) ||
         (key == CHANTYPES && value != DEFAULT_CHANTYPES) ||
-        (key == PREFIX && value != DEFAULT_PREFIX) || 
+        (key == PREFIX && value != DEFAULT_PREFIX) ||
         (key == USERMODES && value != DEFAULT_USERMODES)) {
       std::cerr << NOTSUPPORTED_VALUE(keyStr) << std::endl;
       return (false);

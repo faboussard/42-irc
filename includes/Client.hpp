@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/11 18:30:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:05:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,11 @@
 #include <sys/types.h>
 
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
+
+class Channel;
 
 typedef struct UserModes {
   bool invisible;
@@ -43,12 +46,11 @@ class Client {
   bool _CapSend;
   UserModes _uModes;
   uint8_t _nbPassAttempts;
-  int _channelsCount;
+  size_t _channelsCount;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "",
                   const std::string& hostName = "");
-  // explicit Client(int fd = -1, const std::string& ip = "");
 
   /* Getters */
   int getFd(void) const;
@@ -66,7 +68,7 @@ class Client {
   bool isAccepted(void) const;
   bool isCapSend(void) const;
   uint8_t getNbPassAttempts(void) const;
-  int getChannelsCount() const;
+  size_t getChannelsCount() const;
 
   /* Setters */
   void setFd(int fd);
@@ -77,6 +79,7 @@ class Client {
   void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
 
+  /* Client status */
   void declareAccepted(void);
   void declarePasswordGiven(void);
   void incrementNbPassAttempts(void);
@@ -90,6 +93,7 @@ class Client {
 
   /* Channels handling */
   void incrementChannelsCount();
+  void decrementChannelsCount();
 };
 
 #endif  // INCLUDES_CLIENT_HPP_

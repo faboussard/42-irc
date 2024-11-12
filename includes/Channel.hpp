@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/08 15:54:14 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:18:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,9 @@
 #include <map>
 #include <string>
 
-#include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
+
+class Client;
 
 typedef std::map<int, Client *> clientPMap;
 
@@ -57,10 +58,8 @@ class Channel {
 
  public:
   explicit Channel(const std::string &name = "");
-  bool isSecret;  // sera remplacé dans la strcuture de Yuko.
 
-  /* Getters */
-
+  /*  Getters */
   const std::string &getName(void) const;
   const std::string &getType(void) const;
   const std::string getNameWithPrefix(void) const;
@@ -73,20 +72,19 @@ class Channel {
   const std::string &getKey(void) const;
   int getLimit(void) const;
 
-  /* Setters */
-
+  /*  Setters */
   void setTopic(const std::string &topic, const std::string &author);
 
-  /* Member Functions */
+  /*  Member functions */
   bool isClientInChannel(int fd) const;
-  void receiveMessageInTheChannel(int fd);
 
-  /* Add/remove client */
-  void removeClientFromTheChannel(int fd);
+  /* Clients Management */
+  void removeClientFromChannelMap(Client *client);
   void addClientToChannelMap(Client *client);
+  void receiveMessageInTheChannel(int fd);
+  void checkAndremoveClientFromTheChannel(int fd);
 
   /* Modes handling */
-
   // invite-only (i)
   void activateInviteOnlyMode(void);
   void deactivateInviteOnlyMode(void);

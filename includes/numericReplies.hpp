@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   numericReplies.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 16:29:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:06:15 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,6 @@ extern Config *gConfig;
 
 /*------ Connection registration ---------------------------------------------*/
 
-// #define _001_RPL_WELCOME(nick, user, host)                                 
-//   (FROM_SERVER + "001 " + nick + " :Welcome to the " +                     
-//   gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user + "@" +  
-//   host + "\r\n")
 #define _001_RPL_WELCOME(nick, user, host)                                 \
   (FROM_SERVER + "001 " + nick + " :Welcome to the " +                     \
   gConfig->getParam(NETWORK) + " Network, " + nick + "!" + user + "@" +  \
@@ -49,10 +45,6 @@ extern Config *gConfig;
   (FROM_SERVER + "003 " + nick + " :This server was created on " + starttime + \
   "\r\n")
 
-// #define _004_RPL_MYINFO(nick)                                                 
-//   (FROM_SERVER + "004 " + nick + " :" + SRV_NAME + " " + SRV_VERSION + " " +  
-//   gConfig->getParam("USERMODES") + " " + gConfig->getSupportedChanModes() +   
-//   "\r\n")
 #define _004_RPL_MYINFO(nick)                                                 \
   (FROM_SERVER + "004 " + nick + " :" + SRV_NAME + " " + SRV_VERSION + " " +  \
   gConfig->getParam(USERMODES) + " " + gConfig->getSupportedChanModes() +   \

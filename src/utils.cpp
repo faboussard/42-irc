@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 15:33:50 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 15:58:23 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,25 @@ void strToUpper(std::string *str) {
   }
 }
 
-std::string trimWhiteSpaces(const std::string &str) {
-  std::string::const_iterator itBegin = str.begin();
-  std::string::const_iterator itEnd = str.end();
-  std::string::const_iterator it = itBegin;
-
-  while (it != itEnd && std::isspace(*it)) ++it;
-  std::string::const_reverse_iterator rit = str.rbegin();
-  while (rit.base() != itBegin && std::isspace(*rit)) ++rit;
-  return (std::string(it, rit.base()));
+std::string trimWhiteSpaces(const std::string &input) {
+  std::string result = input;
+  result.erase(0, result.find_first_not_of(
+                      " \t\n\r\f\v"));  // Retirer les espaces au début
+  result.erase(result.find_last_not_of(" \t\n\r\f\v") +
+               1);  // Retirer les espaces à la fin
+  return result;
 }
+
+// std::string trimWhiteSpaces(const std::string &str) {
+//   std::string::const_iterator itBegin = str.begin();
+//   std::string::const_iterator itEnd = str.end();
+//   std::string::const_iterator it = itBegin;
+
+//   while (it != itEnd && std::isspace(*it)) ++it;
+//   std::string::const_reverse_iterator rit = str.rbegin();
+//   while (rit.base() != itBegin && std::isspace(*rit)) ++rit;
+//   return (std::string(it, rit.base()));
+// }
 
 void splitByCommaAndTrim(const std::string &argument, stringVector *args) {
   std::stringstream ss(argument);
