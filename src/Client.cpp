@@ -3,22 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 17:24:24 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 11:54:03 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../includes/Client.hpp"
 
 #include <cerrno>
 #include <cstring>
 #include <iostream>
 #include <string>
 
+#include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
-#include "../includes/Client.hpp"
 
+extern Config* gConfig;
 
 /*============================================================================*/
 /*       Constructors                                                         */
@@ -168,6 +170,14 @@ std::string Client::shareMessage(void) {
 /*       Channel handling                                                     */
 /*============================================================================*/
 
-void Client::incrementChannelsCount(void) { _channelsCount++; }
+void Client::incrementChannelsCount(void) {
+  if (_channelsCount > 0) {
+    --_channelsCount;
+  }
+}
 
-void Client::decrementChannelsCount(void) { _channelsCount--; }
+void Client::decrementChannelsCount(void) {
+  if (_channelsCount >= gConfig->getLimit("CHANLIMIT")) {
+    --_channelsCount;
+  }
+}

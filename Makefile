@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+         #
+#    By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/08 14:14:28 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/12 11:58:54 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,9 +63,9 @@ debug: clean create_dirs ${NAME}
 
 # ---------------------------------- valgrind -------------------------------- #
 
-valgrind: $(NAME)
-			valgrind --track-fds=yes --trace-children=yes --leak-check=full \
-			--show-leak-kinds=all ./$(NAME) 6667 pass
+valgrind: $(NAME) debug
+			valgrind --track-fds=yes --leak-check=full \
+			--show-leak-kinds=all -s ./$(NAME) 6667 pass
 
 # ---------------------------------- Test ------------------------------------ #
 test: CFLAGS := $(filter-out -Werror, $(CFLAGS))

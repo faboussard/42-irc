@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   messageManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 10:08:25 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 11:54:06 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

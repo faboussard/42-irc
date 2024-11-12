@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 08:22:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 11:53:34 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Client {
   explicit Client(int fd = -1, const std::string& ip = "",
                   const std::string& hostName = "");
 
-/* Getters                                                                    */
+  /* Getters */
 
   int getFd(void) const;
   std::string getIp(void) const;
@@ -71,7 +71,7 @@ class Client {
   uint8_t getNbPassAttempts(void) const;
   size_t getChannelsCount() const;
 
-/* Setters                                                                    */
+  /* Setters */
 
   void setFd(int fd);
   void setNickname(const std::string& nickname);
@@ -81,7 +81,7 @@ class Client {
   void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
 
-/* Member functions                                                           */
+  /* Member functions */
 
   /* Client status */
   void declareAccepted(void);

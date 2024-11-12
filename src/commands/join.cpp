@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 10:10:32 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:59:53 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,83 +30,80 @@ void Server::joinChannel(const std::string &param, int fd) {
     return;
   }
   if (isLeaveAllChannelsRequest(param)) {
-    quitChannel(fd);
+    quitAllChannels(fd);
     return;
   }
+  // faire une fonction parse keys and channels
   stringVector channels;
   std::string::size_type spacePos = param.find(" ");
   std::string channelsPart = param.substr(0, spacePos);
   splitByCommaAndTrim(channelsPart, &channels);
+  stringVector keys;
+  std::string keysPart =
+      (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
+  splitByCommaAndTrim(keysPart, &keys);
+  ////////////////////////////////////
 #ifdef DEBUG
   std::cout << "Before split and trim: " << channelsPart << std::endl;
   std::cout << "Before split and trim: ";
-  for (size_t i = 0; i < channels.size(); ++i)
-    std::cout << channels[i] << "|";
+  for (size_t i = 0; i < channels.size(); ++i) std::cout << channels[i] << "|";
   std::cout << std::endl;
 #endif
-  if (isChannelsCorrect(channels, client)) {
-    for (size_t i = 0; i < channels.size(); ++i) {
-      std::string channelNameWithoutPrefix = channels[i].substr(1);
+  stringVector::const_iterator itEnd = channels.end();
+  for (stringVector::const_iterator it = channels.begin(); it != itEnd; ++it) {
+    if (isChannelValid(*it, client)) {
+      std::string channelNameWithoutPrefix = it->substr(1);
 
-      stringVector keys;
-      std::string keysPart =
-          (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
-      splitByCommaAndTrim(keysPart, &keys);
-      checkKeysCorrectness(keys);
-      if (!keys.empty()) {
-        send525InvalidKey(client, getChannelByName(channelNameWithoutPrefix));
-        return;
+      // recuperer la clef  en parcorant le vector keys en double boucle
+      std::string key =
+          "empty";  // valeur mise par defaut avant de faire la vraie fonction.
+                    // pour linstant key ne marche pas.
+      if (isKeyValid(key)) {
+#ifdef DEBUG
+        std::cout << "channelNameWithoutPrefix " << channelNameWithoutPrefix
+                  << std::endl;
+#endif
+        // std::string _key = key.
+        processJoinRequest(fd, &client, channelNameWithoutPrefix, key);
       }
-      processJoinRequest(fd, &client, channelNameWithoutPrefix, keys, i);
     }
   }
 }
 
-bool Server::isChannelsCorrect(const stringVector &channels,
-                               const Client &client) {
-  stringVector::const_iterator it = channels.begin();
-  stringVector::const_iterator itEnd = channels.end();
-  for (; it != itEnd; ++it) {
-    if (it->empty() || (it->length() == 1 && (*it)[0] == REG_CHAN)) {
-      send461NeedMoreParams(client, "JOIN");
-      return (false);
-    }
-    if (it->find_first_of(" \t\n\r\f\v,") != std::string::npos) {
-      std::cout << RED
-          "ERROR : channel name cannot contain whitespaces or commas or be "
-          "empty" RESET
-                << std::endl;
-      return (false);
-    }
-    if (it->length() > 20 || it->length() < 2 || (*it)[0] != REG_CHAN) {
-      send476BadChanMask(client, it->substr(1));
-      return false;
-    } else if (client.getChannelsCount() >= gConfig->getLimit("CHANLIMIT")) {
-      send405TooManyChannels(client);
-      return (false);
-    }
+bool Server::isChannelValid(const std::string &channelToCheck,
+                            const Client &client) {
+  if (channelToCheck.empty() ||
+      (channelToCheck.length() == 1 && channelToCheck[0] == REG_CHAN)) {
+    send461NeedMoreParams(client, "JOIN");
+    return (false);
+  } else if (channelToCheck.length() > gConfig->getLimit("CHANNELLEN") ||
+             channelToCheck.length() < 2 || channelToCheck[0] != REG_CHAN) {
+    send476BadChanMask(client, channelToCheck.substr(1));
+    return (false);
+  } else if (client.getChannelsCount() >= gConfig->getLimit("CHANLIMIT")) {
+    send405TooManyChannels(client);
+    return (false);
+  } else if (channelToCheck.find_first_of(" \t\n\r\f\v,") !=
+             std::string::npos) {
+    std::cerr << RED "ERROR : channel" << channelToCheck
+              << "cannot contain whitespaces or commas" RESET << std::endl;
+    return (false);
   }
   return (true);
 }
 
-void Server::checkKeysCorrectness(const stringVector &keys) {
-  stringVector::const_iterator it = keys.begin();
-  stringVector::const_iterator itEnd = keys.end();
-  for (; it != itEnd; ++it) {
-    if (it->find_first_of(" \t\n\r\f\v,") != std::string::npos) {
-      std::cout << RED
-          "ERROR : keys cannot contain whitespaces or commas or be empty" RESET
-                << std::endl;
-      return;
-    }
+bool Server::isKeyValid(const std::string &keyToCheck) {
+  if (keyToCheck.find_first_of(" \t\n\r\f\v,") != std::string::npos) {
+    std::cerr << RED "ERROR : key " << keyToCheck
+              << " cannot contain whitespaces or commas" RESET << std::endl;
+    return (false);
   }
+  return (true);
 }
 
-// tester avec Client &client
 void Server::processJoinRequest(int fd, Client *client,
                                 const std::string &channelName,
-                                const std::vector<std::string> &keys,
-                                size_t i) {
+                                const std::string &key) {
   // si le channel n'existe pas on l'ajoute
   if (_channels.find(channelName) == _channels.end()) {
     addChanneltoServerIfNoExist(channelName);
@@ -116,7 +113,7 @@ void Server::processJoinRequest(int fd, Client *client,
   const clientPMap &clientsInChannel =
       _channels[channelName].getChannelClients();
   Channel &channel = _channels.at(channelName);
-  if (!keys.empty()) handleKey(client, channel, keys[i]);
+  if (!key.empty()) handleKey(client, channel, key);
 
   // si le client n'est pas déjà dans le channel
   std::string nick = client->getNickname();

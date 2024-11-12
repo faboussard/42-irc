@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 08:29:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:52:49 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,11 +128,10 @@ class Server {
   /*-------- JOIN --------*/
 
   bool isLeaveAllChannelsRequest(const std::string &param);
-  bool isChannelsCorrect(const stringVector &channels, const Client &client);
+  bool isChannelValid(const std::string &channelToCheck, const Client &client);
 
   void joinChannel(const std::string &param, int fd);
-  void sendJoinMessage(int fd, const Client &client,
-                       const std::string &channelName);
+
   void addChanneltoServerIfNoExist(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
@@ -141,16 +140,14 @@ class Server {
                             const std::string &channelName);
   void processJoinRequest(int fd, Client *client,
                           const std::string &channelName,
-                          const std::vector<std::string> &keys, size_t i);
+                          const std::string &key);
   void handlePartRequest(int fd, const std::string &param);
   void handleKey(Client *client, const Channel &channel,
                  const std::string &key);
-  void checkChannelsCorrectness(const stringVector &channels,
-                                const Client &client);
-  void checkKeysCorrectness(const stringVector &keys);
+  bool isKeyValid(const std::string &keyToCheck);
 
   /*-------- PART --------*/
-  void quitChannel(int fd);
+  void quitAllChannels(int fd);
   void broadcastPartMessage(int fd, const std::string &nick,
                             const std::string &channelName);
   void sendPartMessageToClient(int fd, const std::string &nick,

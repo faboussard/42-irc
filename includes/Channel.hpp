@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 08:26:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:35:45 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ class Channel {
  public:
   explicit Channel(const std::string &name = "");
 
-/*  Getters                                                                   */
+  /*  Getters */
 
   const std::string &getName(void) const;
   const std::string &getType(void) const;
@@ -73,11 +73,11 @@ class Channel {
   const std::string &getKey(void) const;
   int getLimit(void) const;
 
-/*  Setters                                                                   */
+  /*  Setters */
 
   void setTopic(const std::string &topic, const std::string &author);
 
-/*  Member functions                                                          */
+  /*  Member functions */
 
   /* Clients Management */
   void removeClientFromChannelMap(Client *client);

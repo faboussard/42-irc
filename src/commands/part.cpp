@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 09:05:21 by yusengok         ###   ########.fr       */
+/*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
+/*   Updated: 2024/11/12 11:53:30 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 // ajout fonction is client in channel
 
@@ -22,7 +23,7 @@
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
 
-void Server::quitChannel(int fd) {
+void Server::quitAllChannels(int fd) {
   Client *client = &_clients.at(fd);
 
   channelsMap::iterator itEnd = _channels.end();
