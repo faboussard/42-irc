@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 17:19:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:52:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,6 @@ void Server::acceptNewClient(void) {
       gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
   std::string hostName;
   if (host->h_name == NULL || sizeof(host->h_name) == 0 ||
-      // static_cast<size_t>(host->h_length) > gConfig->getLimit("HOSTLEN"))
       static_cast<size_t>(host->h_length) > gConfig->getLimit(HOSTLEN))
     hostName = clientIp;
   else

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 17:16:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:53:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,14 +78,14 @@ bool Server::isChannelValid(const std::string &channelToCheck,
 
 //     std::cout << "channelToCheck.length() " << channelToCheck.length() <<
 //     std::endl; std::cout << " gConfig->getLimit(channelen)" <<
-//     gConfig->getLimit("CHANNELLEN")  << std::endl;
+//     gConfig->getLimit(CHANNELLEN)  << std::endl;
 // #endif
 #ifdef DEBUG
   std::cout << std::endl << std::endl;
 
   std::cout << "client.getChannelsCount() " << client.getChannelsCount()
             << std::endl;
-  std::cout << " gConfig->getLimitchanlimit" << gConfig->getLimit("CHANLIMIT")
+  std::cout << "gConfig->getLimitchanlimit " << gConfig->getLimit(CHANLIMIT)
             << std::endl;
 #endif
   if (channelToCheck.empty() ||
