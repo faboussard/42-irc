@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 15:58:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:34:55 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,15 +182,13 @@ void send353Namreply(const Client &client, const Channel &channel) {
 
   std::string nicknames = "";
   clientPMap chanOps = channel.getChannelOperators();
-  clientPMap::const_iterator itBegin = chanOps.begin();
   clientPMap::const_iterator itEnd = chanOps.end();
-  for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
+  for (clientPMap::const_iterator it = chanOps.begin(); it != itEnd; ++it) {
     nicknames += CHAN_OP + it->second->getNickname() + " ";
   }
   clientPMap chanClients = channel.getChannelClients();
-  itBegin = chanClients.begin();
   itEnd = chanClients.end();
-  for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
+  for (clientPMap::const_iterator it = chanClients.begin(); it != itEnd; ++it) {
     if (chanOps.find(it->first) == chanOps.end())
       nicknames += it->second->getNickname() + " ";
   }
