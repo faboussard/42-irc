@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 15:59:33 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:43:03 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ class Server {
  public:
   explicit Server(int port, const std::string &password);
 
-/*  Getters                                                                   */
+  /*  Getters */
 
   int getSocketFd() const;
   int getPort() const;
@@ -91,7 +91,7 @@ class Server {
   const channelsMap &getChannels() const;
   const clientsMap &getClients() const;
 
-/* Member functions                                                           */
+  /* Member functions */
 
   /* Clients Management */
   void acceptNewClient(void);
@@ -139,7 +139,8 @@ class Server {
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
   void processJoinRequest(int fd, Client *client,
-                          const std::string &channelName, const stringVector &keys, size_t channelIndex);
+                          const std::string &channelName,
+                          const stringVector &keys, size_t channelIndex);
   void handlePartRequest(int fd, const std::string &param);
   bool handleKey(Client *client, const Channel &channel,
                  const std::string &key);
