@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 12:25:55 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:32:15 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,15 +173,9 @@ void Server::handleClientMessage(int fd) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
-<<<<<<< HEAD
   std::cout << "Received message from client " << fd
             << ", nickname: " << _clients[fd].getNickname() << ": " << message
             << std::endl;
-=======
-    std::cout << "Received message from client " << fd << ", nickname: "
-              << _clients[fd].getNickname() << ": " << message
-              << std::endl;
->>>>>>> main
 
   Client &client = _clients[fd];
   if (client.isAccepted() == false) {
