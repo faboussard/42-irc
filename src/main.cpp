@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 19:44:16 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:10:43 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,12 @@ int main(int ac, char** argv) {
     signal(SIGQUIT, Server::signalHandler);
     initServerConfig();
     ser.runServer();
-  } catch (const std::exception& e) {
+  } catch (const std::runtime_error& e) {
     std::cerr << RED << e.what() << RESET << '\n';
     ser.closeServer();
-    exit(EXIT_FAILURE);
+    return (EXIT_FAILURE);
   }
   ser.closeServer();
   std::cout << "The Server is closed" << std::endl;
-  delete gConfig;
-  exit(EXIT_SUCCESS);
+  return (EXIT_SUCCESS);
 }
