@@ -12,7 +12,7 @@
 
 C = c++
 NAME = ircserv
-CFLAGS = -Wall -Wextra -Werror -Wuninitialized -MMD -MP -std=c++98
+CFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98
 MKDIR = mkdir -p
 RMDIR = rm -rf
 
