@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:42:55 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:03:19 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,11 @@ int main(int ac, char** argv) {
     signal(SIGQUIT, Server::signalHandler);
     initServerConfig();
     ser.runServer();
-    ser.closeServer();
   } catch (const std::runtime_error& e) {
     std::cerr << RED << e.what() << RESET << '\n';
     exitCode = EXIT_FAILURE;
   }
+  ser.closeServer();
   if (exitCode == EXIT_SUCCESS)
     std::cout << "The Server is closed" << std::endl;
   delete gConfig;
