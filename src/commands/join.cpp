@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 16:25:28 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:33:07 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,15 +69,21 @@ void Server::joinChannel(const std::string &param, int fd) {
 bool Server::isChannelValid(const std::string &channelToCheck,
                             const Client &client) {
 #ifdef DEBUG
+    std::cout << std::endl << std::endl;
+
   std::cout << "channel to check " << channelToCheck << std::endl;
 #endif
+// #ifdef DEBUG
+//     std::cout << std::endl << std::endl;
+
+//     std::cout << "channelToCheck.length() " << channelToCheck.length() << std::endl;
+//     std::cout << " gConfig->getLimit(channelen)" <<  gConfig->getLimit("CHANNELLEN")  << std::endl;
+// #endif
 #ifdef DEBUG
-    std::cout << "channelToCheck.length() " << channelToCheck.length() << std::endl;
-    std::cout << " gConfig->getLimit("CHANNELLEN") " <<  gConfig->getLimit("CHANNELLEN")  << std::endl;
-#endif
-#ifdef DEBUG
+    std::cout << std::endl << std::endl;
+
     std::cout << "client.getChannelsCount() " << client.getChannelsCount() << std::endl;
-    std::cout << " gConfig->getLimit("CHANLIMIT"" <<  gConfig->getLimit("CHANLIMIT")  << std::endl;
+    std::cout << " gConfig->getLimitchanlimit" <<  gConfig->getLimit("CHANLIMIT")  << std::endl;
 #endif
   if (channelToCheck.empty() ||
       (channelToCheck.length() == 1 && channelToCheck[0] == REG_CHAN)) {

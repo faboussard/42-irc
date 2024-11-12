@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 16:21:57 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:34:55 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,18 +172,22 @@ std::string Client::shareMessage(void) {
 
 void Client::incrementChannelsCount(void) {
 #ifdef DEBUG
-    std::cout << "_channelsCount " << _channelsCount << std::endl;
+    std::cout << std::endl << std::endl;
+
+    std::cout << "increment _channelsCount " << _channelsCount << std::endl;
 #endif
-  if (_channelsCount > 0) {
-    --_channelsCount;
+  if (_channelsCount <= gConfig->getLimit("CHANLIMIT")) {
+    ++_channelsCount;
   }
 }
 
 void Client::decrementChannelsCount(void) {
   #ifdef DEBUG
-    std::cout << "_channelsCount " << _channelsCount << std::endl;
+    std::cout << std::endl << std::endl;
+
+    std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
 #endif
-  if (_channelsCount >= gConfig->getLimit("CHANLIMIT")) {
+  if (_channelsCount > 0) {
     --_channelsCount;
   }
 }
