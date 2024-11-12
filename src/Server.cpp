@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 12:40:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 15:48:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,6 +228,17 @@ void Server::clearClient(int fd) {
       break;
     }
   }
+  // if (_clients.at(fd).getChannelsCount() > 0) {  // Decommente after merge join & part
+    channelsMap::iterator itEnd = _channels.end();
+    for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
+      if (it->second.getChannelClients().find(fd) !=
+          it->second.getChannelClients().end())
+        it->second.removeClientFromTheChannel(fd);
+      if (it->second.getChannelOperators().find(fd) !=
+          it->second.getChannelOperators().end())
+        it->second.removeOperator(&_clients.at(fd));
+    }
+  // }
   _clients.erase(fd);
 }
 
