@@ -6,15 +6,16 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 15:02:06 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:33:50 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/utils.hpp"
-#include "../includes/Server.hpp"
 
 #include <string>
 #include <vector>
+
+#include "../includes/Server.hpp"
 
 void shrink_to_fit(std::vector<struct pollfd> *vec) {
   std::vector<struct pollfd>(*vec).swap(*vec);
@@ -22,9 +23,9 @@ void shrink_to_fit(std::vector<struct pollfd> *vec) {
 
 bool isNumeric(const std::string &str) {
   for (size_t i = 0; i < str.length(); i++) {
-    if (!std::isdigit(str[i])) return false;
+    if (!std::isdigit(str[i])) return (false);
   }
-  return true;
+  return (true);
 }
 
 void strToUpper(std::string *str) {
@@ -43,8 +44,7 @@ std::string trimWhiteSpaces(const std::string &str) {
 
   while (it != itEnd && std::isspace(*it)) ++it;
   std::string::const_reverse_iterator rit = str.rbegin();
-  while (rit.base() != itBegin && std::isspace(*rit))
-    ++rit;
+  while (rit.base() != itBegin && std::isspace(*rit)) ++rit;
   return (std::string(it, rit.base()));
 }
 

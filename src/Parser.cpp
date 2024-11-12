@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 16:57:35 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/12 12:25:35 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ Command Parser::choseCommand(const std::string& command) {
     return (USER);
   } else if (command == "PASS") {
     return (PASS);
+  } else if (command == "WHO") {
+    return (WHO);
   }
   return (UNKNOWN);
 }
@@ -69,12 +71,13 @@ static std::string trimBeginWithChar(const std::string &str, const char c) {
   return (std::string(it, itEnd));
 }
 
-std::vector<std::string> split(const std::string& str, const std::string& delim) {
+std::vector<std::string> split(const std::string& str,
+                               const std::string& delim) {
     std::vector<std::string> result;
     size_t start = 0;
     size_t end = str.find(delim);
     size_t delimLen = delim.length();
-std::cout << str << std::endl;
+    std::cout << str << std::endl;
     while (end != std::string::npos) {
         std::string token = str.substr(start, end - start);
         token = trimBeginWithChar(token, '\n');
@@ -85,7 +88,6 @@ std::cout << str << std::endl;
         end = str.find(delim, start);
     }
     std::string token = trimBeginWithChar(str.substr(start), '\n');
-    // std::string token = str.substr(start);
     if (!token.empty()) {
         result.push_back(token);
     }
@@ -94,7 +96,6 @@ std::cout << str << std::endl;
 
 commandVectorPairs Parser::parseCommandIntoPairs(const std::string &command) {
   std::vector<std::string> cmds = split(command, "\r\n");
-  // std::vector<std::string> cmds = split(command, '\n', '\r');
   commandVectorPairs result;
   std::string token;
   std::pair<std::string, std::string> pair;

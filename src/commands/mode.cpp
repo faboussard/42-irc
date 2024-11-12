@@ -6,13 +6,22 @@
 /*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 18:01:25 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:53:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../includes/Server.hpp"
+
+void Server::mode(int fd, const std::string &arg) {
+/*--- To remove ---*/
+  (void)fd;
+  (void)arg;
+/*-----------------*/
+}
+
 // ======== MODE <prefix><channel> =============================================
 // Replies:
-// -- 324 RPL_CHANNELMODEIS: 
+// -- 324 RPL_CHANNELMODEIS:
 // :<server> 324 <client> <channel> <modestring> <mode arguments>...
 // e.g. :irc.example.com 324 Alice #chatroom +itkl secretpass 25
 
