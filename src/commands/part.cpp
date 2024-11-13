@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:09:39 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:24:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ void Server::quitAllChannels(int fd) {
     if (channel->getChannelClients().find(fd) !=
         channel->getChannelClients().end()) {
       sendPartMessageToClient(fd, client->getNickname(), channel->getName());
-      broadcastPartMessage(fd, client->getNickname(), channel->getName());
+      // broadcastPartMessage(fd, client->getNickname(), channel->getName());
+      broadcastInChannel(*client, *channel, "PART", "completed");
       client->decrementChannelsCount();
       channel->removeClientFromChannelMap(client);
     }
@@ -43,22 +44,22 @@ void Server::quitAllChannels(int fd) {
   }
 }
 
-void Server::broadcastPartMessage(int fd, const std::string &nick,
-                                  const std::string &channelName) {
-  std::string partMessage = ":" + nick + " PART :#" + channelName + "\r\n";
+// void Server::broadcastPartMessage(int fd, const std::string &nick,
+//                                   const std::string &channelName) {
+//   std::string partMessage = ":" + nick + " PART :#" + channelName + "\r\n";
 
-  clientPMap clientsInChannel =
-      findChannelByName(channelName).getChannelClients();
+//   clientPMap clientsInChannel =
+//       findChannelByName(channelName).getChannelClients();
 
-  for (clientPMap::iterator it = clientsInChannel.begin();
-       it != clientsInChannel.end(); ++it) {
-    if (it->first != fd) {
-      if (send(it->first, partMessage.c_str(), partMessage.length(), 0) == -1) {
-        throw std::runtime_error("Runtime error: send failed");
-      }
-    }
-  }
-}
+//   for (clientPMap::iterator it = clientsInChannel.begin();
+//        it != clientsInChannel.end(); ++it) {
+//     if (it->first != fd) {
+//       if (send(it->first, partMessage.c_str(), partMessage.length(), 0) == -1) {
+//         throw std::runtime_error("Runtime error: send failed");
+//       }
+//     }
+//   }
+// }
 
 void Server::sendPartMessageToClient(int fd, const std::string &nick,
                                      const std::string &channelName) {

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:11:19 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:23:09 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -270,11 +270,11 @@ void Server::sendConnectionMessage(const Client &client) const {
 /*       Clients management                                                   */
 /*============================================================================*/
 
-void Server::sendToAllClients(const std::string &message) {
-  for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-    if (it->second.isAccepted()) it->second.receiveMessage(message);
-  }
-}
+// void Server::sendToAllClients(const std::string &message) {
+//   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+//     if (it->second.isAccepted()) it->second.receiveMessage(message);
+//   }
+// }
 
 void Server::broadcastInChannel(const Client &client, const Channel &channel,
                                 const std::string &command,

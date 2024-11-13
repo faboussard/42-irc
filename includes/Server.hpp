@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:11:09 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:23:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ class Server {
   void handleClientMessage(int fd);
 
   /* Other methods */
-  void sendToAllClients(const std::string &message);
+  // void sendToAllClients(const std::string &message);
 
   /* Clear and Close */
   void clearClient(int fd);
