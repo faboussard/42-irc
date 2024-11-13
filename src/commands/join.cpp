@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:51:10 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:52:51 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,12 +128,12 @@ void Server::processJoinRequest(int fd, Client *client,
     // si le client n'est pas déjà dans le channel
     std::string nick = client->getNickname();
     if (clientsInChannel.find(fd) == clientsInChannel.end()) {
+      broadcastInChannel(*client, channel, "JOIN", " say hello!");
       client->incrementChannelsCount();
       channel.addClientToChannelMap(client);
       sendJoinMessageToClient(fd, nick, channelName, *client);
       send353Namreply(*client, _channels[channelName]);
       send366Endofnames(*client, _channels[channelName]);
-      broadcastInChannel(*client, channel, "JOIN", " say hello!");
       // broadcastJoinMessage(fd, nick, channelName);
     }
   }

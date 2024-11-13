@@ -190,11 +190,48 @@ _**Implemented Features:**_
 
 
 1. kick command ready - explanation of command in file of same name 
+i call on part function (quit channel) because i find it funny but it can be removed
+kick #k nick bla
+:nick KICK #k :bla
+:nick PART #k : say goodbye!
 
-2. Server.hpp - addind e afind :
+Tests conducted :
 
-Client &findClientByNickname(const std::string &nickname);
+join #s
+:admin JOIN :#s
+:ircserv.localhost 331 admin #s :No topic is set
+:ircserv.localhost 353 admin #s :@admin 
+:ircserv.localhost 366 admin #s :End of \NAMES list
+kick #s
+:ircserv.localhost 461 admin KICK :Not enough parameters
+kick
+:ircserv.localhost 461 admin KICK :Not enough parameters
+kick #s adm
+:ircserv.localhost 401 admin adm :No such nick/channel
+kick #s nick
+:ircserv.localhost 441 admin nick #s :They aren't on that channel
+:nick JOIN #s : say hello!
+kick #s nick :jojo
+:nick KICK #s :jojo
+:nick PART #s : say goodbye!
+:nick JOIN #s : say hello!
+kick #s nick jojo
+:nick KICK #s :jojo
+:nick PART #s : say goodbye!
 
+
+
+2. use of general function made by yuko  broadcastInChannel for join and part.:
+
+maintenant jutilise la fonction generale broadcast in channel pour join et part egalement :   broadcastInChannel(*client, *channel, "PART", " say goodbye!");
+fonction lancee avant ajout ou apres depart du client du channel pour ne pas quil recoive le message. 
+
+
+3. Server.hpp - function added: 
+
+Client *findClientByNickname(const std::string &nickname);
+
+4. some functions were put in comments if not used: cleaning to be done at the end of the project ( with clion that highlights the unused functions)
 
 
 DEBUG GDB

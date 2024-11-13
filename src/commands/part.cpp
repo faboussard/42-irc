@@ -6,11 +6,9 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:51:17 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:38:24 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// ajout fonction is client in channel
 
 #include <map>
 #include <stdexcept>
@@ -25,13 +23,13 @@
 void Server::quitChannel(int fd, Channel *channel, Client *client) {
   sendPartMessageToClient(fd, client->getNickname(), channel->getName());
   // broadcastPartMessage(fd, client->getNickname(), channel->getName());
-  broadcastInChannel(*client, *channel, "PART", " say goodbye!");
   client->decrementChannelsCount();
   channel->removeClientFromChannelMap(client);
   if (channel->getChannelOperators().find(fd) !=
       channel->getChannelOperators().end()) {
     channel->removeOperator(client);
   }
+  broadcastInChannel(*client, *channel, "PART", " say goodbye!");
 }
 
 void Server::quitAllChannels(int fd) {

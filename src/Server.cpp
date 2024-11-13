@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:45:41 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 18:58:42 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ Client *Server::findClientByNickname(const std::string &nickname) {
       return &it->second;
     }
   }
-  throw std::runtime_error("Client not found with the given nickname");
+  return NULL;
 }
 
 // const std::string &Server::getPassword(void) const { return _password; }
