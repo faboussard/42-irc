@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 11:15:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 16:40:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,9 @@ class Server {
 
   /*-------- KICK --------*/
   void kick(int fd, const std::string &arg);
-  void parseKickParams(const std::string &param, Client &client,
-                             std::string &channelName, std::string &targetNick,
-                             std::string &reason);
+  void parseKickParams(std::string *param,const Client &client,
+                             const std::string &channelName, const std::string &targetNick,
+                             const std::string &reason);
 
  public:
   explicit Server(int port, const std::string &password);
@@ -134,10 +134,10 @@ class Server {
   void broadcastInChannel(const Client &client, const Channel &channel,
                           const std::string &command,
                           const std::string &content);
+  bool channelExists(const std::string &channel);
 
   /*  Command  */
   /*-------- JOIN --------*/
-
   bool isLeaveAllChannelsRequest(const std::string &param);
   bool isChannelValid(const std::string &channelToCheck, const Client &client);
 
@@ -175,6 +175,8 @@ class Server {
 
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);
+  bool parseTopicParams(const std::string &arg, stringVector *params,
+                const Client &client);
   void sendTopic(const Client &client, const Channel &channel);
   void updateTopic(const Client &client, Channel *channel,
                    const std::string &newTopic);
@@ -190,7 +192,6 @@ class Server {
   void list(const Client &client, const std::string &argument);
   void listAllChannels(int fd, const std::string &nick);
   void listChannels(const stringVector &channels, const Client &client);
-  bool findChannel(const std::string &channel);
 
   /*-------- NOTICE --------*/
   void notice(int fd, const std::string &arg);
