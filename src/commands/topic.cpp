@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 14:10:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 16:32:01 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,6 @@ bool Server::parseTopicParams(const std::string &arg, stringVector *params,
     return (true);
   if (topic[0] != ':') {
     send461NeedMoreParams(client, "TOPIC");
-    return (false);
-  }
-  if (channel[0] != '#') {
-    send476BadChanMask(client, channel);
     return (false);
   }
 #ifdef DEBUG
