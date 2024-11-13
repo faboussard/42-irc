@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 13:57:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 15:39:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,11 +98,11 @@ class Server {
   // Client &getClientByFd(int fd);
   // const channelsMap &getChannels() const;
   // const clientsMap &getClients() const;
+  bool clientExists(const std::string &nick) const;
 
  private:
   /* Server Management */
   void fetchStartTime(void);
-
 
   /* Clients Management */
   void acceptNewClient(void);
@@ -167,6 +167,7 @@ class Server {
 
   /*-------- INVITE --------*/
   void invite(int fd, const std::string &arg);
+  void sendInvitList(int fd) const;
 
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 14:10:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 16:33:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,6 @@ bool Server::parseTopicParams(const std::string &arg, stringVector *params,
     send461NeedMoreParams(client, "TOPIC");
     return (false);
   }
-  if (channel[0] != '#') {
-    send476BadChanMask(client, channel);
-    return (false);
-  }
 #ifdef DEBUG
   std::cout << "[TOPIC] Channel: " << channel << " / Topic before trim: "
             << topic << std::endl;
@@ -103,7 +99,7 @@ void Server::sendTopic(const Client &client, const Channel &channel) {
 void Server::updateTopic(const Client &client, Channel *channel,
                          const std::string &newTopic) {
   if (channel->getMode().topicSettableByOpsOnly &&
-      !channel->isOperator(client)) {
+      !channel->isOperator(client.getFd())) {
     send482ChanOPrivsNeeded(client, *channel);
     return;
   }

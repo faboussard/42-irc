@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 17:22:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 15:56:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,10 @@ const clientPMap &Channel::getChannelClients(void) const {
 
 const clientPMap &Channel::getChannelOperators(void) const {
   return (_channelOperators);
+}
+
+const clientPMap &Channel::getInvitedClients(void) const {
+  return (_invitedClients);
 }
 
 const Topic &Channel::getTopic(void) const { return _topic; }
@@ -118,8 +122,23 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
   }
 }
 
+void Channel::addClientToInvitedMap(Client *client) {
+  _invitedClients[client->getFd()] = client;
+}
+
+void Channel::removeClientFromInvitedMap(Client *client) {
+  _invitedClients.erase(client->getFd());
+}
+
 bool Channel::isClientInChannel(int fd) const {
   if (_channelClients.find(fd) != _channelClients.end()) {
+    return (true);
+  }
+  return (false);
+}
+
+bool Channel::isClientInvited(int fd) const {
+  if (_invitedClients.find(fd) != _invitedClients.end()) {
     return (true);
   }
   return (false);
@@ -190,8 +209,8 @@ void Channel::removeOperator(Client *client) {
             << " removed from operator in channel " << _name << std::endl;
 }
 
-bool Channel::isOperator(const Client &client) const {
-  if (_channelOperators.find(client.getFd()) != _channelOperators.end()) {
+bool Channel::isOperator(int fd) const {
+  if (_channelOperators.find(fd) != _channelOperators.end()) {
     return (true);
   }
   return (false);
