@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:50:36 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 17:20:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 08:11:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ enum eConfigKey {
   PREFIX,
   MODES,
   USERMODES,
+  STATUSMSG,
   UNKNOWN_CONFIG
 };
 
@@ -56,8 +57,9 @@ typedef std::map<eConfigKey, size_t> numParametersMap;
 #define DEFAULT_CHANMODES "i,t,k,l"
 #define DEFAULT_CHANTYPES "#"
 #define DEFAULT_PREFIX "(o)@"
-#define DEFAULT_MODES "0"
+#define DEFAULT_MODES "4"
 #define DEFAULT_USERMODES ""
+#define DEFAULT_STATUSMSG "@"
 
 #define LIMIT_CHANLIMIT 20
 #define LIMIT_CHANNELLEN 200
@@ -95,14 +97,20 @@ class Config {
 
   std::string        _supportedChanModes;
   std::string        _isupportParamTokens;
-
-  // stringSet _requiredParams;
-  // stringSet _requiredLimits;
   const std::string  _notDefined;
 
+ public:
+  explicit Config(const std::string& pathToConfigFile);
+
+  size_t getLimit(eConfigKey key) const;
+  const std::string& getParam(eConfigKey key) const;
+
+  const std::string& getSupportedChanModes(void) const;
+  const std::string& getIsupportParamToken(void) const;
+
+ private:
   void parseConfigFile(const std::string& pathToConfigFile);
   void applyAllDefaultValues(void);
-  // void assignMissingConfigurations(void);
   void setNumericParameters(void);
   void initializeSupportedChanModes(void);
   void generateIsupportParamToken(void);
@@ -115,22 +123,6 @@ class Config {
                         const std::string& value);
   bool isNumericLimitConfig(eConfigKey key);
   bool isWithinLimit(eConfigKey key, size_t value) const;
-
-  // std::string getDefaultValue(const std::string &key) const;
-  // bool isWithinLimit(const std::string &key, size_t value) const;
-  // void initializeRequiredParams(void);
-  // void initializeRequiredLimits(void);
-
- public:
-  explicit Config(const std::string& pathToConfigFile);
-
-  // size_t getLimit(const std::string& key) const;
-  // const std::string& getParam(const std::string& key) const;
-  size_t getLimit(eConfigKey key) const;
-  const std::string& getParam(eConfigKey key) const;
-
-  const std::string& getSupportedChanModes(void) const;
-  const std::string& getIsupportParamToken(void) const;
 };
 
 void initServerConfig(void);
