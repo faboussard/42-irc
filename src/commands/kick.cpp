@@ -6,24 +6,16 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 16:49:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:00:34 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Server.hpp"
   /*
-  commentaire pour PR: a enlever apres*/
 
-// articulation de la fonction kick: 
 // kick #channelName #targetNick #reason (reason is optional)
 
-
-  /*
-  Si aucun espace n'est trouvé dans la chaîne param, cette ligne envoie un
-  message d'erreur au client, indiquant qu'il manque des paramètres pour la
-  commande KICK.*/
-
-
+*/
 void Server::kick(int fd, const std::string &param) {
   Client &client = _clients.at(fd);
 
@@ -62,7 +54,9 @@ void Server::kick(int fd, const std::string &param) {
     return;
   }
   
-  if (!channel.isClientInChannel(targetNick)) {
+  Client &targetClient = findClientByNickname(targetNick);
+  int fdTarget =  targetClient.getFd();
+  if (!channel.isClientInChannel(fdTarget)) {
     send441UserNotInChannel(client, targetNick, channel);
     return;
   }
@@ -113,18 +107,12 @@ Examples:
    :WiZ!jto@tolsun.oulu.fi KICK #Finnish John
                                    ; KICK message on channel #Finnish
                                    from WiZ to remove John from channel
-booboofanny — Aujourd’hui à 10:39
+
 ERR_USERNOTINCHANNEL (441) 
   "<client> <nick> <channel> :They aren't on that channel"
 Returned when a client tries to perform a channel+nick affecting command, when the nick isn’t joined to the channel (for example, MODE #channel +o nick).
 
-ERR_NOTONCHANNEL (442) 
-  "<client> <channel> :You're not on that channel"
-Returned when a client tries to perform a channel-affecting command on a channel which the client isn’t a part of. 
 
-
-
-=> i am using 442as 441 seems to be the same but specific for nick ?
 KICKLEN Parameter
   Format: KICKLEN=<length>
 The KICKLEN parameter indicates the maximum length for the <reason> of a KICK command. If a KICK <reason> has more characters than this parameter, it may be silently truncated by the server before being passed on to other clients. Clients MAY receive a KICK <reason> that has more characters than this parameter.

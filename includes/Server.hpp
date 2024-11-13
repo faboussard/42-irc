@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 16:40:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 16:55:45 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,12 @@ class Server {
   // int getSocketFd() const;
   // int getPort() const;
   // const std::string &getPassword() const;
-  // Client &getClientByFd(int fd);
+
+  /*  Finders */
+
+   Client &findClientByFd(int fd);
+  const Client &findClientByNickname(const std::string &nickname);
+   
   // const channelsMap &getChannels() const;
   // const clientsMap &getClients() const;
 

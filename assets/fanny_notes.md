@@ -189,37 +189,12 @@ NExT PR
 _**Implemented Features:**_
 
 
-1. Format:
-- Added the preprocessors needed in all files to be cpplint compliant (except in commands i did not managed because they are not ready yet)
-- added the formating for the GETTERS, SETTERS "headers"
+1. kick command ready - explanation of command in file of same name 
 
-2. JOIN command functionality fixed
+2. Server.hpp - addind e afind :
 
-- Fixed : join is protected . channels and keys will not work if there are some whitespace. 
-tested:  JOIN #s, ,#g and other variants 
-- chan limit works fine.
-- No numeric reply ssent if a user re-joins an already joined channel
-- everything refactored
+Client &findClientByNickname(const std::string &nickname);
 
-3. PART command functionnal for join 0 only (no need for others)
-- join 0 is functionnal.
-   - user will part all channels and will be removed from  _channelClients
-   - if he was operator, he will be removed from _channelOperators and there will be the deactivateTopicOpsOnlyMode
-
-3. new trimWhiteSpaces function proposal : 
-less lines, using embeded functions:
-
-
-std::string trimWhiteSpaces(const std::string &input) {
-  std::string result = input;
-  result.erase(0, result.find_first_not_of(
-                      " \t\n\r\f\v"));  // Retirer les espaces au début
-  result.erase(result.find_last_not_of(" \t\n\r\f\v") +
-               1);  // Retirer les espaces à la fin
-  return result;
-}
-
-4. Added the steps for server mounting in the documentation 
 
 
 DEBUG GDB
