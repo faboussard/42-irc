@@ -6,11 +6,13 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 19:04:32 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:16:56 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
 #include <sstream>
+#include <string>
 
 #include "../../includes/Server.hpp"
 

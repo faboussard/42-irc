@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:42:12 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:15:45 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,12 +79,12 @@ class Server {
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
 
-
   /*-------- KICK --------*/
   void kick(int fd, const std::string &arg);
-  void parseKickParams(std::string *param,const Client &client,
-                             const std::string &channelName, const std::string &targetNick,
-                             const std::string &reason);
+  void parseKickParams(std::string *param, const Client &client,
+                       const std::string &channelName,
+                       const std::string &targetNick,
+                       const std::string &reason);
 
  public:
   explicit Server(int port, const std::string &password);
@@ -106,8 +106,8 @@ class Server {
   /*  Finders */
 
   //  Client &findClientByFd(int fd);
-   Client *findClientByNickname(const std::string &nickname);
-   
+  Client *findClientByNickname(const std::string &nickname);
+
   // const channelsMap &getChannels() const;
   // const clientsMap &getClients() const;
   bool clientExists(const std::string &nick) const;
@@ -175,7 +175,6 @@ class Server {
 
   /*-------- JOIN --------*/
 
-
   /*-------- INVITE --------*/
   void invite(int fd, const std::string &arg);
   void sendInvitList(int fd) const;
@@ -183,7 +182,7 @@ class Server {
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);
   bool parseTopicParams(const std::string &arg, stringVector *params,
-                const Client &client);
+                        const Client &client);
   void sendTopic(const Client &client, const Channel &channel);
   void updateTopic(const Client &client, Channel *channel,
                    const std::string &newTopic);

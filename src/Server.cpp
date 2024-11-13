@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 18:58:42 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:15:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,8 @@ Client *Server::findClientByNickname(const std::string &nickname) {
 void Server::runServer(void) {
   createSocket();
   fetchStartTime();
-  std::cout << GREEN "Server started on port " << _port << \
-  " at " << _startTime << RESET << std::endl;
+  std::cout << GREEN "Server started on port " << _port << " at " << _startTime
+            << RESET << std::endl;
   acceptAndChat();
 }
 
@@ -271,7 +271,8 @@ void Server::sendConnectionMessage(const Client &client) const {
 /*============================================================================*/
 
 // void Server::sendToAllClients(const std::string &message) {
-//   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+//   for (clientsMap::iterator it = _clients.begin(); it != _clients.end();
+//   ++it) {
 //     if (it->second.isAccepted()) it->second.receiveMessage(message);
 //   }
 // }
@@ -280,7 +281,7 @@ void Server::broadcastInChannel(const Client &client, const Channel &channel,
                                 const std::string &command,
                                 const std::string &content) {
   std::string message = ":" + client.getNickname() + " " + command + " " +
-                          channel.getNameWithPrefix() + " :" + content + "\r\n";
+                        channel.getNameWithPrefix() + " :" + content + "\r\n";
   const clientPMap &allClients = channel.getChannelClients();
   clientPMap::const_iterator itEnd = allClients.end();
   for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
@@ -291,8 +292,7 @@ void Server::broadcastInChannel(const Client &client, const Channel &channel,
 bool Server::clientExists(const std::string &nick) const {
   clientsMap::const_iterator itEnd = _clients.end();
   for (clientsMap::const_iterator it = _clients.begin(); it != itEnd; ++it) {
-    if (it->second.getNickname() == nick)
-      return (true);
+    if (it->second.getNickname() == nick) return (true);
   }
   return (false);
 }

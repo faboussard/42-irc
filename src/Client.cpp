@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 16:35:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:15:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,9 +172,9 @@ std::string Client::shareMessage(void) {
 
 void Client::incrementChannelsCount(void) {
 #ifdef DEBUG
-    std::cout << std::endl << std::endl;
+  std::cout << std::endl << std::endl;
 
-    std::cout << "increment _channelsCount " << _channelsCount << std::endl;
+  std::cout << "increment _channelsCount " << _channelsCount << std::endl;
 #endif
   if (_channelsCount <= gConfig->getLimit(CHANLIMIT)) {
     ++_channelsCount;
@@ -182,10 +182,10 @@ void Client::incrementChannelsCount(void) {
 }
 
 void Client::decrementChannelsCount(void) {
-  #ifdef DEBUG
-    std::cout << std::endl << std::endl;
+#ifdef DEBUG
+  std::cout << std::endl << std::endl;
 
-    std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
+  std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
 #endif
   if (_channelsCount > 0) {
     --_channelsCount;

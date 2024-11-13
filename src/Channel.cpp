@@ -6,14 +6,14 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/13 15:56:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:15:52 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
 
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "../includes/colors.hpp"
 #include "../includes/numericReplies.hpp"
@@ -234,7 +234,6 @@ void Channel::deactivateLimitMode(void) {
   std::cout << "[" << _nameWithPrefix << "] Limit mode desactivated"
             << std::endl;
 }
-
 
 /*============================================================================*/
 /*       Others                                                               */

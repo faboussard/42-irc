@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 18:52:51 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 19:15:25 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,8 @@ void Server::sendJoinMessageToClient(int fd, const std::string &nick,
 //   clientPMap::iterator it = clientsInChannel.begin();
 //   for (; it != itEnd; ++it) {
 //     if (it->first != fd) {  // Ne pas envoyer au client qui join
-//       if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) == -1) {
+//       if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) ==
+//       -1) {
 //         throw std::runtime_error("Runtime error: send failed");
 //       }
 //     }

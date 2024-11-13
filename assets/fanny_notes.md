@@ -202,18 +202,25 @@ join #s
 :ircserv.localhost 331 admin #s :No topic is set
 :ircserv.localhost 353 admin #s :@admin 
 :ircserv.localhost 366 admin #s :End of \NAMES list
+
+
 kick #s
 :ircserv.localhost 461 admin KICK :Not enough parameters
+
 kick
 :ircserv.localhost 461 admin KICK :Not enough parameters
+
 kick #s adm
 :ircserv.localhost 401 admin adm :No such nick/channel
+
 kick #s nick
 :ircserv.localhost 441 admin nick #s :They aren't on that channel
+
 :nick JOIN #s : say hello!
 kick #s nick :jojo
 :nick KICK #s :jojo
 :nick PART #s : say goodbye!
+
 :nick JOIN #s : say hello!
 kick #s nick jojo
 :nick KICK #s :jojo
@@ -223,8 +230,10 @@ kick #s nick jojo
 
 2. use of general function made by yuko  broadcastInChannel for join and part.:
 
-maintenant jutilise la fonction generale broadcast in channel pour join et part egalement :   broadcastInChannel(*client, *channel, "PART", " say goodbye!");
-fonction lancee avant ajout ou apres depart du client du channel pour ne pas quil recoive le message. 
+now i am using the function broadcastInChannel for join and part :   
+broadcastInChannel(*client, *channel, "PART", " say goodbye!");
+
+Function called before or after the client's join/leave to avoid them receiving their own message.
 
 
 3. Server.hpp - function added: 
@@ -232,6 +241,8 @@ fonction lancee avant ajout ou apres depart du client du channel pour ne pas qui
 Client *findClientByNickname(const std::string &nickname);
 
 4. some functions were put in comments if not used: cleaning to be done at the end of the project ( with clion that highlights the unused functions)
+
+5. valgrind OK 
 
 
 DEBUG GDB
