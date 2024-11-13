@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:55:24 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 08:17:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:02:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,6 +231,7 @@ std::string Config::keyToString(eConfigKey key) const {
   if (key == PREFIX) return ("PREFIX");
   if (key == MODES) return ("MODES");
   if (key == USERMODES) return ("USERMODES");
+  if (key == STATUSMSG) return ("STATUSMSG");
   return ("");
 }
 
