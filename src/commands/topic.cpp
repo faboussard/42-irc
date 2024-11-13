@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 17:08:15 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:01:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,37 +19,67 @@
 //   < HexChat > TOPIC #42 new topic (withot :) -- HexChat adds ':'
 //   < netcat >  TOPIC #42 :new topic (with :)
 
-bool splitByFirstSpaces(const std::string &arg, stringVector *params,
-                        const Client &client) {
-  std::string::const_iterator itEnd = arg.end();
-  for (std::string::const_iterator it = arg.begin(); it != itEnd; ++it) {
-    if (std::isspace(*it)) {
-      params->push_back(std::string(arg.begin(), it));
-      params->push_back(std::string(it + 1, itEnd));
-      if (params->at(1)[0] != ':') {
-        send461NeedMoreParams(client, "TOPIC");
-        return (false);
-      }
-      if (params->at(1)[0] == ':' && params->at(1).size() > 1)
-        params->at(1) = params->at(1).substr(1);
-      else if (params->at(1)[0] == ':' && params->at(1).size() == 1)
-        params->at(1) = "";
+// A ':' at the beginning of the topic is ignored.
+
+// bool splitByFirstSpaces(const std::string &arg, stringVector *params,
+//                         const Client &client) {
+//   std::string::const_iterator itEnd = arg.end();
+//   for (std::string::const_iterator it = arg.begin(); it != itEnd; ++it) {
+//     if (std::isspace(*it)) {
+//       params->push_back(std::string(arg.begin(), it));
+//       params->push_back(std::string(it + 1, itEnd));
+//       if (params->at(1)[0] != ':') {
+//         send461NeedMoreParams(client, "TOPIC");
+//         return (false);
+//       }
+//       if (params->at(1)[0] == ':' && params->at(1).size() > 1)
+//         params->at(1) = params->at(1).substr(1);
+//       else if (params->at(1)[0] == ':' && params->at(1).size() == 1)
+//         params->at(1) = "";
+// #ifdef DEBUG
+//         std::cout << "First: " << params->at(0)
+//                   << " / Second: " << params->at(1) << std::endl;
+// #endif
+//       return (true);
+//     }
+//   }
+//   params->push_back(arg);
+// #ifdef DEBUG
+//   std::cout << "First: " << params->at(0) << std::endl;
+// #endif
+//   return (true);
+// }
+
+bool parseParam(const std::string &arg, stringVector *params,
+                const Client &client) {
+  std::istringstream iss(arg);
+  std::string channel, topic;
+  iss >> channel >> topic >> std::ws;
 #ifdef DEBUG
-        std::cout << "First: " << params->at(0)
-                  << " / Second: " << params->at(1) << std::endl;
+  std::cout << "[TOPIC] Channel: " << channel << " / Topic: " << topic
+            << std::endl;
 #endif
-      return (true);
-    }
+  if (channel.empty()) {
+    send461NeedMoreParams(client, "TOPIC");
+    return (false);
   }
-  params->push_back(arg);
-#ifdef DEBUG
-  std::cout << "First: " << params->at(0) << std::endl;
-#endif
+  if (channel[0] != '#') {
+    send476BadChanMask(client, channel);
+    return (false);
+  }
+  params->push_back(channel);
+  if (topic.empty())
+    return (true);
+  size_t pos = topic.find_first_not_of(":");
+  if (pos != 1)
+    client.receiveMessage(FROM_SERVER + "NOTICE " + client.getNickname() +
+                       "Colomns at the beginning of the topic are not accepted. They were removed by Server.\r\n");
+  topic.erase(0, pos);
   return (true);
 }
 
 void Server::topic(int fd, const std::string &arg) {
-  Client &client = _clients[fd];
+  Client &client = _clients.at(fd);
 #ifdef DEBUG
   std::cout << "TOPIC command from " << client.getNickname() << std::endl;
 #endif
@@ -58,12 +88,14 @@ void Server::topic(int fd, const std::string &arg) {
     return;
   }
   stringVector params;
-  if (!splitByFirstSpaces(arg, &params, client)) return;
+  // if (!splitByFirstSpaces(arg, &params, client)) return;
+  if (!parseParam(arg, &params, client)) return;
   const std::string &chanNameWithPrefix = params.at(0);
 
-  if (chanNameWithPrefix[0] != '#') {
-    send476BadChanMask(client, chanNameWithPrefix);
-  } else if (!findChannel(chanNameWithPrefix)) {
+  // if (chanNameWithPrefix[0] != '#') {
+  //   send476BadChanMask(client, chanNameWithPrefix);
+  // } else if (!findChannel(chanNameWithPrefix)) {
+  if (!findChannel(chanNameWithPrefix)) {
     send403NoSuchChannel(client, chanNameWithPrefix);
   } else {
     const std::string &chanName = chanNameWithPrefix.substr(1);
@@ -98,7 +130,7 @@ void Server::updateTopic(const Client &client, Channel *channel,
   if (newTopic.size() > gConfig->getLimit(TOPICLEN)) {
     send476BadChanMask(client, channel->getNameWithPrefix());
     client.receiveMessage(FROM_SERVER + "NOTICE " +
-                          "Topic is too long, limit is " + \
+                          "Topic is too long, limit is " +
                           gConfig->getParam(TOPICLEN) + " characters.\r\n");
     return;
   }
