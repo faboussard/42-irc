@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:24:19 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:51:10 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ void Server::processJoinRequest(int fd, Client *client,
       sendJoinMessageToClient(fd, nick, channelName, *client);
       send353Namreply(*client, _channels[channelName]);
       send366Endofnames(*client, _channels[channelName]);
-      broadcastInChannel(*client, channel, "JOIN", "completed");
+      broadcastInChannel(*client, channel, "JOIN", " say hello!");
       // broadcastJoinMessage(fd, nick, channelName);
     }
   }

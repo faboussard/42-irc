@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:23:09 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:45:41 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,10 @@ const Channel &Server::findChannelByName(const std::string &name) const {
   return it->second;
 }
 
-const Client &Server::findClientByNickname(const std::string &nickname) {
+Client *Server::findClientByNickname(const std::string &nickname) {
   for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
     if (it->second.getNickname() == nickname) {
-      return it->second;
+      return &it->second;
     }
   }
   throw std::runtime_error("Client not found with the given nickname");
