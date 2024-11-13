@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 10:38:21 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:57:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,10 +127,10 @@ class Server {
   void broadcastInChannel(const Client &client, const Channel &channel,
                           const std::string &command,
                           const std::string &content);
+  bool channelExists(const std::string &channel);
 
   /*  Command  */
   /*-------- JOIN --------*/
-
   bool isLeaveAllChannelsRequest(const std::string &param);
   bool isChannelValid(const std::string &channelToCheck, const Client &client);
 
@@ -170,6 +170,8 @@ class Server {
 
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);
+  bool parseTopicParams(const std::string &arg, stringVector *params,
+                const Client &client);
   void sendTopic(const Client &client, const Channel &channel);
   void updateTopic(const Client &client, Channel *channel,
                    const std::string &newTopic);
@@ -185,7 +187,6 @@ class Server {
   void list(const Client &client, const std::string &argument);
   void listAllChannels(int fd, const std::string &nick);
   void listChannels(const stringVector &channels, const Client &client);
-  bool findChannel(const std::string &channel);
 
   /*-------- NOTICE --------*/
   void notice(int fd, const std::string &arg);

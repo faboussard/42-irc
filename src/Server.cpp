@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 10:37:41 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:58:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ Server::Server(int port, const std::string &password)
 // Client &Server::getClientByFd(int fd) {
 //   clientsMap::iterator it = _clients.find(fd);
 //   if (it == _clients.end()) {
-//     std::cerr << "Client not found with the given file descriptor" 
+//     std::cerr << "Client not found with the given file descriptor"
 //     << std::endl;
 //     throw std::runtime_error("Client not found");
 //   }
