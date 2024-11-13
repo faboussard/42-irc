@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 11:53:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:06:15 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ extern Config *gConfig;
 
 #define _001_RPL_WELCOME(nick, user, host)                                 \
   (FROM_SERVER + "001 " + nick + " :Welcome to the " +                     \
-  gConfig->getParam("NETWORK") + " Network, " + nick + "!" + user + "@" +  \
+  gConfig->getParam(NETWORK) + " Network, " + nick + "!" + user + "@" +  \
   host + "\r\n")
 
 #define _002_RPL_YOURHOST(nick)                                 \
@@ -47,7 +47,7 @@ extern Config *gConfig;
 
 #define _004_RPL_MYINFO(nick)                                                 \
   (FROM_SERVER + "004 " + nick + " :" + SRV_NAME + " " + SRV_VERSION + " " +  \
-  gConfig->getParam("USERMODES") + " " + gConfig->getSupportedChanModes() +   \
+  gConfig->getParam(USERMODES) + " " + gConfig->getSupportedChanModes() +   \
   "\r\n")
 
 #define _005_RPL_ISUPPORT(nick)                                            \

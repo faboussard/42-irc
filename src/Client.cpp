@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 16:34:55 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:21:16 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 /*       Messages handling                                                    */
 /*============================================================================*/
 
-void Client::receiveMessage(const std::string& message) {
+void Client::receiveMessage(const std::string& message) const {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {
@@ -176,7 +176,7 @@ void Client::incrementChannelsCount(void) {
 
     std::cout << "increment _channelsCount " << _channelsCount << std::endl;
 #endif
-  if (_channelsCount <= gConfig->getLimit("CHANLIMIT")) {
+  if (_channelsCount <= gConfig->getLimit(CHANLIMIT)) {
     ++_channelsCount;
   }
 }

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 16:43:03 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:20:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cctype>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
@@ -82,7 +83,6 @@ class Server {
   explicit Server(int port, const std::string &password);
 
   /*  Getters */
-
   int getSocketFd() const;
   int getPort() const;
   const std::string &getPassword() const;
@@ -90,8 +90,6 @@ class Server {
   const Channel &getChannelByName(const std::string &name) const;
   const channelsMap &getChannels() const;
   const clientsMap &getClients() const;
-
-  /* Member functions */
 
   /* Clients Management */
   void acceptNewClient(void);
@@ -122,6 +120,9 @@ class Server {
   /* Commands handling */
   void handleCommand(const std::string &command, const std::string &argument,
                      int fd);
+  void broadcastInChannel(const Client &client, const Channel &channel,
+                          const std::string &command,
+                          const std::string &content);
 
   /*  Command  */
 
@@ -166,6 +167,10 @@ class Server {
 
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);
+  void sendTopic(const Client &client, const Channel &channel);
+  void updateTopic(const Client &client, Channel *channel,
+                   const std::string &newTopic);
+  // void broadcastTopic(const Client &client, const Channel &channel);
 
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
@@ -187,7 +192,10 @@ class Server {
   void privmsg(int fd, const std::string &arg);
 
   /*-------- PING --------*/
-  void ping(Client *client, const std::string &token);
+  void ping(const Client &client, const std::string &token);
+
+  /* Tests */
+  void addClient(int fd, const Client &client);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

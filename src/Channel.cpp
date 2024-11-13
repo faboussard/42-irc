@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 16:15:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:22:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,8 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
 }
 
 /*============================================================================*/
-/*       Add/remove client                                                    */
+/*       Clients management                                                   */
 /*============================================================================*/
-
 
 void Channel::addClientToChannelMap(Client *client) {
   _channelClients[client->getFd()] = client;
@@ -117,6 +116,13 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
     std::cerr << RED "Client " RESET << fd << " not found in channel " << _name
               << RESET << std::endl;
   }
+}
+
+bool Channel::isClientInChannel(int fd) const {
+  if (_channelClients.find(fd) != _channelClients.end()) {
+    return (true);
+  }
+  return (false);
 }
 
 /*============================================================================*/
@@ -171,8 +177,7 @@ void Channel::deactivateKeyMode(void) {
   std::cout << "[" << _nameWithPrefix << "] Key mode desactivated" << std::endl;
 }
 
-/* add/remove operator (o) */
-
+/* operator (o) */
 void Channel::addOperator(Client *client) {
   _channelOperators[client->getFd()] = client;
   std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
@@ -183,6 +188,13 @@ void Channel::removeOperator(Client *client) {
   _channelOperators.erase(client->getFd());
   std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
             << " removed from operator in channel " << _name << std::endl;
+}
+
+bool Channel::isOperator(const Client &client) const {
+  if (_channelOperators.find(client.getFd()) != _channelOperators.end()) {
+    return (true);
+  }
+  return (false);
 }
 
 /* limit-mode (l) */

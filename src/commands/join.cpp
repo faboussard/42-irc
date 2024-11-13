@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 16:43:55 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:53:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void Server::joinChannel(const std::string &param, int fd) {
     quitAllChannels(fd);
     return;
   }
-  if (client.getChannelsCount() >= gConfig->getLimit("CHANLIMIT")) {
+  if (client.getChannelsCount() >= gConfig->getLimit(CHANLIMIT)) {
     send405TooManyChannels(client);
     return;
   }
@@ -78,25 +78,25 @@ bool Server::isChannelValid(const std::string &channelToCheck,
 
 //     std::cout << "channelToCheck.length() " << channelToCheck.length() <<
 //     std::endl; std::cout << " gConfig->getLimit(channelen)" <<
-//     gConfig->getLimit("CHANNELLEN")  << std::endl;
+//     gConfig->getLimit(CHANNELLEN)  << std::endl;
 // #endif
 #ifdef DEBUG
   std::cout << std::endl << std::endl;
 
   std::cout << "client.getChannelsCount() " << client.getChannelsCount()
             << std::endl;
-  std::cout << " gConfig->getLimitchanlimit" << gConfig->getLimit("CHANLIMIT")
+  std::cout << "gConfig->getLimitchanlimit " << gConfig->getLimit(CHANLIMIT)
             << std::endl;
 #endif
   if (channelToCheck.empty() ||
       (channelToCheck.length() == 1 && channelToCheck[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
     return (false);
-  } else if (channelToCheck.length() > gConfig->getLimit("CHANNELLEN") ||
+  } else if (channelToCheck.length() > gConfig->getLimit(CHANNELLEN) ||
              channelToCheck.length() < 2 || channelToCheck[0] != REG_CHAN) {
     send476BadChanMask(client, channelToCheck.substr(1));
     return (false);
-  } else if (client.getChannelsCount() >= gConfig->getLimit("CHANLIMIT")) {
+  } else if (client.getChannelsCount() >= gConfig->getLimit(CHANLIMIT)) {
     send405TooManyChannels(client);
     return (false);
   }
