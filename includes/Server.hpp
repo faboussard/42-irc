@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 17:20:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:06:20 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,13 @@ class Server {
   struct sockaddr_in _address;
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
+
+
+  /*-------- KICK --------*/
+  void kick(int fd, const std::string &arg);
+  void parseKickParams(const std::string &param, Client &client,
+                             std::string &channelName, std::string &targetNick,
+                             std::string &reason);
 
  public:
   explicit Server(int port, const std::string &password);
@@ -159,8 +166,6 @@ class Server {
 
   /*-------- JOIN --------*/
 
-  /*-------- KICK --------*/
-  void kick(int fd, const std::string &arg);
 
   /*-------- INVITE --------*/
   void invite(int fd, const std::string &arg);

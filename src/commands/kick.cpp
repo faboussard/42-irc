@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 10:44:57 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:04:59 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,16 @@
 // articulation de la fonction kick: 
 // kick #channelName #targetNick #reason (reason is optional)
 
-
-void Server::kick(int fd, const std::string &param) {
-  Client &client = _clients.at(fd);
-
-  if (param.empty()) {
+void Server::parseKickParams(const std::string &param, Client &client,
+                             std::string &channelName, std::string &targetNick,
+                             std::string &reason)
+{
+    if (param.empty()) {
     send461NeedMoreParams(client, "KICK");
     return;
   }
 
-
-/*
+  /*
   Si aucun espace n'est trouvé dans la chaîne param, cette ligne envoie un
   message d'erreur au client, indiquant qu'il manque des paramètres pour la
   commande KICK.*/
@@ -36,11 +35,8 @@ void Server::kick(int fd, const std::string &param) {
     send461NeedMoreParams(client, "KICK");
     return;
   }
-
-  std::string channelName;
-  std::string targetNick;
-  std::string reason;
-  if (spacePos != std::string::npos) {
+  
+    if (spacePos != std::string::npos) {
     channelName = param.substr(0, spacePos);
     std::string::size_type spacePos2 = param.find(" ", spacePos + 1);
     if (spacePos2 != std::string::npos) {
@@ -50,4 +46,16 @@ void Server::kick(int fd, const std::string &param) {
       targetNick = param.substr(spacePos + 1);
     }
   }
+}
+
+void Server::kick(int fd, const std::string &param) {
+  Client &client = _clients.at(fd);
+
+  std::string channelName;
+  std::string targetNick;
+  std::string reason;
+
+  parseKickParams(param, client, channelName, targetNick, reason);
+  
+
 }
