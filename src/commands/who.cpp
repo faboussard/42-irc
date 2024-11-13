@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 11:54:01 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:15:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void Server::who(const Client &client, const std::string &arg) {
 #ifdef DEBUG
       std::cout << "Listing all clients for " << arg << "..." << std::endl;
 #endif
-      sendClientsListInChannel(client, getChannelByName(arg.substr(1)));
+      sendClientsListInChannel(client, findChannelByName(arg.substr(1)));
     } else {
       send403NoSuchChannel(client, arg);
     }

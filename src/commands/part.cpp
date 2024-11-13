@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 11:53:30 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:15:35 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void Server::broadcastPartMessage(int fd, const std::string &nick,
   std::string partMessage = ":" + nick + " PART :#" + channelName + "\r\n";
 
   clientPMap clientsInChannel =
-      getChannelByName(channelName).getChannelClients();
+      findChannelByName(channelName).getChannelClients();
 
   for (clientPMap::iterator it = clientsInChannel.begin();
        it != clientsInChannel.end(); ++it) {

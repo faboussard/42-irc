@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 17:52:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:15:21 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,20 +34,21 @@ Server::Server(int port, const std::string &password)
 /*       Getters                                                              */
 /*============================================================================*/
 
-Client &Server::getClientByFd(int fd) {
-  clientsMap::iterator it = _clients.find(fd);
-  if (it == _clients.end()) {
-    std::cerr << "Client not found with the given file descriptor" << std::endl;
-    throw std::runtime_error("Client not found");
-  }
-  return it->second;
-}
+// Client &Server::getClientByFd(int fd) {
+//   clientsMap::iterator it = _clients.find(fd);
+//   if (it == _clients.end()) {
+//     std::cerr << "Client not found with the given file descriptor" 
+//     << std::endl;
+//     throw std::runtime_error("Client not found");
+//   }
+//   return it->second;
+// }
 
-const clientsMap &Server::getClients() const { return _clients; }
+// const clientsMap &Server::getClients() const { return _clients; }
 
-const channelsMap &Server::getChannels() const { return _channels; }
+// const channelsMap &Server::getChannels() const { return _channels; }
 
-const Channel &Server::getChannelByName(const std::string &name) const {
+const Channel &Server::findChannelByName(const std::string &name) const {
   channelsMap::const_iterator it = _channels.find(name);
   if (it == _channels.end()) {
     throw std::runtime_error("Channel not found with the given name");
@@ -55,11 +56,11 @@ const Channel &Server::getChannelByName(const std::string &name) const {
   return it->second;
 }
 
-const std::string &Server::getPassword(void) const { return _password; }
+// const std::string &Server::getPassword(void) const { return _password; }
 
-int Server::getPort(void) const { return _port; }
+// int Server::getPort(void) const { return _port; }
 
-int Server::getSocketFd(void) const { return _socketFd; }
+// int Server::getSocketFd(void) const { return _socketFd; }
 
 /*============================================================================*/
 /*       Server Mounting                                                      */

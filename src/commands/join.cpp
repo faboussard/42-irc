@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 17:53:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:15:28 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void Server::processJoinRequest(int fd, Client *client,
 
   bool keyHandled = false;
   if (channelIndex < keys.size() && !keys[channelIndex].empty()) {
-    if (handleKey(client, getChannelByName(channelName), keys[channelIndex])) {
+    if (handleKey(client, findChannelByName(channelName), keys[channelIndex])) {
       keyHandled = true;
     }
   }
@@ -175,7 +175,7 @@ void Server::broadcastJoinMessage(int fd, const std::string &nick,
   std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
 
   clientPMap clientsInChannel =
-      getChannelByName(channelName).getChannelClients();
+      findChannelByName(channelName).getChannelClients();
   clientPMap::iterator itEnd = clientsInChannel.end();
   clientPMap::iterator it = clientsInChannel.begin();
   for (; it != itEnd; ++it) {

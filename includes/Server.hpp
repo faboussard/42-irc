@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 11:06:20 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:15:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,38 +89,42 @@ class Server {
  public:
   explicit Server(int port, const std::string &password);
 
+  /* Server Mounting */
+  void runServer(void);
+  void createSocket(void);
+  // void createPoll(void);
+  static void signalHandler(int signal);
+  void acceptAndChat(void);
+  void closeServer(void);
+
   /*  Getters */
-  int getSocketFd() const;
-  int getPort() const;
-  const std::string &getPassword() const;
-  Client &getClientByFd(int fd);
-  const Channel &getChannelByName(const std::string &name) const;
-  const channelsMap &getChannels() const;
-  const clientsMap &getClients() const;
+  const Channel &findChannelByName(const std::string &name) const;
+  // int getSocketFd() const;
+  // int getPort() const;
+  // const std::string &getPassword() const;
+  // Client &getClientByFd(int fd);
+  // const channelsMap &getChannels() const;
+  // const clientsMap &getClients() const;
+
+ private:
+  /* Server Management */
+  void fetchStartTime(void);
+
 
   /* Clients Management */
   void acceptNewClient(void);
   void sendConnectionMessage(const Client &client) const;
-  void receiveMessage(int fd);
+  // void receiveMessage(int fd);
 
   /* Clients message handling */
   void handleInitialMessage(Client *client, const std::string &msg);
   void handleOtherMessage(const Client &client, const std::string &msg);
   void handleClientMessage(int fd);
 
-  /* Server Mounting */
-  void runServer(void);
-  void createSocket(void);
-  void createPoll(void);
-  void fetchStartTime(void);
-  static void signalHandler(int signal);
-  void acceptAndChat(void);
-
   /* Other methods */
   void sendToAllClients(const std::string &message);
 
   /* Clear and Close */
-  void closeServer(void);
   void clearClient(int fd);
   void closeClient(int fd);
 
@@ -132,7 +136,6 @@ class Server {
                           const std::string &content);
 
   /*  Command  */
-
   /*-------- JOIN --------*/
 
   bool isLeaveAllChannelsRequest(const std::string &param);
@@ -175,7 +178,6 @@ class Server {
   void sendTopic(const Client &client, const Channel &channel);
   void updateTopic(const Client &client, Channel *channel,
                    const std::string &newTopic);
-  // void broadcastTopic(const Client &client, const Channel &channel);
 
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
