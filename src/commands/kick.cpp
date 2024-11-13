@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 17:13:24 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:30:46 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,6 @@ void Server::kick(int fd, const std::string &param) {
 // // appel a part ?? 
 //   Client &targetClient = _clients.at(channel.getClientFd(targetNick));
 //   channel.removeClientFromChannel(targetNick);
-  
-  
 }
 
 /*

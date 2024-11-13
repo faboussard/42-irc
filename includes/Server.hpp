@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 17:23:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:29:54 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,7 @@ class Server {
 
   /*-------- PART --------*/
   void quitAllChannels(int fd);
+  void quitChannel(int fd, Channel *channel, Client *client);
   void broadcastPartMessage(int fd, const std::string &nick,
                             const std::string &channelName);
   void sendPartMessageToClient(int fd, const std::string &nick,
