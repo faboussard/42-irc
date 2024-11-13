@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 16:56:17 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:11:19 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,8 +246,10 @@ void Server::clearClient(int fd) {
     if (it->second.getChannelOperators().find(fd) !=
         it->second.getChannelOperators().end())
       it->second.removeOperator(&_clients.at(fd));
+    if (it->second.getInvitedClients().find(fd) !=
+        it->second.getInvitedClients().end())
+      it->second.removeClientFromInvitedMap(&_clients.at(fd));
   }
-  // }
   _clients.erase(fd);
 }
 
@@ -284,4 +286,13 @@ void Server::broadcastInChannel(const Client &client, const Channel &channel,
   for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
     it->second->receiveMessage(message);
   }
+}
+
+bool Server::clientExists(const std::string &nick) const {
+  clientsMap::const_iterator itEnd = _clients.end();
+  for (clientsMap::const_iterator it = _clients.begin(); it != itEnd; ++it) {
+    if (it->second.getNickname() == nick)
+      return (true);
+  }
+  return (false);
 }

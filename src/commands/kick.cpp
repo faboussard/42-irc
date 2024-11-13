@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 17:00:34 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 17:12:55 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void Server::kick(int fd, const std::string &param) {
     return;
   }
 
-  bool reasonExists = !reason.empty();
+  // bool reasonExists = !reason.empty();
   if (!channelExists(channelName)) {
     send403NoSuchChannel(client, channelName);
     return;
@@ -49,20 +49,20 @@ void Server::kick(int fd, const std::string &param) {
     return;
   }
   
-  if (!channel.isOperator(client)) {
+  if (!channel.isOperator(client.getFd())) {
     send482ChanOPrivsNeeded(client, channel);
     return;
   }
   
-  Client &targetClient = findClientByNickname(targetNick);
-  int fdTarget =  targetClient.getFd();
-  if (!channel.isClientInChannel(fdTarget)) {
-    send441UserNotInChannel(client, targetNick, channel);
-    return;
-  }
-// appel a part ?? 
-  Client &targetClient = _clients.at(channel.getClientFd(targetNick));
-  channel.removeClientFromChannel(targetNick);
+//   Client &targetClient = findClientByNickname(targetNick);
+//   int fdTarget =  targetClient.getFd();
+//   if (!channel.isClientInChannel(fdTarget)) {
+//     send441UserNotInChannel(client, targetNick, channel);
+//     return;
+//   }
+// // appel a part ?? 
+//   Client &targetClient = _clients.at(channel.getClientFd(targetNick));
+//   channel.removeClientFromChannel(targetNick);
   
   
 }
