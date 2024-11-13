@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 11:53:34 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:05:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ class Client {
                   const std::string& hostName = "");
 
   /* Getters */
-
   int getFd(void) const;
   std::string getIp(void) const;
   const std::string& getHostName(void) const;
@@ -72,7 +71,6 @@ class Client {
   size_t getChannelsCount() const;
 
   /* Setters */
-
   void setFd(int fd);
   void setNickname(const std::string& nickname);
   void setUserName(const std::string& username);
@@ -80,8 +78,6 @@ class Client {
   void setIp(const std::string& ip);
   void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
-
-  /* Member functions */
 
   /* Client status */
   void declareAccepted(void);
@@ -92,7 +88,7 @@ class Client {
   void setURegisteredMode(bool isRegistered);
 
   /* Messages handling */
-  void receiveMessage(const std::string& message);
+  void receiveMessage(const std::string& message) const;
   std::string shareMessage();
 
   /* Channels handling */

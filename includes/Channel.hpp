@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 16:15:57 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:18:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ class Channel {
   explicit Channel(const std::string &name = "");
 
   /*  Getters */
-
   const std::string &getName(void) const;
   const std::string &getType(void) const;
   const std::string getNameWithPrefix(void) const;
@@ -74,16 +73,17 @@ class Channel {
   int getLimit(void) const;
 
   /*  Setters */
-
   void setTopic(const std::string &topic, const std::string &author);
 
   /*  Member functions */
+  bool isClientInChannel(int fd) const;
 
   /* Clients Management */
   void removeClientFromChannelMap(Client *client);
   void addClientToChannelMap(Client *client);
   void receiveMessageInTheChannel(int fd);
   void checkAndremoveClientFromTheChannel(int fd);
+
   /* Modes handling */
   // invite-only (i)
   void activateInviteOnlyMode(void);
@@ -98,9 +98,10 @@ class Channel {
   void activateKeyMode(const std::string &key, const Client &client);
   void deactivateKeyMode(void);
 
-  // add/remove operator (o)
+  // operator (o)
   void addOperator(Client *client);
   void removeOperator(Client *client);
+  bool isOperator(const Client &client) const;
 
   // limit-mode (l)
   void activateLimitMode(int limit, const Client &client);
