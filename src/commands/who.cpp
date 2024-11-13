@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 11:54:01 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:53:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void Server::who(const Client &client, const std::string &arg) {
   } else if (arg[0] != '#') {
     send476BadChanMask(client, arg);
   } else {
-    if (findChannel(arg)) {
+    if (channelExists(arg)) {
 #ifdef DEBUG
       std::cout << "Listing all clients for " << arg << "..." << std::endl;
 #endif
