@@ -189,60 +189,19 @@ NExT PR
 _**Implemented Features:**_
 
 
-1. kick command ready - explanation of command in file of same name 
-i call on part function (quit channel) because i find it funny but it can be removed
-kick #k nick bla
-:nick KICK #k :bla
-:nick PART #k : say goodbye!
-
-Tests conducted :
-
-join #s
-:admin JOIN :#s
-:ircserv.localhost 331 admin #s :No topic is set
-:ircserv.localhost 353 admin #s :@admin 
-:ircserv.localhost 366 admin #s :End of \NAMES list
+1. primsg ready:
 
 
-kick #s
-:ircserv.localhost 461 admin KICK :Not enough parameters
+// PRIVMSG <target>{,<target>} <:text to be sent>
 
-kick
-:ircserv.localhost 461 admin KICK :Not enough parameters
+//<target> is the nickname of a client or the name of a channel.
 
-kick #s adm
-:ircserv.localhost 401 admin adm :No such nick/channel
+Rest of explanation and numeric replies details are in the file privmsg.cpp
 
-kick #s nick
-:ircserv.localhost 441 admin nick #s :They aren't on that channel
+2. 
+added numeric reply: 
+void send407TooManyTargets(const Client &client) 
 
-:nick JOIN #s : say hello!
-kick #s nick :jojo
-:nick KICK #s :jojo
-:nick PART #s : say goodbye!
-
-:nick JOIN #s : say hello!
-kick #s nick jojo
-:nick KICK #s :jojo
-:nick PART #s : say goodbye!
-
-
-
-2. use of general function made by yuko  broadcastInChannel for join and part.:
-
-now i am using the function broadcastInChannel for join and part :   
-broadcastInChannel(*client, *channel, "PART", " say goodbye!");
-
-Function called before or after the client's join/leave to avoid them receiving their own message.
-
-
-3. Server.hpp - function added: 
-
-Client *findClientByNickname(const std::string &nickname);
-
-4. some functions were put in comments if not used: cleaning to be done at the end of the project ( with clion that highlights the unused functions)
-
-5. valgrind OK 
 
 
 DEBUG GDB

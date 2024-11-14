@@ -6,11 +6,12 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 14:48:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 16:28:37 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <algorithm>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -31,41 +32,6 @@
 // When the PRIVMSG message is sent from a server to a client and <target>
 // starts with a dollar character ('$', 0x24), the message is a broadcast sent
 // to all clients on one or multiple servers.
-
-void Server::privmsg(int fd, const std::string &arg) {
-  Client &client = _clients.at(fd);
-  stringVector targets;
-  std::string message;
-
-  // Parse arguments to get targets and message
-  parseArguments(arg, client, targets, message);
-  if (message.empty()) return;
-
-  bool startsWithDollarPrefix = (targets[0][0] == '$');
-  bool startsWithOperatorPrefix = (targets[0][0] == STATUSMSG);
-
-  // Process each target
- #ifndef DEBUG
- for (stringVector::iterator it = targets.begin(); it != targets.end(); ++it) {
-    std::cout << "Target: " << *it << std::endl;
-  }
-  std::cout << "Message: " << message << std::endl;
-  std::cout << "Starts with $: " << startsWithDollarPrefix << std::endl;
-  std::cout << "Starts with @: " << startsWithOperatorPrefix << std::endl;
-  #endif
-  
-  stringVector::const_iterator itEnd = targets.end();
-  for (stringVector::const_iterator it = targets.begin(); it != itEnd; ++it) {
-    const std::string &target = *it;
-    if (target[0] == '$' || target[0] == STATUSMSG) {
-      std::string adjustedTarget = target.substr(1);
-      handleChannelTarget(client, adjustedTarget, message,
-                          startsWithDollarPrefix, startsWithOperatorPrefix);
-    } else {
-      handleClientTarget(client, target, message);
-    }
-  }
-}
 
 void Server::sendPrivmsgToClient(const Client &sender, const Client &receiver,
                                  const std::string &content) {
@@ -119,41 +85,49 @@ void Server::broadcastToAllOperators(const Client &sender,
   }
 }
 
-bool Server::parseAndCheckArgument(const std::string &arg, Client &client,
-                            stringVector &targets, std::string &message) {
+// Fonction pour valider les arguments de privmsg
+bool Server::isArgumentValid(const std::string &arg,const Client &client) {
   if (arg.empty()) {
     send461NeedMoreParams(client, "PRIVMSG");
-    return;
+    return false;
   }
+
+  size_t commaCount = std::count(arg.begin(), arg.end(), ',');
+  if (commaCount > gConfig->getLimit(MAXTARGETS)) {
+    send407TooManyTargets(client);
+    return false;
+  }
+
+  return true;
+}
+
+// Fonction pour analyser les arguments en cibles et message
+void Server::parseArguments(const std::string &arg,const Client &client,
+                            std::vector<std::string> &targets,
+                            std::string &message) {
   std::istringstream iss(arg);
   std::string target;
 
+  // Récupérer la première partie pour les cibles
   std::getline(iss, target, ' ');
   if (target.empty()) {
     send411NoRecipient(client, "PRIVMSG");
     return;
   }
-
-  size_t count = std::count(target.begin(), target.end(), ',');
-  if (count > gConfig->getLimit(MAXTARGETS)) {
-    send407TooManyTargets(client);
-    return;
-  }
-
   while (!target.empty()) {
     std::getline(iss, target, ',');
     targets.push_back(target);
   }
 
+  // Récupérer la seconde partie pour le message
   std::getline(iss, message, ' ');
   if (message.empty() || message[0] != ':') {
     send412NoTextToSend(client);
-    return (false);
   }
-  return (true);
 }
 
-void Server::handleClientTarget(Client &sender, const std::string &target,
+// Fonction pour traiter une cible client spécifique
+void Server::handleClientTarget(const Client &sender, const std::string &target,
                                 const std::string &message) {
   Client *targetClient = findClientByNickname(target);
   if (targetClient == NULL) {
@@ -163,7 +137,8 @@ void Server::handleClientTarget(Client &sender, const std::string &target,
   }
 }
 
-void Server::handleChannelTarget(Client &sender, const std::string &target,
+// Fonction pour traiter une cible de canal spécifique
+void Server::handleChannelTarget(const Client &sender, const std::string &target,
                                  const std::string &message,
                                  bool startsWithDollarPrefix,
                                  bool startsWithOperatorPrefix) {
@@ -172,17 +147,64 @@ void Server::handleChannelTarget(Client &sender, const std::string &target,
     return;
   }
 
+
   Channel &channel = _channels.at(target);
 
-  if (startsWithDollarPrefix && !startsWithOperatorPrefix) {  // gestion du $
+  if (channel.getMode().inviteOnly &&
+      !channel.isClientInvited(sender.getFd())) {
+    send404CannotSendToChan(sender, channel);
+    return;
+  }
+
+
+  if (startsWithDollarPrefix && !startsWithOperatorPrefix) {
     broadcastToAllClients(sender, "PRIVMSG", message);
-  } else if (startsWithDollarPrefix &&
-             startsWithOperatorPrefix) {  // gestion du $ + @
+  } else if (startsWithDollarPrefix && startsWithOperatorPrefix) {
     broadcastToAllOperators(sender, "PRIVMSG", message);
-  } else if (startsWithOperatorPrefix) {  // gestion du @
+  } else if (startsWithOperatorPrefix) {
     broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
   } else {
     broadcastInChannel(sender, channel, "PRIVMSG", message);
+  }
+}
+
+// Fonction principale privmsg
+void Server::privmsg(int fd, const std::string &arg) {
+  const Client &client = _clients.at(fd);
+
+  // Valider les arguments
+  if (!isArgumentValid(arg, client)) {
+    return;
+  }
+
+  std::vector<std::string> targets;
+  std::string message;
+
+  // Analyser les arguments pour obtenir les cibles et le message
+  parseArguments(arg, client, targets, message);
+  if (message.empty() || message[0] != ':') {
+    send412NoTextToSend(client);
+    return;
+  }
+
+  bool startsWithDollarPrefix = (targets[0][0] == '$');
+  bool startsWithOperatorPrefix = (targets[0][0] == STATUSMSG);
+
+  // Traiter chaque cible
+  std::vector<std::string>::const_iterator it;
+  for (it = targets.begin(); it != targets.end(); ++it) {
+    std::string target = *it;
+    if (target.empty()) {
+      send411NoRecipient(client, "PRIVMSG");
+      return;
+    }
+    if (target[0] == '$' || target[0] == STATUSMSG) {
+      std::string adjustedTarget = target.substr(1);
+      handleChannelTarget(client, adjustedTarget, message,
+                          startsWithDollarPrefix, startsWithOperatorPrefix);
+    } else {
+      handleClientTarget(client, target, message);
+    }
   }
 }
 
@@ -198,7 +220,10 @@ void Server::handleChannelTarget(Client &sender, const std::string &target,
 // ERR_NOSUCHSERVER (402) = ne pas traite, pas demander par le sujet
 //*********************************************************************** */
 
-// ERR_CANNOTSENDTOCHAN (404)
+// ERR_CANNOTSENDTOCHAN (404) = OK 
+
+
+// ==> if sender is not invited to channel  
 
 // "<client> <channel> :Cannot send to channel"
 // Indicates that the PRIVMSG / NOTICE could not be delivered to <channel>.

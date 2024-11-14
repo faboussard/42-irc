@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 14:08:05 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:44:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,10 @@ Client *Server::findClientByNickname(const std::string &nickname) {
   clientsMap::iterator itEnd = _clients.end();
   for (clientsMap::iterator it = _clients.begin(); it != itEnd; ++it) {
     if (it->second.getNickname() == nickname) {
-      return &it->second;
+      return (&it->second);
     }
   }
-  return NULL;
+  return (NULL);
 }
 
 // const std::string &Server::getPassword(void) const { return _password; }
@@ -289,10 +289,23 @@ void Server::broadcastInChannel(const Client &client, const Channel &channel,
   }
 }
 
-bool Server::clientExists(const std::string &nick) const {
+/*============================================================================*/
+/*       Chekers                                                              */
+/*============================================================================*/
+
+bool Server::nickExists(const std::string &nick) const {
   clientsMap::const_iterator itEnd = _clients.end();
   for (clientsMap::const_iterator it = _clients.begin(); it != itEnd; ++it) {
     if (it->second.getNickname() == nick) return (true);
+  }
+  return (false);
+}
+
+bool Server::channelExists(const std::string &channel) {
+  std::string nameToFind = std::string(channel.begin() + 1, channel.end());
+  channelsMap::iterator itEnd = _channels.end();
+  for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
+    if (it->first == nameToFind) return (true);
   }
   return (false);
 }

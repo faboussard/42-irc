@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 14:30:47 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 16:11:05 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ extern Config *gConfig;
 
 /*------ User related messages -----------------------------------------------*/
 
-#define _221_RPL_UMODEIS(nick, modes) \
-  (FROM_SERVER + "221 " + nick + " " + modes + "\r\n")
+// #define _221_RPL_UMODEIS(nick, modes) \
+//   (FROM_SERVER + "221 " + nick + " " + modes + "\r\n")
 // Informs client's currently-set user modes. (Reply to MODE <nick> command)
 
 #define _352_RPL_WHOREPLY(targetNick, chanName, userN, hostN, nick, realN)     \
@@ -262,7 +262,7 @@ void sendWelcome(int fd, std::string const &nick);
 
 /*------ User related replies ------------------------------------------------*/
 
-void send221Umodeis(const Client &client);
+// void send221Umodeis(const Client &client);
 void send315EndOfWho(const Client &client, const Channel &channel);
 void send352Whoreply(const Client &client, const Client &clientInChannel, \
                      const Channel &channel);

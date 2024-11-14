@@ -79,22 +79,22 @@ static std::string trimBeginWithChar(const std::string& str, const char c) {
 
 std::vector<std::string> split(const std::string& str,
                                const std::string& delim) {
-  std::vector<std::string> result;
-  size_t start = 0;
-  size_t end = str.find(delim);
-  size_t delimLen = delim.length();
-  std::cout << str << std::endl;
-  while (end != std::string::npos) {
-    std::string token = str.substr(start, end - start);
-    token = trimBeginWithChar(token, '\n');
-    if (!token.empty()) {
-      result.push_back(token);
+
+    std::vector<std::string> result;
+    size_t start = 0;
+    size_t end = str.find(delim);
+    size_t delimLen = delim.length();
+    std::cout << str << std::endl;
+    while (end != std::string::npos) {
+        std::string token = str.substr(start, end - start);
+        token = trimBeginWithChar(token, '\n');
+        if (!token.empty()) {
+            result.push_back(token);
+        }
+        start = end + delimLen;
+        end = str.find(delim, start);
     }
-    start = end + delimLen;
-    end = str.find(delim, start);
-  }
   std::string token = trimBeginWithChar(str.substr(start), '\n');
-  // std::string token = str.substr(start);
   if (!token.empty()) {
     result.push_back(token);
   }
@@ -103,7 +103,6 @@ std::vector<std::string> split(const std::string& str,
 
 commandVectorPairs Parser::parseCommandIntoPairs(const std::string& command) {
   std::vector<std::string> cmds = split(command, "\r\n");
-  // std::vector<std::string> cmds = split(command, '\n', '\r');
   commandVectorPairs result;
   std::string token;
   std::pair<std::string, std::string> pair;
