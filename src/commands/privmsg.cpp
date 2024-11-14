@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 12:24:19 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 12:25:06 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,13 +140,13 @@ void Server::privmsg(int fd, const std::string &arg) {
   if (isTargetAChannel == true) {
     if (startsWithDollarPrefix == true &&
         startsWithOperatorPrefix == false) {  // gestion du $
-      broadcastToAllClients(message);
+      broadcastToAllClients(client, "PRIVMSG", message);
       return;
     }
 
     if (startsWithDollarPrefix == true &&
         startsWithOperatorPrefix == true) {  // gestion du $
-      broadcastToAllOperators(message);
+      broadcastToAllOperators(client, "PRIVMSG", message);
       return;
     }
 
