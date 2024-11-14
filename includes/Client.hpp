@@ -43,7 +43,6 @@ class Client {
   bool _realnameSet;
   bool _passwordGiven;
   bool _accepted;
-  bool _CapSend;
   UserModes _uModes;
   uint8_t _nbPassAttempts;
   size_t _channelsCount;
