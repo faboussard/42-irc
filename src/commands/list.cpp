@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 11:53:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:41:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,4 @@ void Server::listChannels(const stringVector &channels, const Client &client) {
         send476BadChanMask(client, *it);
     }
   }
-}
-
-bool Server::channelExists(const std::string &channel) {
-  std::string nameToFind = std::string(channel.begin() + 1, channel.end());
-  channelsMap::iterator itEnd = _channels.end();
-  for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
-    if (it->first == nameToFind) return (true);
-  }
-  return (false);
 }
