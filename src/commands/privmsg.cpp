@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 14:44:37 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:48:27 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@
 // starts with a dollar character ('$', 0x24), the message is a broadcast sent
 // to all clients on one or multiple servers.
 
-
 void Server::privmsg(int fd, const std::string &arg) {
   Client &client = _clients.at(fd);
   stringVector targets;
@@ -46,6 +45,15 @@ void Server::privmsg(int fd, const std::string &arg) {
   bool startsWithOperatorPrefix = (targets[0][0] == STATUSMSG);
 
   // Process each target
+ #ifndef DEBUG
+ for (stringVector::iterator it = targets.begin(); it != targets.end(); ++it) {
+    std::cout << "Target: " << *it << std::endl;
+  }
+  std::cout << "Message: " << message << std::endl;
+  std::cout << "Starts with $: " << startsWithDollarPrefix << std::endl;
+  std::cout << "Starts with @: " << startsWithOperatorPrefix << std::endl;
+  #endif
+  
   stringVector::const_iterator itEnd = targets.end();
   for (stringVector::const_iterator it = targets.begin(); it != itEnd; ++it) {
     const std::string &target = *it;
@@ -111,8 +119,7 @@ void Server::broadcastToAllOperators(const Client &sender,
   }
 }
 
-
-void Server::parseArguments(const std::string &arg, Client &client,
+bool Server::parseAndCheckArgument(const std::string &arg, Client &client,
                             stringVector &targets, std::string &message) {
   if (arg.empty()) {
     send461NeedMoreParams(client, "PRIVMSG");
@@ -141,7 +148,9 @@ void Server::parseArguments(const std::string &arg, Client &client,
   std::getline(iss, message, ' ');
   if (message.empty() || message[0] != ':') {
     send412NoTextToSend(client);
+    return (false);
   }
+  return (true);
 }
 
 void Server::handleClientTarget(Client &sender, const std::string &target,
