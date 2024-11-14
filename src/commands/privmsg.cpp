@@ -6,11 +6,58 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 14:16:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:44:37 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include "../../includes/Server.hpp"
+
+// PRIVMSG <target>{,<target>} <:text to be sent>
+
+//<target> is the nickname of a client or the name of a channel.
+
+// If a message cannot be delivered to a channel, the server SHOULD respond
+// with an ERR_CANNOTSENDTOCHAN (404) numeric to let the user know that this
+// message could not be delivered.
+
+// If <target> is a channel name, it may be prefixed with one or more channel
+// membership prefix character (@ = STATUSMSG) and the message will be
+// delivered only to operators.
+
+// When the PRIVMSG message is sent from a server to a client and <target>
+// starts with a dollar character ('$', 0x24), the message is a broadcast sent
+// to all clients on one or multiple servers.
+
+
+void Server::privmsg(int fd, const std::string &arg) {
+  Client &client = _clients.at(fd);
+  stringVector targets;
+  std::string message;
+
+  // Parse arguments to get targets and message
+  parseArguments(arg, client, targets, message);
+  if (message.empty()) return;
+
+  bool startsWithDollarPrefix = (targets[0][0] == '$');
+  bool startsWithOperatorPrefix = (targets[0][0] == STATUSMSG);
+
+  // Process each target
+  stringVector::const_iterator itEnd = targets.end();
+  for (stringVector::const_iterator it = targets.begin(); it != itEnd; ++it) {
+    const std::string &target = *it;
+    if (target[0] == '$' || target[0] == STATUSMSG) {
+      std::string adjustedTarget = target.substr(1);
+      handleChannelTarget(client, adjustedTarget, message,
+                          startsWithDollarPrefix, startsWithOperatorPrefix);
+    } else {
+      handleClientTarget(client, target, message);
+    }
+  }
+}
 
 void Server::sendPrivmsgToClient(const Client &sender, const Client &receiver,
                                  const std::string &content) {
@@ -64,112 +111,83 @@ void Server::broadcastToAllOperators(const Client &sender,
   }
 }
 
-void Server::privmsg(int fd, const std::string &arg) {
-  // PRIVMSG message
-  //      Command: PRIVMSG
 
-  //   Parameters: <target>{,<target>} <text to be sent>
-
-  //<target> is the nickname of a client or the name of a channel.
-
-  // If a message cannot be delivered to a channel, the server SHOULD respond
-  // with an ERR_CANNOTSENDTOCHAN (404) numeric to let the user know that this
-  // message could not be delivered.
-
-  // If <target> is a channel name, it may be prefixed with one or more channel
-  // membership prefix character (@ = STATUSMSG) and the message will be
-  // delivered only to operators.
-
-  // When the PRIVMSG message is sent from a server to a client and <target>
-  // starts with a dollar character ('$', 0x24), the message is a broadcast sent
-  // to all clients on one or multiple servers.
-
-  Client &client = _clients.at(fd);
+void Server::parseArguments(const std::string &arg, Client &client,
+                            stringVector &targets, std::string &message) {
   if (arg.empty()) {
     send461NeedMoreParams(client, "PRIVMSG");
     return;
   }
   std::istringstream iss(arg);
-  std::string target, message;
+  std::string target;
+
   std::getline(iss, target, ' ');
   if (target.empty()) {
     send411NoRecipient(client, "PRIVMSG");
     return;
   }
 
+  size_t count = std::count(target.begin(), target.end(), ',');
+  if (count > gConfig->getLimit(MAXTARGETS)) {
+    send407TooManyTargets(client);
+    return;
+  }
+
+  while (!target.empty()) {
+    std::getline(iss, target, ',');
+    targets.push_back(target);
+  }
+
   std::getline(iss, message, ' ');
   if (message.empty() || message[0] != ':') {
     send412NoTextToSend(client);
-    return;
   }
+}
 
-  bool startsWithDollarPrefix = false;
-  if (target[0] == '$') {
-    target = target.substr(1);
-    startsWithDollarPrefix = true;
-  }
-
-  bool startsWithOperatorPrefix = false;
-  if (target[0] == STATUSMSG) {
-    target = target.substr(1);
-    startsWithOperatorPrefix = true;
-  }
-
-  // meme reponse dans le protocole irc si on ne trouve pas le client ou le
-  // channel (alors que cest ambigu)
-  bool isTargetAClient = false;
+void Server::handleClientTarget(Client &sender, const std::string &target,
+                                const std::string &message) {
   Client *targetClient = findClientByNickname(target);
   if (targetClient == NULL) {
-    send401NoSuchNick(client, target);
-    return;
-  } else
-    isTargetAClient = true;
+    send401NoSuchNick(sender, target);
+  } else {
+    sendPrivmsgToClient(sender, *targetClient, message);
+  }
+}
 
-  bool isTargetAChannel = false;
-  if (!channelExists(target.substr(1))) {
-    send401NoSuchNick(client, target);
-    return;
-  } else
-    isTargetAChannel = true;
-
-  if (isTargetAClient == true) {
-    sendPrivmsgToClient(client, *targetClient, message);
+void Server::handleChannelTarget(Client &sender, const std::string &target,
+                                 const std::string &message,
+                                 bool startsWithDollarPrefix,
+                                 bool startsWithOperatorPrefix) {
+  if (!channelExists(target)) {
+    send401NoSuchNick(sender, target);
     return;
   }
 
-  if (isTargetAChannel == true) {
-    if (startsWithDollarPrefix == true &&
-        startsWithOperatorPrefix == false) {  // gestion du $
-      broadcastToAllClients(client, "PRIVMSG", message);
-      return;
-    }
+  Channel &channel = _channels.at(target);
 
-    if (startsWithDollarPrefix == true &&
-        startsWithOperatorPrefix == true) {  // gestion du $ + @
-      broadcastToAllOperators(client, "PRIVMSG", message);
-      return;
-    }
-
-    Channel &channel = _channels.at(target.substr(1));
-    if (startsWithOperatorPrefix == true) {  // gestion du @
-      broadcastToOperatorsOnly(client, channel,
-                               "PRIVMSG", message);
-      return;
-    }
-
-    broadcastInChannel(client, channel, "PRIVMSG",
-                       message);
+  if (startsWithDollarPrefix && !startsWithOperatorPrefix) {  // gestion du $
+    broadcastToAllClients(sender, "PRIVMSG", message);
+  } else if (startsWithDollarPrefix &&
+             startsWithOperatorPrefix) {  // gestion du $ + @
+    broadcastToAllOperators(sender, "PRIVMSG", message);
+  } else if (startsWithOperatorPrefix) {  // gestion du @
+    broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
+  } else {
+    broadcastInChannel(sender, channel, "PRIVMSG", message);
   }
 }
 
 // Numeric Replies:
+//*********************************************************************** */
 
 //   ERR_NOSUCHNICK (401) - OK
 // "<client> <nickname> :No such nick/channel"
 // Indicates that no client can be found for the supplied nickname. The text
 // used in the last param of this message may vary.
+//*********************************************************************** */
 
 // ERR_NOSUCHSERVER (402) = ne pas traite, pas demander par le sujet
+//*********************************************************************** */
 
 // ERR_CANNOTSENDTOCHAN (404)
 
@@ -180,13 +198,18 @@ void Server::privmsg(int fd, const std::string &arg) {
 // This is generally sent in response to channel modes, such as a channel
 // being moderated and the client not having permission to speak on the
 // channel, or not being joined to a channel with the no external messages
-// mode set. ERR_TOOMANYTARGETS (407) = irc ne fournit pas de numeric reply
-// specific. on va plutot considerer que lon doit specifier une seule target
+// mode set.
+//*********************************************************************** */
+// ERR_TOOMANYTARGETS (407) = irc ne fournit pas de numeric reply
+// specific.
+//*********************************************************************** */
+
 // ERR_NORECIPIENT (411) = OK
 
 // "<client> :No recipient given (<command>)"
 // Returned by the PRIVMSG command to indicate the message wasn’t delivered
 // because there was no recipient given.
+//*********************************************************************** */
 
 // ERR_NOTEXTTOSEND (412) = OK
 

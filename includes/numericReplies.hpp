@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/12 17:06:15 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:30:47 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,9 @@ extern Config *gConfig;
 
 #define _405_ERR_TOOMANYCHANNELS(nick) \
   (FROM_SERVER + "405 " + nick + " :You have joined too many channels\r\n")
+
+#define _407_ERR_TOOMANYTARGETS(nick) \
+  (FROM_SERVER + "407 " + nick + " :Too many targets\r\n")
 
 #define _409_ERR_NOORIGIN(nick) \
   (FROM_SERVER + "409 " + nick + " :No origin specified\r\n")
@@ -287,6 +290,7 @@ void send401NoSuchNick(const Client &client, const std::string &targetNick);
 void send403NoSuchChannel(const Client &client, const std::string &chanName);
 void send404CannotSendToChan(const Client &client, const Channel &channel);
 void send405TooManyChannels(const Client &client);
+void send407TooManyTargets(const Client &client);
 void send409NoOrigin(const Client &client);
 void send411NoRecipient(const Client &client, const std::string &command);
 void send412NoTextToSend(const Client &client);

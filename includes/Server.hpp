@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 14:15:04 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:40:10 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,14 @@ class Server {
                              const std::string &content);
   void broadcastToAllOperators(const Client &sender, const std::string &command,
                                const std::string &content);
+  void handleClientTarget(Client &sender, const std::string &target,
+                          const std::string &message);
+  void parseArguments(const std::string &arg, Client &client,
+                      stringVector &targets, std::string &message);
+  void handleChannelTarget(Client &sender, const std::string &target,
+                           const std::string &message,
+                           bool startsWithDollarPrefix,
+                           bool startsWithOperatorPrefix);
 
  public:
   explicit Server(int port, const std::string &password);
