@@ -202,6 +202,8 @@ Rest of explanation and numeric replies details are in the file privmsg.cpp
 added numeric reply: 
 void send407TooManyTargets(const Client &client) 
 
+3 . CHAN_OP = "@" becomes CHAN_OP = '@' (char)
+numeric replies impacted for one function
 
 
 DEBUG GDB

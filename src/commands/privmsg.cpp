@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 16:28:37 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 16:45:55 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,8 +140,8 @@ void Server::handleClientTarget(const Client &sender, const std::string &target,
 // Fonction pour traiter une cible de canal spécifique
 void Server::handleChannelTarget(const Client &sender, const std::string &target,
                                  const std::string &message,
-                                 bool startsWithDollarPrefix,
-                                 bool startsWithOperatorPrefix) {
+                                 bool isDiffusionPrefix,
+                                 bool isChanOpPrefix) {
   if (!channelExists(target)) {
     send401NoSuchNick(sender, target);
     return;
@@ -157,11 +157,11 @@ void Server::handleChannelTarget(const Client &sender, const std::string &target
   }
 
 
-  if (startsWithDollarPrefix && !startsWithOperatorPrefix) {
+  if (isDiffusionPrefix && !isChanOpPrefix) {
     broadcastToAllClients(sender, "PRIVMSG", message);
-  } else if (startsWithDollarPrefix && startsWithOperatorPrefix) {
+  } else if (isDiffusionPrefix && isChanOpPrefix) {
     broadcastToAllOperators(sender, "PRIVMSG", message);
-  } else if (startsWithOperatorPrefix) {
+  } else if (isChanOpPrefix) {
     broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
   } else {
     broadcastInChannel(sender, channel, "PRIVMSG", message);
@@ -187,8 +187,7 @@ void Server::privmsg(int fd, const std::string &arg) {
     return;
   }
 
-  bool startsWithDollarPrefix = (targets[0][0] == '$');
-  bool startsWithOperatorPrefix = (targets[0][0] == STATUSMSG);
+
 
   // Traiter chaque cible
   std::vector<std::string>::const_iterator it;
@@ -198,10 +197,12 @@ void Server::privmsg(int fd, const std::string &arg) {
       send411NoRecipient(client, "PRIVMSG");
       return;
     }
-    if (target[0] == '$' || target[0] == STATUSMSG) {
+      bool isDiffusionPrefix = (target[0] == DIFFUSION_PREFIX);
+      bool isChanOpPrefix = (target[0] == CHAN_OP);
+    if (isDiffusionPrefix || isChanOpPrefix) {
       std::string adjustedTarget = target.substr(1);
       handleChannelTarget(client, adjustedTarget, message,
-                          startsWithDollarPrefix, startsWithOperatorPrefix);
+                          isDiffusionPrefix, isChanOpPrefix);
     } else {
       handleClientTarget(client, target, message);
     }
