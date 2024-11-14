@@ -15,11 +15,12 @@
 #include "../../includes/colors.hpp"
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
-  client->incrementNbPassAttempts();
+
   if (client->isPasswordGiven()) {
     send462AlreadyRegistered(*client);
     return (false);
   }
+  client->incrementNbPassAttempts();
   if (arg.empty()) {
     send461NeedMoreParams(*client, "PASS");
     return (false);
