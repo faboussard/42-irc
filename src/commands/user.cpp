@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:54:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 16:23:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ bool Parser::verifyUser(const std::string &user, Client *client,
   }
   client->setUserName(fields[0]);
   client->setRealName(fields[3]);
-  std::cout << BRIGHT_YELLOW "UserName IS ACCEPTED !!!!! : "
+  std::cout << BBRIGHT_YELLOW "UserName IS ACCEPTED !!!!! : "
             << client->getUserName() << RESET << std::endl;
   return (true);
 }

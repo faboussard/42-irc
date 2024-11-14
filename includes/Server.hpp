@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 14:41:03 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 16:20:20 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,15 @@ enum Command {
   UNKNOWN
 };
 
+enum eLogLevel {
+  DEBUG,
+  INFO,
+  NOTIFY,
+  WARNING,
+  ERROR 
+};
+
+
 class Server {
  private:
   static bool _signal;
@@ -98,18 +107,18 @@ class Server {
   void closeServer(void);
 
   /*  Getters */
-  Channel *findChannelByName(const std::string &name);
   // int getSocketFd() const;
   // int getPort() const;
   // const std::string &getPassword() const;
-
-  /*  Finders */
-
   //  Client &findClientByFd(int fd);
-  Client *findClientByNickname(const std::string &nickname);
-
   // const channelsMap &getChannels() const;
   // const clientsMap &getClients() const;
+
+  /*  Finders */
+  Channel *findChannelByName(const std::string &name);
+  Client *findClientByNickname(const std::string &nickname);
+
+  static void printLog(eLogLevel level, const std::string &content);
 
  private:
   /* Server Management */

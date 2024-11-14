@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 14:44:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:02:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,27 +31,60 @@ Server::Server(int port, const std::string &password)
 }
 
 /*============================================================================*/
-/*       Getters                                                              */
+/*       Server log                                                           */
 /*============================================================================*/
 
-// Client &Server::findClientByFd(int fd) {
-//   clientsMap::iterator it = _clients.find(fd);
-//   if (it == _clients.end()) {
-//     std::cerr << "Client not found with the given file descriptor"
-//     << std::endl;
-//     throw std::runtime_error("Client not found");
-//   }
-//   return it->second;
-// }
+void Server::printLog(eLogLevel level, const std::string &content) {
+  char timeStamp[20];
+  time_t now = time(&now);
+  struct tm tp = *localtime(&now);
+  std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d %H:%M:%S", &tp);
+
+  std::cout << "[" << timeStamp << "]";
+  switch (level) {
+    case DEBUG:
+#ifdef DEBUG
+      std::cout << CYAN "[DEBUG] " RESET << content << std::endl;
+      break;
+#endif
+    case INFO:
+      std::cout << "[INFO] " << content << std::endl;
+      break;
+    case NOTIFY:
+      std::cout << GREEN "[NOTICE] " RESET << content << std::endl;
+      break;
+    case WARNING:
+      std::cerr << BRIGHT_YELLOW "[WARNING] " RESET << content << std::endl;
+      break;
+    case ERROR:
+      std::cerr << RED "[ERROR] " RESET << content << std::endl;
+      break;
+    default:
+      break;
+  }
+}
+
+/*============================================================================*/
+/*       Getters                                                              */
+/*============================================================================*/
 
 // const clientsMap &Server::getClients() const { return _clients; }
 
 // const channelsMap &Server::getChannels() const { return _channels; }
 
+// const std::string &Server::getPassword(void) const { return _password; }
+
+// int Server::getPort(void) const { return _port; }
+
+// int Server::getSocketFd(void) const { return _socketFd; }
+
+/*============================================================================*/
+/*       Finders                                                              */
+/*============================================================================*/
+
 Channel *Server::findChannelByName(const std::string &name) {
   channelsMap::iterator it = _channels.find(name);
-  if (it == _channels.end())
-   return (NULL);
+  if (it == _channels.end()) return (NULL);
   return (&it->second);
 }
 
@@ -65,12 +98,6 @@ Client *Server::findClientByNickname(const std::string &nickname) {
   return (NULL);
 }
 
-// const std::string &Server::getPassword(void) const { return _password; }
-
-// int Server::getPort(void) const { return _port; }
-
-// int Server::getSocketFd(void) const { return _socketFd; }
-
 /*============================================================================*/
 /*       Server Mounting                                                      */
 /*============================================================================*/
@@ -78,8 +105,12 @@ Client *Server::findClientByNickname(const std::string &nickname) {
 void Server::runServer(void) {
   createSocket();
   fetchStartTime();
-  std::cout << GREEN "Server started on port " << _port << " at " << _startTime
-            << RESET << std::endl;
+  // std::cout << GREEN "Server started on port " << _port << " at " <<
+  // _startTime
+  //           << RESET << std::endl;
+  std::string message =
+      "Server started on port " + toString(_port) + " at " + _startTime + RESET;
+  printLog(NOTIFY, message);
   acceptAndChat();
 }
 
@@ -149,7 +180,13 @@ void Server::acceptAndChat(void) {
 void Server::signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGQUIT) {
     _signal = true;
-    std::cout << std::endl << "Signal Received!" << std::endl;
+    std::string message;
+    if (signal == SIGINT)
+      message = "SIGINT Received";
+    else
+      message = "SIGQUIT Received";
+    // std::cout << std::endl << "Signal Received" << std::endl;
+    printLog(NOTIFY, message);
   }
 }
 
@@ -166,8 +203,12 @@ void Server::closeServer(void) {
   _channels.clear();
   // Fermer le socket principal
   if (_socketFd != -1) {
-    std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET
-              << std::endl;
+    // std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected"
+    // RESET
+    //           << std::endl;
+    std::string logMessage =
+        "<fd " + toString(_socketFd) + "> Server disconnected";
+    printLog(NOTIFY, logMessage);
     close(_socketFd);
     _socketFd = -1;
   }
@@ -189,11 +230,13 @@ void Server::acceptNewClient(void) {
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
-    std::cerr << RED "Failed to accept new client" RESET << std::endl;
+    // std::cerr << RED "Failed to accept new client" RESET << std::endl;
+    printLog(ERROR, "Failed to accept new client");
     return;
   }
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
-    std::cerr << "fcntl() failed" << std::endl;
+    // std::cerr << "fcntl() failed" << std::endl;
+    printLog(ERROR, "fcntl() failed");
     return;
   }
 
@@ -211,10 +254,6 @@ void Server::acceptNewClient(void) {
   else
     hostName = host->h_name;
   Client cli(newClientFd, clientIp, hostName);
-#ifdef DEBUG
-  std::cout << "New client IP " << cli.getIp() << std::endl;
-  std::cout << "New client host name " << cli.getHostName() << std::endl;
-#endif
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 }
@@ -222,8 +261,10 @@ void Server::acceptNewClient(void) {
 void Server::closeClient(int fd) {
   if (fd != -1) {
     close(fd);
-    std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
-              << std::endl;
+    // std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
+    //           << std::endl;
+    std::string logMessage = "<fd " + toString(fd) + "> Client Disconnected";
+    printLog(NOTIFY, logMessage);
   }
 }
 

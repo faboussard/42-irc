@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 17:14:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 16:22:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void clientIsAcceptedMessageToDelete(const Client *client,
             << std::endl;
   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
   std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
+  std::cout << BBRIGHT_YELLOW "Command: " << command << std::endl;
 }
 #endif
 // <-------------------------------------------------------------------------//
@@ -115,7 +115,7 @@ static void clientNameUserCommandMessage(
 
   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
   std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
+  std::cout << BBRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
   std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
 }
 #endif

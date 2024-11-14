@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:53:36 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 16:23:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@
 #define YELLOW "\033[0;33m"
 #define MAGENTA "\033[35m"
 #define CYAN "\033[0;36m"
-#define BRIGHT_YELLOW "\033[1;93m"
+#define BRIGHT_YELLOW "\033[0;93m"
+#define BBRIGHT_YELLOW "\033[1;93m"
 #define BLUE "\033[94m"
 #define RESET "\033[0m"
 #define GREY "\033[90m"

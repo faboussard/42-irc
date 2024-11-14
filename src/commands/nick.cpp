@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 17:53:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 16:22:54 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ bool Parser::verifyNick(const std::string &nick, Client *client,
     }
   }
   client->setNickname(nick);
-  std::cout << BRIGHT_YELLOW "NickName IS ACCEPTED !!!!! : "
+  std::cout << BBRIGHT_YELLOW "NickName IS ACCEPTED !!!!! : "
             << client->getNickname() << RESET << std::endl;
   return (true);
 }
