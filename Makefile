@@ -60,6 +60,11 @@ debug: C = g++
 debug: CFLAGS += -DDEBUG -g3
 debug: clean create_dirs ${NAME}
 
+#----------------------------------- Fsanitize ------------------------------- #
+fsan:
+	$(RMDIR) $(DIR_OBJS)
+	$(MAKE) CFLAGS="-g3 -fsanitize=address"
+	$(MAKE) clean
 # ---------------------------------- valgrind -------------------------------- #
 valgrind: $(NAME) debug
 			valgrind --track-fds=yes --leak-check=full \
@@ -92,4 +97,4 @@ fclean: clean
 re: fclean all
 
 # ---------------------------------- Phony ----------------------------------- #
-.PHONY: all clean fclean re debug fsanitize valgrind
+.PHONY: all clean fclean re debug fsanitize valgrind fsan

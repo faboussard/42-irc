@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 12:23:34 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:42:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _realnameSet(false),
       _passwordGiven(false),
       _accepted(false),
-      _CapSend(false),
       _nbPassAttempts(0),
       _channelsCount(0) {
   // _uModes.invisible = false;
@@ -84,8 +83,6 @@ bool Client::isPasswordGiven(void) const { return (_passwordGiven); }
 
 bool Client::isAccepted(void) const { return (_accepted); }
 
-bool Client::isCapSend(void) const { return (_CapSend); }
-
 uint8_t Client::getNbPassAttempts(void) const { return (_nbPassAttempts); }
 
 /*============================================================================*/
@@ -112,8 +109,6 @@ void Client::setFd(int fd) { _fd = fd; }
 void Client::setIp(const std::string& ip) { _ip = ip; }
 
 void Client::setHostName(const std::string& hostname) { _hostName = hostname; }
-
-void Client::setCapSend(bool yes) { _CapSend = yes; }
 
 // void Client::setUInvisibleMode(bool isInvisible) {
 //   _uModes.invisible = isInvisible;
@@ -171,9 +166,9 @@ std::string Client::shareMessage(void) {
 
 void Client::incrementChannelsCount(void) {
 #ifdef DEBUG
-    std::cout << std::endl << std::endl;
+  std::cout << std::endl << std::endl;
 
-    std::cout << "increment _channelsCount " << _channelsCount << std::endl;
+  std::cout << "increment _channelsCount " << _channelsCount << std::endl;
 #endif
   if (_channelsCount <= gConfig->getLimit(CHANLIMIT)) {
     ++_channelsCount;
@@ -181,10 +176,10 @@ void Client::incrementChannelsCount(void) {
 }
 
 void Client::decrementChannelsCount(void) {
-  #ifdef DEBUG
-    std::cout << std::endl << std::endl;
+#ifdef DEBUG
+  std::cout << std::endl << std::endl;
 
-    std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
+  std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
 #endif
   if (_channelsCount > 0) {
     --_channelsCount;

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 17:53:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:38:26 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,10 @@ void Server::processJoinRequest(int fd, Client *client,
     _channels.at(channelName).addOperator(client);
   }
 
+  Channel &channel = _channels.at(channelName);
   bool keyHandled = false;
   if (channelIndex < keys.size() && !keys[channelIndex].empty()) {
-    if (handleKey(client, getChannelByName(channelName), keys[channelIndex])) {
+    if (handleKey(client, channel, keys[channelIndex])) {
       keyHandled = true;
     }
   }
@@ -128,12 +129,13 @@ void Server::processJoinRequest(int fd, Client *client,
     // si le client n'est pas déjà dans le channel
     std::string nick = client->getNickname();
     if (clientsInChannel.find(fd) == clientsInChannel.end()) {
+      broadcastInChannel(*client, channel, "JOIN", "say hello!");
       client->incrementChannelsCount();
       channel.addClientToChannelMap(client);
       sendJoinMessageToClient(fd, nick, channelName, *client);
       send353Namreply(*client, _channels[channelName]);
       send366Endofnames(*client, _channels[channelName]);
-      broadcastJoinMessage(fd, nick, channelName);
+      // broadcastJoinMessage(fd, nick, channelName);
     }
   }
 }
@@ -170,19 +172,20 @@ void Server::sendJoinMessageToClient(int fd, const std::string &nick,
     send332Topic(client, _channels[channelName]);
 }
 
-void Server::broadcastJoinMessage(int fd, const std::string &nick,
-                                  const std::string &channelName) {
-  std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
+// void Server::broadcastJoinMessage(int fd, const std::string &nick,
+//                                   const std::string &channelName) {
+//   std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
 
-  clientPMap clientsInChannel =
-      getChannelByName(channelName).getChannelClients();
-  clientPMap::iterator itEnd = clientsInChannel.end();
-  clientPMap::iterator it = clientsInChannel.begin();
-  for (; it != itEnd; ++it) {
-    if (it->first != fd) {  // Ne pas envoyer au client qui join
-      if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) == -1) {
-        throw std::runtime_error("Runtime error: send failed");
-      }
-    }
-  }
-}
+//   clientPMap clientsInChannel =
+//       findChannelByName(channelName).getChannelClients();
+//   clientPMap::iterator itEnd = clientsInChannel.end();
+//   clientPMap::iterator it = clientsInChannel.begin();
+//   for (; it != itEnd; ++it) {
+//     if (it->first != fd) {  // Ne pas envoyer au client qui join
+//       if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) ==
+//       -1) {
+//         throw std::runtime_error("Runtime error: send failed");
+//       }
+//     }
+//   }
+// }

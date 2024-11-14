@@ -73,9 +73,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       clientIsAcceptedMessageToDelete(client, command);
 #endif
       handleCommand(command, argument, client->getFd());
-    } else if (command == "CAP" && client->isCapSend() == false &&
-               client->isPasswordGiven() == false) {
-      if (client->isCapSend() == false) client->setCapSend(true);
+    } else if (command == "CAP") { continue;
     } else if (command == "PASS") {
       if (isLastPass(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyPassword(argument, _password, client) == false) {
@@ -86,7 +84,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
         }
       }
     } else if (client->isPasswordGiven() == false) {
-      send461NeedMoreParams(*client, "PASS");
+      send451NotRegistered(*client);
     } else if (command == "NICK") {
       if (isLastNick(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyNick(argument, client, &_clients) == true &&
@@ -105,23 +103,37 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 #endif
       }
     } else if (client->isAccepted() == false) {
-      if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);
-      if (client->isUsernameSet() == false) send451NotRegistered(*client);
+      send451NotRegistered(*client);
     }
   }
 }
 
+#ifdef DEBUG
+static void clientNameUserCommandMessage(
+    const Client *client, const std::string *command,
+    const std::string *argument, const int *fd) {
+
+  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
+  std::cout << "UserName: " << client->getUserName() << std::endl;
+  std::cout << BRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
+  std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
+}
+#endif
+
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
   commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
+  int fd = client.getFd();
   for (size_t it = 0; it < vecSize; ++it) {
     std::string command = splittedPair[it].first;
     std::string argument = splittedPair[it].second;
     Command cmd = Parser::choseCommand(command);
-    std::cout << BLUE "NickName: " << client.getNickname() << std::endl;
-    std::cout << "UserName: " << client.getUserName() << std::endl;
-    std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
-    std::cout << MAGENTA "Message: " << argument << RESET << std::endl;
+    clientsMap::iterator itCli = _clients.find(fd);
+    if (itCli == _clients.end())
+      return;
+#ifdef DEBUG
+    clientNameUserCommandMessage(&client, &command, &argument, &fd);
+#endif
     if (cmd == UNKNOWN) {
       send421UnknownCommand(client, command);
       continue;
@@ -146,6 +158,7 @@ void Server::handleClientMessage(int fd) {
     return;
   } else if (valread == 0) {
     std::cout << "Client " << fd << " disconnected" << std::endl;
+    messageBuffer[fd].erase();
     clearClient(fd);
     return;
   }

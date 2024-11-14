@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 10:42:45 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:41:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,13 @@ class Server {
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
 
+  /*-------- KICK --------*/
+  void kick(int fd, const std::string &arg);
+  void parseKickParams(std::string *param, const Client &client,
+                       const std::string &channelName,
+                       const std::string &targetNick,
+                       const std::string &reason);
+
  public:
   explicit Server(int port, const std::string &password);
 
@@ -91,11 +98,16 @@ class Server {
   void closeServer(void);
 
   /*  Getters */
-  const Channel &getChannelByName(const std::string &name) const;
+  Channel *findChannelByName(const std::string &name);
   // int getSocketFd() const;
   // int getPort() const;
   // const std::string &getPassword() const;
-  // Client &getClientByFd(int fd);
+
+  /*  Finders */
+
+  //  Client &findClientByFd(int fd);
+  Client *findClientByNickname(const std::string &nickname);
+
   // const channelsMap &getChannels() const;
   // const clientsMap &getClients() const;
 
@@ -114,7 +126,7 @@ class Server {
   void handleClientMessage(int fd);
 
   /* Other methods */
-  void sendToAllClients(const std::string &message);
+  // void sendToAllClients(const std::string &message);
 
   /* Clear and Close */
   void clearClient(int fd);
@@ -154,6 +166,7 @@ class Server {
 
   /*-------- PART --------*/
   void quitAllChannels(int fd);
+  void quitChannel(int fd, Channel *channel, Client *client);
   void broadcastPartMessage(int fd, const std::string &nick,
                             const std::string &channelName);
   void sendPartMessageToClient(int fd, const std::string &nick,
@@ -161,11 +174,6 @@ class Server {
 
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
-
-  /*-------- JOIN --------*/
-
-  /*-------- KICK --------*/
-  void kick(int fd, const std::string &arg);
 
   /*-------- INVITE --------*/
   void invite(int fd, const std::string &arg);
@@ -179,7 +187,7 @@ class Server {
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);
   bool parseTopicParams(const std::string &arg, stringVector *params,
-                const Client &client);
+                        const Client &client);
   void sendTopic(const Client &client, const Channel &channel);
   void updateTopic(const Client &client, Channel *channel,
                    const std::string &newTopic);
