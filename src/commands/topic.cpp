@@ -1,52 +1,119 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   topic.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/10/29 08:47:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 16:59:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// ======= TOPIC from a client who is not on the channel =======================
-// Reply: 
-// -- 442 ERR_NOTONCHANNEL
+#include "../../includes/Server.hpp"
 
-// ======= TOPIC with 't' mode from a client on the channel but not ops ========
-// Reply: 
-//  // -- 482 ERR_CHANOPRIVSNEEDED:
+// Supported command formats:
+// - Show current topic of channel #42
+//   TOPIC #42
+// - Change topic of channel #42 to "new topic"
+//   < HexChat > TOPIC #42 new topic (withot :) -- HexChat adds ':'
+//   < netcat >  TOPIC #42 :new topic (with :)
 
-// ======= TOPIC <channel> =====================================================
-// Replies:
-// -- 332 RPL_TOPIC & RPL_TOPICWHOTIME:
-// If the client is on the channel && the topic is set
+// Channel and topic are separated by space.
+// Extra colons at the beginning of the topic are ignored.
 
-// -- 331 RPL_NOTOPIC
-// If the topic is not set
+void Server::topic(int fd, const std::string &arg) {
+  Client &client = _clients.at(fd);
+#ifdef DEBUG
+  std::cout << "[TOPIC] Command received from " << client.getNickname()
+  << std::endl;
+#endif
+  if (arg.empty()) {
+    send461NeedMoreParams(client, "TOPIC");
+    return;
+  }
+  stringVector params;
+  if (!parseTopicParams(arg, &params, client))
+    return;
+  const std::string &chanNameWithPrefix = params.at(0);
+  if (!channelExists(chanNameWithPrefix)) {
+    send403NoSuchChannel(client, chanNameWithPrefix);
+  } else {
+    const std::string &chanName = chanNameWithPrefix.substr(1);
+    Channel &channel = _channels.at(chanName);
+    if (!channel.isClientInChannel(fd)) {
+      send442NotOnChannel(client, channel);
+      return;
+    }
+    if (params.size() == 1)
+      sendTopic(client, channel);
+    else
+      updateTopic(client, &channel, params.at(1));
+  }
+}
 
-// -- 403 ERR_NOSUCHCHANNEL
-// If the channel does not exist 
+bool Server::parseTopicParams(const std::string &arg, stringVector *params,
+                const Client &client) {
+  std::istringstream iss(arg);
+  std::string channel, topic;
+  iss >> channel;
+  if (channel.empty()) {
+    send461NeedMoreParams(client, "TOPIC");
+    return (false);
+  }
+  if (channel[0] != REG_CHAN) {
+    send476BadChanMask(client, channel);
+    return (false);
+  }
+  params->push_back(channel);
+  std::getline(iss >> std::ws, topic);
+  if (topic.empty())
+    return (true);
+  if (topic[0] != ':') {
+    send461NeedMoreParams(client, "TOPIC");
+    return (false);
+  }
+#ifdef DEBUG
+  std::cout << "[TOPIC] Channel: " << channel << " / Topic before trim: "
+            << topic << std::endl;
+#endif
+  topic.erase(0, topic.find_first_not_of(":"));
+#ifdef DEBUG
+  std::cout << "[TOPIC] Topic after trim: " << topic << std::endl;
+#endif
+  if (topic.empty())
+    topic = "";
+  params->push_back(topic);
+  return (true);
+}
 
-// ======= TOPIC <channel> :<empty topic> ======================================
-// Replies:
-// -- 482 ERR_CHANOPRIVSNEEDED:
-// If the channel is on 't' mode && TOPIC was sent from a client on the channel but not ops
+void Server::sendTopic(const Client &client, const Channel &channel) {
+  if (channel.getTopic().topic.empty()) {
+    send331Notopic(client, channel);
+  } else {
+    send332Topic(client, channel);
+    send333Topicwhotime(client, channel);
+  }
+}
 
-// -- :<client who sent TOPIC> TOPIC <prefix><channel> :
-// Topic for the channel will be cleared.
-// Replies (not numeric) to every client in that channel (including the author of the topic change)
-
-// ======= TOPIC <channel> :<topic> ============================================
-// Replies:
-// -- 482 ERR_CHANOPRIVSNEEDED:
-// If the channel is on 't' mode && TOPIC was sent from a client on the channel but not ops
-
-// -- :<client who sent TOPIC> TOPIC <prefix><channel> : <new topic>
-// Topic of a channel will be changed.
-// Replies (not numeric) to every client in that channel (including the author of the topic change)
-// e.g. [:Alice TOPIC #test :New topic]
-
-// If the <topic> param is provided but the same as the previous topic (ie. it is unchanged), 
-// servers MAY notify the author and/or other users anyway.
+void Server::updateTopic(const Client &client, Channel *channel,
+                         const std::string &newTopic) {
+  if (channel->getMode().topicSettableByOpsOnly &&
+      !channel->isOperator(client.getFd())) {
+    send482ChanOPrivsNeeded(client, *channel);
+    return;
+  }
+  if (newTopic.size() > gConfig->getLimit(TOPICLEN)) {
+    send476BadChanMask(client, channel->getNameWithPrefix());
+    client.receiveMessage(FROM_SERVER + "NOTICE " +
+                          "Topic is too long, limit is " +
+                          gConfig->getParam(TOPICLEN) + " characters.\r\n");
+    return;
+  }
+  std::string oldTopic = channel->getTopic().topic;
+  channel->setTopic(newTopic, client.getNickname());
+  if (oldTopic.empty() && newTopic.empty())
+    send331Notopic(client, *channel);
+  else
+    broadcastInChannel(client, *channel, "TOPIC", newTopic);
+}

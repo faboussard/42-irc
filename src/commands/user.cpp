@@ -1,18 +1,20 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/30 10:48:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 11:54:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Parser.hpp"
+#include "../../includes/Parser.hpp"
+#include "../../includes/colors.hpp"
 
-static std::vector<std::string> fillUserVectorString(const std::string str) {
+static std::vector<std::string> fillUserVectorString(const std::string &str) {
+  if (str.empty()) return (std::vector<std::string>());
   std::vector<std::string> result;
   std::istringstream iss(str);
   std::string token;
@@ -26,7 +28,7 @@ static std::vector<std::string> fillUserVectorString(const std::string str) {
     result.clear();
     return (result);
   }
-  std::string lastToken = str.substr(str.find_first_of(":"));
+  std::string lastToken = str.substr(str.find_first_of(":") + 1);
   if (lastToken.empty() || lastToken.size() > 100)
     result.clear();
   else
@@ -34,59 +36,56 @@ static std::vector<std::string> fillUserVectorString(const std::string str) {
   return (result);
 }
 
-static bool usernameContainsForbiddenCaracters(const std::string username) {
-  size_t size = username.size();
+static bool usernameIsInvalid(const std::string &username) {
+  const size_t size = username.size();
 
+  if (size > 10) {
+    return (true);
+  }
   for (size_t i = 0; i < size; ++i) {
     if (std::isspace(username.at(i)) || std::iscntrl(username.at(i))) {
-      std::cout << "space or control char" << std::endl;
-    // ERR_ERRONEUSNICKNAME (432)
       return (true);
     }
   }
   return (false);
 }
 
-static bool realnameContainsForbiddenCaracters(const std::string realname) {
+static bool realnameIsInvalid(const std::string &realname) {
   size_t size = realname.size();
 
   for (size_t i = 0; i < size; ++i) {
     if (std::iscntrl(realname.at(i))) {
-      std::cout << "control char" << std::endl;
-    // ERR_ERRONEUSNICKNAME (432)
       return (true);
     }
   }
   return (false);
 }
 
-bool Parser::verifyUser(std::string user, Client& client, clientsMap cltMap) {
-  if (client.isUsernameSet()) {
-    // ERR_ALREADYREGISTERED (462)
-    return (false);
-  }
-  if (user.empty()) {
-    // ERR_NEEDMOREPARAMS (461)
+bool Parser::verifyUser(const std::string &user, Client *client,
+                        clientsMap *cltMap) {
+  if (client->isUsernameSet()) {
+    send462AlreadyRegistered(*client);
     return (false);
   }
   std::vector<std::string> fields = fillUserVectorString(user);
-  if (fields.size() != 4) {
-    std::cout << "fields.size() != 4" << std::endl;
-    // ERR_NEEDMOREPARAMS (461)
+  if (user.empty() || fields.size() != 4) {
+    send461NeedMoreParams(*client, "USER");
     return (false);
   }
-  if (usernameContainsForbiddenCaracters(fields[0])
-      || realnameContainsForbiddenCaracters(fields[3]))
+  if (usernameIsInvalid(fields[0]) || realnameIsInvalid(fields[3])) {
+    send432ErroneusNickname(*client, client->getNickname());
     return (false);
-  clientsMap::iterator itEnd = cltMap.end();
-  for (clientsMap::iterator it = cltMap.begin(); it != itEnd; ++it) {
+  }
+  clientsMap::iterator itEnd = cltMap->end();
+  for (clientsMap::iterator it = cltMap->begin(); it != itEnd; ++it) {
     if (it->second.getUserName() == user) {
-      // sendNumericReply(462, "ERR_ALREADYREGISTERED");
-      std::cout << "username already registered" << std::endl;
+      send462AlreadyRegistered(*client);
       return (false);
     }
   }
-  client.setUserName(user);
-  client.setRealName(fields[3]);
+  client->setUserName(fields[0]);
+  client->setRealName(fields[3]);
+  std::cout << BRIGHT_YELLOW "UserName IS ACCEPTED !!!!! : "
+            << client->getUserName() << RESET << std::endl;
   return (true);
 }

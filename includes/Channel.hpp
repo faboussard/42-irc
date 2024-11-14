@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/29 10:36:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 15:56:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,17 @@
 #include <map>
 #include <string>
 
-#include "../includes/Client.hpp"
+#include "../includes/Config.hpp"
 
-typedef std::map<int, Client> clientsMap;
+class Client;
+
+typedef std::map<int, Client *> clientPMap;
+
+extern Config *gConfig;
+
+#define REG_CHAN '#'     // regular channel prefix
+#define PUBLIC_CHAN "="  // public channel symbol
+#define CHAN_OP "@"      // channel operator prefix
 
 typedef struct Topic {
   std::string topic;
@@ -32,53 +40,74 @@ typedef struct Mode {
   bool topicSettableByOpsOnly;
   bool keyRequired;
   bool limitSet;
-  std::string key;
-  int limit;
 } Mode;
 
 class Channel {
  private:
   std::string _name;
+  std::string _type;
+  std::string _nameWithPrefix;
   std::string _creationTime;
   Topic _topic;
   Mode _mode;
+  std::string _key;
+  int _limit;
 
-  clientsMap _clientsInChannel;
-  clientsMap _channelOperators;
+  clientPMap _channelClients;
+  clientPMap _channelOperators;
+  clientPMap _invitedClients;
 
  public:
   explicit Channel(const std::string &name = "");
 
-  /* Getters */
-
-  const std::string &getName() const;
-  const std::string getNameWithPrefix() const;
-  const std::string &getCreationTime() const;
-  const clientsMap &getClientsInChannel() const;
-  const clientsMap &getChannelOperators() const;
+  /*  Getters */
+  const std::string &getName(void) const;
+  const std::string &getType(void) const;
+  const std::string getNameWithPrefix(void) const;
+  const std::string &getCreationTime(void) const;
+  const clientPMap &getChannelClients(void) const;
+  const clientPMap &getChannelOperators(void) const;
+  const clientPMap &getInvitedClients(void) const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
   const std::string getChannelModeFlag(void) const;
   const std::string &getKey(void) const;
   int getLimit(void) const;
 
-  /* Setters */
-
+  /*  Setters */
   void setTopic(const std::string &topic, const std::string &author);
-  void setInviteOnlyMode(void);
-  void setTopicSettableByOpsOnlyMode(void);
-  // void setKey(const std::string &key, const Client &cli);
-  // void setLimit(int limit, const Client &cli);
 
-  /* Member Functions */
-
-  void removeClientFromTheChannel(int fd);
-  void acceptClientInTheChannel(const Client &client);  // Utilisation du type défini
+  /* Clients Management */
+  void removeClientFromChannelMap(Client *client);
+  void addClientToChannelMap(Client *client);
   void receiveMessageInTheChannel(int fd);
+  void checkAndremoveClientFromTheChannel(int fd);
+  void addClientToInvitedMap(Client *client);
+  void removeClientFromInvitedMap(Client *client);
+  bool isClientInChannel(int fd) const;
+  bool isClientInvited(int fd) const;
 
-  void activateKeyMode(const std::string &key, const Client &cli);
+  /* Modes handling */
+  // invite-only (i)
+  void activateInviteOnlyMode(void);
+  void deactivateInviteOnlyMode(void);
+
+  // topic-settable-by-ops-only (t)
+  void activateTopicOpsOnlyMode(void);
+  void deactivateTopicOpsOnlyMode(void);
+
+  // key-mode (k)
+  void updateKey(const std::string &key);
+  void activateKeyMode(const std::string &key, const Client &client);
   void deactivateKeyMode(void);
-  void activateLimitMode(int limit, const Client &cli);
+
+  // operator (o)
+  void addOperator(Client *client);
+  void removeOperator(Client *client);
+  bool isOperator(int fd) const;
+
+  // limit-mode (l)
+  void activateLimitMode(int limit, const Client &client);
   void deactivateLimitMode(void);
 };
 

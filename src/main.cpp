@@ -1,17 +1,22 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/10/17 15:12:35 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/12 16:13:47 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
+#include <string>
+
+#include "../includes/Config.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/tests.hpp"
 
 void checkArgs(int port, const std::string& password) {
   if (port <= 1080 || port > 65535) {
@@ -39,14 +44,14 @@ int main(int ac, char** argv) {
   try {
     signal(SIGINT, Server::signalHandler);
     signal(SIGQUIT, Server::signalHandler);
+    initServerConfig();
     ser.runServer();
-  } catch (const std::exception& e) {
+  } catch (const std::runtime_error& e) {
     std::cerr << RED << e.what() << RESET << '\n';
     ser.closeServer();
-    exit(EXIT_FAILURE);
+    return (EXIT_FAILURE);
   }
-
   ser.closeServer();
   std::cout << "The Server is closed" << std::endl;
-  exit(EXIT_SUCCESS);
+  return (EXIT_SUCCESS);
 }

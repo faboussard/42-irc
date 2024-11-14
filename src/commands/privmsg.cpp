@@ -1,27 +1,20 @@
 /* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   colors.hpp                                         :+:      :+:    :+:   */
+/*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:53:36 by faboussa         ###   ########.fr       */
+/*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
+/*   Updated: 2024/11/12 11:53:58 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INCLUDES_COLORS_HPP_
-#define INCLUDES_COLORS_HPP_
+#include "../../includes/Server.hpp"
 
-#define RED "\033[31m"
-#define GREEN "\033[0;32m"
-#define BRIGHT_GREEN "\033[1;32m"
-#define YELLOW "\033[0;33m"
-#define MAGENTA "\033[35m"
-#define CYAN "\033[0;36m"
-#define BRIGHT_YELLOW "\033[1;93m"
-#define BLUE "\033[94m"
-#define RESET "\033[0m"
-#define GREY "\033[90m"
-
-#endif  //  INCLUDES_COLORS_HPP_
+void Server::privmsg(int fd, const std::string &arg) {
+  /*--- To remove ---*/
+  (void)fd;
+  (void)arg;
+  /*-----------------*/
+}
