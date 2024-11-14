@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 12:24:21 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:15:04 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ class Server {
   void closeServer(void);
 
   /*  Getters */
-  const Channel &findChannelByName(const std::string &name) const;
+  Channel *findChannelByName(const std::string &name);
   // int getSocketFd() const;
   // int getPort() const;
   // const std::string &getPassword() const;

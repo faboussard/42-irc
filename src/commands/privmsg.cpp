@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 12:25:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:16:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,13 +150,14 @@ void Server::privmsg(int fd, const std::string &arg) {
       return;
     }
 
+    Channel &channel = _channels.at(target.substr(1));
     if (startsWithOperatorPrefix == true) {  // gestion du @
-      broadcastToOperatorsOnly(client, findChannelByName(target.substr(1)),
+      broadcastToOperatorsOnly(client, channel,
                                "PRIVMSG", message);
       return;
     }
 
-    broadcastInChannel(client, findChannelByName(target.substr(1)), "PRIVMSG",
+    broadcastInChannel(client, channel, "PRIVMSG",
                        message);
   }
 }

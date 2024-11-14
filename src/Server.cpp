@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 19:15:31 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:08:05 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,16 +48,16 @@ Server::Server(int port, const std::string &password)
 
 // const channelsMap &Server::getChannels() const { return _channels; }
 
-const Channel &Server::findChannelByName(const std::string &name) const {
-  channelsMap::const_iterator it = _channels.find(name);
-  if (it == _channels.end()) {
-    throw std::runtime_error("Channel not found with the given name");
-  }
-  return it->second;
+Channel *Server::findChannelByName(const std::string &name) {
+  channelsMap::iterator it = _channels.find(name);
+  if (it == _channels.end())
+   return (NULL);
+  return (&it->second);
 }
 
 Client *Server::findClientByNickname(const std::string &nickname) {
-  for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
+  clientsMap::iterator itEnd = _clients.end();
+  for (clientsMap::iterator it = _clients.begin(); it != itEnd; ++it) {
     if (it->second.getNickname() == nickname) {
       return &it->second;
     }
@@ -158,8 +158,8 @@ void Server::signalHandler(int signal) {
 /*============================================================================*/
 
 void Server::closeServer(void) {
-  // Fermer tous les clients
-  for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
+  clientsMap::iterator itEnd = _clients.end();
+  for (clientsMap::iterator it = _clients.begin(); it != itEnd; ++it) {
     closeClient(it->second.getFd());
   }
   _clients.clear();
