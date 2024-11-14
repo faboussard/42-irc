@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 19:15:45 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 12:24:21 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,18 @@ class Server {
                        const std::string &channelName,
                        const std::string &targetNick,
                        const std::string &reason);
+
+  /*-------- PRIVMSG --------*/
+  void privmsg(int fd, const std::string &arg);
+  void broadcastToOperatorsOnly(const Client &sender, const Channel &channel,
+                                const std::string &command,
+                                const std::string &content);
+  void sendPrivmsgToClient(const Client &sender, const Client &receiver,
+                           const std::string &message);
+  void broadcastToAllClients(const Client &sender, const std::string &command,
+                             const std::string &content);
+  void broadcastToAllOperators(const Client &sender, const std::string &command,
+                               const std::string &content);
 
  public:
   explicit Server(int port, const std::string &password);
@@ -201,9 +213,6 @@ class Server {
 
   /*-------- NOTICE --------*/
   void notice(int fd, const std::string &arg);
-
-  /*-------- PRIVMSG --------*/
-  void privmsg(int fd, const std::string &arg);
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
