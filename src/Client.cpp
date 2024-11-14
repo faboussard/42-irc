@@ -33,7 +33,6 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _realnameSet(false),
       _passwordGiven(false),
       _accepted(false),
-      _CapSend(false),
       _nbPassAttempts(0),
       _channelsCount(0) {
   _uModes.invisible = false;
@@ -79,8 +78,6 @@ bool Client::isPasswordGiven(void) const { return (_passwordGiven); }
 
 bool Client::isAccepted(void) const { return (_accepted); }
 
-bool Client::isCapSend(void) const { return (_CapSend); }
-
 uint8_t Client::getNbPassAttempts(void) const { return (_nbPassAttempts); }
 
 /*============================================================================*/
@@ -107,8 +104,6 @@ void Client::setFd(int fd) { _fd = fd; }
 void Client::setIp(const std::string& ip) { _ip = ip; }
 
 void Client::setHostName(const std::string& hostname) { _hostName = hostname; }
-
-void Client::setCapSend(bool yes) { _CapSend = yes; }
 
 void Client::setUInvisibleMode(bool isInvisible) {
   _uModes.invisible = isInvisible;

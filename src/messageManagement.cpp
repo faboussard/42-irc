@@ -69,9 +69,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       clientIsAcceptedMessageToDelete(client, command);
 #endif
       handleCommand(command, argument, client->getFd());
-    } else if (command == "CAP" && client->isCapSend() == false &&
-               client->isPasswordGiven() == false) {
-      if (client->isCapSend() == false) client->setCapSend(true);
+    } else if (command == "CAP") { continue;
     } else if (command == "PASS") {
       if (isLastPass(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyPassword(argument, _password, client) == false) {
@@ -82,7 +80,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
         }
       }
     } else if (client->isPasswordGiven() == false) {
-      send461NeedMoreParams(*client, "PASS");
+      send451NotRegistered(*client);
     } else if (command == "NICK") {
       if (isLastNick(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyNick(argument, client, &_clients) == true &&
@@ -101,8 +99,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 #endif
       }
     } else if (client->isAccepted() == false) {
-      if (client->isNicknameSet() == false) send431NoNicknameGiven(*client);
-      if (client->isUsernameSet() == false) send451NotRegistered(*client);
+      send451NotRegistered(*client);
     }
   }
 }
