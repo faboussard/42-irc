@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 16:32:01 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/13 16:59:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void Server::sendTopic(const Client &client, const Channel &channel) {
 void Server::updateTopic(const Client &client, Channel *channel,
                          const std::string &newTopic) {
   if (channel->getMode().topicSettableByOpsOnly &&
-      !channel->isOperator(client)) {
+      !channel->isOperator(client.getFd())) {
     send482ChanOPrivsNeeded(client, *channel);
     return;
   }

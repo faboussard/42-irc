@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 13:58:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:08:05 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ Server::Server(int port, const std::string &password)
 /*       Getters                                                              */
 /*============================================================================*/
 
-// Client &Server::getClientByFd(int fd) {
+// Client &Server::findClientByFd(int fd) {
 //   clientsMap::iterator it = _clients.find(fd);
 //   if (it == _clients.end()) {
 //     std::cerr << "Client not found with the given file descriptor"
@@ -48,12 +48,21 @@ Server::Server(int port, const std::string &password)
 
 // const channelsMap &Server::getChannels() const { return _channels; }
 
-const Channel &Server::getChannelByName(const std::string &name) const {
-  channelsMap::const_iterator it = _channels.find(name);
-  if (it == _channels.end()) {
-    throw std::runtime_error("Channel not found with the given name");
+Channel *Server::findChannelByName(const std::string &name) {
+  channelsMap::iterator it = _channels.find(name);
+  if (it == _channels.end())
+   return (NULL);
+  return (&it->second);
+}
+
+Client *Server::findClientByNickname(const std::string &nickname) {
+  clientsMap::iterator itEnd = _clients.end();
+  for (clientsMap::iterator it = _clients.begin(); it != itEnd; ++it) {
+    if (it->second.getNickname() == nickname) {
+      return &it->second;
+    }
   }
-  return it->second;
+  return NULL;
 }
 
 // const std::string &Server::getPassword(void) const { return _password; }
@@ -69,8 +78,8 @@ const Channel &Server::getChannelByName(const std::string &name) const {
 void Server::runServer(void) {
   createSocket();
   fetchStartTime();
-  std::cout << GREEN "Server started on port " << _port << \
-  " at " << _startTime << RESET << std::endl;
+  std::cout << GREEN "Server started on port " << _port << " at " << _startTime
+            << RESET << std::endl;
   acceptAndChat();
 }
 
@@ -149,8 +158,8 @@ void Server::signalHandler(int signal) {
 /*============================================================================*/
 
 void Server::closeServer(void) {
-  // Fermer tous les clients
-  for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); it++) {
+  clientsMap::iterator itEnd = _clients.end();
+  for (clientsMap::iterator it = _clients.begin(); it != itEnd; ++it) {
     closeClient(it->second.getFd());
   }
   _clients.clear();
@@ -237,8 +246,10 @@ void Server::clearClient(int fd) {
     if (it->second.getChannelOperators().find(fd) !=
         it->second.getChannelOperators().end())
       it->second.removeOperator(&_clients.at(fd));
+    if (it->second.getInvitedClients().find(fd) !=
+        it->second.getInvitedClients().end())
+      it->second.removeClientFromInvitedMap(&_clients.at(fd));
   }
-  // }
   _clients.erase(fd);
 }
 
@@ -259,20 +270,29 @@ void Server::sendConnectionMessage(const Client &client) const {
 /*       Clients management                                                   */
 /*============================================================================*/
 
-void Server::sendToAllClients(const std::string &message) {
-  for (clientsMap::iterator it = _clients.begin(); it != _clients.end(); ++it) {
-    if (it->second.isAccepted()) it->second.receiveMessage(message);
-  }
-}
+// void Server::sendToAllClients(const std::string &message) {
+//   for (clientsMap::iterator it = _clients.begin(); it != _clients.end();
+//   ++it) {
+//     if (it->second.isAccepted()) it->second.receiveMessage(message);
+//   }
+// }
 
 void Server::broadcastInChannel(const Client &client, const Channel &channel,
                                 const std::string &command,
                                 const std::string &content) {
   std::string message = ":" + client.getNickname() + " " + command + " " +
-                          channel.getNameWithPrefix() + " :" + content + "\r\n";
+                        channel.getNameWithPrefix() + " :" + content + "\r\n";
   const clientPMap &allClients = channel.getChannelClients();
   clientPMap::const_iterator itEnd = allClients.end();
   for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
     it->second->receiveMessage(message);
   }
+}
+
+bool Server::clientExists(const std::string &nick) const {
+  clientsMap::const_iterator itEnd = _clients.end();
+  for (clientsMap::const_iterator it = _clients.begin(); it != itEnd; ++it) {
+    if (it->second.getNickname() == nick) return (true);
+  }
+  return (false);
 }
