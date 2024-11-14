@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 16:35:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/14 10:44:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,8 +139,7 @@ void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 
 void Client::receiveMessage(const std::string& message) const {
   if (_fd != -1) {
-    ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
-    if (sent == -1) {
+    if (send(_fd, message.c_str(), message.length(), MSG_NOSIGNAL) == -1) {
       std::cerr << RED "Error while sending message to fd " << _fd << ": "
                 << strerror(errno) << RESET << std::endl;
     }
