@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/14 16:44:05 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:32:49 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ extern Config *gConfig;
 #define REG_CHAN '#'     // regular channel prefix
 // #define PUBLIC_CHAN "="  // public channel symbol - not used
 #define CHAN_OP '@'      // channel operator prefix
-#define DIFFUSION_PREFIX '$'    // broadcast channel prefix
 
 typedef struct Topic {
   std::string topic;

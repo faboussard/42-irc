@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 16:45:55 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:56:46 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,21 +53,6 @@ void Server::broadcastToOperatorsOnly(const Client &sender,
   }
 }
 
-void Server::broadcastToAllClients(const Client &sender,
-                                   const std::string &command,
-                                   const std::string &content) {
-  std::string message =
-      ":" + sender.getNickname() + " " + command + " :" + content + "\r\n";
-
-  for (channelsMap::const_iterator channelIt = _channels.begin();
-       channelIt != _channels.end(); ++channelIt) {
-    const clientPMap &clients = channelIt->second.getChannelClients();
-    for (clientPMap::const_iterator clientIt = clients.begin();
-         clientIt != clients.end(); ++clientIt) {
-      clientIt->second->receiveMessage(message);
-    }
-  }
-}
 
 void Server::broadcastToAllOperators(const Client &sender,
                                      const std::string &command,
@@ -86,125 +71,116 @@ void Server::broadcastToAllOperators(const Client &sender,
 }
 
 // Fonction pour valider les arguments de privmsg
-bool Server::isArgumentValid(const std::string &arg,const Client &client) {
-  if (arg.empty()) {
-    send461NeedMoreParams(client, "PRIVMSG");
-    return false;
-  }
-
+bool Server::isArgumentValid(const std::string &arg, const Client &client,
+                             const std::vector<std::string> &targets,
+                             const std::string &message) {
   size_t commaCount = std::count(arg.begin(), arg.end(), ',');
   if (commaCount > gConfig->getLimit(MAXTARGETS)) {
     send407TooManyTargets(client);
     return false;
   }
 
+  // Analyser les arguments pour obtenir les cibles et le message
+  if (message.empty() || message[0] != ':') {
+    send412NoTextToSend(client);
+    return false;
+  }
+
+  // verifier que chaque cible est homogene. pas de mix $ et @ par exemple
+
+  size_t chanOpPrefixCount = 0;
+  size_t channelsCount = 0;
+  size_t clientsCount = 0;
+
+  std::vector<std::string>::const_iterator itEnd = targets.end();
+  for (std::vector<std::string>::const_iterator it = targets.begin();
+       it != itEnd; ++it) {
+    std::string target = *it;
+    if (target[0] == CHAN_OP) chanOpPrefixCount++;
+    if (target[0] == REG_CHAN) channelsCount++;
+    if (target[0] == CHAN_OP && target[1] == REG_CHAN)
+      target = target.substr(2);
+    else if (target[0] == CHAN_OP || target[0] == REG_CHAN)
+      target = target.substr(1);
+    if (channelExists(target)) channelsCount++;
+    if (findClientByNickname(target)) {
+      clientsCount++;
+    }
+    if ((channelsCount || clientsCount || chanOpPrefixCount) !=
+        commaCount + 1) {
+      send407TooManyTargets(client);
+      return false;
+    }
+  }
   return true;
 }
 
-// Fonction pour analyser les arguments en cibles et message
-void Server::parseArguments(const std::string &arg,const Client &client,
+bool Server::parseArguments(const std::string &arg, const Client &client,
                             std::vector<std::string> &targets,
                             std::string &message) {
   std::istringstream iss(arg);
   std::string target;
-
-  // Récupérer la première partie pour les cibles
   std::getline(iss, target, ' ');
   if (target.empty()) {
     send411NoRecipient(client, "PRIVMSG");
-    return;
+    return (false);
   }
   while (!target.empty()) {
     std::getline(iss, target, ',');
     targets.push_back(target);
   }
-
-  // Récupérer la seconde partie pour le message
   std::getline(iss, message, ' ');
-  if (message.empty() || message[0] != ':') {
-    send412NoTextToSend(client);
+  if (!isArgumentValid(arg, client, targets, message)) {
+    return false;
   }
-}
-
-// Fonction pour traiter une cible client spécifique
-void Server::handleClientTarget(const Client &sender, const std::string &target,
-                                const std::string &message) {
-  Client *targetClient = findClientByNickname(target);
-  if (targetClient == NULL) {
-    send401NoSuchNick(sender, target);
-  } else {
-    sendPrivmsgToClient(sender, *targetClient, message);
-  }
-}
-
-// Fonction pour traiter une cible de canal spécifique
-void Server::handleChannelTarget(const Client &sender, const std::string &target,
-                                 const std::string &message,
-                                 bool isDiffusionPrefix,
-                                 bool isChanOpPrefix) {
-  if (!channelExists(target)) {
-    send401NoSuchNick(sender, target);
-    return;
-  }
-
-
-  Channel &channel = _channels.at(target);
-
-  if (channel.getMode().inviteOnly &&
-      !channel.isClientInvited(sender.getFd())) {
-    send404CannotSendToChan(sender, channel);
-    return;
-  }
-
-
-  if (isDiffusionPrefix && !isChanOpPrefix) {
-    broadcastToAllClients(sender, "PRIVMSG", message);
-  } else if (isDiffusionPrefix && isChanOpPrefix) {
-    broadcastToAllOperators(sender, "PRIVMSG", message);
-  } else if (isChanOpPrefix) {
-    broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
-  } else {
-    broadcastInChannel(sender, channel, "PRIVMSG", message);
-  }
+  return (true);
 }
 
 // Fonction principale privmsg
 void Server::privmsg(int fd, const std::string &arg) {
-  const Client &client = _clients.at(fd);
+  const Client &sender = _clients.at(fd);
 
-  // Valider les arguments
-  if (!isArgumentValid(arg, client)) {
+  if (arg.empty()) {
+    send461NeedMoreParams(sender, "PRIVMSG");
     return;
   }
-
   std::vector<std::string> targets;
   std::string message;
-
-  // Analyser les arguments pour obtenir les cibles et le message
-  parseArguments(arg, client, targets, message);
-  if (message.empty() || message[0] != ':') {
-    send412NoTextToSend(client);
+  if (parseArguments(arg, sender, targets, message) == false) {
     return;
   }
 
+#ifdef DEBUG
+  std::cout << "[arg]  " << arg << std::endl;
+  std::cout << "[targets]  " << targets << std::endl;
+  std::cout << "[message]  " << message << std::endl;
+#endif
 
+  // Valider les arguments
 
-  // Traiter chaque cible
-  std::vector<std::string>::const_iterator it;
-  for (it = targets.begin(); it != targets.end(); ++it) {
+  bool isChannel = (targets[0][0] == REG_CHAN);
+  bool isChanOpPrefix = (targets[0][0] == CHAN_OP);
+  std::vector<std::string>::const_iterator itEnd = targets.end();
+  for (std::vector<std::string>::const_iterator it = targets.begin();
+       it != itEnd; ++it) {
     std::string target = *it;
-    if (target.empty()) {
-      send411NoRecipient(client, "PRIVMSG");
+    if (!channelExists(target) || !findClientByNickname(target)) {
+      send401NoSuchNick(sender, target);
       return;
     }
-      bool isDiffusionPrefix = (target[0] == DIFFUSION_PREFIX);
-      bool isChanOpPrefix = (target[0] == CHAN_OP);
-    if (isDiffusionPrefix || isChanOpPrefix) {
-      std::string adjustedTarget = target.substr(1);
-      handleChannelTarget(client, adjustedTarget, message,
-                          isDiffusionPrefix, isChanOpPrefix);
+    Channel &channel = _channels.at(target);
+    if (channel.getMode().inviteOnly &&
+        !channel.isClientInvited(sender.getFd())) {
+      send404CannotSendToChan(sender, channel);
+      return;
+    }
+
+    if (isChanOpPrefix) {
+      broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
+    } else if (isChannel) {
+      broadcastInChannel(sender, channel, "PRIVMSG", message);
     } else {
-      handleClientTarget(client, target, message);
+      sendPrivmsgToClient(sender, *findClientByNickname(target), message);
     }
   }
 }
@@ -221,10 +197,9 @@ void Server::privmsg(int fd, const std::string &arg) {
 // ERR_NOSUCHSERVER (402) = ne pas traite, pas demander par le sujet
 //*********************************************************************** */
 
-// ERR_CANNOTSENDTOCHAN (404) = OK 
+// ERR_CANNOTSENDTOCHAN (404) = OK
 
-
-// ==> if sender is not invited to channel  
+// ==> if sender is not invited to channel
 
 // "<client> <channel> :Cannot send to channel"
 // Indicates that the PRIVMSG / NOTICE could not be delivered to <channel>.
@@ -235,8 +210,7 @@ void Server::privmsg(int fd, const std::string &arg) {
 // channel, or not being joined to a channel with the no external messages
 // mode set.
 //*********************************************************************** */
-// ERR_TOOMANYTARGETS (407) = irc ne fournit pas de numeric reply
-// specific.
+// ERR_TOOMANYTARGETS (407) = si melange $ et @ = OK
 //*********************************************************************** */
 
 // ERR_NORECIPIENT (411) = OK
@@ -266,7 +240,7 @@ void Server::privmsg(int fd, const std::string &arg) {
 //                                   functionally identical to the above
 //                                   command.
 
-//   PRIVMSG $#bunny :Hi! I have a problem!
+//   PRIVMSG $#bunny :Hi! I have a problem! = NON GERE ! car un seul server
 //                                   ; Command to send a message to halfops
 //                                   and chanops on #bunny. This command is
 //                                   functionally identical to the above

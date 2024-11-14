@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 16:17:54 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 17:51:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,21 +93,15 @@ class Server {
                                 const std::string &content);
   void sendPrivmsgToClient(const Client &sender, const Client &receiver,
                            const std::string &message);
-  void broadcastToAllClients(const Client &sender, const std::string &command,
-                             const std::string &content);
   void broadcastToAllOperators(const Client &sender, const std::string &command,
                                const std::string &content);
-  void handleClientTarget(const Client &sender, const std::string &target,
-                          const std::string &message);
-  void parseArguments(const std::string &arg, const Client &client,
+  bool parseArguments(const std::string &arg, const Client &client,
                             std::vector<std::string> &targets,
                             std::string &message);
-  void handleChannelTarget(const Client &sender, const std::string &target,
-                           const std::string &message,
-                           bool startsWithDollarPrefix,
-                           bool startsWithOperatorPrefix);
 
-bool isArgumentValid(const std::string &arg, const Client &client);
+bool isArgumentValid( const std::string &arg, const Client &client,
+                              const std::vector<std::string> &targets,
+                              const std::string &message);
 
 
  public:

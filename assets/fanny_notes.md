@@ -196,6 +196,9 @@ _**Implemented Features:**_
 
 //<target> is the nickname of a client or the name of a channel.
 
+@ to be handled, not $. 
+PArsing made to avoid a mixmatch of client, channels OPchannels targets
+
 Rest of explanation and numeric replies details are in the file privmsg.cpp
 
 2. 
@@ -204,6 +207,8 @@ void send407TooManyTargets(const Client &client)
 
 3 . CHAN_OP = "@" becomes CHAN_OP = '@' (char)
 numeric replies impacted for one function
+
+
 
 
 DEBUG GDB
