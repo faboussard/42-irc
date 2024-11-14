@@ -183,101 +183,57 @@ The poll() function is used to monitor changes in the status of file descriptors
 raccourci cpplint : ctrl shift i
 
 ---
-## **issues encontered and solved**
 
-s :End of /NAMES list: 
-
-// que se pqsse til si on a join #channelA, 0 ? 
-
-
-
-Summary:
-
-Join function with Channel management implemented.
-splitByComma in utils.
-
-HexChat and Netcat will both receive the Join messages sent by the server.
-data registed in right structure (channel in server, user in channel, operator in channel when channel creation)
-
-List command can be tested.
-
-Known bugs :
-JOIN #s,  ,#g = SEGFAULT basic_string::_M_create
-if a user has already joined the channel, no numeric reply is sent (probably to be manged in the handleJoinRequest function)
-
-TODO:
-PART command ( Join + 0)
-KEY MANAGEMENT : I have started to implement it but it is not finished yet as we miss MODE 
-
-Tests conducted:
-
-valgrind tested = no leaks. 
-
-JOIN + blank spaces
-=> 461 > not enough parameters
-
-JOIN #
-=> 461 > not enough parameters
-
-JOIN + 0
-=> TODO (part from all channels)
-
-JOIN #channelA,#channelB
-=> join 2 channels
-
-JOIN ##
-=> join 1 channel
-
-
-
-
+NExT PR 
 **Summary:**
 _**Implemented Features:**_
 
-1. JOIN command functionality with proper channel and user management.
-Server successfully sends JOIN messages to clients (HexChat and Netcat tested).
-`2. splitByComma` function moved to  utils to handle comma-separated values.
+
+1. Format:
+- Added the preprocessors needed in all files to be cpplint compliant (except in commands i did not managed because they are not ready yet)
+- added the formating for the GETTERS, SETTERS "headers"
+
+2. JOIN command functionality fixed
+
+- Fixed : join is protected . channels and keys will not work if there are some whitespace. 
+tested:  JOIN #s, ,#g and other variants 
+- chan limit works fine.
+- No numeric reply ssent if a user re-joins an already joined channel
+- everything refactored
+
+3. PART command functionnal for join 0 only (no need for others)
+- join 0 is functionnal.
+   - user will part all channels and will be removed from  _channelClients
+   - if he was operator, he will be removed from _channelOperators and there will be the deactivateTopicOpsOnlyMode
+
+3. new trimWhiteSpaces function proposal : 
+less lines, using embeded functions:
 
 
-**Channel data structure now includes:**
-Channels on the server.
-Users in each channel.
-Operators in a channel upon creation.
+std::string trimWhiteSpaces(const std::string &input) {
+  std::string result = input;
+  result.erase(0, result.find_first_not_of(
+                      " \t\n\r\f\v"));  // Retirer les espaces au début
+  result.erase(result.find_last_not_of(" \t\n\r\f\v") +
+               1);  // Retirer les espaces à la fin
+  return result;
+}
 
- LIST command is ready for testing.
-
-**Known Issues:**
-
-- SEGFAULT occurs with` JOIN #s, ,#g` due to basic_string::_M_create error.
-
-- No numeric reply should be sent if a user re-joins an already joined channel (likely to be handled in handleJoinRequest).
-
-- User cannot join a channel already created (expected behavior : he can, he does not have to enter # again)
-```
-JOIN #s
-:admin JOIN :#s
-:ircserv.localhost 331 admin #s :No topic is set
-:ircserv.localhost 353 admin #s :admin 
-:ircserv.localhost 366 admin #s :End of \NAMES list
-JOIN s
-:ircserv.localhost 476 admin s :Bad Channel mask
-```
+4. Added the steps for server mounting in the documentation 
 
 
-**TODOs: future enhancements needed **
-
-Implement PART command (triggered by JOIN + 0).
-Finalize key management functionality (currently pending MODE command integration).
-Tests Conducted:
-Valgrind Results: No memory leaks.
-Command Tests:
-JOIN + blank spaces → 461 Error: Not enough parameters.
-JOIN # → 461 Error: Not enough parameters.
-JOIN + 0 → TODO (expected to PART from all channels).
-JOIN #channelA,#channelB → Joins two channels.
-JOIN ## → Joins one channel.
+DEBUG GDB
 
 
+gdb ./bin/ircserv -tui
+b function_name + tab
+run 6667 pass 
+say no to debuging info 
+connect to NC
+enter joining info ( pass, nick ...) 
+enter commands : if i want to process it i type c 
+n to continue 
+enter + emptyline will process the previous command 
  
 
 

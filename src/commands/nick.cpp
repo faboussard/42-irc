@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   nick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/06 13:35:01 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:53:30 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ bool Parser::verifyNick(const std::string &nick, Client *client,
     return (false);
   }
   size_t size = nick.size();
-  if (size > 9 || std::isdigit(nick[0])) {
+    if (size > gConfig->getLimit(NICKLEN) || std::isdigit(nick[0])) {
     send432ErroneusNickname(*client, nick);
     return (false);
   }

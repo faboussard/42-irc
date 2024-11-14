@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 15:52:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 11:53:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void Server::listChannels(const stringVector &channels, const Client &client) {
       else
         send403NoSuchChannel(client, *it);
     } else if (prefix == '&' || prefix == '!' || prefix == '+') {
-        if (findChannel(*it))
+        if (channelExists(*it))
           send476BadChanMask(client, *it);
         else
           send403NoSuchChannel(client, *it);
@@ -76,7 +76,7 @@ void Server::listChannels(const stringVector &channels, const Client &client) {
   }
 }
 
-bool Server::findChannel(const std::string &channel) {
+bool Server::channelExists(const std::string &channel) {
   std::string nameToFind = std::string(channel.begin() + 1, channel.end());
   channelsMap::iterator itEnd = _channels.end();
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
@@ -84,4 +84,3 @@ bool Server::findChannel(const std::string &channel) {
   }
   return (false);
 }
-

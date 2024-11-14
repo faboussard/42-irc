@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/08 09:55:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:57:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cctype>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
@@ -80,68 +81,86 @@ class Server {
 
  public:
   explicit Server(int port, const std::string &password);
-#ifdef TEST
-  Server() {};
-#endif
-  /* Getters */
-  int getSocketFd() const;
-  int getPort() const;
-  const std::string &getPassword() const;
-  Client &getClientByFd(int fd);
+
+  /* Server Mounting */
+  void runServer(void);
+  void createSocket(void);
+  // void createPoll(void);
+  static void signalHandler(int signal);
+  void acceptAndChat(void);
+  void closeServer(void);
+
+  /*  Getters */
   const Channel &getChannelByName(const std::string &name) const;
-  const channelsMap &getChannels() const;
-  const clientsMap &getClients() const;
+  // int getSocketFd() const;
+  // int getPort() const;
+  // const std::string &getPassword() const;
+  // Client &getClientByFd(int fd);
+  // const channelsMap &getChannels() const;
+  // const clientsMap &getClients() const;
+
+ private:
+  /* Server Management */
+  void fetchStartTime(void);
+
 
   /* Clients Management */
   void acceptNewClient(void);
   void sendConnectionMessage(const Client &client) const;
-  void receiveMessage(int fd);
+  // void receiveMessage(int fd);
 
   /* Clients message handling */
   void handleInitialMessage(Client *client, const std::string &msg);
   void handleOtherMessage(const Client &client, const std::string &msg);
   void handleClientMessage(int fd);
 
-  /* Server Mounting */
-  void runServer(void);
-  void createSocket(void);
-  void createPoll(void);
-  void fetchStartTime(void);
-  static void signalHandler(int signal);
-  void acceptAndChat(void);
-
   /* Other methods */
   void sendToAllClients(const std::string &message);
-  void handlePassword(int fd);
 
   /* Clear and Close */
-  void closeServer(void);
   void clearClient(int fd);
   void closeClient(int fd);
 
   /* Commands handling */
   void handleCommand(const std::string &command, const std::string &argument,
                      int fd);
+  void broadcastInChannel(const Client &client, const Channel &channel,
+                          const std::string &command,
+                          const std::string &content);
+  bool channelExists(const std::string &channel);
 
-  /*-------- QUIT --------*/
-  void quit(const std::string &argument, Client *client, clientsMap *cltMap);
-
+  /*  Command  */
   /*-------- JOIN --------*/
-  void handleJoinRequest(int fd, const Client &client,
-                         const std::string &channelName);
-  bool isValidChannelPrefix(const std::string &param);
-  bool isValidChannelNameLength(const std::string &param);
   bool isLeaveAllChannelsRequest(const std::string &param);
-  bool isSingleCharacterChannelPrefix(const std::string &param);
+  bool isChannelValid(const std::string &channelToCheck, const Client &client);
+
   void joinChannel(const std::string &param, int fd);
-  bool isChannelValid(const std::string &param, const Client &client);
-  void createAndRegisterChannel(Client *client, const std::string &channelName);
+
   void addChanneltoServerIfNoExist(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
   void broadcastJoinMessage(int fd, const std::string &nick,
                             const std::string &channelName);
+  void processJoinRequest(int fd, Client *client,
+                          const std::string &channelName,
+                          const stringVector &keys, size_t channelIndex);
+  void handlePartRequest(int fd, const std::string &param);
+  bool handleKey(Client *client, const Channel &channel,
+                 const std::string &key);
+  bool isKeyValid(const std::string &keyToCheck);
+
+  /*-------- PART --------*/
+  void quitAllChannels(int fd);
+  void broadcastPartMessage(int fd, const std::string &nick,
+                            const std::string &channelName);
+  void sendPartMessageToClient(int fd, const std::string &nick,
+                               const std::string &channelName);
+
+  /*-------- QUIT --------*/
+  void quit(const std::string &argument, Client *client, clientsMap *cltMap);
+
+  /*-------- JOIN --------*/
 
   /*-------- KICK --------*/
   void kick(int fd, const std::string &arg);
@@ -151,6 +170,11 @@ class Server {
 
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);
+  bool parseTopicParams(const std::string &arg, stringVector *params,
+                const Client &client);
+  void sendTopic(const Client &client, const Channel &channel);
+  void updateTopic(const Client &client, Channel *channel,
+                   const std::string &newTopic);
 
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
@@ -163,7 +187,6 @@ class Server {
   void list(const Client &client, const std::string &argument);
   void listAllChannels(int fd, const std::string &nick);
   void listChannels(const stringVector &channels, const Client &client);
-  bool findChannel(const std::string &channel);
 
   /*-------- NOTICE --------*/
   void notice(int fd, const std::string &arg);
@@ -172,7 +195,7 @@ class Server {
   void privmsg(int fd, const std::string &arg);
 
   /*-------- PING --------*/
-  void ping(Client *client, const std::string &token);
+  void ping(const Client &client, const std::string &token);
 
   /* Tests */
   void addClient(int fd, const Client &client);

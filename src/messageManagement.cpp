@@ -1,14 +1,18 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   messageManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 12:32:15 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:14:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <iostream>
+#include <map>
+#include <string>
 
 #include "../includes/Parser.hpp"
 #include "../includes/Server.hpp"
@@ -180,8 +184,8 @@ void Server::handleClientMessage(int fd) {
   } else {
     handleOtherMessage(client, message);
   }
-  // }
 }
+
 /*============================================================================*/
 /*       Commands management                                                  */
 /*============================================================================*/
@@ -214,7 +218,7 @@ void Server::handleCommand(const std::string &command,
   } else if (command == "QUIT") {
     quit(argument, &_clients[fd], &_clients);
   } else if (command == "PING") {
-    ping(&_clients.at(fd), argument);
+    ping(_clients.at(fd), argument);
   } else if (command == "PASS" || command == "USER") {
     if (argument.empty())
       send461NeedMoreParams(_clients[fd], command);

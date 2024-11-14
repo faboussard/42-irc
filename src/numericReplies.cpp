@@ -1,16 +1,18 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/07 15:58:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:13:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/numericReplies.hpp"
+
+#include <string>
 
 #include "../includes/Config.hpp"
 
@@ -69,20 +71,18 @@ void send221Umodeis(const Client &client) {
 }
 
 void send315EndOfWho(const Client &client, const Channel &channel) {
-  std::string message = _315_RPL_ENDOFWHO(client.getNickname(),
-                                          channel.getNameWithPrefix());
+  std::string message =
+      _315_RPL_ENDOFWHO(client.getNickname(), channel.getNameWithPrefix());
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
 
 void send352Whoreply(const Client &client, const Client &clientInChannel,
                      const Channel &channel) {
-  std::string message = _352_RPL_WHOREPLY(client.getNickname(),
-                                          channel.getNameWithPrefix(),
-                                          clientInChannel.getUserName(),
-                                          clientInChannel.getHostName(),
-                                          clientInChannel.getNickname(),
-                                          clientInChannel.getRealName());
+  std::string message = _352_RPL_WHOREPLY(
+      client.getNickname(), channel.getNameWithPrefix(),
+      clientInChannel.getUserName(), clientInChannel.getHostName(),
+      clientInChannel.getNickname(), clientInChannel.getRealName());
   if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -182,15 +182,13 @@ void send353Namreply(const Client &client, const Channel &channel) {
 
   std::string nicknames = "";
   clientPMap chanOps = channel.getChannelOperators();
-  clientPMap::const_iterator itBegin = chanOps.begin();
   clientPMap::const_iterator itEnd = chanOps.end();
-  for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
+  for (clientPMap::const_iterator it = chanOps.begin(); it != itEnd; ++it) {
     nicknames += CHAN_OP + it->second->getNickname() + " ";
   }
   clientPMap chanClients = channel.getChannelClients();
-  itBegin = chanClients.begin();
   itEnd = chanClients.end();
-  for (clientPMap::const_iterator it = itBegin; it != itEnd; ++it) {
+  for (clientPMap::const_iterator it = chanClients.begin(); it != itEnd; ++it) {
     if (chanOps.find(it->first) == chanOps.end())
       nicknames += it->second->getNickname() + " ";
   }

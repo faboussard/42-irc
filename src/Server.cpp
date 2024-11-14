@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/12 12:09:58 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/13 13:58:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,33 +34,33 @@ Server::Server(int port, const std::string &password)
 /*       Getters                                                              */
 /*============================================================================*/
 
-Client &Server::getClientByFd(int fd) {
-  clientsMap::iterator it = _clients.find(fd);
-  if (it == _clients.end()) {
-    std::cerr << "Client not found with the given file descriptor" << std::endl;
-    throw std::runtime_error("Client not found");
-  }
-  return it->second;
-}
+// Client &Server::getClientByFd(int fd) {
+//   clientsMap::iterator it = _clients.find(fd);
+//   if (it == _clients.end()) {
+//     std::cerr << "Client not found with the given file descriptor"
+//     << std::endl;
+//     throw std::runtime_error("Client not found");
+//   }
+//   return it->second;
+// }
 
-const clientsMap &Server::getClients() const { return _clients; }
+// const clientsMap &Server::getClients() const { return _clients; }
 
-const channelsMap &Server::getChannels() const { return _channels; }
+// const channelsMap &Server::getChannels() const { return _channels; }
 
 const Channel &Server::getChannelByName(const std::string &name) const {
   channelsMap::const_iterator it = _channels.find(name);
   if (it == _channels.end()) {
-    std::cerr << "Channel not found with the given name" << std::endl;
-    throw std::runtime_error("Channel not found");
+    throw std::runtime_error("Channel not found with the given name");
   }
   return it->second;
 }
 
-const std::string &Server::getPassword(void) const { return _password; }
+// const std::string &Server::getPassword(void) const { return _password; }
 
-int Server::getPort(void) const { return _port; }
+// int Server::getPort(void) const { return _port; }
 
-int Server::getSocketFd(void) const { return _socketFd; }
+// int Server::getSocketFd(void) const { return _socketFd; }
 
 /*============================================================================*/
 /*       Server Mounting                                                      */
@@ -68,8 +68,9 @@ int Server::getSocketFd(void) const { return _socketFd; }
 
 void Server::runServer(void) {
   createSocket();
-  std::cout << GREEN "Server started on port " RESET << _port << std::endl;
   fetchStartTime();
+  std::cout << GREEN "Server started on port " << _port << \
+  " at " << _startTime << RESET << std::endl;
   acceptAndChat();
 }
 
@@ -108,7 +109,7 @@ void Server::fetchStartTime(void) {
 
   ctime_r(&now, buffer);
   std::string startTime = buffer;
-  startTime.erase(_startTime.find_last_not_of("\n") + 1);
+  startTime.erase(startTime.find_last_not_of("\n") + 1);
   _startTime = startTime;
 }
 
@@ -196,7 +197,7 @@ void Server::acceptNewClient(void) {
       gethostbyaddr(&cliadd.sin_addr, sizeof(cliadd.sin_addr), AF_INET);
   std::string hostName;
   if (host->h_name == NULL || sizeof(host->h_name) == 0 ||
-      static_cast<size_t>(host->h_length) > gConfig->getLimit("HOSTLEN"))
+      static_cast<size_t>(host->h_length) > gConfig->getLimit(HOSTLEN))
     hostName = clientIp;
   else
     hostName = host->h_name;
@@ -226,6 +227,18 @@ void Server::clearClient(int fd) {
       break;
     }
   }
+  // if (_clients.at(fd).getChannelsCount() > 0) {  // Decommente after merge
+  // join & part
+  channelsMap::iterator itEnd = _channels.end();
+  for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
+    if (it->second.getChannelClients().find(fd) !=
+        it->second.getChannelClients().end())
+      it->second.checkAndremoveClientFromTheChannel(fd);
+    if (it->second.getChannelOperators().find(fd) !=
+        it->second.getChannelOperators().end())
+      it->second.removeOperator(&_clients.at(fd));
+  }
+  // }
   _clients.erase(fd);
 }
 
@@ -252,48 +265,14 @@ void Server::sendToAllClients(const std::string &message) {
   }
 }
 
-//     // Récupérer l'instance du client avant de l'accepter dans le canal
-//     const Client &client = getClientByFd(fd);
-//     _channels[channelName].acceptClientInTheChannel(client);
-
-//     // Envoyer la réponse JOIN au client
-//     // client._nick = "faboussa"; //
-//     std::cout << "Client " << client.getNickName() << " joined channel " <<
-//     channelName << std::endl;
-
-//     std::string nick = client.getNickName();
-//     #ifdef DEBUG
-//       std::cout << "Client " << nick << " joined channel " << channelName <<
-//       std::endl;
-//     #endif
-//     std::string joinMessage = ":" + nick + " JOIN :" + channelName + "\r\n";
-//     send(fd, joinMessage.c_str(), joinMessage.length(), 0);
-
-//     // Préparer et envoyer la liste des utilisateurs dans le canal (353
-//     RPL_NAMREPLY) std::string nameReply = ":" + SRV_NAME + " 353 " + nick + "
-//     = " + channelName + " :";
-
-//     const clientsMap &clientsInChannel =
-//     _channels[channelName].getChannelClients(); for
-//     (clientsMap::const_iterator it = clientsInChannel.begin(); it !=
-//     clientsInChannel.end(); ++it) {
-//         nameReply += getClientByFd(it->first).getNickName() + " ";
-//     }
-
-//     // Terminer le message de liste avec un retour à la ligne
-//     nameReply += "\r\n";
-//     send(fd, nameReply.c_str(), nameReply.length(), 0);
-
-//     // Envoyer le RPL_ENDOFNAMES (366) pour indiquer que la liste des noms
-//     est terminée std::string endOfNames = ":" + SRV_NAME + " 366 " + nick + "
-//     " + channelName + " :End of /NAMES list\r\n"; send(fd,
-//     endOfNames.c_str(), endOfNames.length(), 0);
-
-//     // Informer les autres clients dans le canal que quelqu'un a rejoint
-//     for (clientsMap::const_iterator it = clientsInChannel.begin(); it !=
-//     clientsInChannel.end(); ++it) {
-//         if (it->first != fd) { // Évitez d'envoyer au client qui a rejoint
-//             send(it->first, joinMessage.c_str(), joinMessage.length(), 0);
-//         }
-//     }
-// }
+void Server::broadcastInChannel(const Client &client, const Channel &channel,
+                                const std::string &command,
+                                const std::string &content) {
+  std::string message = ":" + client.getNickname() + " " + command + " " +
+                          channel.getNameWithPrefix() + " :" + content + "\r\n";
+  const clientPMap &allClients = channel.getChannelClients();
+  clientPMap::const_iterator itEnd = allClients.end();
+  for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
+    it->second->receiveMessage(message);
+  }
+}

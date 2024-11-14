@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/07 15:32:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/12 17:21:16 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,13 @@
 
 #include <cerrno>
 #include <cstring>
+#include <iostream>
+#include <string>
 
+#include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
+
+extern Config* gConfig;
 
 /*============================================================================*/
 /*       Constructors                                                         */
@@ -48,7 +53,7 @@ std::string const& Client::getNickname(void) const { return (_nickname); }
 
 std::string const& Client::getUserName(void) const { return (_userName); }
 
-int Client::getChannelsCount() const { return (_channelsCount); }
+size_t Client::getChannelsCount() const { return (_channelsCount); }
 
 int Client::getFd(void) const { return (_fd); }
 
@@ -127,7 +132,7 @@ void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 /*       Messages handling                                                    */
 /*============================================================================*/
 
-void Client::receiveMessage(const std::string& message) {
+void Client::receiveMessage(const std::string& message) const {
   if (_fd != -1) {
     ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
     if (sent == -1) {
@@ -160,4 +165,24 @@ std::string Client::shareMessage(void) {
 /*       Channel handling                                                     */
 /*============================================================================*/
 
-void Client::incrementChannelsCount(void) { getChannelsCount(); }
+void Client::incrementChannelsCount(void) {
+#ifdef DEBUG
+    std::cout << std::endl << std::endl;
+
+    std::cout << "increment _channelsCount " << _channelsCount << std::endl;
+#endif
+  if (_channelsCount <= gConfig->getLimit(CHANLIMIT)) {
+    ++_channelsCount;
+  }
+}
+
+void Client::decrementChannelsCount(void) {
+  #ifdef DEBUG
+    std::cout << std::endl << std::endl;
+
+    std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
+#endif
+  if (_channelsCount > 0) {
+    --_channelsCount;
+  }
+}
