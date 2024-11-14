@@ -6,12 +6,12 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 16:35:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:39:28 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/Server.hpp"
 #include "../../includes/Channel.hpp"
+#include "../../includes/Server.hpp"
 
 // Supports only 2 patterns:
 // WHO
@@ -37,7 +37,8 @@ void Server::who(const Client &client, const std::string &arg) {
 #ifdef DEBUG
       std::cout << "Listing all clients for " << arg << "..." << std::endl;
 #endif
-      sendClientsListInChannel(client, findChannelByName(arg.substr(1)));
+      Channel &channel = _channels.at(arg.substr(1));
+      sendClientsListInChannel(client, channel);
     } else {
       send403NoSuchChannel(client, arg);
     }
@@ -50,7 +51,7 @@ void Server::sendClientsListInChannel(const Client &client,
   clientPMap::const_iterator itEnd = clientsInChannel.end();
 #ifdef DEBUG
   std::cout << "Number of clients in " << channel.getNameWithPrefix() << ": "
-  << clientsInChannel.size() << std::endl;
+            << clientsInChannel.size() << std::endl;
 #endif
   for (clientPMap::const_iterator it = clientsInChannel.begin(); it != itEnd;
        ++it) {

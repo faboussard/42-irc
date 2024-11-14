@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 19:15:25 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 13:38:26 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,10 @@ void Server::processJoinRequest(int fd, Client *client,
     _channels.at(channelName).addOperator(client);
   }
 
+  Channel &channel = _channels.at(channelName);
   bool keyHandled = false;
   if (channelIndex < keys.size() && !keys[channelIndex].empty()) {
-    if (handleKey(client, findChannelByName(channelName), keys[channelIndex])) {
+    if (handleKey(client, channel, keys[channelIndex])) {
       keyHandled = true;
     }
   }
@@ -128,7 +129,7 @@ void Server::processJoinRequest(int fd, Client *client,
     // si le client n'est pas déjà dans le channel
     std::string nick = client->getNickname();
     if (clientsInChannel.find(fd) == clientsInChannel.end()) {
-      broadcastInChannel(*client, channel, "JOIN", " say hello!");
+      broadcastInChannel(*client, channel, "JOIN", "say hello!");
       client->incrementChannelsCount();
       channel.addClientToChannelMap(client);
       sendJoinMessageToClient(fd, nick, channelName, *client);
