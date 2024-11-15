@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 17:04:34 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 18:14:26 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,10 +214,10 @@ class Server {
   void broadcastToAllOperators(const Client &sender, const std::string &command,
                                const std::string &content);
   bool parseArguments(const std::string &arg, const Client &client,
-                      std::vector<std::string> &targets, std::string &message);
+                      std::vector<std::string> *targets, std::string *message);
 
   bool validTargets(const std::string &arg, const Client &client,
-                    const std::vector<std::string> &targets);
+                    std::vector<std::string> *targets);
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
