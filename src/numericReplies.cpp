@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 14:31:17 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 21:12:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,18 @@
 
 #include "../includes/Config.hpp"
 
+void sendNumericReply(int fd, std::string *message) {
+  if (message == NULL)
+    return;
+  if (send(fd, message->c_str(), message->size(), MSG_NOSIGNAL) == -1) {
+    std::ostringstream oss;
+    oss << RUNTIME_ERROR << " to " << "fd " << fd;
+    Server::printLog(ERROR_LOG, REP_LOG, oss.str());
+    return;
+  }
+  Server::printLog(INFO_LOG, REP_LOG, message->erase(message->size() - 2));
+}
+
 /*============================================================================*/
 /*       Welcome messages                                                     */
 /*============================================================================*/
@@ -23,59 +35,65 @@
 void send001Welcome(int fd, const std::string &nick, std::string const &user,
                     std::string const &host) {
   std::string message = _001_RPL_WELCOME(nick, user, host);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(fd, &message);
 }
 
 void send002Yourhost(int fd, const std::string &nick) {
   std::string message = _002_RPL_YOURHOST(nick);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(fd, &message);
 }
 
 void send003Created(int fd, const std::string &nick,
                     const std::string &startTime) {
   std::string message = _003_RPL_CREATED(nick, startTime);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(fd, &message);
 }
 
 void send104Myinfo(int fd, const std::string &nick) {
   std::string message = _004_RPL_MYINFO(nick);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(fd, &message);
 }
 
 void send005Isupport(int fd, const std::string &nick) {
   std::string message = _005_RPL_ISUPPORT(nick);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(fd, &message);
 }
 
 void sendWelcome(int fd, const std::string &nick) {
   std::string message = _WELCOME(nick);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  if (send(fd, message.c_str(), message.size(), 0) == -1) {
+    std::ostringstream oss;
+    oss << RUNTIME_ERROR << " to " << "fd " << fd;
+    Server::printLog(ERROR_LOG, REP_LOG, oss.str());
+  }
 }
 
 /*============================================================================*/
 /*       Users related replies                                                */
 /*============================================================================*/
 
-// void send221Umodeis(const Client &client) {
-//   std::string nick = client.getNickname();
-//   std::string uModes = client.getUserModesFlag();
-//   std::string message = _221_RPL_UMODEIS(nick, uModes);
-//   if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-//     throw std::runtime_error(RUNTIME_ERROR);
-// }
-
 void send315EndOfWho(const Client &client, const Channel &channel) {
   std::string message =
       _315_RPL_ENDOFWHO(client.getNickname(), channel.getNameWithPrefix());
-  
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send352Whoreply(const Client &client, const Client &clientInChannel,
@@ -84,8 +102,10 @@ void send352Whoreply(const Client &client, const Client &clientInChannel,
       client.getNickname(), channel.getNameWithPrefix(),
       clientInChannel.getUserName(), clientInChannel.getHostName(),
       clientInChannel.getNickname(), clientInChannel.getRealName());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 /*============================================================================*/
@@ -94,117 +114,151 @@ void send352Whoreply(const Client &client, const Client &clientInChannel,
 
 void send321Liststart(int fd, const std::string &nick) {
   std::string message = _321_RPL_LISTSTART(nick);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(fd, &message);
 }
 
 void send322List(int fd, const std::string &nick, const Channel &channel) {
   std::string numUsers = toString(channel.getChannelClients().size());
   std::string message = _322_RPL_LIST(nick, channel.getNameWithPrefix(),
                                       numUsers, channel.getTopic().topic);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(fd, &message);
 }
 
 void send323Listend(int fd, const std::string &nick) {
   std::string message = _323_RPL_LISTEND(nick);
-  if (send(fd, message.c_str(), message.size(), 0) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(fd, &message);
 }
 
 void send324Channelmodeis(const Client &client, const Channel &channel) {
-  std::string modeArgs = "";
-  if (channel.getMode().keyRequired) modeArgs += channel.getKey() + " ";
+  std::ostringstream modeArgs;
+  if (channel.getMode().keyRequired)
+    modeArgs <<  channel.getKey() << ' ';
   if (channel.getMode().limitSet)
-    modeArgs += toString(channel.getLimit()) + " ";
+    modeArgs << channel.getLimit() << ' ';
   std::string message =
       _324_RPL_CHANNELMODEIS(client.getNickname(), channel.getNameWithPrefix(),
-                             channel.getChannelModeFlag(), modeArgs);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+                             channel.getChannelModeFlag(), modeArgs.str());
+  // std::string modeArgs = "";
+  // if (channel.getMode().keyRequired) modeArgs += channel.getKey() + " ";
+  // if (channel.getMode().limitSet)
+  //   modeArgs += toString(channel.getLimit()) + " ";
+  // std::string message =
+  //     _324_RPL_CHANNELMODEIS(client.getNickname(), channel.getNameWithPrefix(),
+  //                            channel.getChannelModeFlag(), modeArgs);
+
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send329Creationtime(const Client &client, const Channel &channel) {
   std::string message =
       _329_RPL_CREATIONTIME(client.getNickname(), channel.getNameWithPrefix(),
                             channel.getCreationTime());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send331Notopic(const Client &client, const Channel &channel) {
-  std::string chanName = channel.getNameWithPrefix();
-  std::string message = _331_RPL_NOTOPIC(client.getNickname(), chanName);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  std::string message =
+      _331_RPL_NOTOPIC(client.getNickname(), channel.getNameWithPrefix());
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send332Topic(const Client &client, const Channel &channel) {
-  std::string chanName = channel.getNameWithPrefix();
-  std::string topic = channel.getTopic().topic;
-  std::string message = _332_RPL_TOPIC(client.getNickname(), chanName, topic);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  std::string message =
+      _332_RPL_TOPIC(client.getNickname(), channel.getNameWithPrefix(), 
+      channel.getTopic().topic);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send333Topicwhotime(const Client &client, const Channel &channel) {
-  std::string chanName = channel.getNameWithPrefix();
-  std::string author = channel.getTopic().author;
-  std::string setTime = channel.getTopic().setTime;
   std::string message =
-      _333_RPL_TOPICWHOTIME(client.getNickname(), chanName, author, setTime);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+      _333_RPL_TOPICWHOTIME(client.getNickname(), channel.getNameWithPrefix(),
+      channel.getTopic().author, channel.getTopic().setTime);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send336Invitelist(const Client &client, const Channel &channel) {
   std::string message =
       _336_RPL_INVITELIST(client.getNickname(), channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send337Endofinvitelist(const Client &client) {
   std::string message = _337_RPL_ENDOFINVITELIST(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send341Inviting(const Client &client, const std::string &invitedNick,
                      const Channel &channel) {
   std::string message = _341_RPL_INVITING(client.getNickname(), invitedNick,
                                           channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send353Namreply(const Client &client, const Channel &channel) {
-  std::string chanNameWithSymbol = channel.getNameWithPrefix();
+  std::ostringstream nicknames;
+  std::ostringstream chanNameWithSymbol;
 
-  std::string nicknames = "";
   clientPMap chanOps = channel.getChannelOperators();
   clientPMap::const_iterator itEnd = chanOps.end();
   for (clientPMap::const_iterator it = chanOps.begin(); it != itEnd; ++it) {
-    nicknames += CHAN_OP + it->second->getNickname() + " ";
+    nicknames << CHAN_OP << it->second->getNickname() << " ";
   }
   clientPMap chanClients = channel.getChannelClients();
   itEnd = chanClients.end();
   for (clientPMap::const_iterator it = chanClients.begin(); it != itEnd; ++it) {
     if (chanOps.find(it->first) == chanOps.end())
-      nicknames += it->second->getNickname() + " ";
+      nicknames << it->second->getNickname() << " ";
   }
-
+  chanNameWithSymbol << PUBLIC_CHAN << channel.getName();
   std::string message =
-      _353_RPL_NAMREPLY(client.getNickname(), chanNameWithSymbol, nicknames);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+      _353_RPL_NAMREPLY(client.getNickname(), chanNameWithSymbol.str(),
+      nicknames.str());
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send366Endofnames(const Client &client, const Channel &channel) {
   std::string message =
       _366_RPL_ENDOFNAMES(client.getNickname(), channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 /*============================================================================*/
@@ -213,27 +267,35 @@ void send366Endofnames(const Client &client, const Channel &channel) {
 
 void send401NoSuchNick(const Client &client, const std::string &targetNick) {
   std::string message = _401_ERR_NOSUCHNICK(client.getNickname(), targetNick);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send403NoSuchChannel(const Client &client, const std::string &chanName) {
   std::string message = _403_ERR_NOSUCHCHANNEL(client.getNickname(), chanName);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send404CannotSendToChan(const Client &client, const Channel &channel) {
   std::string message = _404_ERR_CANNOTSENDTOCHAN(client.getNickname(),
                                                   channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send405TooManyChannels(const Client &client) {
   std::string message = _405_ERR_TOOMANYCHANNELS(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send409NoOrigin(const Client &client) {
@@ -244,49 +306,63 @@ void send409NoOrigin(const Client &client) {
 
 void send411NoRecipient(const Client &client, const std::string &command) {
   std::string message = _411_ERR_NORECIPIENT(client.getNickname(), command);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send412NoTextToSend(const Client &client) {
   std::string message = _412_ERR_NOTEXTTOSEND(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send417InputTooLong(const Client &client) {
   std::string message = _417_ERR_INPUTTOOLONG(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send421UnknownCommand(const Client &client, const std::string &command) {
   std::string message = _421_ERR_UNKNOWNCOMMAND(client.getNickname(), command);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send431NoNicknameGiven(const Client &client) {
   std::string message;
   message = _431_ERR_NONICKNAMEGIVEN(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send432ErroneusNickname(const Client &client,
                              const std::string &erroneusNick) {
   std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
   std::string message = _432_ERR_ERRONEUSNICKNAME(nick, erroneusNick);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send433NickAlreadyInUse(const Client &client,
                              const std::string &nickInUse) {
   std::string nick = client.getNickname().empty() ? "*" : client.getNickname();
   std::string message = _433_ERR_NICKNAMEINUSE(nick, nickInUse);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send441UserNotInChannel(const Client &client,
@@ -294,23 +370,29 @@ void send441UserNotInChannel(const Client &client,
                              const Channel &channel) {
   std::string message = _441_ERR_USERNOTINCHANNEL(
       client.getNickname(), targetNick, channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send442NotOnChannel(const Client &client, const Channel &channel) {
   std::string message =
       _442_ERR_NOTONCHANNEL(client.getNickname(), channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send443UserOnChannel(const Client &client, const std::string &invitedNick,
                           const Channel &channel) {
   std::string message = _443_ERR_USERONCHANNEL(
       client.getNickname(), invitedNick, channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send451NotRegistered(const Client &client) {
@@ -321,21 +403,27 @@ void send451NotRegistered(const Client &client) {
 
 void send461NeedMoreParams(const Client &client, const std::string &command) {
   std::string message = _461_ERR_NEEDMOREPARAMS(client.getNickname(), command);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send462AlreadyRegistered(const Client &client) {
   std::string message = _462_ERR_ALREADYREGISTERED(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send464PasswdMismatch(const Client &client) {
   std::string message;
   message = _464_ERR_PASSWD_MISMATCH(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send471ChannelIsFull(const Client &client, const Channel &channel) {
@@ -347,63 +435,78 @@ void send471ChannelIsFull(const Client &client, const Channel &channel) {
 
 void send472UnknownMode(const Client &client, const std::string &modeChar) {
   std::string message = _472_ERR_UNKNOWNMODE(client.getNickname(), modeChar);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send473InviteOnlyChan(const Client &client, const Channel &channel) {
   std::string message = _473_ERR_INVITEONLYCHAN(client.getNickname(),
                                                 channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send475BadChannelKey(const Client &client, const Channel &channel) {
   std::string message =
       _475_ERR_BADCHANNELKEY(client.getNickname(), channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send476BadChanMask(const Client &client,
                         const std::string &chanNameWithBadMask) {
   std::string message =
       _476_ERR_BADCHANMASK(client.getNickname(), chanNameWithBadMask);
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send481NoPrivileges(const Client &client) {
   std::string message = _481_ERR_NOPRIVILEGES(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send482ChanOPrivsNeeded(const Client &client, const Channel &channel) {
   std::string message = _482_ERR_CHANOPRIVSNEEDED(client.getNickname(),
                                                   channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send501UmodeUnknownFlag(const Client &client) {
   std::string message = _501_ERR_UMODEUNKNOWNFLAG(client.getNickname());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 void send525InvalidKey(const Client &client, const Channel &channel) {
   std::string message =
       _525_ERR_INVALIDKEY(client.getNickname(), channel.getNameWithPrefix());
-  if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-    throw std::runtime_error(RUNTIME_ERROR);
+  // if (send(fd, message.c_str(), message.size(), 0) == -1)
+  //   throw std::runtime_error(RUNTIME_ERROR);
+  // Server::printLog(INFO_LOG, REP_LOG, message.erase(message.size() - 2));
+  sendNumericReply(client.getFd(), &message);
 }
 
 /*============================================================================*/
-/*       Unit test - numeric replies                                          */
+/*       Unit - numeric replies                                               */
 /*============================================================================*/
 
-// testAllNumericReplies(_startTime, cli, "COMMAND", "puppy");
 void testAllNumericReplies(const std::string &serverStartTime,
                            const Client &client, const std::string &command,
                            const std::string &targetNick) {
@@ -412,9 +515,6 @@ void testAllNumericReplies(const std::string &serverStartTime,
   testClient.setNickname("testClient");
   testClient.setUserName("testUser");
   testClient.setRealName("Test User");
-  // testClient.setUInvisibleMode(true);
-  // testClient.setUOperatorMode(false);
-  // testClient.setURegisteredMode(true);
   std::string nick = testClient.getNickname();
   std::string user = testClient.getUserName();
   std::string host = testClient.getHostName();
