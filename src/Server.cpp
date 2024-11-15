@@ -228,16 +228,7 @@ void Server::closeClient(int fd) {
 }
 
 void Server::clearClient(int fd) {
-  closeClient(fd);
 
-  for (size_t i = 0; i < _pollFds.size(); i++) {
-    if (_pollFds[i].fd == fd) {
-      _pollFds.erase(_pollFds.begin() + i);
-      break;
-    }
-  }
-  // if (_clients.at(fd).getChannelsCount() > 0) {  // Decommente after merge
-  // join & part
   channelsMap::iterator itEnd = _channels.end();
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
     if (it->second.getChannelClients().find(fd) !=
@@ -250,6 +241,18 @@ void Server::clearClient(int fd) {
         it->second.getInvitedClients().end())
       it->second.removeClientFromInvitedMap(&_clients.at(fd));
   }
+
+  closeClient(fd);
+
+  for (size_t i = 0; i < _pollFds.size(); i++) {
+    if (_pollFds[i].fd == fd) {
+      _pollFds.erase(_pollFds.begin() + i);
+      break;
+    }
+  }
+  // if (_clients.at(fd).getChannelsCount() > 0) {  // Decommente after merge
+  // join & part
+
   _clients.erase(fd);
 }
 
