@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/13 19:15:52 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 21:19:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,12 +70,17 @@ const Topic &Channel::getTopic(void) const { return _topic; }
 const Mode &Channel::getMode(void) const { return _mode; }
 
 const std::string Channel::getChannelModeFlag(void) const {
-  std::string flags = "+";
-  if (_mode.inviteOnly) flags += "i";
-  if (_mode.topicSettableByOpsOnly) flags += "t";
-  if (_mode.keyRequired) flags += "k";
-  if (_mode.limitSet) flags += "l";
-  return (flags);
+  std::ostringstream flagsStream;
+  flagsStream << "+";
+  if (_mode.inviteOnly)
+    flagsStream << "i";
+  if (_mode.topicSettableByOpsOnly)
+    flagsStream << "t";
+  if (_mode.keyRequired)
+    flagsStream << "k";
+  if (_mode.limitSet)
+    flagsStream << "l";
+  return (flagsStream.str());
 }
 
 const std::string &Channel::getKey(void) const { return (_key); }

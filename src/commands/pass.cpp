@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/14 16:23:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 15:25:11 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,11 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
     return (false);
   }
   client->declarePasswordGiven();
-  std::cout << BBRIGHT_YELLOW "Password IS ACCEPTED !!!!! : " << arg << RESET
-            << std::endl;
+  // std::cout << BBRIGHT_YELLOW "Password IS ACCEPTED !!!!! : " << arg << RESET
+  //           << std::endl;
+  std::ostringstream oss;
+  oss << client->getNickname() << " (fd" << client->getFd() 
+      << "): Password authentication successful";
+  Server::printLog(INFO_LOG, AUTH_LOG, oss.str());
   return (true);
 }

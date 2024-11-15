@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 12:27:18 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 19:05:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,22 +47,22 @@ void Server::printLog(eLogLevel level, const std::string &context,
   contextLavel << "[" << context << "] ";
   switch (level) {
     case DEBUG_LOG:
-#ifdef DEBUG
-      std::cout << CYAN " [DEBUG] " RESET << contextLavel.str() << message
+// #ifdef DEBUG
+      std::cout << CYAN " DEBUG   " RESET << contextLavel.str() << message
       << std::endl;
-      break;
-#endif
+      return;
+// #endif
     case INFO_LOG:
-      logLevel << GREEN << " [INFO] " << RESET;
+      logLevel << GREEN << " INFO    " << RESET;
       break;
     case NOTIFY_LOG:
-      logLevel << BLUE << " [NOTICE] " << RESET;
+      logLevel << BLUE << " NOTICE  " << RESET;
       break;
     case WARNING_LOG:
-      logLevel << BRIGHT_YELLOW << " [WARNING] " << RESET;
+      logLevel << BRIGHT_YELLOW << " WARNING " << RESET;
       break;
     case ERROR_LOG:
-      logLevel << RED << " [ERROR] " << RESET;
+      logLevel << RED << " ERROR   " << RESET;
       break;
     default:
       return;
@@ -186,12 +186,12 @@ void Server::acceptAndChat(void) {
 void Server::signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGQUIT) {
     _signal = true;
+    // std::cout << std::endl << "Signal Received" << std::endl;
     std::string message;
     if (signal == SIGINT)
       message = "SIGINT Received";
     else
       message = "SIGQUIT Received";
-    // std::cout << std::endl << "Signal Received" << std::endl;
     printLog(NOTIFY_LOG, SIGNAL_LOG, message);
   }
 }
@@ -262,6 +262,9 @@ void Server::acceptNewClient(void) {
   Client cli(newClientFd, clientIp, hostName);
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
+  std::ostringstream context;
+  context << "fd" << newClientFd;
+  printLog(NOTIFY_LOG, context.str(), "New client connected. Waiting for authentification");
 }
 
 void Server::closeClient(int fd) {

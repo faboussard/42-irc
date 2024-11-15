@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:54:08 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 15:31:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ std::vector<std::string> split(const std::string& str,
     size_t start = 0;
     size_t end = str.find(delim);
     size_t delimLen = delim.length();
-    std::cout << str << std::endl;
+    // std::cout << str << std::endl;
     while (end != std::string::npos) {
         std::string token = str.substr(start, end - start);
         token = trimBeginWithChar(token, '\n');
@@ -118,8 +118,11 @@ commandVectorPairs Parser::parseCommandIntoPairs(const std::string& command) {
       secondPart = "";
     strToUpper(&firstPart);
     pair = std::make_pair(firstPart, secondPart);
-    std::cout << CYAN "pair.first : " << pair.first << std::endl;
-    std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
+    // std::cout << CYAN "pair.first : " << pair.first << std::endl;
+    // std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
+    std::ostringstream oss;
+    oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN << pair.second << RESET;
+    Server::printLog(DEBUG_LOG, PARSER_LOG, oss.str());
     result.push_back(pair);
   }
   return (result);

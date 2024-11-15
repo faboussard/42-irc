@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 12:26:53 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 19:03:37 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,11 @@ enum eLogLevel {
 /* log contexts */
 #define SYSTEM_LOG "System"
 #define SIGNAL_LOG "Signal"
+#define PARSER_LOG "Parser"
+#define AUTH_LOG "Auth"
 #define CLIENT_LOG "Client"
 #define CHANNEL_LOG "Channel"
+#define REP_LOG "Reply"
 
 class Server {
  private:

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/14 16:22:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 17:16:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,12 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
   for (size_t it = 0; it < vecSize; ++it) {
     std::string command = splittedPair[it].first;
     std::string argument = splittedPair[it].second;
-    std::cout << MAGENTA "Command: " << command << std::endl;
-    std::cout << "Message: " << argument << RESET << std::endl;
+    // std::cout << MAGENTA "Command: " << command << std::endl;
+    // std::cout << "Message: " << argument << RESET << std::endl;
+    std::ostringstream oss;
+    oss << "Command: " MAGENTA << command << RESET " | Message: " MAGENTA 
+        << argument << RESET;
+    printLog(DEBUG_LOG, PARSER_LOG, oss.str());
 
     if (command == "QUIT") {
       quit(argument, client, &_clients);
@@ -99,7 +103,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
         client->declareAccepted();
         sendConnectionMessage(*client);
 #ifdef TESTNUMERICR
-        testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
+        testAllNumericReplies(_startTime, *client, "COMMAND", "puppy");
 #endif
       }
     } else if (client->isAccepted() == false) {
@@ -157,7 +161,7 @@ void Server::handleClientMessage(int fd) {
     std::cerr << RED "Error while receiving message" RESET << std::endl;
     return;
   } else if (valread == 0) {
-    std::cout << "Client " << fd << " disconnected" << std::endl;
+    // std::cout << "Client " << fd << " disconnected" << std::endl;
     messageBuffer[fd].erase();
     clearClient(fd);
     return;
@@ -176,9 +180,16 @@ void Server::handleClientMessage(int fd) {
   }
   if (message.empty())
     return;
-  std::cout << "Received message from client " << fd
-            << ", nickname: " << _clients[fd].getNickname() << ": " << message
-            << std::endl;
+  // std::cout << "Received message from client " << fd
+  //           << ", nickname: " << _clients[fd].getNickname() << ": " << message
+  //           << std::endl;
+  std::string msgBuf = message;
+  msgBuf.erase(0, msgBuf.find_first_not_of("\n"));
+  msgBuf.erase(msgBuf.find_last_not_of("\n") + 1);
+  std::ostringstream oss;
+  oss << _clients[fd].getNickname() << " (fd" << fd << ") sent a message: "
+      << msgBuf;
+  printLog(INFO_LOG, CLIENT_LOG, oss.str());
 
   Client &client = _clients[fd];
   if (client.isAccepted() == false) {

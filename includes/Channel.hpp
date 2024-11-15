@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/13 15:56:57 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 17:11:50 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ typedef std::map<int, Client *> clientPMap;
 extern Config *gConfig;
 
 #define REG_CHAN '#'     // regular channel prefix
-#define PUBLIC_CHAN "="  // public channel symbol
-#define CHAN_OP "@"      // channel operator prefix
+#define PUBLIC_CHAN '='  // public channel symbol
+#define CHAN_OP '@'      // channel operator prefix
 
 typedef struct Topic {
   std::string topic;
