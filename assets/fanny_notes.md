@@ -189,7 +189,9 @@ NExT PR
 _**Implemented Features:**_
 
 
-1. primsg ready:
+1. primsg command enhanced
+ -> to be used with the command PRVMSG
+ -> used by itself when users talk in a channel ! 
 
 // PRIVMSG <target>{,<target>} <:text to be sent>
 
@@ -230,7 +232,7 @@ privmsg #@s :o
 privmsg admin,    ,nick :p
 :ircserv.localhost 412 nick :No text to send
 
-privmsg #1,#2,#3,#4,#5,#6 :g
+privmsg #1,#2,#3,#4,#5 :g
 :ircserv.localhost 407 admin :Too many targets
 
 4. CHAN_OP = "@" becomes CHAN_OP = '@' (char)
