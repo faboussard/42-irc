@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 13:30:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:41:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,6 @@ class Server {
 
   // const channelsMap &getChannels() const;
   // const clientsMap &getClients() const;
-  bool clientExists(const std::string &nick) const;
 
  private:
   /* Server Management */
@@ -133,13 +132,16 @@ class Server {
   void clearClient(int fd);
   void closeClient(int fd);
 
+  /* Checkers */
+  bool nickExists(const std::string &nick) const;
+  bool channelExists(const std::string &channel);
+
   /* Commands handling */
   void handleCommand(const std::string &command, const std::string &argument,
                      int fd);
   void broadcastInChannel(const Client &client, const Channel &channel,
                           const std::string &command,
                           const std::string &content);
-  bool channelExists(const std::string &channel);
 
   /*  Command  */
   /*-------- JOIN --------*/
@@ -173,11 +175,14 @@ class Server {
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
 
-  /*-------- JOIN --------*/
-
   /*-------- INVITE --------*/
   void invite(int fd, const std::string &arg);
-  void sendInvitList(int fd) const;
+  bool inviteParamsValid(int invitingClientFd, const std::string &invitedNick,
+                         const std::string &channelNameWithPrefix);
+  void inviteClientToChannel(int invitingClientFd,
+                             const std::string &invitedNick,
+                             const std::string &channelNameWithPrefix);
+  void sendInvitedChannelsList(int fd) const;
 
   /*-------- TOPIC --------*/
   void topic(int fd, const std::string &arg);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/13 19:15:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/14 14:42:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _accepted(false),
       _nbPassAttempts(0),
       _channelsCount(0) {
-  _uModes.invisible = false;
-  _uModes.operatorOfServer = false;
-  _uModes.registered = false;
+  // _uModes.invisible = false;
+  // _uModes.operatorOfServer = false;
+  // _uModes.registered = false;
 }
 
 /*============================================================================*/
@@ -63,13 +63,13 @@ std::string const& Client::getHostName(void) const { return (_hostName); }
 
 std::string const& Client::getRealName(void) const { return (_realName); }
 
-UserModes const& Client::getUserModes(void) const { return (_uModes); }
+// UserModes const& Client::getUserModes(void) const { return (_uModes); }
 
 const std::string Client::getUserModesFlag(void) const {
   std::string flags = "+";
-  if (_uModes.invisible) flags += "i";
-  if (_uModes.operatorOfServer) flags += "o";
-  if (_uModes.registered) flags += "r";
+  // if (_uModes.invisible) flags += "i";
+  // if (_uModes.operatorOfServer) flags += "o";
+  // if (_uModes.registered) flags += "r";
   return (flags);
 }
 
@@ -110,17 +110,17 @@ void Client::setIp(const std::string& ip) { _ip = ip; }
 
 void Client::setHostName(const std::string& hostname) { _hostName = hostname; }
 
-void Client::setUInvisibleMode(bool isInvisible) {
-  _uModes.invisible = isInvisible;
-}
+// void Client::setUInvisibleMode(bool isInvisible) {
+//   _uModes.invisible = isInvisible;
+// }
 
-void Client::setUOperatorMode(bool isOperator) {
-  _uModes.operatorOfServer = isOperator;
-}
+// void Client::setUOperatorMode(bool isOperator) {
+//   _uModes.operatorOfServer = isOperator;
+// }
 
-void Client::setURegisteredMode(bool isRegistered) {
-  _uModes.registered = isRegistered;
-}
+// void Client::setURegisteredMode(bool isRegistered) {
+//   _uModes.registered = isRegistered;
+// }
 
 void Client::declareAccepted(void) { _accepted = true; }
 
@@ -134,8 +134,7 @@ void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 
 void Client::receiveMessage(const std::string& message) const {
   if (_fd != -1) {
-    ssize_t sent = send(_fd, message.c_str(), message.length(), 0);
-    if (sent == -1) {
+    if (send(_fd, message.c_str(), message.length(), MSG_NOSIGNAL) == -1) {
       std::cerr << RED "Error while sending message to fd " << _fd << ": "
                 << strerror(errno) << RESET << std::endl;
     }
