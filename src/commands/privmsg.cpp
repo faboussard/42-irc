@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/15 12:38:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 12:47:18 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,8 +71,7 @@ void Server::broadcastToAllOperators(const Client &sender,
 
 // Fonction pour valider les arguments de privmsg
 bool Server::validTargets(const std::string &arg, const Client &client,
-                             const stringVector &targets,
-                             const std::string &message) {
+                          const stringVector &targets) {
   size_t commaCount = std::count(arg.begin(), arg.end(), ',');
 #ifdef DEBUG
   std::cout << "commaCount: " << commaCount << std::endl;
@@ -89,8 +88,7 @@ bool Server::validTargets(const std::string &arg, const Client &client,
   size_t clientsCount = 0;
 
   stringVector::const_iterator itEnd = targets.end();
-  for (stringVector::const_iterator it = targets.begin();
-       it != itEnd; ++it) {
+  for (stringVector::const_iterator it = targets.begin(); it != itEnd; ++it) {
     std::string target = *it;
 #ifdef DEBUG
     std::cout << "target: " << target << std::endl;
@@ -105,8 +103,8 @@ bool Server::validTargets(const std::string &arg, const Client &client,
         clientsCount++;
     }
   }
-  if (commaCount != 0 && channelsCount != commaCount + 1 && clientsCount != commaCount + 1 &&
-      chanOpPrefixCount != commaCount + 1) {
+  if (commaCount != 0 && channelsCount != commaCount + 1 &&
+      clientsCount != commaCount + 1 && chanOpPrefixCount != commaCount + 1) {
     send407TooManyTargets(client);
     return false;
   }
@@ -147,7 +145,7 @@ bool Server::parseArguments(const std::string &arg, const Client &client,
 #endif
 
   // Vérifier si les arguments sont valides
-  if (!validTargets(arg, client, targets, message)) {
+  if (!validTargets(arg, client, targets)) {
     return false;
   }
 
@@ -176,8 +174,7 @@ void Server::privmsg(int fd, const std::string &arg) {
   stringVector::const_iterator itEnd = targets.end();
   for (stringVector::const_iterator it = targets.begin(); it != itEnd; ++it) {
     std::string target = *it;
-    if (target[0] == CHAN_OP)
-      target = target.substr(1);
+    if (target[0] == CHAN_OP) target = target.substr(1);
 #ifdef DEBUG
     std::cout << "TRIMMED target: " << target << std::endl;
 #endif
@@ -187,30 +184,22 @@ void Server::privmsg(int fd, const std::string &arg) {
     }
     std::string messageWithoutColon = message.substr(1);
 
-
     if (channelExists(target)) {
-      #ifdef DEBUG
-    std::cout << "here " << target << std::endl;
-#endif
       Channel &channel = _channels.at(target.substr(1));
       if (channel.getMode().inviteOnly &&
           !channel.isClientInvited(sender.getFd())) {
         send404CannotSendToChan(sender, channel);
         return;
       }
-            #ifdef DEBUG
-    std::cout << "here 2" << target << std::endl;
-#endif
       if (isChanOpPrefix) {
-        broadcastToOperatorsOnly(sender, channel, "PRIVMSG", messageWithoutColon);
+        broadcastToOperatorsOnly(sender, channel, "PRIVMSG",
+                                 messageWithoutColon);
       } else if (isChannel) {
-              #ifdef DEBUG
-    std::cout << "here 3 " << target << std::endl;
-#endif
         broadcastInChannel(sender, channel, "PRIVMSG", messageWithoutColon);
       }
     } else {
-      sendPrivmsgToClient(sender, *findClientByNickname(target), messageWithoutColon);
+      sendPrivmsgToClient(sender, *findClientByNickname(target),
+                          messageWithoutColon);
     }
   }
 }
