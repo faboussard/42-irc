@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 16:20:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 12:26:53 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,13 +68,18 @@ enum Command {
 };
 
 enum eLogLevel {
-  DEBUG,
-  INFO,
-  NOTIFY,
-  WARNING,
-  ERROR 
+  DEBUG_LOG,
+  INFO_LOG,
+  NOTIFY_LOG,
+  WARNING_LOG,
+  ERROR_LOG 
 };
 
+/* log contexts */
+#define SYSTEM_LOG "System"
+#define SIGNAL_LOG "Signal"
+#define CLIENT_LOG "Client"
+#define CHANNEL_LOG "Channel"
 
 class Server {
  private:
@@ -87,13 +92,6 @@ class Server {
   struct sockaddr_in _address;
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
-
-  /*-------- KICK --------*/
-  void kick(int fd, const std::string &arg);
-  void parseKickParams(std::string *param, const Client &client,
-                       const std::string &channelName,
-                       const std::string &targetNick,
-                       const std::string &reason);
 
  public:
   explicit Server(int port, const std::string &password);
@@ -118,7 +116,8 @@ class Server {
   Channel *findChannelByName(const std::string &name);
   Client *findClientByNickname(const std::string &nickname);
 
-  static void printLog(eLogLevel level, const std::string &content);
+  static void printLog(eLogLevel level, const std::string &context,
+                      const std::string &message);
 
  private:
   /* Server Management */
@@ -183,6 +182,13 @@ class Server {
 
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
+
+  /*-------- KICK --------*/
+  void kick(int fd, const std::string &arg);
+  void parseKickParams(std::string *param, const Client &client,
+                       const std::string &channelName,
+                       const std::string &targetNick,
+                       const std::string &reason);
 
   /*-------- INVITE --------*/
   void invite(int fd, const std::string &arg);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 17:02:25 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 12:27:18 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,34 +34,40 @@ Server::Server(int port, const std::string &password)
 /*       Server log                                                           */
 /*============================================================================*/
 
-void Server::printLog(eLogLevel level, const std::string &content) {
+void Server::printLog(eLogLevel level, const std::string &context,
+                      const std::string &message) {
   char timeStamp[20];
   time_t now = time(&now);
   struct tm tp = *localtime(&now);
   std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d %H:%M:%S", &tp);
-
   std::cout << "[" << timeStamp << "]";
+
+  std::ostringstream logLevel;
+  std::ostringstream contextLavel;
+  contextLavel << "[" << context << "] ";
   switch (level) {
-    case DEBUG:
+    case DEBUG_LOG:
 #ifdef DEBUG
-      std::cout << CYAN "[DEBUG] " RESET << content << std::endl;
+      std::cout << CYAN " [DEBUG] " RESET << contextLavel.str() << message
+      << std::endl;
       break;
 #endif
-    case INFO:
-      std::cout << "[INFO] " << content << std::endl;
+    case INFO_LOG:
+      logLevel << GREEN << " [INFO] " << RESET;
       break;
-    case NOTIFY:
-      std::cout << GREEN "[NOTICE] " RESET << content << std::endl;
+    case NOTIFY_LOG:
+      logLevel << BLUE << " [NOTICE] " << RESET;
       break;
-    case WARNING:
-      std::cerr << BRIGHT_YELLOW "[WARNING] " RESET << content << std::endl;
+    case WARNING_LOG:
+      logLevel << BRIGHT_YELLOW << " [WARNING] " << RESET;
       break;
-    case ERROR:
-      std::cerr << RED "[ERROR] " RESET << content << std::endl;
+    case ERROR_LOG:
+      logLevel << RED << " [ERROR] " << RESET;
       break;
     default:
-      break;
+      return;
   }
+  std::cout << logLevel.str() << contextLavel.str() << message << std::endl;
 }
 
 /*============================================================================*/
@@ -108,9 +114,9 @@ void Server::runServer(void) {
   // std::cout << GREEN "Server started on port " << _port << " at " <<
   // _startTime
   //           << RESET << std::endl;
-  std::string message =
-      "Server started on port " + toString(_port) + " at " + _startTime + RESET;
-  printLog(NOTIFY, message);
+  std::ostringstream oss;
+  oss << "Server started on port " << _port;
+  printLog(NOTIFY_LOG, SYSTEM_LOG, oss.str());
   acceptAndChat();
 }
 
@@ -186,7 +192,7 @@ void Server::signalHandler(int signal) {
     else
       message = "SIGQUIT Received";
     // std::cout << std::endl << "Signal Received" << std::endl;
-    printLog(NOTIFY, message);
+    printLog(NOTIFY_LOG, SIGNAL_LOG, message);
   }
 }
 
@@ -206,9 +212,9 @@ void Server::closeServer(void) {
     // std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected"
     // RESET
     //           << std::endl;
-    std::string logMessage =
-        "<fd " + toString(_socketFd) + "> Server disconnected";
-    printLog(NOTIFY, logMessage);
+    std::ostringstream context;
+    context << "fd" << _socketFd;
+    printLog(NOTIFY_LOG, context.str(), "Server disconnected");
     close(_socketFd);
     _socketFd = -1;
   }
@@ -231,12 +237,12 @@ void Server::acceptNewClient(void) {
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
     // std::cerr << RED "Failed to accept new client" RESET << std::endl;
-    printLog(ERROR, "Failed to accept new client");
+    printLog(ERROR_LOG, SYSTEM_LOG, "Failed to accept new client");
     return;
   }
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
     // std::cerr << "fcntl() failed" << std::endl;
-    printLog(ERROR, "fcntl() failed");
+    printLog(ERROR_LOG, SYSTEM_LOG, "fcntl() failed");
     return;
   }
 
@@ -263,8 +269,9 @@ void Server::closeClient(int fd) {
     close(fd);
     // std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
     //           << std::endl;
-    std::string logMessage = "<fd " + toString(fd) + "> Client Disconnected";
-    printLog(NOTIFY, logMessage);
+    std::ostringstream context;
+    context << "fd" << fd;
+    printLog(NOTIFY_LOG, context.str(), "Client Disconnected");
   }
 }
 
