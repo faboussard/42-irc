@@ -191,7 +191,6 @@ _**Implemented Features:**_
 
 1. primsg ready:
 
-
 // PRIVMSG <target>{,<target>} <:text to be sent>
 
 //<target> is the nickname of a client or the name of a channel.
@@ -205,10 +204,7 @@ Rest of explanation and numeric replies details are in the file privmsg.cpp
 added numeric reply: 
 void send407TooManyTargets(const Client &client) 
 
-3 . CHAN_OP = "@" becomes CHAN_OP = '@' (char)
-numeric replies impacted for one function
-
-txts conducted :
+3. txts conducted :
 
 privmsg
 :ircserv.localhost 461 nick PRIVMSG :Not enough parameters
@@ -236,6 +232,12 @@ privmsg admin,    ,nick :p
 
 privmsg #1,#2,#3,#4,#5,#6 :g
 :ircserv.localhost 407 admin :Too many targets
+
+4. CHAN_OP = "@" becomes CHAN_OP = '@' (char)
+numeric replies impacted for one function
+
+5. notice not to be handled - removed 
+
 
 DEBUG GDB
 
