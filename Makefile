@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/12 11:58:54 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/15 13:41:20 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils \
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
        pass nick user \
-	   invite join kick list mode notice part ping privmsg quit topic who \
+	   invite join kick list mode part ping privmsg quit topic who \
 		# joinTest generalTest \ 
 
 # ---------------------------------- Répertoires ----------------------------- #

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/15 12:47:18 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 13:39:08 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,12 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "../../includes/Server.hpp"
 
 // PRIVMSG <target>{,<target>} <:text to be sent>
-
-//<target> is the nickname of a client or the name of a channel.
-
-// If a message cannot be delivered to a channel, the server SHOULD respond
-// with an ERR_CANNOTSENDTOCHAN (404) numeric to let the user know that this
-// message could not be delivered.
-
-// If <target> is a channel name, it may be prefixed with one or more channel
-// membership prefix character (@ = STATUSMSG) and the message will be
-// delivered only to operators.
-
-// When the PRIVMSG message is sent from a server to a client and <target>
-// starts with a dollar character ('$', 0x24), the message is a broadcast sent
-// to all clients on one or multiple servers.
+// <target> is the nickname of a client or the name of a channel.
 
 void Server::sendPrivmsgToClient(const Client &sender, const Client &receiver,
                                  const std::string &content) {
@@ -273,3 +261,14 @@ void Server::privmsg(int fd, const std::string &arg) {
 //   :dan!~h@localhost PRIVMSG #coolpeople :Hi everyone!
 //                                   ; Message from dan to the channel
 //                                   #coolpeople
+// If a message cannot be delivered to a channel, the server SHOULD respond
+// with an ERR_CANNOTSENDTOCHAN (404) numeric to let the user know that this
+// message could not be delivered.
+
+// If <target> is a channel name, it may be prefixed with one or more channel
+// membership prefix character (@ = STATUSMSG) and the message will be
+// delivered only to operators.
+
+// When the PRIVMSG message is sent from a server to a client and <target>
+// starts with a dollar character ('$', 0x24), the message is a broadcast sent
+// to all clients on one or multiple servers.

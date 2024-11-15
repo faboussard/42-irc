@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 12:43:11 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 13:37:40 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,30 +78,6 @@ class Server {
   struct sockaddr_in _address;
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
-
-  /*-------- KICK --------*/
-  void kick(int fd, const std::string &arg);
-  void parseKickParams(std::string *param, const Client &client,
-                       const std::string &channelName,
-                       const std::string &targetNick,
-                       const std::string &reason);
-
-  /*-------- PRIVMSG --------*/
-  void privmsg(int fd, const std::string &arg);
-  void broadcastToOperatorsOnly(const Client &sender, const Channel &channel,
-                                const std::string &command,
-                                const std::string &content);
-  void sendPrivmsgToClient(const Client &sender, const Client &receiver,
-                           const std::string &message);
-  void broadcastToAllOperators(const Client &sender, const std::string &command,
-                               const std::string &content);
-  bool parseArguments(const std::string &arg, const Client &client,
-                            std::vector<std::string> &targets,
-                            std::string &message);
-
-bool validTargets( const std::string &arg, const Client &client,
-                              const std::vector<std::string> &targets);
-
 
  public:
   explicit Server(int port, const std::string &password);
@@ -221,8 +197,27 @@ bool validTargets( const std::string &arg, const Client &client,
   void listAllChannels(int fd, const std::string &nick);
   void listChannels(const stringVector &channels, const Client &client);
 
-  /*-------- NOTICE --------*/
-  void notice(int fd, const std::string &arg);
+  /*-------- KICK --------*/
+  void kick(int fd, const std::string &arg);
+  void parseKickParams(std::string *param, const Client &client,
+                       const std::string &channelName,
+                       const std::string &targetNick,
+                       const std::string &reason);
+
+  /*-------- PRIVMSG --------*/
+  void privmsg(int fd, const std::string &arg);
+  void broadcastToOperatorsOnly(const Client &sender, const Channel &channel,
+                                const std::string &command,
+                                const std::string &content);
+  void sendPrivmsgToClient(const Client &sender, const Client &receiver,
+                           const std::string &message);
+  void broadcastToAllOperators(const Client &sender, const std::string &command,
+                               const std::string &content);
+  bool parseArguments(const std::string &arg, const Client &client,
+                      std::vector<std::string> &targets, std::string &message);
+
+  bool validTargets(const std::string &arg, const Client &client,
+                    const std::vector<std::string> &targets);
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
