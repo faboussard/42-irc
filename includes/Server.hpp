@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 17:51:16 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 12:36:26 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ class Server {
                             std::vector<std::string> &targets,
                             std::string &message);
 
-bool isArgumentValid( const std::string &arg, const Client &client,
+bool validTargets( const std::string &arg, const Client &client,
                               const std::vector<std::string> &targets,
                               const std::string &message);
 

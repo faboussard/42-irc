@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/15 11:37:25 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 12:38:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,33 +70,26 @@ void Server::broadcastToAllOperators(const Client &sender,
 }
 
 // Fonction pour valider les arguments de privmsg
-bool Server::isArgumentValid(const std::string &arg, const Client &client,
-                             const std::vector<std::string> &targets,
+bool Server::validTargets(const std::string &arg, const Client &client,
+                             const stringVector &targets,
                              const std::string &message) {
   size_t commaCount = std::count(arg.begin(), arg.end(), ',');
 #ifdef DEBUG
   std::cout << "commaCount: " << commaCount << std::endl;
   std::cout << "MAXTARGETS: " << gConfig->getLimit(MAXTARGETS) << std::endl;
 #endif
-  if (commaCount > gConfig->getLimit(MAXTARGETS)) {
+  if (commaCount + 1 > gConfig->getLimit(MAXTARGETS)) {
     send407TooManyTargets(client);
     return false;
   }
-
-  // Analyser les arguments pour obtenir les cibles et le message
-  if (message.empty() || message[0] != ':') {
-    send412NoTextToSend(client);
-    return false;
-  }
-
-  // verifier que chaque cible est homogene. pas de mix $ et @ par exemple
+  // verifier que chaque cible est homogene. pas de mix @ et # et user
 
   size_t chanOpPrefixCount = 0;
   size_t channelsCount = 0;
   size_t clientsCount = 0;
 
-  std::vector<std::string>::const_iterator itEnd = targets.end();
-  for (std::vector<std::string>::const_iterator it = targets.begin();
+  stringVector::const_iterator itEnd = targets.end();
+  for (stringVector::const_iterator it = targets.begin();
        it != itEnd; ++it) {
     std::string target = *it;
 #ifdef DEBUG
@@ -154,7 +147,7 @@ bool Server::parseArguments(const std::string &arg, const Client &client,
 #endif
 
   // Vérifier si les arguments sont valides
-  if (!isArgumentValid(arg, client, targets, message)) {
+  if (!validTargets(arg, client, targets, message)) {
     return false;
   }
 
@@ -174,12 +167,9 @@ void Server::privmsg(int fd, const std::string &arg) {
   if (parseArguments(arg, sender, targets, message) == false) {
     return;
   }
-
 #ifdef DEBUG
   std::cout << "[message]  " << message << std::endl;
 #endif
-
-  // Valider les arguments
 
   bool isChannel = (targets[0][0] == REG_CHAN);
   bool isChanOpPrefix = (targets[0][0] == CHAN_OP);
@@ -195,6 +185,8 @@ void Server::privmsg(int fd, const std::string &arg) {
       send401NoSuchNick(sender, target);
       return;
     }
+    std::string messageWithoutColon = message.substr(1);
+
 
     if (channelExists(target)) {
       #ifdef DEBUG
@@ -210,15 +202,15 @@ void Server::privmsg(int fd, const std::string &arg) {
     std::cout << "here 2" << target << std::endl;
 #endif
       if (isChanOpPrefix) {
-        broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
+        broadcastToOperatorsOnly(sender, channel, "PRIVMSG", messageWithoutColon);
       } else if (isChannel) {
               #ifdef DEBUG
     std::cout << "here 3 " << target << std::endl;
 #endif
-        broadcastInChannel(sender, channel, "PRIVMSG", message);
+        broadcastInChannel(sender, channel, "PRIVMSG", messageWithoutColon);
       }
     } else {
-      sendPrivmsgToClient(sender, *findClientByNickname(target), message);
+      sendPrivmsgToClient(sender, *findClientByNickname(target), messageWithoutColon);
     }
   }
 }
