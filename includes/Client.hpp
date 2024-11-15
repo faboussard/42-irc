@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 14:39:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 12:49:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ class Client {
   bool _realnameSet;
   bool _passwordGiven;
   bool _accepted;
-  bool _CapSend;
   // UserModes _uModes;
   uint8_t _nbPassAttempts;
   size_t _channelsCount;
