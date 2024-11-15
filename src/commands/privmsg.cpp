@@ -6,15 +6,15 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/15 13:39:08 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 17:00:09 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <algorithm>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "../../includes/Server.hpp"
 
@@ -26,35 +26,6 @@ void Server::sendPrivmsgToClient(const Client &sender, const Client &receiver,
   std::string message = ":" + sender.getNickname() + " PRIVMSG " +
                         receiver.getNickname() + " " + content + "\r\n";
   receiver.receiveMessage(message);
-}
-
-void Server::broadcastToOperatorsOnly(const Client &sender,
-                                      const Channel &channel,
-                                      const std::string &command,
-                                      const std::string &content) {
-  std::string message = ":" + sender.getNickname() + " " + command + " " +
-                        channel.getNameWithPrefix() + " :" + content + "\r\n";
-  const clientPMap &operators = channel.getChannelOperators();
-  clientPMap::const_iterator itEnd = operators.end();
-  for (clientPMap::const_iterator it = operators.begin(); it != itEnd; ++it) {
-    it->second->receiveMessage(message);
-  }
-}
-
-void Server::broadcastToAllOperators(const Client &sender,
-                                     const std::string &command,
-                                     const std::string &content) {
-  std::string message =
-      ":" + sender.getNickname() + " " + command + " :" + content + "\r\n";
-
-  for (channelsMap::const_iterator channelIt = _channels.begin();
-       channelIt != _channels.end(); ++channelIt) {
-    const clientPMap &operators = channelIt->second.getChannelOperators();
-    for (clientPMap::const_iterator operatorIt = operators.begin();
-         operatorIt != operators.end(); ++operatorIt) {
-      operatorIt->second->receiveMessage(message);
-    }
-  }
 }
 
 // Fonction pour valider les arguments de privmsg
