@@ -174,6 +174,8 @@ void Server::handleClientMessage(int fd) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
+  if (message.empty())
+    return;
   std::cout << "Received message from client " << fd
             << ", nickname: " << _clients[fd].getNickname() << ": " << message
             << std::endl;
