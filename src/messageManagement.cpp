@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/15 17:16:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 23:47:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,10 @@ void Server::handleClientMessage(int fd) {
   int valread = recv(fd, buffer, sizeof(buffer), 0);
 
   if (valread == -1) {
-    std::cerr << RED "Error while receiving message" RESET << std::endl;
+    // std::cerr << RED "Error while receiving message" RESET << std::endl;
+    std::ostringstream oss;
+    oss << "fd" << fd << ": Error occurred while receiving a message.";
+    Server::printLog(ERROR_LOG, CLIENT_LOG, oss.str());
     return;
   } else if (valread == 0) {
     // std::cout << "Client " << fd << " disconnected" << std::endl;
