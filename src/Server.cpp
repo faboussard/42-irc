@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 19:05:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 23:13:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,46 +28,6 @@ bool Server::_signal = false;
 Server::Server(int port, const std::string &password)
     : _socketFd(-1), _port(port), _password(password) {
   _signal = false;
-}
-
-/*============================================================================*/
-/*       Server log                                                           */
-/*============================================================================*/
-
-void Server::printLog(eLogLevel level, const std::string &context,
-                      const std::string &message) {
-  char timeStamp[20];
-  time_t now = time(&now);
-  struct tm tp = *localtime(&now);
-  std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d %H:%M:%S", &tp);
-  std::cout << "[" << timeStamp << "]";
-
-  std::ostringstream logLevel;
-  std::ostringstream contextLavel;
-  contextLavel << "[" << context << "] ";
-  switch (level) {
-    case DEBUG_LOG:
-// #ifdef DEBUG
-      std::cout << CYAN " DEBUG   " RESET << contextLavel.str() << message
-      << std::endl;
-      return;
-// #endif
-    case INFO_LOG:
-      logLevel << GREEN << " INFO    " << RESET;
-      break;
-    case NOTIFY_LOG:
-      logLevel << BLUE << " NOTICE  " << RESET;
-      break;
-    case WARNING_LOG:
-      logLevel << BRIGHT_YELLOW << " WARNING " << RESET;
-      break;
-    case ERROR_LOG:
-      logLevel << RED << " ERROR   " << RESET;
-      break;
-    default:
-      return;
-  }
-  std::cout << logLevel.str() << contextLavel.str() << message << std::endl;
 }
 
 /*============================================================================*/
@@ -262,6 +222,7 @@ void Server::acceptNewClient(void) {
   Client cli(newClientFd, clientIp, hostName);
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
+
   std::ostringstream context;
   context << "fd" << newClientFd;
   printLog(NOTIFY_LOG, context.str(), "New client connected. Waiting for authentification");
@@ -272,6 +233,7 @@ void Server::closeClient(int fd) {
     close(fd);
     // std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
     //           << std::endl;
+
     std::ostringstream context;
     context << "fd" << fd;
     printLog(NOTIFY_LOG, context.str(), "Client Disconnected");
@@ -282,15 +244,15 @@ void Server::clearClient(int fd) {
 
   channelsMap::iterator itEnd = _channels.end();
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
-    if (it->second.getChannelClients().find(fd) !=
-        it->second.getChannelClients().end())
-      it->second.checkAndremoveClientFromTheChannel(fd);
-    if (it->second.getChannelOperators().find(fd) !=
-        it->second.getChannelOperators().end())
-      it->second.removeOperator(&_clients.at(fd));
     if (it->second.getInvitedClients().find(fd) !=
         it->second.getInvitedClients().end())
       it->second.removeClientFromInvitedMap(&_clients.at(fd));
+    if (it->second.getChannelOperators().find(fd) !=
+        it->second.getChannelOperators().end())
+      it->second.removeOperator(&_clients.at(fd));
+    // if (it->second.getChannelClients().find(fd) !=
+    //     it->second.getChannelClients().end())
+    it->second.checkAndremoveClientFromTheChannel(fd);
   }
 
   closeClient(fd);
@@ -362,4 +324,44 @@ bool Server::channelExists(const std::string &channel) {
     if (it->first == nameToFind) return (true);
   }
   return (false);
+}
+
+/*============================================================================*/
+/*       Server log                                                           */
+/*============================================================================*/
+
+void Server::printLog(eLogLevel level, const std::string &context,
+                      const std::string &message) {
+  char timeStamp[20];
+  time_t now = time(&now);
+  struct tm tp = *localtime(&now);
+  std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d %H:%M:%S", &tp);
+  std::cout << "[" << timeStamp << "]";
+
+  std::ostringstream logLevel;
+  std::ostringstream contextLavel;
+  contextLavel << "[" << context << "] ";
+  switch (level) {
+    case DEBUG_LOG:
+// #ifdef DEBUG
+      std::cout << CYAN " DEBUG   " RESET << contextLavel.str() << message
+      << std::endl;
+      return;
+// #endif
+    case INFO_LOG:
+      logLevel << GREEN << " INFO    " << RESET;
+      break;
+    case NOTIFY_LOG:
+      logLevel << BLUE << " NOTICE  " << RESET;
+      break;
+    case WARNING_LOG:
+      logLevel << BRIGHT_YELLOW << " WARNING " << RESET;
+      break;
+    case ERROR_LOG:
+      logLevel << RED << " ERROR   " << RESET;
+      break;
+    default:
+      return;
+  }
+  std::cout << logLevel.str() << contextLavel.str() << message << std::endl;
 }
