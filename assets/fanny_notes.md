@@ -208,8 +208,34 @@ void send407TooManyTargets(const Client &client)
 3 . CHAN_OP = "@" becomes CHAN_OP = '@' (char)
 numeric replies impacted for one function
 
+txts conducted :
 
+privmsg
+:ircserv.localhost 461 nick PRIVMSG :Not enough parameters
 
+ privmsg #s :haha
+:nick PRIVMSG #s :haha
+
+privmsg nick,admin :gg
+:nick PRIVMSG nick :gg
+
+privmsg @#s,@#h :g
+:ircserv.localhost 401 nick #h :No such nick/channel
+
+privmsg #s,admin :h
+:ircserv.localhost 407 nick :Too many targets
+
+privmsg #@s, "h
+:ircserv.localhost 412 nick :No text to send
+
+privmsg #@s :o
+:ircserv.localhost 401 nick #@s :No such nick/channel
+
+privmsg admin,    ,nick :p
+:ircserv.localhost 412 nick :No text to send
+
+privmsg #1,#2,#3,#4,#5,#6 :g
+:ircserv.localhost 407 admin :Too many targets
 
 DEBUG GDB
 

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 19:40:23 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/15 11:37:25 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ bool Server::isArgumentValid(const std::string &arg, const Client &client,
 #ifdef DEBUG
     std::cout << "target: " << target << std::endl;
 #endif
+
     if (commaCount != 0) {
       if (target[0] == CHAN_OP)
         chanOpPrefixCount++;
@@ -109,12 +110,12 @@ bool Server::isArgumentValid(const std::string &arg, const Client &client,
         channelsCount++;
       else
         clientsCount++;
-      if (channelsCount != commaCount + 1 && clientsCount != commaCount + 1 &&
-          chanOpPrefixCount != commaCount + 1) {
-        send407TooManyTargets(client);
-        return false;
-      }
     }
+  }
+  if (commaCount != 0 && channelsCount != commaCount + 1 && clientsCount != commaCount + 1 &&
+      chanOpPrefixCount != commaCount + 1) {
+    send407TooManyTargets(client);
+    return false;
   }
   return true;
 }
@@ -168,7 +169,7 @@ void Server::privmsg(int fd, const std::string &arg) {
     send461NeedMoreParams(sender, "PRIVMSG");
     return;
   }
-  std::vector<std::string> targets;
+  stringVector targets;
   std::string message;
   if (parseArguments(arg, sender, targets, message) == false) {
     return;
@@ -182,13 +183,10 @@ void Server::privmsg(int fd, const std::string &arg) {
 
   bool isChannel = (targets[0][0] == REG_CHAN);
   bool isChanOpPrefix = (targets[0][0] == CHAN_OP);
-  std::vector<std::string>::const_iterator itEnd = targets.end();
-  for (std::vector<std::string>::const_iterator it = targets.begin();
-       it != itEnd; ++it) {
+  stringVector::const_iterator itEnd = targets.end();
+  for (stringVector::const_iterator it = targets.begin(); it != itEnd; ++it) {
     std::string target = *it;
     if (target[0] == CHAN_OP)
-      target = target.substr(2);
-    else if (target[0] == REG_CHAN)
       target = target.substr(1);
 #ifdef DEBUG
     std::cout << "TRIMMED target: " << target << std::endl;
@@ -197,16 +195,26 @@ void Server::privmsg(int fd, const std::string &arg) {
       send401NoSuchNick(sender, target);
       return;
     }
+
     if (channelExists(target)) {
-      Channel &channel = _channels.at(target);
+      #ifdef DEBUG
+    std::cout << "here " << target << std::endl;
+#endif
+      Channel &channel = _channels.at(target.substr(1));
       if (channel.getMode().inviteOnly &&
           !channel.isClientInvited(sender.getFd())) {
         send404CannotSendToChan(sender, channel);
         return;
       }
+            #ifdef DEBUG
+    std::cout << "here 2" << target << std::endl;
+#endif
       if (isChanOpPrefix) {
         broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
       } else if (isChannel) {
+              #ifdef DEBUG
+    std::cout << "here 3 " << target << std::endl;
+#endif
         broadcastInChannel(sender, channel, "PRIVMSG", message);
       }
     } else {
