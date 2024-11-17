@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 20:51:50 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:54:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,9 @@ void Client::receiveMessage(const std::string& message) const {
           << strerror(errno);
       Server::printLog(ERROR_LOG, CLIENT, oss.str());
     } else {
-      oss << "Sent to " << _nickname << ": " << message;
+      std::string trimed = message;
+      trimed.erase(trimed.find_last_not_of("\r\n") + 1);
+      oss << "Sent to " << _nickname << ": " << trimed;
       Server::printLog(INFO_LOG, REPLY, oss.str());
     }
   } else {
