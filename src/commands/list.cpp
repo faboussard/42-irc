@@ -6,13 +6,15 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 10:41:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:40:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
+#include <string>
+
 #include "../../includes/Server.hpp"
 #include "../../includes/utils.hpp"
-
 
 void Server::list(const Client &client, const std::string &argument) {
 #ifdef TESTLIST

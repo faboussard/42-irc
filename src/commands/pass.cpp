@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 18:12:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:38:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ void logPassAuthFailed(const Client &client);
 void logPassAuthSuccess(const Client &client);
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
-
   if (client->isPasswordGiven()) {
     send462AlreadyRegistered(*client);
     return (false);
@@ -44,8 +43,8 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
 void logPassAuthFailed(const Client &client) {
   int remainingAttempts = 3 - client.getNbPassAttempts();
   std::ostringstream oss;
-  oss << client.getNickname() << " (fd" << client.getFd() 
-      << "): Password authentication failed. " 
+  oss << client.getNickname() << " (fd" << client.getFd()
+      << "): Password authentication failed. "
       << remainingAttempts << " attempt(s) remaining.";
   if (remainingAttempts == 0)
     Server::printLog(WARNING_LOG, AUTH, oss.str());
@@ -54,8 +53,8 @@ void logPassAuthFailed(const Client &client) {
 }
 
 void logPassAuthSuccess(const Client &client) {
-  std::ostringstream oss;  
-  oss << client.getNickname() << " (fd" << client.getFd() 
+  std::ostringstream oss;
+  oss << client.getNickname() << " (fd" << client.getFd()
       << "): Password authentication successful";
   Server::printLog(INFO_LOG, AUTH, oss.str());
 }

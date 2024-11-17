@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:55:24 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/17 18:22:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:27:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void Config::parseConfigFile(const std::string& pathToConfigFile) {
   Server::printLog(INFO_LOG, SYSTEM, message);
   std::ifstream file(pathToConfigFile.c_str());
   if (!file.is_open()) {
-    Server::printLog(WARNING_LOG, SYSTEM, 
+    Server::printLog(WARNING_LOG, SYSTEM,
                     "Failed to open config file. Using default configuration.");
   } else {
     std::stringstream buffer;
@@ -160,7 +160,7 @@ void Config::setNumericParameters(void) {
       errno = 0;
       size_t value = std::strtoul(it->second.c_str(), &end, 10);
       if (errno == ERANGE || *end != '\0' || !isWithinLimit(it->first, value)) {
-        Server::printLog(WARNING_LOG, SYSTEM, 
+        Server::printLog(WARNING_LOG, SYSTEM,
                         INVALID_VALUE(keyToString(it->first)));
         std::string defaultValue = getDefaultValue(it->first);
         value = std::strtoul(defaultValue.c_str(), &end, 10);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 21:05:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:31:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,8 +225,7 @@ void Server::acceptNewClient(void) {
   _pollFds.push_back(newPoll);
 
   std::ostringstream oss;
-  oss << "fd" << newClientFd 
-      << ": New client connected from " << clientIp 
+  oss << "fd" << newClientFd << ": New client connected from " << clientIp
       << ". Waiting for authentification.";
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
 }
@@ -244,7 +243,6 @@ void Server::closeClient(int fd) {
 }
 
 void Server::clearClient(int fd) {
-
   channelsMap::iterator itEnd = _channels.end();
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
     if (it->second.getInvitedClients().find(fd) !=
@@ -342,7 +340,7 @@ void Server::printLog(eLogLevel level, eLogContext context,
   struct tm tp = *localtime(&now);
   std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d %H:%M:%S", &tp);
   std::ostringstream logHeader;
- logHeader << "[" << timeStamp << "]";
+  logHeader << "[" << timeStamp << "]";
 
   switch (level) {
     case DEBUG_LOG:
@@ -372,7 +370,7 @@ void Server::printLog(eLogLevel level, eLogContext context,
     std::cerr << logHeader.str() << logContext(context) << message << std::endl;
 }
 
-std::string logContext(eLogContext context){
+std::string logContext(eLogContext context) {
   switch (context) {
     case SYSTEM:
       return SYSTEM_LOG;

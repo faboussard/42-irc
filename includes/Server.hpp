@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 20:42:44 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:39:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ enum eLogLevel {
   INFO_LOG,
   NOTIFY_LOG,
   WARNING_LOG,
-  ERROR_LOG 
+  ERROR_LOG
 };
 
 enum eLogContext {

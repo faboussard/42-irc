@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 13:31:46 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:37:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void Server::kick(int fd, const std::string &param) {
     send441UserNotInChannel(client, targetNick, channel);
     return;
   }
-  std::string message = targetNick + " " + reason + "\r\n"; 
+  std::string message = targetNick + " " + reason + "\r\n";
   broadcastInChannel(client, channel, "KICK", message);
   quitChannel(fdTarget, &channel, targetClient);
 }

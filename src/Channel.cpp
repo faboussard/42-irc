@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 20:32:03 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:26:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
   _topic.author = author;
   time_t now = time(0);
   _topic.setTime = toString(now);
-  
+
   std::ostringstream oss;
   oss << _nameWithPrefix << ": Topic updated by " << author << " to " << topic
       << " at " << _topic.setTime;
@@ -142,7 +142,7 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
   }
 }
 
-void Channel::addClientToInvitedMap(Client *invited, 
+void Channel::addClientToInvitedMap(Client *invited,
                                     const std::string &invitingNick) {
   _invitedClients[invited->getFd()] = invited;
   std::ostringstream oss;
@@ -207,7 +207,7 @@ void Channel::deactivateTopicOpsOnlyMode(void) {
   _mode.topicSettableByOpsOnly = false;
 
   std::ostringstream oss;
-  oss << _nameWithPrefix 
+  oss << _nameWithPrefix
       << ": Topic settable by Operator only mode desactivated";
   Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
@@ -247,7 +247,7 @@ void Channel::addOperator(Client *client) {
   _channelOperators[client->getFd()] = client;
 
   std::ostringstream oss;
-  oss << _nameWithPrefix << ": " << client->getNickname() 
+  oss << _nameWithPrefix << ": " << client->getNickname()
       << " has been promoted to operator";
   Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
@@ -256,7 +256,7 @@ void Channel::removeOperator(Client *client) {
   _channelOperators.erase(client->getFd());
 
   std::ostringstream oss;
-  oss << _nameWithPrefix << ": " << client->getNickname() 
+  oss << _nameWithPrefix << ": " << client->getNickname()
       << " has been demoted from operator";
   Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
@@ -300,7 +300,7 @@ void Channel::deactivateLimitMode(void) {
 //     std::string message = _channelClients[fd]->shareMessage();
 //     if (!message.empty()) {
 //       std::cout << "Message received in channel " << _name << " from client "
-//                 << fd << ": " << message << std::endl;    
+//                 << fd << ": " << message << std::endl;
 //       clientPMap::iterator itBegin = _channelClients.begin();
 //       clientPMap::iterator itEnd = _channelClients.end();
 //       for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {

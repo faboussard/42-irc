@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 21:07:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:36:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ void Server::joinChannel(const std::string &param, int fd) {
 #ifdef DEBUG
   std::ostringstream before;
   std::ostringstream after;
-  before << "JOIN: Before split and trim channel: " CYAN << channelsPart << RESET;
+  before << "JOIN: Before split and trim channel: " CYAN
+         << channelsPart << RESET;
   after << "JOIN: After split and trim channel: ";
   for (size_t i = 0; i < channels.size(); ++i)
     after << CYAN << channels[i] << RESET "|";

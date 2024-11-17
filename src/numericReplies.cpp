@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/17 17:10:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:33:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ void send331Notopic(const Client &client, const Channel &channel) {
 
 void send332Topic(const Client &client, const Channel &channel) {
   std::string message =
-      _332_RPL_TOPIC(client.getNickname(), channel.getNameWithPrefix(), 
+      _332_RPL_TOPIC(client.getNickname(), channel.getNameWithPrefix(),
       channel.getTopic().topic);
   // if (send(fd, message.c_str(), message.size(), 0) == -1)
   //   throw std::runtime_error(RUNTIME_ERROR);

@@ -6,9 +6,11 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/17 20:31:01 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:41:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <string>
 
 #include "../../includes/Server.hpp"
 

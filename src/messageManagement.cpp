@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 20:43:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:33:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     // std::cout << MAGENTA "Command: " << command << std::endl;
     // std::cout << "Message: " << argument << RESET << std::endl;
     std::ostringstream oss;
-    oss << "Command: " MAGENTA << command << RESET " | Message: " MAGENTA 
+    oss << "Command: " MAGENTA << command << RESET " | Message: " MAGENTA
         << argument << RESET;
     printLog(DEBUG_LOG, PARSER, oss.str());
 
@@ -77,7 +77,8 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       clientIsAcceptedMessageToDelete(client, command);
 #endif
       handleCommand(command, argument, client->getFd());
-    } else if (command == "CAP") { continue;
+    } else if (command == "CAP") {
+      continue;
     } else if (command == "PASS") {
       if (isLastPass(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyPassword(argument, _password, client) == false) {

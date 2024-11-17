@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 17:11:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:28:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,6 @@ static std::string trimBeginWithChar(const std::string& str, const char c) {
 
 std::vector<std::string> split(const std::string& str,
                                const std::string& delim) {
-
     std::vector<std::string> result;
     size_t start = 0;
     size_t end = str.find(delim);
@@ -121,7 +120,8 @@ commandVectorPairs Parser::parseCommandIntoPairs(const std::string& command) {
     // std::cout << CYAN "pair.first : " << pair.first << std::endl;
     // std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
     std::ostringstream oss;
-    oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN << pair.second << RESET;
+    oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN
+        << pair.second << RESET;
     Server::printLog(DEBUG_LOG, PARSER, oss.str());
     result.push_back(pair);
   }
