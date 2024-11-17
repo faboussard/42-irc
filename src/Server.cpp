@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 21:31:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 22:05:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -337,7 +337,8 @@ void Server::printLog(eLogLevel level, eLogContext context,
                       const std::string &message) {
   char timeStamp[20];
   time_t now = time(&now);
-  struct tm tp = *localtime(&now);
+  struct tm tp;
+  localtime_r(&now, &tp);
   std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d %H:%M:%S", &tp);
   std::ostringstream logHeader;
   logHeader << "[" << timeStamp << "]";

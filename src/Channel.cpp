@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 21:26:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 22:03:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,7 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
   _topic.setTime = toString(now);
 
   std::ostringstream oss;
-  oss << _nameWithPrefix << ": Topic updated by " << author << " to " << topic
-      << " at " << _topic.setTime;
+  oss << _nameWithPrefix << ": Topic updated by " << author;
   Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
