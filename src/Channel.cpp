@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/15 23:42:03 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:32:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,11 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
   _topic.author = author;
   time_t now = time(0);
   _topic.setTime = toString(now);
+  
+  std::ostringstream oss;
+  oss << _nameWithPrefix << ": Topic updated by " << author << " to " << topic
+      << " at " << _topic.setTime;
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 /*============================================================================*/
@@ -108,7 +113,7 @@ void Channel::addClientToChannelMap(Client *client) {
   //           << " added in channel " << _name << std::endl;
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname() << " has joined";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 void Channel::removeClientFromChannelMap(Client *client) {
@@ -117,7 +122,7 @@ void Channel::removeClientFromChannelMap(Client *client) {
   //           << " removed from channel " << _name << std::endl;
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname() << " has left";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 void Channel::checkAndremoveClientFromTheChannel(int fd) {
@@ -127,7 +132,7 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
     std::ostringstream oss;
     oss << _nameWithPrefix << ": " << _channelClients.at(fd)->getNickname()
         << " has left";
-    Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+    Server::printLog(INFO_LOG, CHANNEL, oss.str());
     _channelClients.erase(fd);
     // std::cout << "Client " << fd << " removed from channel " << _name
     //           << std::endl;
@@ -137,12 +142,13 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
   }
 }
 
-void Channel::addClientToInvitedMap(Client *client) {
-  _invitedClients[client->getFd()] = client;
+void Channel::addClientToInvitedMap(Client *invited, 
+                                    const std::string &invitingNick) {
+  _invitedClients[invited->getFd()] = invited;
   std::ostringstream oss;
-  oss << _nameWithPrefix << ": " << client->getNickname()
-      << " has been invited";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str()); 
+  oss << _nameWithPrefix << ": " << invited->getNickname()
+      << " has been invited by " << invitingNick;
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 void Channel::removeClientFromInvitedMap(Client *client) {
@@ -150,7 +156,7 @@ void Channel::removeClientFromInvitedMap(Client *client) {
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname()
       << " has been removed from invited clients list";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 bool Channel::isClientInChannel(int fd) const {
@@ -177,7 +183,7 @@ void Channel::activateInviteOnlyMode(void) {
 
   std::ostringstream oss;
   oss << _nameWithPrefix << ": Invite-only mode activated";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 void Channel::deactivateInviteOnlyMode(void) {
@@ -185,7 +191,7 @@ void Channel::deactivateInviteOnlyMode(void) {
 
   std::ostringstream oss;
   oss << _nameWithPrefix << ": Invite-only mode desactivated";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 /* topic-settable-by-ops-only (t) */
@@ -194,7 +200,7 @@ void Channel::activateTopicOpsOnlyMode(void) {
 
   std::ostringstream oss;
   oss << _nameWithPrefix << ": Topic settable by Operator only mode activated";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 void Channel::deactivateTopicOpsOnlyMode(void) {
@@ -203,7 +209,7 @@ void Channel::deactivateTopicOpsOnlyMode(void) {
   std::ostringstream oss;
   oss << _nameWithPrefix 
       << ": Topic settable by Operator only mode desactivated";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 /* key-mode (k) */
@@ -212,7 +218,7 @@ void Channel::updateKey(const std::string &newKey) {
 
   std::ostringstream oss;
   oss << _nameWithPrefix << ": Channel key updated";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 void Channel::activateKeyMode(const std::string &key, const Client &client) {
@@ -224,7 +230,7 @@ void Channel::activateKeyMode(const std::string &key, const Client &client) {
 
     std::ostringstream oss;
     oss << _nameWithPrefix << ": Key mode activated. Key set to " << key;
-    Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+    Server::printLog(INFO_LOG, CHANNEL, oss.str());
   }
 }
 void Channel::deactivateKeyMode(void) {
@@ -233,7 +239,7 @@ void Channel::deactivateKeyMode(void) {
 
   std::ostringstream oss;
   oss << _nameWithPrefix << ": Key mode desactivated";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 /* operator (o) */
@@ -243,7 +249,7 @@ void Channel::addOperator(Client *client) {
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname() 
       << " has been promoted to operator";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 void Channel::removeOperator(Client *client) {
@@ -252,7 +258,7 @@ void Channel::removeOperator(Client *client) {
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname() 
       << " has been demoted from operator";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 bool Channel::isOperator(int fd) const {
@@ -272,7 +278,7 @@ void Channel::activateLimitMode(int limit, const Client &client) {
 
     std::ostringstream oss;
     oss << _nameWithPrefix << ": Limit mode activated. Limit set to " << limit;
-    Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+    Server::printLog(INFO_LOG, CHANNEL, oss.str());
   }
 }
 
@@ -282,7 +288,7 @@ void Channel::deactivateLimitMode(void) {
 
   std::ostringstream oss;
   oss << _nameWithPrefix << ": Limit mode desactivated";
-  Server::printLog(INFO_LOG, CHANNEL_LOG, oss.str());
+  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 /*============================================================================*/

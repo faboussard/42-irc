@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 23:13:01 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:05:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void Server::runServer(void) {
   //           << RESET << std::endl;
   std::ostringstream oss;
   oss << "Server started on port " << _port;
-  printLog(NOTIFY_LOG, SYSTEM_LOG, oss.str());
+  printLog(NOTIFY_LOG, SYSTEM, oss.str());
   acceptAndChat();
 }
 
@@ -128,7 +128,8 @@ void Server::acceptAndChat(void) {
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
-      std::cerr << RED "Error while polling" RESET << std::endl;
+      // std::cerr << RED "Error while polling" RESET << std::endl;
+      printLog(ERROR_LOG, SYSTEM, "Error while polling");
       break;
     }
     for (size_t i = 0; i < _pollFds.size(); ++i) {
@@ -152,7 +153,7 @@ void Server::signalHandler(int signal) {
       message = "SIGINT Received";
     else
       message = "SIGQUIT Received";
-    printLog(NOTIFY_LOG, SIGNAL_LOG, message);
+    printLog(NOTIFY_LOG, SIGNAL, message);
   }
 }
 
@@ -172,9 +173,9 @@ void Server::closeServer(void) {
     // std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected"
     // RESET
     //           << std::endl;
-    std::ostringstream context;
-    context << "fd" << _socketFd;
-    printLog(NOTIFY_LOG, context.str(), "Server disconnected");
+    std::ostringstream oss;
+    oss << "fd" << _socketFd << ": Server disconnected";
+    printLog(NOTIFY_LOG, SYSTEM, oss.str());
     close(_socketFd);
     _socketFd = -1;
   }
@@ -197,12 +198,12 @@ void Server::acceptNewClient(void) {
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
     // std::cerr << RED "Failed to accept new client" RESET << std::endl;
-    printLog(ERROR_LOG, SYSTEM_LOG, "Failed to accept new client");
+    printLog(ERROR_LOG, SYSTEM, "Failed to accept new client");
     return;
   }
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
     // std::cerr << "fcntl() failed" << std::endl;
-    printLog(ERROR_LOG, SYSTEM_LOG, "fcntl() failed");
+    printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
     return;
   }
 
@@ -223,9 +224,11 @@ void Server::acceptNewClient(void) {
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
 
-  std::ostringstream context;
-  context << "fd" << newClientFd;
-  printLog(NOTIFY_LOG, context.str(), "New client connected. Waiting for authentification");
+  std::ostringstream oss;
+  oss << "fd" << newClientFd 
+      << ": New client connected from " << clientIp 
+      << ". Waiting for authentification.";
+  printLog(NOTIFY_LOG, SYSTEM, oss.str());
 }
 
 void Server::closeClient(int fd) {
@@ -234,9 +237,9 @@ void Server::closeClient(int fd) {
     // std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
     //           << std::endl;
 
-    std::ostringstream context;
-    context << "fd" << fd;
-    printLog(NOTIFY_LOG, context.str(), "Client Disconnected");
+    std::ostringstream oss;
+    oss << "fd" << fd << ": Client disconnected";
+    printLog(NOTIFY_LOG, SYSTEM, oss.str());
   }
 }
 
@@ -330,38 +333,62 @@ bool Server::channelExists(const std::string &channel) {
 /*       Server log                                                           */
 /*============================================================================*/
 
-void Server::printLog(eLogLevel level, const std::string &context,
+std::string logContext(eLogContext context);
+
+void Server::printLog(eLogLevel level, eLogContext context,
                       const std::string &message) {
   char timeStamp[20];
   time_t now = time(&now);
   struct tm tp = *localtime(&now);
   std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d %H:%M:%S", &tp);
-  std::cout << "[" << timeStamp << "]";
+  std::ostringstream logHeader;
+ logHeader << "[" << timeStamp << "]";
 
-  std::ostringstream logLevel;
-  std::ostringstream contextLavel;
-  contextLavel << "[" << context << "] ";
   switch (level) {
     case DEBUG_LOG:
 // #ifdef DEBUG
-      std::cout << CYAN " DEBUG   " RESET << contextLavel.str() << message
-      << std::endl;
+      std::cout << logHeader.str() << CYAN " DEBUG   " RESET
+      << logContext(context) << message << std::endl;
       return;
 // #endif
     case INFO_LOG:
-      logLevel << GREEN << " INFO    " << RESET;
+     logHeader << GREEN " INFO    " RESET;
       break;
     case NOTIFY_LOG:
-      logLevel << BLUE << " NOTICE  " << RESET;
+     logHeader << BLUE << " NOTICE  " << RESET;
       break;
     case WARNING_LOG:
-      logLevel << BRIGHT_YELLOW << " WARNING " << RESET;
+     logHeader << BRIGHT_YELLOW << " WARNING " << RESET;
       break;
     case ERROR_LOG:
-      logLevel << RED << " ERROR   " << RESET;
+     logHeader << RED << " ERROR   " << RESET;
       break;
     default:
       return;
   }
-  std::cout << logLevel.str() << contextLavel.str() << message << std::endl;
+  if (level == INFO_LOG || level == NOTIFY_LOG)
+    std::cout << logHeader.str() << logContext(context) << message << std::endl;
+  else if (level == WARNING_LOG || level == ERROR_LOG)
+    std::cerr << logHeader.str() << logContext(context) << message << std::endl;
+}
+
+std::string logContext(eLogContext context){
+  switch (context) {
+    case SYSTEM:
+      return SYSTEM_LOG;
+    case SIGNAL:
+      return SIGNAL_LOG;
+    case PARSER:
+      return PARSER_LOG;
+    case AUTH:
+      return AUTH_LOG;
+    case COMMAND:
+      return COMMAND_LOG;
+    case CLIENT:
+      return CLIENT_LOG;
+    case CHANNEL:
+      return CHANNEL_LOG;
+    case REPLY:
+      return REP_LOG;
+  }
 }

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/15 23:47:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:43:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     std::ostringstream oss;
     oss << "Command: " MAGENTA << command << RESET " | Message: " MAGENTA 
         << argument << RESET;
-    printLog(DEBUG_LOG, PARSER_LOG, oss.str());
+    printLog(DEBUG_LOG, PARSER, oss.str());
 
     if (command == "QUIT") {
       quit(argument, client, &_clients);
@@ -161,7 +161,7 @@ void Server::handleClientMessage(int fd) {
     // std::cerr << RED "Error while receiving message" RESET << std::endl;
     std::ostringstream oss;
     oss << "fd" << fd << ": Error occurred while receiving a message.";
-    Server::printLog(ERROR_LOG, CLIENT_LOG, oss.str());
+    Server::printLog(ERROR_LOG, CLIENT, oss.str());
     return;
   } else if (valread == 0) {
     // std::cout << "Client " << fd << " disconnected" << std::endl;
@@ -192,7 +192,7 @@ void Server::handleClientMessage(int fd) {
   std::ostringstream oss;
   oss << _clients[fd].getNickname() << " (fd" << fd << ") sent a message: "
       << msgBuf;
-  printLog(INFO_LOG, CLIENT_LOG, oss.str());
+  printLog(INFO_LOG, CLIENT, oss.str());
 
   Client &client = _clients[fd];
   if (client.isAccepted() == false) {
@@ -223,8 +223,8 @@ void Server::handleCommand(const std::string &command,
     who(_clients.at(fd), argument);
   } else if (command == "LIST") {
     list(_clients.at(fd), argument);
-  } else if (command == "NOTICE") {
-    notice(fd, argument);
+  // } else if (command == "NOTICE") {
+  //   notice(fd, argument);
   } else if (command == "NICK") {
     Parser::verifyNick(argument, &_clients[fd], &_clients);
   } else if (command == "USER") {

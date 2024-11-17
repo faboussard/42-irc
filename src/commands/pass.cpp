@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/15 21:55:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 18:12:30 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,14 @@ void logPassAuthFailed(const Client &client) {
       << "): Password authentication failed. " 
       << remainingAttempts << " attempt(s) remaining.";
   if (remainingAttempts == 0)
-    Server::printLog(WARNING_LOG, AUTH_LOG, oss.str());
+    Server::printLog(WARNING_LOG, AUTH, oss.str());
   else
-    Server::printLog(NOTIFY_LOG, AUTH_LOG, oss.str());
+    Server::printLog(NOTIFY_LOG, AUTH, oss.str());
 }
 
 void logPassAuthSuccess(const Client &client) {
-  std::ostringstream oss;
+  std::ostringstream oss;  
   oss << client.getNickname() << " (fd" << client.getFd() 
       << "): Password authentication successful";
-  Server::printLog(INFO_LOG, AUTH_LOG, oss.str());
+  Server::printLog(INFO_LOG, AUTH, oss.str());
 }

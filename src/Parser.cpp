@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/15 15:31:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 17:11:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ commandVectorPairs Parser::parseCommandIntoPairs(const std::string& command) {
     // std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
     std::ostringstream oss;
     oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN << pair.second << RESET;
-    Server::printLog(DEBUG_LOG, PARSER_LOG, oss.str());
+    Server::printLog(DEBUG_LOG, PARSER, oss.str());
     result.push_back(pair);
   }
   return (result);

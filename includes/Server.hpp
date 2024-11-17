@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 19:03:37 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:42:44 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,14 +75,26 @@ enum eLogLevel {
   ERROR_LOG 
 };
 
+enum eLogContext {
+  SYSTEM,
+  SIGNAL,
+  PARSER,
+  COMMAND,
+  AUTH,
+  CLIENT,
+  CHANNEL,
+  REPLY
+};
+
 /* log contexts */
-#define SYSTEM_LOG "System"
-#define SIGNAL_LOG "Signal"
-#define PARSER_LOG "Parser"
-#define AUTH_LOG "Auth"
-#define CLIENT_LOG "Client"
-#define CHANNEL_LOG "Channel"
-#define REP_LOG "Reply"
+#define SYSTEM_LOG "[System] "
+#define SIGNAL_LOG "[Signal] "
+#define PARSER_LOG "[Parser] "
+#define COMMAND_LOG "[Command] "
+#define AUTH_LOG "[Auth] "
+#define CLIENT_LOG "[Client] "
+#define CHANNEL_LOG "[Channel] "
+#define REP_LOG "[Reply] "
 
 class Server {
  private:
@@ -119,7 +131,8 @@ class Server {
   Channel *findChannelByName(const std::string &name);
   Client *findClientByNickname(const std::string &nickname);
 
-  static void printLog(eLogLevel level, const std::string &context,
+  /*  Log */
+  static void printLog(eLogLevel level, eLogContext context,
                       const std::string &message);
 
  private:
@@ -221,9 +234,6 @@ class Server {
   void list(const Client &client, const std::string &argument);
   void listAllChannels(int fd, const std::string &nick);
   void listChannels(const stringVector &channels, const Client &client);
-
-  /*-------- NOTICE --------*/
-  void notice(int fd, const std::string &arg);
 
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);

@@ -24,7 +24,7 @@ HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils \
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
        pass nick user \
-	   invite join kick list mode notice part ping privmsg quit topic who \
+	   invite join kick list mode part ping privmsg quit topic who \
 		# joinTest generalTest \ 
 
 # ---------------------------------- Répertoires ----------------------------- #

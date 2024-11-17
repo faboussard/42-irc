@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/15 15:37:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:24:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,6 @@ bool Parser::verifyNick(const std::string &nick, Client *client,
   std::ostringstream oss;
   oss << client->getNickname() << " (fd" << client->getFd()
       << "): Nickname validated";
-  Server::printLog(INFO_LOG, AUTH_LOG, oss.str());
+  Server::printLog(INFO_LOG, CLIENT, oss.str());
   return (true);
 }

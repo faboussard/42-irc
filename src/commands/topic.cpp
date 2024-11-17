@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 16:59:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:31:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,9 @@
 void Server::topic(int fd, const std::string &arg) {
   Client &client = _clients.at(fd);
 #ifdef DEBUG
-  std::cout << "[TOPIC] Command received from " << client.getNickname()
-  << std::endl;
+  std::ostreamstring oss;
+  oss << "TOPIC: Command received from " << client.getNickname();
+  printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
   if (arg.empty()) {
     send461NeedMoreParams(client, "TOPIC");
@@ -74,12 +75,15 @@ bool Server::parseTopicParams(const std::string &arg, stringVector *params,
     return (false);
   }
 #ifdef DEBUG
-  std::cout << "[TOPIC] Channel: " << channel << " / Topic before trim: "
-            << topic << std::endl;
+  std::ostreamstring oss;
+  oss << "TOPIC: Channel: " << channel << " / Topic before trim: " << topic;
+  printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
   topic.erase(0, topic.find_first_not_of(":"));
 #ifdef DEBUG
-  std::cout << "[TOPIC] Topic after trim: " << topic << std::endl;
+  oss.clear();
+  oss << "TOPIC: Topic after trim: " << topic;
+  printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
   if (topic.empty())
     topic = "";

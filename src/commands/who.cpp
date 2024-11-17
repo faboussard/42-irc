@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 13:39:28 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:35:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,16 @@
 void Server::who(const Client &client, const std::string &arg) {
   if (arg.empty()) {
 #ifdef DEBUG
-    std::cout << "Listing all clients for each Channel..." << std::endl;
+    std::ostringstream oss;
+    oss << "WHO: Listing all clients for each Channel";
+    printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
     channelsMap::iterator itEnd = _channels.end();
     for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
 #ifdef DEBUG
-      std::cout << "Listing all clients for " << it->first << "..."
-                << std::endl;
+      oss.clear();
+      oss << "WHO: Listing all clients for " << it->first;
+      printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
       sendClientsListInChannel(client, it->second);
     }
@@ -35,7 +38,9 @@ void Server::who(const Client &client, const std::string &arg) {
   } else {
     if (channelExists(arg)) {
 #ifdef DEBUG
-      std::cout << "Listing all clients for " << arg << "..." << std::endl;
+      oss.clear();
+      oss << "WHO: Listing all clients for " << arg;
+      printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
       Channel &channel = _channels.at(arg.substr(1));
       sendClientsListInChannel(client, channel);
@@ -50,15 +55,13 @@ void Server::sendClientsListInChannel(const Client &client,
   const clientPMap &clientsInChannel = channel.getChannelClients();
   clientPMap::const_iterator itEnd = clientsInChannel.end();
 #ifdef DEBUG
-  std::cout << "Number of clients in " << channel.getNameWithPrefix() << ": "
-            << clientsInChannel.size() << std::endl;
+  std::ostringstream oss;
+  oss << "WHO: Number of clients in " << channel.getNameWithPrefix() << ": "
+      << clientsInChannel.size();
+  printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
   for (clientPMap::const_iterator it = clientsInChannel.begin(); it != itEnd;
        ++it) {
-#ifdef DEBUG
-    std::cout << "Sending WHO reply for " << it->second->getNickname() << "..."
-              << std::endl;
-#endif
     send352Whoreply(client, *it->second, channel);
   }
   send315EndOfWho(client, channel);
