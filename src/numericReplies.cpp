@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/17 21:33:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 09:31:30 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,6 +296,12 @@ void send405TooManyChannels(const Client &client) {
   //   throw std::runtime_error(RUNTIME_ERROR);
   // Server::printLog(INFO_LOG, REPLY, message.erase(message.size() - 2));
   sendNumericReply(client.getFd(), &message);
+}
+
+void send407TooManyTargets(const Client &client) {
+  std::string message = _407_ERR_TOOMANYTARGETS(client.getNickname());
+  if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
 }
 
 void send409NoOrigin(const Client &client) {

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 21:36:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 09:35:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ bool Server::isChannelValid(const std::string &channelToCheck,
 }
 
 void Server::processJoinRequest(int fd, Client *client,
-                                const std::string &channelName,
+                                const std::string &channelNameWithoutPrefix,
                                 const stringVector &keys, size_t channelIndex) {
   // si le channel n'existe pas on l'ajoute
 #ifdef DEBUG
@@ -140,12 +140,12 @@ void Server::processJoinRequest(int fd, Client *client,
   oss << "JOIN: Join request processing for channel " << channelName;
   printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
-  if (_channels.find(channelName) == _channels.end()) {
-    addChanneltoServerIfNoExist(channelName);
-    _channels.at(channelName).addOperator(client);
+  if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
+    addChanneltoServerIfNoExist(channelNameWithoutPrefix);
+    _channels.at(channelNameWithoutPrefix).addOperator(client);
   }
 
-  Channel &channel = _channels.at(channelName);
+  Channel &channel = _channels.at(channelNameWithoutPrefix);
   bool keyHandled = false;
   if (channelIndex < keys.size() && !keys[channelIndex].empty()) {
     if (handleKey(client, channel, keys[channelIndex])) {
@@ -154,18 +154,18 @@ void Server::processJoinRequest(int fd, Client *client,
   }
   if (keyHandled || keys.empty()) {
     const clientPMap &clientsInChannel =
-        _channels[channelName].getChannelClients();
-    Channel &channel = _channels.at(channelName);
+        _channels[channelNameWithoutPrefix].getChannelClients();
+    Channel &channel = _channels.at(channelNameWithoutPrefix);
     // si le client n'est pas déjà dans le channel
     std::string nick = client->getNickname();
     if (clientsInChannel.find(fd) == clientsInChannel.end()) {
       broadcastInChannel(*client, channel, "JOIN", "say hello!");
       client->incrementChannelsCount();
       channel.addClientToChannelMap(client);
-      sendJoinMessageToClient(fd, nick, channelName, *client);
-      send353Namreply(*client, _channels[channelName]);
-      send366Endofnames(*client, _channels[channelName]);
-      // broadcastJoinMessage(fd, nick, channelName);
+      sendJoinMessageToClient(fd, nick, channelNameWithoutPrefix, *client);
+      send353Namreply(*client, channel);
+      send366Endofnames(*client, channel);
+      // broadcastJoinMessage(fd, nick, channelNameWithoutPrefix);
     }
   }
 }

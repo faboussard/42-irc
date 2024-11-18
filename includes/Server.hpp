@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 21:39:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 09:26:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,13 +199,6 @@ class Server {
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
 
-  /*-------- KICK --------*/
-  void kick(int fd, const std::string &arg);
-  void parseKickParams(std::string *param, const Client &client,
-                       const std::string &channelName,
-                       const std::string &targetNick,
-                       const std::string &reason);
-
   /*-------- INVITE --------*/
   void invite(int fd, const std::string &arg);
   bool inviteParamsValid(int invitingClientFd, const std::string &invitedNick,
@@ -235,8 +228,27 @@ class Server {
   void listAllChannels(int fd, const std::string &nick);
   void listChannels(const stringVector &channels, const Client &client);
 
+  /*-------- KICK --------*/
+  void kick(int fd, const std::string &arg);
+  void parseKickParams(std::string *param, const Client &client,
+                       const std::string &channelName,
+                       const std::string &targetNick,
+                       const std::string &reason);
+
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);
+  void broadcastToOperatorsOnly(const Client &sender, const Channel &channel,
+                                const std::string &command,
+                                const std::string &content);
+  void sendPrivmsgToClient(const Client &sender, const Client &receiver,
+                           const std::string &message);
+  void broadcastToAllOperators(const Client &sender, const std::string &command,
+                               const std::string &content);
+  bool parsePrivmsgArguments(const std::string &arg, const Client &client,
+                      std::vector<std::string> *targets, std::string *message);
+
+  bool validPrivmsgTargets(const std::string &arg, const Client &client,
+                    stringVector *targets);
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);

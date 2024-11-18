@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 21:33:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 09:30:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,8 +224,6 @@ void Server::handleCommand(const std::string &command,
     who(_clients.at(fd), argument);
   } else if (command == "LIST") {
     list(_clients.at(fd), argument);
-  // } else if (command == "NOTICE") {
-  //   notice(fd, argument);
   } else if (command == "NICK") {
     Parser::verifyNick(argument, &_clients[fd], &_clients);
   } else if (command == "USER") {

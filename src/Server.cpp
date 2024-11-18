@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 22:05:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 09:32:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ Server::Server(int port, const std::string &password)
 
 Channel *Server::findChannelByName(const std::string &name) {
   channelsMap::iterator it = _channels.find(name);
-  if (it == _channels.end()) return (NULL);
+  if (it == _channels.end())
+    return (NULL);
   return (&it->second);
 }
 
@@ -255,9 +256,7 @@ void Server::clearClient(int fd) {
     //     it->second.getChannelClients().end())
     it->second.checkAndremoveClientFromTheChannel(fd);
   }
-
   closeClient(fd);
-
   for (size_t i = 0; i < _pollFds.size(); i++) {
     if (_pollFds[i].fd == fd) {
       _pollFds.erase(_pollFds.begin() + i);
@@ -266,7 +265,6 @@ void Server::clearClient(int fd) {
   }
   // if (_clients.at(fd).getChannelsCount() > 0) {  // Decommente after merge
   // join & part
-
   _clients.erase(fd);
 }
 
@@ -284,7 +282,7 @@ void Server::sendConnectionMessage(const Client &client) const {
 }
 
 /*============================================================================*/
-/*       Clients management                                                   */
+/*       Broadcast                                                            */
 /*============================================================================*/
 
 // void Server::sendToAllClients(const std::string &message) {
@@ -294,15 +292,28 @@ void Server::sendConnectionMessage(const Client &client) const {
 //   }
 // }
 
-void Server::broadcastInChannel(const Client &client, const Channel &channel,
+void Server::broadcastInChannel(const Client &sender, const Channel &channel,
                                 const std::string &command,
                                 const std::string &content) {
-  std::string message = ":" + client.getNickname() + " " + command + " " +
+  std::string message = ":" + sender.getNickname() + " " + command + " " +
                         channel.getNameWithPrefix() + " :" + content + "\r\n";
   const clientPMap &allClients = channel.getChannelClients();
   clientPMap::const_iterator itEnd = allClients.end();
   for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
-    it->second->receiveMessage(message);
+    if (it->first != sender.getFd()) it->second->receiveMessage(message);
+  }
+}
+
+void Server::broadcastToOperatorsOnly(const Client &sender,
+                                      const Channel &channel,
+                                      const std::string &command,
+                                      const std::string &content) {
+  std::string message = ":" + sender.getNickname() + " " + command + " " +
+                        channel.getNameWithPrefix() + " :" + content + "\r\n";
+  const clientPMap &operators = channel.getChannelOperators();
+  clientPMap::const_iterator itEnd = operators.end();
+  for (clientPMap::const_iterator it = operators.begin(); it != itEnd; ++it) {
+    if (it->first != sender.getFd()) it->second->receiveMessage(message);
   }
 }
 

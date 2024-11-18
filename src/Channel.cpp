@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 22:03:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 09:26:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,19 +294,19 @@ void Channel::deactivateLimitMode(void) {
 /*       Others                                                               */
 /*============================================================================*/
 
-// void Channel::receiveMessageInTheChannel(int fd) {
-//   if (_channelClients.find(fd) != _channelClients.end()) {
-//     std::string message = _channelClients[fd]->shareMessage();
-//     if (!message.empty()) {
-//       std::cout << "Message received in channel " << _name << " from client "
-//                 << fd << ": " << message << std::endl;
-//       clientPMap::iterator itBegin = _channelClients.begin();
-//       clientPMap::iterator itEnd = _channelClients.end();
-//       for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {
-//         if (it->first != fd) {
-//           it->second->receiveMessage(message);
-//         }
-//       }
-//     }
-//   }
-// }
+void Channel::receiveMessageInTheChannel(int fd) {
+  if (_channelClients.find(fd) != _channelClients.end()) {
+    std::string message = _channelClients[fd]->shareMessage();
+    if (!message.empty()) {
+      std::cout << "Message received in channel " << _name << " from client "
+                << fd << ": " << message << std::endl;
+      clientPMap::iterator itBegin = _channelClients.begin();
+      clientPMap::iterator itEnd = _channelClients.end();
+      for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {
+        if (it->first != fd) {
+          it->second->receiveMessage(message);
+        }
+      }
+    }
+  }
+}
