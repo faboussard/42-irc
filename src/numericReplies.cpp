@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 14:31:17 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 08:43:39 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,18 +62,9 @@ void sendWelcome(int fd, const std::string &nick) {
 /*       Users related replies                                                */
 /*============================================================================*/
 
-// void send221Umodeis(const Client &client) {
-//   std::string nick = client.getNickname();
-//   std::string uModes = client.getUserModesFlag();
-//   std::string message = _221_RPL_UMODEIS(nick, uModes);
-//   if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
-//     throw std::runtime_error(RUNTIME_ERROR);
-// }
-
 void send315EndOfWho(const Client &client, const Channel &channel) {
   std::string message =
       _315_RPL_ENDOFWHO(client.getNickname(), channel.getNameWithPrefix());
-  
   if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
@@ -233,6 +224,12 @@ void send404CannotSendToChan(const Client &client, const Channel &channel) {
 void send405TooManyChannels(const Client &client) {
   std::string message = _405_ERR_TOOMANYCHANNELS(client.getNickname());
   if (send(client.getFd(), message.c_str(), message.size(), MSG_NOSIGNAL) == -1)
+    throw std::runtime_error(RUNTIME_ERROR);
+}
+
+void send407TooManyTargets(const Client &client) {
+  std::string message = _407_ERR_TOOMANYTARGETS(client.getNickname());
+  if (send(client.getFd(), message.c_str(), message.size(), 0) == -1)
     throw std::runtime_error(RUNTIME_ERROR);
 }
 

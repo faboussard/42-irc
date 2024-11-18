@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:55:24 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 13:02:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 08:42:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ void Config::parseConfigFile(const std::string& pathToConfigFile) {
           if (isValidConfigValue(key, keyStr, value))
             _parameters.at(key) = value;
         } else {
-          if (key == USERMODES)  // May be modified after deciding user modes to support
+          if (key == USERMODES)
             continue;
           std::cerr << MISSING_PARAM(keyStr) << std::endl;
         }

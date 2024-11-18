@@ -189,60 +189,56 @@ NExT PR
 _**Implemented Features:**_
 
 
-1. kick command ready - explanation of command in file of same name 
-i call on part function (quit channel) because i find it funny but it can be removed
-kick #k nick bla
-:nick KICK #k :bla
-:nick PART #k : say goodbye!
+1. primsg command enhanced
+ -> to be used with the command PRVMSG
+ -> used by itself when users talk in a channel ! 
 
-Tests conducted :
+// PRIVMSG <target>{,<target>} <:text to be sent>
 
-join #s
-:admin JOIN :#s
-:ircserv.localhost 331 admin #s :No topic is set
-:ircserv.localhost 353 admin #s :@admin 
-:ircserv.localhost 366 admin #s :End of \NAMES list
+//<target> is the nickname of a client or the name of a channel.
 
+@ to be handled, not $. 
+PArsing made to avoid a mixmatch of client, channels OPchannels targets
 
-kick #s
-:ircserv.localhost 461 admin KICK :Not enough parameters
+Rest of explanation and numeric replies details are in the file privmsg.cpp
 
-kick
-:ircserv.localhost 461 admin KICK :Not enough parameters
+2. 
+added numeric reply: 
+void send407TooManyTargets(const Client &client) 
 
-kick #s adm
-:ircserv.localhost 401 admin adm :No such nick/channel
+3. txts conducted :
 
-kick #s nick
-:ircserv.localhost 441 admin nick #s :They aren't on that channel
+privmsg
+:ircserv.localhost 461 nick PRIVMSG :Not enough parameters
 
-:nick JOIN #s : say hello!
-kick #s nick :jojo
-:nick KICK #s :jojo
-:nick PART #s : say goodbye!
+ privmsg #s :haha
+:nick PRIVMSG #s :haha
 
-:nick JOIN #s : say hello!
-kick #s nick jojo
-:nick KICK #s :jojo
-:nick PART #s : say goodbye!
+privmsg nick,admin :gg
+:nick PRIVMSG nick :gg
 
+privmsg @#s,@#h :g
+:ircserv.localhost 401 nick #h :No such nick/channel
 
+privmsg #s,admin :h
+:ircserv.localhost 407 nick :Too many targets
 
-2. use of general function made by yuko  broadcastInChannel for join and part.:
+privmsg #@s, "h
+:ircserv.localhost 412 nick :No text to send
 
-now i am using the function broadcastInChannel for join and part :   
-broadcastInChannel(*client, *channel, "PART", " say goodbye!");
+privmsg #@s :o
+:ircserv.localhost 401 nick #@s :No such nick/channel
 
-Function called before or after the client's join/leave to avoid them receiving their own message.
+privmsg admin,    ,nick :p
+:ircserv.localhost 412 nick :No text to send
 
+privmsg #1,#2,#3,#4,#5 :g
+:ircserv.localhost 407 admin :Too many targets
 
-3. Server.hpp - function added: 
+4. CHAN_OP = "@" becomes CHAN_OP = '@' (char)
+numeric replies impacted for one function
 
-Client *findClientByNickname(const std::string &nickname);
-
-4. some functions were put in comments if not used: cleaning to be done at the end of the project ( with clion that highlights the unused functions)
-
-5. valgrind OK 
+5. notice not to be handled - removed 
 
 
 DEBUG GDB

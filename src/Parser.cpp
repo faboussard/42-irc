@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:54:08 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 08:43:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,6 @@ static std::string trimBeginWithChar(const std::string& str, const char c) {
 
 std::vector<std::string> split(const std::string& str,
                                const std::string& delim) {
-
     std::vector<std::string> result;
     size_t start = 0;
     size_t end = str.find(delim);

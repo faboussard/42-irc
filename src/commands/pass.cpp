@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/13 19:15:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 08:43:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include "../../includes/colors.hpp"
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
-
   if (client->isPasswordGiven()) {
     send462AlreadyRegistered(*client);
     return (false);
