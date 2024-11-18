@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/13 19:15:52 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 08:40:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,9 +245,10 @@ void Channel::receiveMessageInTheChannel(int fd) {
     if (!message.empty()) {
       std::cout << "Message received in channel " << _name << " from client "
                 << fd << ": " << message << std::endl;
-      clientPMap::iterator itBegin = _channelClients.begin();
+      // clientPMap::iterator itBegin = _channelClients.begin();
       clientPMap::iterator itEnd = _channelClients.end();
-      for (clientPMap::iterator it = itBegin; it != itEnd; ++it) {
+      for (clientPMap::iterator it = _channelClients.begin(); it != itEnd;
+           ++it) {
         if (it->first != fd) {
           it->second->receiveMessage(message);
         }
