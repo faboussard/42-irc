@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 15:31:04 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 15:52:26 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,9 +172,9 @@ class Server {
   bool isLeaveAllChannelsRequest(const std::string &param);
   bool isChannelValid(const std::string &channelToCheck, const Client &client);
 
-  void joinChannel(const std::string &param, int fd);
+  void joinChannel(int fd, const std::string &param);
 
-  void addChanneltoServerIfNoExist(const std::string &channelName);
+  void addChanneltoServer(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
