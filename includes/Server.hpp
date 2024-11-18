@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 08:29:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:34:37 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,8 +147,6 @@ class Server {
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
-  void broadcastJoinMessage(int fd, const std::string &nick,
-                            const std::string &channelName);
   void processJoinRequest(int fd, Client *client,
                           const std::string &channelName,
                           const stringVector &keys, size_t channelIndex);
@@ -160,8 +158,6 @@ class Server {
   /*-------- PART --------*/
   void quitAllChannels(int fd);
   void quitChannel(int fd, Channel *channel, Client *client);
-  void broadcastPartMessage(int fd, const std::string &nick,
-                            const std::string &channelName);
   void sendPartMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName);
 
@@ -199,10 +195,9 @@ class Server {
 
   /*-------- KICK --------*/
   void kick(int fd, const std::string &arg);
-  void parseKickParams(std::string *param, const Client &client,
-                       const std::string &channelName,
-                       const std::string &targetNick,
-                       const std::string &reason);
+  void parseKickParams(const std::string &param, const Client &client,
+                             std::string *channelName, std::string *targetNick,
+                             std::string *reason);
 
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);
@@ -211,8 +206,6 @@ class Server {
                                 const std::string &content);
   void sendPrivmsgToClient(const Client &sender, const Client &receiver,
                            const std::string &message);
-  void broadcastToAllOperators(const Client &sender, const std::string &command,
-                               const std::string &content);
   bool parsePrivmsgArguments(const std::string &arg, const Client &client,
                       std::vector<std::string> *targets, std::string *message);
 

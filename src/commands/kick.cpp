@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/15 18:44:25 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:35:17 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,29 +16,36 @@
 
 #include "../../includes/Server.hpp"
 
+void Server::parseKickParams(const std::string &param, const Client &client,
+                             std::string *channelName, std::string *targetNick,
+                             std::string *reason) {
+  std::istringstream iss(param);
+
+  std::getline(iss, *channelName, ' ');
+  std::getline(iss, *targetNick, ' ');
+  if (targetNick->empty()) {
+    send461NeedMoreParams(client, "KICK");
+    return;
+  }
+  if (iss.rdbuf()->in_avail() > 0) {
+    std::getline(iss >> std::ws, *reason);
+  }
+  if (reason->length() >= gConfig->getLimit(KICKLEN)) {
+    *reason = reason->substr(0, gConfig->getLimit(KICKLEN));
+  }
+  if ((*reason)[0] == ':') {
+    *reason = reason->substr(1);
+  }
+}
+
 void Server::kick(int fd, const std::string &param) {
   Client &client = _clients.at(fd);
   if (param.empty()) {
     send461NeedMoreParams(client, "KICK");
     return;
   }
-  std::istringstream iss(param);
   std::string channelName, targetNick, reason;
-  std::getline(iss, channelName, ' ');
-  std::getline(iss, targetNick, ' ');
-  if (targetNick.empty()) {
-    send461NeedMoreParams(client, "KICK");
-    return;
-  }
-  if (iss.rdbuf()->in_avail() > 0) {
-    std::getline(iss >> std::ws, reason);
-  }
-  if (reason.length() >= gConfig->getLimit(KICKLEN)) {
-    reason = reason.substr(0, gConfig->getLimit(KICKLEN));
-  }
-  if (reason[0] == ':') {
-    reason = reason.substr(1);
-  }
+  parseKickParams(param, client, &channelName, &targetNick, &reason);
 #ifdef DEBUG
   std::cout << "[KICK] Channel: " << channelName << " / Target: " << targetNick
             << " / Reason: " << reason << std::endl;

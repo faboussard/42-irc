@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 17:04:29 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 14:29:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,15 +72,6 @@ bool Server::isChannelValid(const std::string &channelToCheck,
   std::cout << std::endl << std::endl;
 
   std::cout << "channel to check " << channelToCheck << std::endl;
-#endif
-// #ifdef DEBUG
-//     std::cout << std::endl << std::endl;
-
-//     std::cout << "channelToCheck.length() " << channelToCheck.length() <<
-//     std::endl; std::cout << " gConfig->getLimit(channelen)" <<
-//     gConfig->getLimit(CHANNELLEN)  << std::endl;
-// #endif
-#ifdef DEBUG
   std::cout << std::endl << std::endl;
 
   std::cout << "client.getChannelsCount() " << client.getChannelsCount()
@@ -106,7 +97,6 @@ bool Server::isChannelValid(const std::string &channelToCheck,
 void Server::processJoinRequest(int fd, Client *client,
                                 const std::string &channelNameWithoutPrefix,
                                 const stringVector &keys, size_t channelIndex) {
-  // si le channel n'existe pas on l'ajoute
 #ifdef DEBUG
   std::cout << "i am in process join request function " << std::endl;
 #endif
@@ -114,7 +104,6 @@ void Server::processJoinRequest(int fd, Client *client,
     addChanneltoServerIfNoExist(channelNameWithoutPrefix);
     _channels.at(channelNameWithoutPrefix).addOperator(client);
   }
-
   Channel &channel = _channels.at(channelNameWithoutPrefix);
   bool keyHandled = false;
   if (channelIndex < keys.size() && !keys[channelIndex].empty()) {
@@ -125,17 +114,13 @@ void Server::processJoinRequest(int fd, Client *client,
   if (keyHandled || keys.empty()) {
     const clientPMap &clientsInChannel =
         _channels[channelNameWithoutPrefix].getChannelClients();
-    Channel &channel = _channels.at(channelNameWithoutPrefix);
-    // si le client n'est pas déjà dans le channel
-    std::string nick = client->getNickname();
     if (clientsInChannel.find(fd) == clientsInChannel.end()) {
-      broadcastInChannel(*client, channel, "JOIN", "say hello!");
-      client->incrementChannelsCount();
       channel.addClientToChannelMap(client);
-      sendJoinMessageToClient(fd, nick, channelNameWithoutPrefix, *client);
+      client->incrementChannelsCount();
+      sendJoinMessageToClient(fd, client->getNickname(), channelNameWithoutPrefix, *client);
       send353Namreply(*client, channel);
       send366Endofnames(*client, channel);
-      // broadcastJoinMessage(fd, nick, channelNameWithoutPrefix);
+      broadcastInChannel(*client, channel, "JOIN", "say hello!");      
     }
   }
 }
@@ -171,21 +156,3 @@ void Server::sendJoinMessageToClient(int fd, const std::string &nick,
   else
     send332Topic(client, _channels[channelName]);
 }
-
-// void Server::broadcastJoinMessage(int fd, const std::string &nick,
-//                                   const std::string &channelName) {
-//   std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
-
-//   clientPMap clientsInChannel =
-//       findChannelByName(channelName).getChannelClients();
-//   clientPMap::iterator itEnd = clientsInChannel.end();
-//   clientPMap::iterator it = clientsInChannel.begin();
-//   for (; it != itEnd; ++it) {
-//     if (it->first != fd) {  // Ne pas envoyer au client qui join
-//       if (send(it->first, joinMessage.c_str(), joinMessage.length(), 0) ==
-//       -1) {
-//         throw std::runtime_error("Runtime error: send failed");
-//       }
-//     }
-//   }
-// }

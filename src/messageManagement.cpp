@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/15 13:07:21 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:35:07 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,8 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       clientIsAcceptedMessageToDelete(client, command);
 #endif
       handleCommand(command, argument, client->getFd());
-    } else if (command == "CAP") { continue;
+    } else if (command == "CAP") {
+      continue;
     } else if (command == "PASS") {
       if (isLastPass(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyPassword(argument, _password, client) == false) {
@@ -109,10 +110,10 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 }
 
 #ifdef DEBUG
-static void clientNameUserCommandMessage(
-    const Client *client, const std::string *command,
-    const std::string *argument, const int *fd) {
-
+static void clientNameUserCommandMessage(const Client *client,
+                                         const std::string *command,
+                                         const std::string *argument,
+                                         const int *fd) {
   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
   std::cout << "UserName: " << client->getUserName() << std::endl;
   std::cout << BRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
@@ -121,6 +122,9 @@ static void clientNameUserCommandMessage(
 #endif
 
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
+#ifdef DEBUG
+  std::cout << BRIGHT_GREEN << msg << RESET << std::endl;
+#endif
   commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
   int fd = client.getFd();
@@ -129,8 +133,7 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
     std::string argument = splittedPair[it].second;
     Command cmd = Parser::choseCommand(command);
     clientsMap::iterator itCli = _clients.find(fd);
-    if (itCli == _clients.end())
-      return;
+    if (itCli == _clients.end()) return;
 #ifdef DEBUG
     clientNameUserCommandMessage(&client, &command, &argument, &fd);
 #endif
@@ -174,8 +177,7 @@ void Server::handleClientMessage(int fd) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
-  if (message.empty())
-    return;
+  if (message.empty()) return;
   std::cout << "Received message from client " << fd
             << ", nickname: " << _clients[fd].getNickname() << ": " << message
             << std::endl;
