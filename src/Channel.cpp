@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 09:26:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:08:35 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,8 +136,8 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
     // std::cout << "Client " << fd << " removed from channel " << _name
     //           << std::endl;
   // } else {
-  //   std::cerr << RED "Client " RESET << fd << " not found in channel " << _name
-  //             << RESET << std::endl;
+  //   std::cerr << RED "Client " RESET << fd << " not found in channel "
+  //             << _name << RESET << std::endl;
   }
 }
 

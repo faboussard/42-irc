@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 11:21:18 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:10:41 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void sendNumericReply(int fd, std::string *message) {
   }
 
   message->erase(0, message->find(' ') + 1);
-  Server::printLog(INFO_LOG, REPLY, 
+  Server::printLog(INFO_LOG, REPLY,
                    message->erase(message->find_last_not_of("\r\n")));
 }
 

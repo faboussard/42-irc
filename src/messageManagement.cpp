@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 11:27:54 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:10:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,18 +113,18 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
   }
 }
 
-#ifdef DEBUG
-static void clientNameUserCommandMessage(
-    const Client *client, const std::string *command,
-    const std::string *argument, const int *fd) {
+// #ifdef DEBUG
+// static void clientNameUserCommandMessage(
+//     const Client *client, const std::string *command,
+//     const std::string *argument, const int *fd) {
 
-  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
-  std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BBRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
-  std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
-  (void)fd;
-}
-#endif
+//   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
+//   std::cout << "UserName: " << client->getUserName() << std::endl;
+//   std::cout << BBRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
+//   std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
+//   (void)fd;
+// }
+// #endif
 
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
   commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
@@ -138,7 +138,15 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
     if (itCli == _clients.end())
       return;
 #ifdef DEBUG
-    clientNameUserCommandMessage(&client, &command, &argument, &fd);
+    // clientNameUserCommandMessage(&client, &command, &argument, &fd);
+  {
+    std::ostringstream oss;
+    oss << "Nick:" BLUE << client.getNickname() << RESET
+        << " | UName:" BLUE << client.getUserName() << RESET
+        << " | Command:" BRIGHT_YELLOW << command << RESET
+        << " | Message:" MAGENTA << argument << RESET;
+    printLog(DEBUG_LOG, PARSER, oss.str());
+  }
 #endif
     if (cmd == UNKNOWN) {
       send421UnknownCommand(client, command);
@@ -186,8 +194,8 @@ void Server::handleClientMessage(int fd) {
   if (message.empty())
     return;
   // std::cout << "Received message from client " << fd
-  //           << ", nickname: " << _clients[fd].getNickname() << ": " << message
-  //           << std::endl;
+  //           << ", nickname: " << _clients[fd].getNickname() << ": "
+  //           << message << std::endl;
   std::string msgBuf = message;
   msgBuf.erase(0, msgBuf.find_first_not_of("\n"));
   msgBuf.erase(msgBuf.find_last_not_of("\n") + 1);

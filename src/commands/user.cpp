@@ -6,9 +6,12 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 17:18:03 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:20:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <string>
+#include <vector>
 
 #include "../../includes/Parser.hpp"
 #include "../../includes/colors.hpp"
