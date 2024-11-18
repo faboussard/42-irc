@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 13:35:07 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 15:30:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void clientIsAcceptedMessageToDelete(const Client *client,
             << std::endl;
   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
   std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BRIGHT_YELLOW "Command: " << command << std::endl;
+  std::cout << BBRIGHT_YELLOW "Command: " << command << std::endl;
 }
 #endif
 // <-------------------------------------------------------------------------//
@@ -61,8 +61,12 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
   for (size_t it = 0; it < vecSize; ++it) {
     std::string command = splittedPair[it].first;
     std::string argument = splittedPair[it].second;
-    std::cout << MAGENTA "Command: " << command << std::endl;
-    std::cout << "Message: " << argument << RESET << std::endl;
+    // std::cout << MAGENTA "Command: " << command << std::endl;
+    // std::cout << "Message: " << argument << RESET << std::endl;
+    std::ostringstream oss;
+    oss << "Command: " MAGENTA << command << RESET " | Message: " MAGENTA
+        << argument << RESET;
+    printLog(DEBUG_LOG, PARSER, oss.str());
 
     if (command == "QUIT") {
       quit(argument, client, &_clients);
@@ -100,7 +104,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
         client->declareAccepted();
         sendConnectionMessage(*client);
 #ifdef TESTNUMERICR
-        testAllNumericReplies(_startTime, client, "COMMAND", "puppy");
+        testAllNumericReplies(_startTime, *client, "COMMAND", "puppy");
 #endif
       }
     } else if (client->isAccepted() == false) {
@@ -109,17 +113,18 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
   }
 }
 
-#ifdef DEBUG
-static void clientNameUserCommandMessage(const Client *client,
-                                         const std::string *command,
-                                         const std::string *argument,
-                                         const int *fd) {
-  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
-  std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
-  std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
-}
-#endif
+// #ifdef DEBUG
+// static void clientNameUserCommandMessage(
+//     const Client *client, const std::string *command,
+//     const std::string *argument, const int *fd) {
+
+//   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
+//   std::cout << "UserName: " << client->getUserName() << std::endl;
+//   std::cout << BBRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
+//   std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
+//   (void)fd;
+// }
+// #endif
 
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 #ifdef DEBUG
@@ -135,7 +140,15 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
     clientsMap::iterator itCli = _clients.find(fd);
     if (itCli == _clients.end()) return;
 #ifdef DEBUG
-    clientNameUserCommandMessage(&client, &command, &argument, &fd);
+    // clientNameUserCommandMessage(&client, &command, &argument, &fd);
+  {
+    std::ostringstream oss;
+    oss << "Nick:" BLUE << client.getNickname() << RESET
+        << " | UName:" BLUE << client.getUserName() << RESET
+        << " | Command:" BRIGHT_YELLOW << command << RESET
+        << " | Message:" MAGENTA << argument << RESET;
+    printLog(DEBUG_LOG, PARSER, oss.str());
+  }
 #endif
     if (cmd == UNKNOWN) {
       send421UnknownCommand(client, command);
@@ -157,10 +170,13 @@ void Server::handleClientMessage(int fd) {
   int valread = recv(fd, buffer, sizeof(buffer), 0);
 
   if (valread == -1) {
-    std::cerr << RED "Error while receiving message" RESET << std::endl;
+    // std::cerr << RED "Error while receiving message" RESET << std::endl;
+    std::ostringstream oss;
+    oss << "fd" << fd << ": Error occurred while receiving a message.";
+    Server::printLog(ERROR_LOG, CLIENT, oss.str());
     return;
   } else if (valread == 0) {
-    std::cout << "Client " << fd << " disconnected" << std::endl;
+    // std::cout << "Client " << fd << " disconnected" << std::endl;
     messageBuffer[fd].erase();
     clearClient(fd);
     return;
@@ -177,10 +193,18 @@ void Server::handleClientMessage(int fd) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
-  if (message.empty()) return;
-  std::cout << "Received message from client " << fd
-            << ", nickname: " << _clients[fd].getNickname() << ": " << message
-            << std::endl;
+  if (message.empty())
+    return;
+  // std::cout << "Received message from client " << fd
+  //           << ", nickname: " << _clients[fd].getNickname() << ": "
+  //           << message << std::endl;
+  std::string msgBuf = message;
+  msgBuf.erase(0, msgBuf.find_first_not_of("\n"));
+  msgBuf.erase(msgBuf.find_last_not_of("\n") + 1);
+  std::ostringstream oss;
+  oss << _clients[fd].getNickname() << " (fd" << fd << ") sent a message: "
+      << msgBuf;
+  printLog(INFO_LOG, CLIENT, oss.str());
 
   Client &client = _clients[fd];
   if (client.isAccepted() == false) {

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 09:22:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 09:38:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ class Channel {
   void addClientToChannelMap(Client *client);
   void receiveMessageInTheChannel(int fd);
   void checkAndremoveClientFromTheChannel(int fd);
-  void addClientToInvitedMap(Client *client);
+  void addClientToInvitedMap(Client *invited, const std::string &invitingNick);
   void removeClientFromInvitedMap(Client *client);
   bool isClientInChannel(int fd) const;
   bool isClientInvited(int fd) const;

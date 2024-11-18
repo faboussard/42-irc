@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 12:49:57 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 14:21:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,6 @@
 
 class Channel;
 
-// typedef struct UserModes {
-//   bool invisible;
-//   bool operatorOfServer;
-//   bool registered;
-// } _userModes;
-
 class Client {
  private:
   int _fd;
@@ -43,7 +37,6 @@ class Client {
   bool _realnameSet;
   bool _passwordGiven;
   bool _accepted;
-  // UserModes _uModes;
   uint8_t _nbPassAttempts;
   size_t _channelsCount;
 
@@ -58,8 +51,6 @@ class Client {
   const std::string& getNickname(void) const;
   const std::string& getUserName(void) const;
   const std::string& getRealName(void) const;
-  // const UserModes& getUserModes(void) const;
-  const std::string getUserModesFlag(void) const;
   bool isNicknameSet(void) const;
   bool isUsernameSet(void) const;
   bool isRealnameSet(void) const;
@@ -82,9 +73,6 @@ class Client {
   void declareAccepted(void);
   void declarePasswordGiven(void);
   void incrementNbPassAttempts(void);
-  // void setUInvisibleMode(bool isInvisible);
-  // void setUOperatorMode(bool isOperator);
-  // void setURegisteredMode(bool isRegistered);
 
   /* Messages handling */
   void receiveMessage(const std::string& message) const;

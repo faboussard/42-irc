@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:50:36 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/13 08:11:32 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/15 22:52:52 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,24 +71,13 @@ typedef std::map<eConfigKey, size_t> numParametersMap;
 #define LIMIT_USERLEN 20
 
 /* Messages */
-#define WARNING_CONFIG (std::string(YELLOW) + \
-                       "WARNING [IRC server configurations]: " \
-                       + RESET)
-#define MISSING_CONFIG_FILE (WARNING_CONFIG + \
-                            "Failed to open config file. " + \
-                            "Using default Isupport configuration." + RESET)
+#define INVALID_VALUE(key) ("Invalid value for " + key + ". " + \
+                            "Using default value.")
 
-#define INVALID_VALUE(key) (WARNING_CONFIG + \
-                            "Invalid value for " + key + ". " + \
-                            "Using default value." + RESET)
+#define NOTSUPPORTED_VALUE(key) ("Given value for " + key + \
+                                " is not supported. Using default value.")
 
-#define NOTSUPPORTED_VALUE(key) (WARNING_CONFIG + \
-                            "Given value for " + key + " is not supported. " + \
-                            "Using default value." + RESET)
-
-#define MISSING_PARAM(key) (WARNING_CONFIG + \
-                            "Missing " + key + ". " + \
-                            "Using default value." + RESET)
+#define MISSING_PARAM(key) ("Missing " + key + ". Using default value.")
 
 class Config {
  private:

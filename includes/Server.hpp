@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 13:34:37 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 15:31:04 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,35 @@ enum Command {
   UNKNOWN
 };
 
+enum eLogLevel {
+  DEBUG_LOG,
+  INFO_LOG,
+  NOTIFY_LOG,
+  WARNING_LOG,
+  ERROR_LOG
+};
+
+enum eLogContext {
+  SYSTEM,
+  SIGNAL,
+  PARSER,
+  COMMAND,
+  AUTH,
+  CLIENT,
+  CHANNEL,
+  REPLY
+};
+
+/* log contexts */
+#define SYSTEM_LOG "[System] "
+#define SIGNAL_LOG "[Signal] "
+#define PARSER_LOG "[Parser] "
+#define COMMAND_LOG "[Command] "
+#define AUTH_LOG "[Auth] "
+#define CLIENT_LOG "[Client] "
+#define CHANNEL_LOG "[Channel] "
+#define REP_LOG "[Reply] "
+
 class Server {
  private:
   static bool _signal;
@@ -91,18 +120,20 @@ class Server {
   void closeServer(void);
 
   /*  Getters */
-  Channel *findChannelByName(const std::string &name);
   // int getSocketFd() const;
   // int getPort() const;
   // const std::string &getPassword() const;
-
-  /*  Finders */
-
   //  Client &findClientByFd(int fd);
-  Client *findClientByNickname(const std::string &nickname);
-
   // const channelsMap &getChannels() const;
   // const clientsMap &getClients() const;
+
+  /*  Finders */
+  Channel *findChannelByName(const std::string &name);
+  Client *findClientByNickname(const std::string &nickname);
+
+  /*  Log */
+  static void printLog(eLogLevel level, eLogContext context,
+                      const std::string &message);
 
  private:
   /* Server Management */

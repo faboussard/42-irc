@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 14:42:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:54:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 
 #include "../includes/Config.hpp"
 #include "../includes/colors.hpp"
+#include "../includes/Server.hpp"
 
 extern Config* gConfig;
 
@@ -39,11 +40,7 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _passwordGiven(false),
       _accepted(false),
       _nbPassAttempts(0),
-      _channelsCount(0) {
-  // _uModes.invisible = false;
-  // _uModes.operatorOfServer = false;
-  // _uModes.registered = false;
-}
+      _channelsCount(0) {}
 
 /*============================================================================*/
 /*       Getters                                                              */
@@ -62,16 +59,6 @@ std::string Client::getIp(void) const { return (_ip); }
 std::string const& Client::getHostName(void) const { return (_hostName); }
 
 std::string const& Client::getRealName(void) const { return (_realName); }
-
-// UserModes const& Client::getUserModes(void) const { return (_uModes); }
-
-const std::string Client::getUserModesFlag(void) const {
-  std::string flags = "+";
-  // if (_uModes.invisible) flags += "i";
-  // if (_uModes.operatorOfServer) flags += "o";
-  // if (_uModes.registered) flags += "r";
-  return (flags);
-}
 
 bool Client::isNicknameSet(void) const { return (_nicknameSet); }
 
@@ -110,18 +97,6 @@ void Client::setIp(const std::string& ip) { _ip = ip; }
 
 void Client::setHostName(const std::string& hostname) { _hostName = hostname; }
 
-// void Client::setUInvisibleMode(bool isInvisible) {
-//   _uModes.invisible = isInvisible;
-// }
-
-// void Client::setUOperatorMode(bool isOperator) {
-//   _uModes.operatorOfServer = isOperator;
-// }
-
-// void Client::setURegisteredMode(bool isRegistered) {
-//   _uModes.registered = isRegistered;
-// }
-
 void Client::declareAccepted(void) { _accepted = true; }
 
 void Client::declarePasswordGiven(void) { _passwordGiven = true; }
@@ -134,12 +109,22 @@ void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 
 void Client::receiveMessage(const std::string& message) const {
   if (_fd != -1) {
+    std::ostringstream oss;
     if (send(_fd, message.c_str(), message.length(), MSG_NOSIGNAL) == -1) {
-      std::cerr << RED "Error while sending message to fd " << _fd << ": "
-                << strerror(errno) << RESET << std::endl;
+      // std::cerr << RED "Error while sending message to fd " << _fd << ": "
+      //           << strerror(errno) << RESET << std::endl;
+      oss << "Error while sending message to fd " << _fd << ": "
+          << strerror(errno);
+      Server::printLog(ERROR_LOG, CLIENT, oss.str());
+    } else {
+      std::string trimed = message;
+      trimed.erase(trimed.find_last_not_of("\r\n") + 1);
+      oss << "Sent to " << _nickname << ": " << trimed;
+      Server::printLog(INFO_LOG, REPLY, oss.str());
     }
   } else {
-    std::cerr << RED "Invalid file descriptor" RESET << std::endl;
+    // std::cerr << RED "Invalid file descriptor" RESET << std::endl;
+    Server::printLog(ERROR_LOG, SYSTEM, "Invalid file descriptor");
   }
 }
 
@@ -150,10 +135,16 @@ std::string Client::shareMessage(void) {
   // buffer
   //           << RESET << std::endl;
   if (bytesRead == -1) {
-    std::cerr << RED "Error while receiving message: " RESET << std::endl;
+    // std::cerr << RED "Error while receiving message: " RESET << std::endl;
+    std::ostringstream oss;
+    oss << _nickname << _fd << ": Error while receiving message";
+    Server::printLog(ERROR_LOG, CLIENT, oss.str());
     return ("");
   } else if (bytesRead == 0) {
-    std::cerr << RED "Connection closed by peer" RESET << std::endl;
+    // std::cerr << RED "Connection closed by peer" RESET << std::endl;
+    std::ostringstream oss;
+    oss << _nickname << _fd << ": Connection closed by peer";
+    Server::printLog(ERROR_LOG, CLIENT, oss.str());
     return ("");
   }
   buffer[bytesRead] = '\0';
@@ -165,23 +156,34 @@ std::string Client::shareMessage(void) {
 /*============================================================================*/
 
 void Client::incrementChannelsCount(void) {
-#ifdef DEBUG
-  std::cout << std::endl << std::endl;
-
-  std::cout << "increment _channelsCount " << _channelsCount << std::endl;
-#endif
+// #ifdef DEBUG
+//   std::cout << std::endl << std::endl;
+//   std::cout << "increment _channelsCount " << _channelsCount << std::endl;
+// #endif
   if (_channelsCount <= gConfig->getLimit(CHANLIMIT)) {
     ++_channelsCount;
+
+#ifdef DEBUG
+    std::ostringstream oss;
+    oss << _nickname << ": currently in " << _channelsCount << " channel(s)";
+    Server::printLog(DEBUG_LOG, CLIENT, oss.str());
+#endif
   }
 }
 
 void Client::decrementChannelsCount(void) {
-#ifdef DEBUG
-  std::cout << std::endl << std::endl;
+// #ifdef DEBUG
+//   std::cout << std::endl << std::endl;
 
-  std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
-#endif
+//   std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
+// #endif
   if (_channelsCount > 0) {
     --_channelsCount;
+
+#ifdef DEBUG
+    std::ostringstream oss;
+    oss << _nickname << ": currently in " << _channelsCount << " channel(s)";
+    Server::printLog(DEBUG_LOG, CLIENT, oss.str());
+#endif
   }
 }
