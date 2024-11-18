@@ -6,9 +6,12 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/12 11:54:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:20:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <string>
+#include <vector>
 
 #include "../../includes/Parser.hpp"
 #include "../../includes/colors.hpp"
@@ -85,7 +88,11 @@ bool Parser::verifyUser(const std::string &user, Client *client,
   }
   client->setUserName(fields[0]);
   client->setRealName(fields[3]);
-  std::cout << BRIGHT_YELLOW "UserName IS ACCEPTED !!!!! : "
-            << client->getUserName() << RESET << std::endl;
+  // std::cout << BBRIGHT_YELLOW "UserName IS ACCEPTED !!!!! : "
+  //           << client->getUserName() << RESET << std::endl;
+  std::ostringstream oss;
+  oss << client->getNickname() << " (fd" << client->getFd()
+      << "): User name validated";
+  Server::printLog(INFO_LOG, CLIENT, oss.str());
   return (true);
 }

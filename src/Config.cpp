@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 11:55:24 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 08:42:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 13:09:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,24 +67,20 @@ const std::string& Config::getSupportedChanModes(void) const {
 bool Config::isValidConfigValue(eConfigKey key, const std::string& keyStr,
                                 const std::string& value) {
   if (!isNumericLimitConfig(key)) {
-#ifdef DEBUG
-    std::cout << "< Value check for non numeric config > "
-              << "keyStr: " << keyStr << " value: " << value << std::endl;
-#endif
     if ((key == CASEMAPPING && value != DEFAULT_CASEMAPPING) ||
         (key == CHANMODES && value != DEFAULT_CHANMODES) ||
         (key == CHANTYPES && value != DEFAULT_CHANTYPES) ||
         (key == PREFIX && value != DEFAULT_PREFIX) ||
         (key == USERMODES && value != DEFAULT_USERMODES) ||
         (key == STATUSMSG && value != DEFAULT_STATUSMSG)) {
-      std::cerr << NOTSUPPORTED_VALUE(keyStr) << std::endl;
+      Server::printLog(WARNING_LOG, SYSTEM, NOTSUPPORTED_VALUE(keyStr));
       return (false);
     }
   } else if (key == MODES && value != DEFAULT_MODES) {
-    std::cerr << NOTSUPPORTED_VALUE(keyStr) << std::endl;
+    Server::printLog(WARNING_LOG, SYSTEM, NOTSUPPORTED_VALUE(keyStr));
     return (false);
   } else if (!isNumeric(value)) {
-    std::cerr << INVALID_VALUE(keyStr) << std::endl;
+    Server::printLog(WARNING_LOG, SYSTEM, INVALID_VALUE(keyStr));
     return (false);
   }
   return (true);
@@ -92,12 +88,19 @@ bool Config::isValidConfigValue(eConfigKey key, const std::string& keyStr,
 
 void Config::parseConfigFile(const std::string& pathToConfigFile) {
   applyAllDefaultValues();
+  std::string message =
+      "Setting configuration. "
+      "Missing parameters will be set to default values.";
+  Server::printLog(INFO_LOG, SYSTEM, message);
   std::ifstream file(pathToConfigFile.c_str());
   if (!file.is_open()) {
-    std::cerr << MISSING_CONFIG_FILE << std::endl;
+    Server::printLog(
+        WARNING_LOG, SYSTEM,
+        "Failed to open config file. Using default configuration.");
   } else {
     std::stringstream buffer;
     buffer << file.rdbuf();
+    file.close();
     std::istringstream stream(buffer.str());
 
     std::string line;
@@ -113,19 +116,22 @@ void Config::parseConfigFile(const std::string& pathToConfigFile) {
           if (isValidConfigValue(key, keyStr, value))
             _parameters.at(key) = value;
         } else {
-          if (key == USERMODES)
-            continue;
-          std::cerr << MISSING_PARAM(keyStr) << std::endl;
+          if (key == USERMODES) continue;
+          Server::printLog(WARNING_LOG, SYSTEM, MISSING_PARAM(keyStr));
         }
       }
     }
     setNumericParameters();
-#ifdef DEBUG
-    std::cout << "===== All configurations =====" << std::endl;
+
+    message = "Configuration successfully set.";
+    Server::printLog(INFO_LOG, SYSTEM, message);
+
+    std::ostringstream config;
+    config << "Configuration: ";
     for (parametersMap::const_iterator it = _parameters.begin();
          it != _parameters.end(); ++it)
-      std::cout << keyToString(it->first) << " => " << it->second << std::endl;
-#endif
+      config << keyToString(it->first) << "=" << it->second << " ";
+    Server::printLog(DEBUG_LOG, SYSTEM, config.str());
   }
 }
 
@@ -156,7 +162,8 @@ void Config::setNumericParameters(void) {
       errno = 0;
       size_t value = std::strtoul(it->second.c_str(), &end, 10);
       if (errno == ERANGE || *end != '\0' || !isWithinLimit(it->first, value)) {
-        std::cerr << INVALID_VALUE(keyToString(it->first)) << std::endl;
+        Server::printLog(WARNING_LOG, SYSTEM,
+                         INVALID_VALUE(keyToString(it->first)));
         std::string defaultValue = getDefaultValue(it->first);
         value = std::strtoul(defaultValue.c_str(), &end, 10);
         _parameters.at(it->first) = defaultValue;

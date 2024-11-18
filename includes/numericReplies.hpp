@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 16:11:05 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 09:24:42 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,6 @@ extern Config *gConfig;
 // Inform clients about the server-supported features and settings
 
 /*------ User related messages -----------------------------------------------*/
-
-// #define _221_RPL_UMODEIS(nick, modes) \
-//   (FROM_SERVER + "221 " + nick + " " + modes + "\r\n")
-// Informs client's currently-set user modes. (Reply to MODE <nick> command)
 
 #define _352_RPL_WHOREPLY(targetNick, chanName, userN, hostN, nick, realN)     \
   (FROM_SERVER + "352 " + targetNick + " " + chanName + " " + userN + " " +    \
@@ -249,6 +245,8 @@ extern Config *gConfig;
 
 /* Functions */
 
+void sendNumericReply(int fd, std::string *message);
+
 /*------ Welcome messages ----------------------------------------------------*/
 
 void send001Welcome(int fd, std::string const &nick, std::string const &user,
@@ -262,7 +260,6 @@ void sendWelcome(int fd, std::string const &nick);
 
 /*------ User related replies ------------------------------------------------*/
 
-// void send221Umodeis(const Client &client);
 void send315EndOfWho(const Client &client, const Channel &channel);
 void send352Whoreply(const Client &client, const Client &clientInChannel, \
                      const Channel &channel);
@@ -324,9 +321,9 @@ void send525InvalidKey(const Client &client, const Channel &channel);
 
 /*--------- Test -------------------------------------------------------------*/
 
-// void testAllNumericReplies(const std::string &serverStartTime,
-//                            const Client &client, const std::string &command,
-//                            const std::string &targetNick);
+void testAllNumericReplies(const std::string &serverStartTime,
+                           const Client &client, const std::string &command,
+                           const std::string &targetNick);
 
 /*--------- Just for fun -----------------------------------------------------*/
 

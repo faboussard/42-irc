@@ -6,9 +6,11 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 14:48:41 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/14 12:17:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/17 21:36:11 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <string>
 
 #include "../../includes/Server.hpp"
 
@@ -71,11 +73,15 @@ void Server::inviteClientToChannel(int invitingClientFd,
     send443UserOnChannel(_clients.at(invitingClientFd), invitedNick, channel);
     return;
   } else {
-    channel.addClientToInvitedMap(invitedClient);
+    const std::string &invitingNick =
+      _clients.at(invitingClientFd).getNickname();
+    channel.addClientToInvitedMap(invitedClient, invitingNick);
     send341Inviting(_clients.at(invitingClientFd), invitedNick, channel);
-    invitedClient->receiveMessage(
-        ":" + _clients.at(invitingClientFd).getNickname() + " INVITE " +
-        invitedNick + " :" + channel.getNameWithPrefix() + "\r\n");
+
+    std::ostringstream oss;
+    oss << ":" << invitingNick << " INVITE " << invitedNick << " :"
+        << channel.getNameWithPrefix() << "\r\n";
+    invitedClient->receiveMessage(oss.str());
   }
 }
 

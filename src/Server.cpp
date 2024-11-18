@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 08:22:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 11:28:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,19 @@ Server::Server(int port, const std::string &password)
 /*       Getters                                                              */
 /*============================================================================*/
 
-// Client &Server::findClientByFd(int fd) {
-//   clientsMap::iterator it = _clients.find(fd);
-//   if (it == _clients.end()) {
-//     std::cerr << "Client not found with the given file descriptor"
-//     << std::endl;
-//     throw std::runtime_error("Client not found");
-//   }
-//   return it->second;
-// }
-
 // const clientsMap &Server::getClients() const { return _clients; }
 
 // const channelsMap &Server::getChannels() const { return _channels; }
+
+// const std::string &Server::getPassword(void) const { return _password; }
+
+// int Server::getPort(void) const { return _port; }
+
+// int Server::getSocketFd(void) const { return _socketFd; }
+
+/*============================================================================*/
+/*       Finders                                                              */
+/*============================================================================*/
 
 Channel *Server::findChannelByName(const std::string &name) {
   channelsMap::iterator it = _channels.find(name);
@@ -65,12 +65,6 @@ Client *Server::findClientByNickname(const std::string &nickname) {
   return (NULL);
 }
 
-// const std::string &Server::getPassword(void) const { return _password; }
-
-// int Server::getPort(void) const { return _port; }
-
-// int Server::getSocketFd(void) const { return _socketFd; }
-
 /*============================================================================*/
 /*       Server Mounting                                                      */
 /*============================================================================*/
@@ -78,8 +72,12 @@ Client *Server::findClientByNickname(const std::string &nickname) {
 void Server::runServer(void) {
   createSocket();
   fetchStartTime();
-  std::cout << GREEN "Server started on port " << _port << " at " << _startTime
-            << RESET << std::endl;
+  // std::cout << GREEN "Server started on port " << _port << " at " <<
+  // _startTime
+  //           << RESET << std::endl;
+  std::ostringstream oss;
+  oss << "Server started on port " << _port;
+  printLog(NOTIFY_LOG, SYSTEM, oss.str());
   acceptAndChat();
 }
 
@@ -131,7 +129,8 @@ void Server::acceptAndChat(void) {
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
-      std::cerr << RED "Error while polling" RESET << std::endl;
+      // std::cerr << RED "Error while polling" RESET << std::endl;
+      printLog(ERROR_LOG, SYSTEM, "Error while polling");
       break;
     }
     for (size_t i = 0; i < _pollFds.size(); ++i) {
@@ -149,7 +148,13 @@ void Server::acceptAndChat(void) {
 void Server::signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGQUIT) {
     _signal = true;
-    std::cout << std::endl << "Signal Received!" << std::endl;
+    // std::cout << std::endl << "Signal Received" << std::endl;
+    std::string message;
+    if (signal == SIGINT)
+      message = "SIGINT Received";
+    else
+      message = "SIGQUIT Received";
+    printLog(NOTIFY_LOG, SIGNAL, message);
   }
 }
 
@@ -166,8 +171,12 @@ void Server::closeServer(void) {
   _channels.clear();
   // Fermer le socket principal
   if (_socketFd != -1) {
-    std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected" RESET
-              << std::endl;
+    // std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected"
+    // RESET
+    //           << std::endl;
+    std::ostringstream oss;
+    oss << "fd" << _socketFd << ": Server disconnected";
+    printLog(NOTIFY_LOG, SYSTEM, oss.str());
     close(_socketFd);
     _socketFd = -1;
   }
@@ -189,11 +198,13 @@ void Server::acceptNewClient(void) {
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
-    std::cerr << RED "Failed to accept new client" RESET << std::endl;
+    // std::cerr << RED "Failed to accept new client" RESET << std::endl;
+    printLog(ERROR_LOG, SYSTEM, "Failed to accept new client");
     return;
   }
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
-    std::cerr << "fcntl() failed" << std::endl;
+    // std::cerr << "fcntl() failed" << std::endl;
+    printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
     return;
   }
 
@@ -211,34 +222,39 @@ void Server::acceptNewClient(void) {
   else
     hostName = host->h_name;
   Client cli(newClientFd, clientIp, hostName);
-#ifdef DEBUG
-  std::cout << "New client IP " << cli.getIp() << std::endl;
-  std::cout << "New client host name " << cli.getHostName() << std::endl;
-#endif
   _clients[newClientFd] = cli;
   _pollFds.push_back(newPoll);
+
+  std::ostringstream oss;
+  oss << "fd" << newClientFd << ": New client connected from " << clientIp
+      << ". Waiting for authentification.";
+  printLog(NOTIFY_LOG, SYSTEM, oss.str());
 }
 
 void Server::closeClient(int fd) {
   if (fd != -1) {
     close(fd);
-    std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
-              << std::endl;
+    // std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
+    //           << std::endl;
+
+    std::ostringstream oss;
+    oss << "fd" << fd << ": Client disconnected";
+    printLog(NOTIFY_LOG, SYSTEM, oss.str());
   }
 }
 
 void Server::clearClient(int fd) {
   channelsMap::iterator itEnd = _channels.end();
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
-    if (it->second.getChannelClients().find(fd) !=
-        it->second.getChannelClients().end())
-      it->second.checkAndremoveClientFromTheChannel(fd);
-    if (it->second.getChannelOperators().find(fd) !=
-        it->second.getChannelOperators().end())
-      it->second.removeOperator(&_clients.at(fd));
     if (it->second.getInvitedClients().find(fd) !=
         it->second.getInvitedClients().end())
       it->second.removeClientFromInvitedMap(&_clients.at(fd));
+    if (it->second.getChannelOperators().find(fd) !=
+        it->second.getChannelOperators().end())
+      it->second.removeOperator(&_clients.at(fd));
+    // if (it->second.getChannelClients().find(fd) !=
+    //     it->second.getChannelClients().end())
+    it->second.checkAndremoveClientFromTheChannel(fd);
   }
   closeClient(fd);
   for (size_t i = 0; i < _pollFds.size(); i++) {
@@ -320,4 +336,70 @@ bool Server::channelExists(const std::string &channel) {
     if (it->first == nameToFind) return (true);
   }
   return (false);
+}
+
+/*============================================================================*/
+/*       Server log                                                           */
+/*============================================================================*/
+
+std::string logContext(eLogContext context);
+
+void Server::printLog(eLogLevel level, eLogContext context,
+                      const std::string &message) {
+  char timeStamp[20];
+  time_t now = time(&now);
+  struct tm tp;
+  localtime_r(&now, &tp);
+  std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d %H:%M:%S", &tp);
+  std::ostringstream logHeader;
+  logHeader << "[" << timeStamp << "]";
+
+  switch (level) {
+    case DEBUG_LOG:
+// #ifdef DEBUG
+      std::cout << logHeader.str() << CYAN " DEBUG   " RESET
+      << logContext(context) << message << std::endl;
+      return;
+// #endif
+    case INFO_LOG:
+     logHeader << GREEN " INFO    " RESET;
+      break;
+    case NOTIFY_LOG:
+     logHeader << BLUE << " NOTICE  " << RESET;
+      break;
+    case WARNING_LOG:
+     logHeader << BRIGHT_YELLOW << " WARNING " << RESET;
+      break;
+    case ERROR_LOG:
+     logHeader << RED << " ERROR   " << RESET;
+      break;
+    default:
+      return;
+  }
+  if (level == INFO_LOG || level == NOTIFY_LOG)
+    std::cout << logHeader.str() << logContext(context) << message << std::endl;
+  else if (level == WARNING_LOG || level == ERROR_LOG)
+    std::cerr << logHeader.str() << logContext(context) << message << std::endl;
+}
+
+std::string logContext(eLogContext context) {
+  switch (context) {
+    case SYSTEM:
+      return SYSTEM_LOG;
+    case SIGNAL:
+      return SIGNAL_LOG;
+    case PARSER:
+      return PARSER_LOG;
+    case AUTH:
+      return AUTH_LOG;
+    case COMMAND:
+      return COMMAND_LOG;
+    case CLIENT:
+      return CLIENT_LOG;
+    case CHANNEL:
+      return CHANNEL_LOG;
+    case REPLY:
+      return REP_LOG;
+  }
+  return ("");
 }
