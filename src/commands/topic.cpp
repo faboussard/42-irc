@@ -6,10 +6,11 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/17 21:41:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 11:54:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sstream>
 #include <string>
 
 #include "../../includes/Server.hpp"
@@ -27,17 +28,18 @@
 void Server::topic(int fd, const std::string &arg) {
   Client &client = _clients.at(fd);
 #ifdef DEBUG
-  std::ostreamstring oss;
-  oss << "TOPIC: Command received from " << client.getNickname();
-  printLog(DEBUG_LOG, COMMAND, oss.str());
+  {
+    std::ostringstream oss;
+    oss << "TOPIC: Command received from " << client.getNickname();
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
 #endif
   if (arg.empty()) {
     send461NeedMoreParams(client, "TOPIC");
     return;
   }
   stringVector params;
-  if (!parseTopicParams(arg, &params, client))
-    return;
+  if (!parseTopicParams(arg, &params, client)) return;
   const std::string &chanNameWithPrefix = params.at(0);
   if (!channelExists(chanNameWithPrefix)) {
     send403NoSuchChannel(client, chanNameWithPrefix);
@@ -56,7 +58,7 @@ void Server::topic(int fd, const std::string &arg) {
 }
 
 bool Server::parseTopicParams(const std::string &arg, stringVector *params,
-                const Client &client) {
+                              const Client &client) {
   std::istringstream iss(arg);
   std::string channel, topic;
   iss >> channel;
@@ -77,18 +79,21 @@ bool Server::parseTopicParams(const std::string &arg, stringVector *params,
     return (false);
   }
 #ifdef DEBUG
-  std::ostreamstring oss;
-  oss << "TOPIC: Channel: " << channel << " / Topic before trim: " << topic;
-  printLog(DEBUG_LOG, COMMAND, oss.str());
+  {
+    std::ostringstream oss;
+    oss << "TOPIC: Channel: " << channel << " / Topic before trim: " << topic;
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
 #endif
   topic.erase(0, topic.find_first_not_of(":"));
 #ifdef DEBUG
-  oss.clear();
-  oss << "TOPIC: Topic after trim: " << topic;
-  printLog(DEBUG_LOG, COMMAND, oss.str());
+  {
+    std::ostringstream oss;
+    oss << "TOPIC: Topic after trim: " << topic;
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
 #endif
-  if (topic.empty())
-    topic = "";
+  if (topic.empty()) topic = "";
   params->push_back(topic);
   return (true);
 }

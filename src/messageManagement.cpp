@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 09:30:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 11:27:54 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,7 @@ static void clientNameUserCommandMessage(
   std::cout << "UserName: " << client->getUserName() << std::endl;
   std::cout << BBRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
   std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
+  (void)fd;
 }
 #endif
 

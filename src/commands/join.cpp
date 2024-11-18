@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 09:35:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/18 11:52:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,21 +42,23 @@ void Server::joinChannel(const std::string &param, int fd) {
   std::string channelsPart = param.substr(0, spacePos);
   splitByCommaAndTrim(channelsPart, &channels);
 // #ifdef DEBUG
-//   std::cout << "Before split and trim channel: " << channelsPart << std::endl;
-//   std::cout << "After split and trim channel: ";
-//   for (size_t i = 0; i < channels.size(); ++i) std::cout << channels[i] << "|";
-//   std::cout << std::endl;
+//   std::cout << "Before split and trim channel: " << channelsPart <<
+//   std::endl; std::cout << "After split and trim channel: "; for (size_t i =
+//   0; i < channels.size(); ++i) std::cout << channels[i] << "|"; std::cout <<
+//   std::endl;
 // #endif
 #ifdef DEBUG
-  std::ostringstream before;
-  std::ostringstream after;
-  before << "JOIN: Before split and trim channel: " CYAN
-         << channelsPart << RESET;
-  after << "JOIN: After split and trim channel: ";
-  for (size_t i = 0; i < channels.size(); ++i)
-    after << CYAN << channels[i] << RESET "|";
-  printLog(DEBUG_LOG, COMMAND, before.str());
-  printLog(DEBUG_LOG, COMMAND, after.str());
+  {
+    std::ostringstream before;
+    std::ostringstream after;
+    before << "JOIN: Before split and trim channel: " CYAN << channelsPart
+           << RESET;
+    after << "JOIN: After split and trim channel: ";
+    for (size_t i = 0; i < channels.size(); ++i)
+      after << CYAN << channels[i] << RESET "|";
+    printLog(DEBUG_LOG, COMMAND, before.str());
+    printLog(DEBUG_LOG, COMMAND, after.str());
+  }
 #endif
 
   stringVector keys;
@@ -70,14 +72,16 @@ void Server::joinChannel(const std::string &param, int fd) {
 //   std::cout << std::endl;
 // #endif
 #ifdef DEBUG
-  before.clear();
-  after.clear();
-  before << "JOIN: Before split and trim key: " CYAN << keysPart << RESET;
-  after << "JOIN: After split and trim key: ";
-  for (size_t i = 0; i < keys.size(); ++i)
-    after << CYAN << keys[i] << RESET "|";
-  printLog(DEBUG_LOG, COMMAND, before.str());
-  printLog(DEBUG_LOG, COMMAND, after.str());
+  {
+    std::ostringstream before;
+    std::ostringstream after;
+    before << "JOIN: Before split and trim key: " CYAN << keysPart << RESET;
+    printLog(DEBUG_LOG, COMMAND, before.str());
+    after << "JOIN: After split and trim key: ";
+    for (size_t i = 0; i < keys.size(); ++i)
+      after << CYAN << keys[i] << RESET "|";
+    printLog(DEBUG_LOG, COMMAND, after.str());
+  }
 #endif
   for (size_t i = 0; i < channels.size(); ++i) {
     if (isChannelValid(channels[i], client)) {
@@ -92,9 +96,11 @@ bool Server::isChannelValid(const std::string &channelToCheck,
 #ifdef DEBUG
   // std::cout << std::endl << std::endl;
   // std::cout << "channel to check " << channelToCheck << std::endl;
-  std::ostringstream oss;
-  oss << "JOIN: Channel to check: " << channelToCheck;
-  printLog(DEBUG_LOG, COMMAND, oss.str());
+  {
+    std::ostringstream oss;
+    oss << "JOIN: Channel to check: " << channelToCheck;
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
 #endif
 // #ifdef DEBUG
 //     std::cout << std::endl << std::endl;
@@ -108,12 +114,16 @@ bool Server::isChannelValid(const std::string &channelToCheck,
   //           << std::endl;
   // std::cout << "gConfig->getLimitchanlimit " << gConfig->getLimit(CHANLIMIT)
   //           << std::endl;
-  oss.clear();
-  oss << "JOIN: client.getChannelsCount() " << client.getChannelsCount();
-  printLog(DEBUG_LOG, COMMAND, oss.str());
-  oss.clear();
-  oss << "JOIN: gConfig->getLimitchanlimit " << gConfig->getLimit(CHANLIMIT);
-  printLog(DEBUG_LOG, COMMAND, oss.str());
+  {
+    std::ostringstream oss;
+    oss << "JOIN: client.getChannelsCount(): " << client.getChannelsCount();
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
+  {
+    std::ostringstream oss;
+    oss << "JOIN: gConfig->getLimitchanlimit: " << gConfig->getLimit(CHANLIMIT);
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
 #endif
   if (channelToCheck.empty() ||
       (channelToCheck.length() == 1 && channelToCheck[0] == REG_CHAN)) {
@@ -136,9 +146,12 @@ void Server::processJoinRequest(int fd, Client *client,
   // si le channel n'existe pas on l'ajoute
 #ifdef DEBUG
   // std::cout << "i am in process join request function " << std::endl;
-  std::ostringstream oss;
-  oss << "JOIN: Join request processing for channel " << channelName;
-  printLog(DEBUG_LOG, COMMAND, oss.str());
+  {
+    std::ostringstream oss;
+    oss << "JOIN: Join request processing for channel " << REG_CHAN
+        << channelNameWithoutPrefix;
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
 #endif
   if (_channels.find(channelNameWithoutPrefix) == _channels.end()) {
     addChanneltoServerIfNoExist(channelNameWithoutPrefix);
