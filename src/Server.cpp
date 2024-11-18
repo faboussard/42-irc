@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 17:00:35 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 08:22:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ Server::Server(int port, const std::string &password)
 
 Channel *Server::findChannelByName(const std::string &name) {
   channelsMap::iterator it = _channels.find(name);
-  if (it == _channels.end()) return (NULL);
+  if (it == _channels.end())
+    return (NULL);
   return (&it->second);
 }
 
@@ -239,9 +240,7 @@ void Server::clearClient(int fd) {
         it->second.getInvitedClients().end())
       it->second.removeClientFromInvitedMap(&_clients.at(fd));
   }
-
   closeClient(fd);
-
   for (size_t i = 0; i < _pollFds.size(); i++) {
     if (_pollFds[i].fd == fd) {
       _pollFds.erase(_pollFds.begin() + i);
@@ -250,7 +249,6 @@ void Server::clearClient(int fd) {
   }
   // if (_clients.at(fd).getChannelsCount() > 0) {  // Decommente after merge
   // join & part
-
   _clients.erase(fd);
 }
 

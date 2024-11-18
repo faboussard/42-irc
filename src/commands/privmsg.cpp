@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/15 18:29:51 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/18 08:29:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void Server::sendPrivmsgToClient(const Client &sender, const Client &receiver,
 }
 
 // Fonction pour valider les arguments de privmsg
-bool Server::validTargets(const std::string &arg, const Client &client,
+bool Server::validPrivmsgTargets(const std::string &arg, const Client &client,
                           stringVector *targets) {
   size_t commaCount = std::count(arg.begin(), arg.end(), ',');
 #ifdef DEBUG
@@ -69,7 +69,7 @@ bool Server::validTargets(const std::string &arg, const Client &client,
   return true;
 }
 
-bool Server::parseArguments(const std::string &arg, const Client &client,
+bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
                             std::vector<std::string> *targetsVector,
                             std::string *message) {
   // Lire le premier target
@@ -98,7 +98,7 @@ bool Server::parseArguments(const std::string &arg, const Client &client,
   std::cout << "[in parsearg ]  " << message << std::endl;
 #endif
   // Vérifier si les arguments sont valides
-  if (!validTargets(arg, client, targetsVector)) {
+  if (!validPrivmsgTargets(arg, client, targetsVector)) {
     return false;
   }
 
@@ -111,7 +111,7 @@ void Server::privmsg(int fd, const std::string &arg) {
 
   stringVector targetsVector;
   std::string message;
-  if (parseArguments(arg, sender, &targetsVector, &message) == false) {
+  if (parsePrivmsgArguments(arg, sender, &targetsVector, &message) == false) {
     return;
   }
 #ifdef DEBUG
