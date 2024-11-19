@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 09:24:42 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 11:53:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,6 +243,10 @@ extern Config *gConfig;
   (FROM_SERVER + "525 " + nick + " " + chanName + \
   " :Key is not well-formed\r\n")
 
+#define _696_ERR_INVALIDMODEPARAM(nick, chanName, modeChar, param)          \
+  (FROM_SERVER + "696 " + nick + " " + chanName + " " + modeChar + " " +    \
+  param + " :" + "Invalid mode parameter\r\n")
+
 /* Functions */
 
 void sendNumericReply(int fd, std::string *message);
@@ -318,14 +322,10 @@ void send481NoPrivileges(const Client &client);
 void send482ChanOPrivsNeeded(const Client &client, const Channel &channel);
 void send501UmodeUnknownFlag(const Client &client);
 void send525InvalidKey(const Client &client, const Channel &channel);
-
-/*--------- Test -------------------------------------------------------------*/
-
-void testAllNumericReplies(const std::string &serverStartTime,
-                           const Client &client, const std::string &command,
-                           const std::string &targetNick);
-
-/*--------- Just for fun -----------------------------------------------------*/
+void send696InvalidModeParam(const Client &client,
+                             const std::string &chanNameWithPrefix,
+                             const std::string &modeCharWithPrefix,
+                             const std::string &param);
 
 #define _WELCOME(nick)                                                         \
   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" +                  \
@@ -341,5 +341,12 @@ void testAllNumericReplies(const std::string &serverStartTime,
   "> ^ <" + " ────\n" +                                                       \
   "───────────────── powered by faboussa, mbernard & yusengok with " + "♥" +  \
   " ──" + "\n\r\n")
+
+/*--------- Test -------------------------------------------------------------*/
+#ifdef TESTNUMERICR
+void testAllNumericReplies(const std::string &serverStartTime,
+                           const Client &client, const std::string &command,
+                           const std::string &targetNick);
+#endif
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_

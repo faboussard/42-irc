@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 14:01:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:16:36 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 #include "../includes/Config.hpp"
 #include "../includes/numericReplies.hpp"
 
-#define SRV_NAME "ircserv.localhost"
+#define SRV_NAME "ircserv"
 #define SRV_VERSION "1.0.0"
 
 typedef std::map<int, Client> clientsMap;
@@ -124,7 +124,7 @@ class Server {
   // const clientsMap &getClients() const;
 
   /*  Finders */
-  Channel *findChannelByName(const std::string &name);
+  // Channel *findChannelByName(const std::string &name);
   Client *findClientByNickname(const std::string &nickname);
 
   /*  Log */

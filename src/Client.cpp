@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 13:58:56 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:14:22 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,13 +128,6 @@ void Client::receiveMessage(const std::string& message) const {
 std::string Client::shareMessage(void) {
   char buffer[1024] = {0};
   ssize_t bytesRead = recv(_fd, buffer, sizeof(buffer) - 1, 0);
-#ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "Received message from client " << _fd << ": " << buffer;
-    Server::printLog(DEBUG_LOG, CLIENT, oss.str());
-  }
-#endif
   if (bytesRead == -1) {
     std::ostringstream oss;
     oss << _nickname << _fd << ": Error while receiving message";

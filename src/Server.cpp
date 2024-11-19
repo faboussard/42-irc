@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 13:58:34 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:19:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,12 @@ Server::Server(int port, const std::string &password)
 /*       Finders                                                              */
 /*============================================================================*/
 
-Channel *Server::findChannelByName(const std::string &name) {
-  channelsMap::iterator it = _channels.find(name);
-  if (it == _channels.end()) return (NULL);
-  return (&it->second);
-}
+// Channel *Server::findChannelByName(const std::string &name) {
+//   channelsMap::iterator it = _channels.find(name);
+//   if (it == _channels.end())
+//     return (NULL);
+//   return (&it->second);
+// }
 
 Client *Server::findClientByNickname(const std::string &nickname) {
   clientsMap::iterator itEnd = _clients.end();
@@ -214,7 +215,7 @@ void Server::acceptNewClient(void) {
   _pollFds.push_back(newPoll);
 
   std::ostringstream oss;
-  oss << "fd" << newClientFd << ": New client connected from " << clientIp
+  oss << "fd" << newClientFd << ": Listening a new client from " << clientIp
       << ". Waiting for authentification.";
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
 }
@@ -334,11 +335,11 @@ void Server::printLog(eLogLevel level, eLogContext context,
 
   switch (level) {
     case DEBUG_LOG:
-      // #ifdef DEBUG
+#ifdef DEBUG
       std::cout << logHeader.str() << CYAN " DEBUG   " RESET
                 << logContext(context) << message << std::endl;
       return;
-      // #endif
+#endif
     case INFO_LOG:
       logHeader << GREEN " INFO    " RESET;
       break;

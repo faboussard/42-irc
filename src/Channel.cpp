@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 14:04:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:13:05 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,29 +119,51 @@ void Channel::removeClientFromChannelMap(Client *client) {
 void Channel::checkAndremoveClientFromTheChannel(int fd) {
   if (_channelClients.find(fd) != _channelClients.end()) {
     _channelClients.erase(fd);
-    _channelClients[fd]->receiveMessage(
-        "You have been removed from the channel");
-    std::ostringstream oss;
-    oss << "Client " << fd << " removed from channel " << _name;
-    Server::printLog(INFO_LOG, CHANNEL, oss.str());
+    {
+      std::ostringstream oss;
+      _channelClients[fd]->receiveMessage(
+          FROM_SERVER + "NOTICE" + " " +
+          "You have been removed from the channel\r\n");
+    }
+    {
+      std::ostringstream oss;
+      oss << "Client " << fd << " removed from channel " << _name;
+      Server::printLog(INFO_LOG, CHANNEL, oss.str());
+    }
   }
 }
 
 void Channel::addClientToInvitedMap(Client *invited,
                                     const std::string &invitingNick) {
   _invitedClients[invited->getFd()] = invited;
-  std::ostringstream oss;
-  oss << _nameWithPrefix << ": " << invited->getNickname()
-      << " has been invited by " << invitingNick;
-  Server::printLog(INFO_LOG, CHANNEL, oss.str());
+  {
+    std::ostringstream oss;
+    invited->receiveMessage(FROM_SERVER + "NOTICE" + " " +
+                            "You have been invited by " + invitingNick +
+                            "\r\n");
+  }
+  {
+    std::ostringstream oss;
+    oss << _nameWithPrefix << ": " << invited->getNickname()
+        << " has been invited by " << invitingNick;
+    Server::printLog(INFO_LOG, CHANNEL, oss.str());
+  }
 }
 
 void Channel::removeClientFromInvitedMap(Client *client) {
   _invitedClients.erase(client->getFd());
-  std::ostringstream oss;
-  oss << _nameWithPrefix << ": " << client->getNickname()
-      << " has been removed from invited clients list";
-  Server::printLog(INFO_LOG, CHANNEL, oss.str());
+  {
+    std::ostringstream oss;
+    client->receiveMessage(FROM_SERVER + "NOTICE" + " " +
+                           "You have been removed from the "
+                           "invited clients list\r\n");
+  }
+  {
+    std::ostringstream oss;
+    oss << _nameWithPrefix << ": " << client->getNickname()
+        << " has been removed from invited clients list";
+    Server::printLog(INFO_LOG, CHANNEL, oss.str());
+  }
 }
 
 bool Channel::isClientInChannel(int fd) const {

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 13:56:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:19:37 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,19 +111,6 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
   }
 }
 
-// #ifdef DEBUG
-// static void clientNameUserCommandMessage(
-//     const Client *client, const std::string *command,
-//     const std::string *argument, const int *fd) {
-
-//   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
-//   std::cout << "UserName: " << client->getUserName() << std::endl;
-//   std::cout << BBRIGHT_YELLOW "Command: " << *command << RESET << std::endl;
-//   std::cout << MAGENTA "Message: " << *argument << RESET << std::endl;
-//   (void)fd;
-// }
-// #endif
-
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 #ifdef DEBUG
   std::cout << BRIGHT_GREEN << msg << RESET << std::endl;
@@ -138,7 +125,6 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
     clientsMap::iterator itCli = _clients.find(fd);
     if (itCli == _clients.end()) return;
 #ifdef DEBUG
-    // clientNameUserCommandMessage(&client, &command, &argument, &fd);
     {
       std::ostringstream oss;
       oss << "Nick:" BLUE << client.getNickname() << RESET << " | UName:" BLUE

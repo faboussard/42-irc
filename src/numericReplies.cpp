@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 13:58:47 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:15:30 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void sendNumericReply(int fd, std::string *message) {
 
   message->erase(0, message->find(' ') + 1);
   Server::printLog(INFO_LOG, REPLY,
-                   message->erase(message->find_last_not_of("\r\n")));
+                   message->erase(message->find_last_not_of("\r\n") + 1));
 }
 
 /*============================================================================*/
@@ -361,11 +361,21 @@ void send525InvalidKey(const Client &client, const Channel &channel) {
   sendNumericReply(client.getFd(), &message);
 }
 
+void send696InvalidModeParam(const Client &client,
+                             const std::string &chanNameWithPrefix,
+                             const std::string &modeCharWithPrefix,
+                             const std::string &param) {
+  std::string message = _696_ERR_INVALIDMODEPARAM(client.getNickname(),
+                                                  chanNameWithPrefix,
+                                                  modeCharWithPrefix, param);
+  sendNumericReply(client.getFd(), &message);
+}
+
 /*============================================================================*/
 /*       Unit - numeric replies                                               */
 /*============================================================================*/
 
-#ifdef TESTNUMERICREPLIES
+#ifdef TESTNUMERICR
 void testAllNumericReplies(const std::string &serverStartTime,
                            const Client &client, const std::string &command,
                            const std::string &targetNick) {
@@ -454,6 +464,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send482ChanOPrivsNeeded(client, kModeChannel);
   send501UmodeUnknownFlag(client);
   send525InvalidKey(client, kModeChannel);
+  send696InvalidModeParam(client, testChannel.getNameWithPrefix(),
+                          "+m", "testParam");
   send(fd, testEnd.c_str(), testEnd.size(), 0);
 }
 #endif
