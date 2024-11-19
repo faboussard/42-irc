@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 09:26:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 09:13:06 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,7 @@ enum Command {
   UNKNOWN
 };
 
-enum eLogLevel {
-  DEBUG_LOG,
-  INFO_LOG,
-  NOTIFY_LOG,
-  WARNING_LOG,
-  ERROR_LOG
-};
+enum eLogLevel { DEBUG_LOG, INFO_LOG, NOTIFY_LOG, WARNING_LOG, ERROR_LOG };
 
 enum eLogContext {
   SYSTEM,
@@ -133,7 +127,7 @@ class Server {
 
   /*  Log */
   static void printLog(eLogLevel level, eLogContext context,
-                      const std::string &message);
+                       const std::string &message);
 
  private:
   /* Server Management */
@@ -219,6 +213,9 @@ class Server {
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
 
+  void Server::switchMode(int fd, const char &c, const bool &plusMode,
+                          const stringVector &parsedArgument);
+
   /*-------- WHO --------*/
   void who(const Client &client, const std::string &arg);
   void sendClientsListInChannel(const Client &client, const Channel &channel);
@@ -245,10 +242,11 @@ class Server {
   void broadcastToAllOperators(const Client &sender, const std::string &command,
                                const std::string &content);
   bool parsePrivmsgArguments(const std::string &arg, const Client &client,
-                      std::vector<std::string> *targets, std::string *message);
+                             std::vector<std::string> *targets,
+                             std::string *message);
 
   bool validPrivmsgTargets(const std::string &arg, const Client &client,
-                    stringVector *targets);
+                           stringVector *targets);
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
