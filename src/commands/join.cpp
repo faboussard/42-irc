@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 14:06:36 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:35:36 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,21 @@ void Server::joinChannel(int fd, const std::string &param) {
   for (size_t i = 0; i < channelsAndKeys.first.size(); ++i) {
 #ifdef DEBUG
     {
-      std::ostringstream oss;
-      oss << "channel: " << channelsAndKeys.first[i];
-      printLog(DEBUG_LOG, COMMAND, oss.str());
+        std::ostringstream oss;
+        oss << "after parseJoinArguments: \n";
+        printLog(DEBUG_LOG, COMMAND, oss.str());
+      if (i < channelsAndKeys.first.size()) {
+        std::ostringstream oss;
+        oss << "channel: " << channelsAndKeys.first[i];
+        printLog(DEBUG_LOG, COMMAND, oss.str());
+      }
     }
     {
-      std::ostringstream oss;
-      oss << "key: " << channelsAndKeys.second[i];
-      printLog(DEBUG_LOG, COMMAND, oss.str());
+      if (i < channelsAndKeys.second.size()) {
+        std::ostringstream oss;
+        oss << "key: " << channelsAndKeys.second[i];
+        printLog(DEBUG_LOG, COMMAND, oss.str());
+      }
     }
 #endif
     const std::string &channelName = channelsAndKeys.first[i];
