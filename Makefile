@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/15 13:41:20 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/19 12:25:55 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,6 @@ SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
        pass nick user \
 	   invite join kick list mode part ping privmsg quit topic who \
-		# joinTest generalTest \ 
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
