@@ -6,13 +6,14 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 14:02:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:25:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <string>
 
+#include "../includes/Bot.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
@@ -39,12 +40,14 @@ int main(int ac, char** argv) {
   std::string password = argv[2];
   checkArgs(port, password);
   Server ser(port, password);
+  Bot bot(port);
 
   try {
     signal(SIGINT, Server::signalHandler);
     signal(SIGQUIT, Server::signalHandler);
     initServerConfig();
     ser.runServer();
+    bot.runBot();
   } catch (const std::runtime_error& e) {
     std::cerr << RED << e.what() << RESET << '\n';
     ser.closeServer();

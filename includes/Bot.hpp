@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 15:07:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:28:52 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,40 @@
 #include <unistd.h>
 
 #include <string>
+#include <vector>
+
+enum eBotCommands {
+  WEATHER,
+  ASCII_ART
+};
 
 class Bot {
  private:
+  int _serverFd;
+  int _serverPort;
+
+  int _botFd;
+  int _botPort;
+  struct sockaddr_in _address;
+  std::vector<struct pollfd> _pollFds;
+
   void createSockets(void);
-  void runBot(void);
   void connectToServer(void);
 
+  bool parseRequest(const std::string &request);
+  void sendRequest(const std::string &request);
+  void receiveResponse(void);
+  bool parseResponse(const std::string &response);
+  void sendResponse(const std::string &response);
+
  public:
-  Bot(void);  //temporary
+  Bot(int serverPort);  //temporary
+  ~Bot(void);  //temporary
+
+  void runBot(void);
+  void closeBot(void);
+
+  
 };
 
 #endif  // INCLUDES_BOT_HPP_
