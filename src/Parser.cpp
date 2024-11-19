@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 14:58:40 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:04:42 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ Command Parser::choseCommand(const std::string& command) {
     return (MODE);
   } else if (command == "LIST") {
     return (LIST);
-  } else if (command == "NOTICE") {
-    return (NOTICE);
   } else if (command == "NICK") {
     return (NICK);
   } else if (command == "PRIVMSG") {
@@ -122,50 +120,5 @@ commandVectorPairs Parser::parseCommandIntoPairs(const std::string& command) {
     Server::printLog(DEBUG_LOG, PARSER, oss.str());
     result.push_back(pair);
   }
-  return (result);
-}
-
-static size_t countNbParamsMustBe(const std::string& str, size_t *nbParamsMustBe, size_t *nbO) {
-  size_t i = 0;
-
-  while (str[i]) {
-    if (str[i] == 'o' || str[i] == 'k' || str[i] == 'l')
-      ++i;
-    if (str[i])
-  }
-  if (str.find('o')) {
-    ++nbParamsMustBe;
-    ++nbO;
-  }
-  if (str.find('k'))
-    ++nbParamsMustBe;
-  if (str.find('l'))
-    ++nbParamsMustBe;
-  
-}
-
-commandVectorPairs Parser::parseModeIntoPairs(const std::string& args) {
-  stringVector plusMinusTab;
-  stringVector argTab;
-
-  std::istringstream iss(args);
-  std::string channel, token;
-  std::vector<std::string> message;
-  size_t nbParamsMustBe = 0;
-  size_t nbO = 0;
-
-  iss >> channel;
-  while (iss >> token) {
-    if (token[0] == '-' || token[0] == '+')
-      plusMinusTab.push_back(token);
-    else
-      argTab.push_back(token);
-    countNbParamsMustBe(token, &nbParamsMustBe, &nbO);
-    token.clear();
-  }
-  commandVectorPairs result;
-  std::string token;
-  std::pair<std::string, std::string> pair;
-
   return (result);
 }

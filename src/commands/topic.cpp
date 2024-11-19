@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 11:54:45 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:00:25 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,6 @@
 #include <string>
 
 #include "../../includes/Server.hpp"
-
-// Supported command formats:
-// - Show current topic of channel #42
-//   TOPIC #42
-// - Change topic of channel #42 to "new topic"
-//   < HexChat > TOPIC #42 new topic (withot :) -- HexChat adds ':'
-//   < netcat >  TOPIC #42 :new topic (with :)
-
-// Channel and topic are separated by space.
-// Extra colons at the beginning of the topic are ignored.
 
 void Server::topic(int fd, const std::string &arg) {
   Client &client = _clients.at(fd);
@@ -72,8 +62,7 @@ bool Server::parseTopicParams(const std::string &arg, stringVector *params,
   }
   params->push_back(channel);
   std::getline(iss >> std::ws, topic);
-  if (topic.empty())
-    return (true);
+  if (topic.empty()) return (true);
   if (topic[0] != ':') {
     send461NeedMoreParams(client, "TOPIC");
     return (false);

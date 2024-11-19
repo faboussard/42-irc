@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 08:19:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:06:43 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ bool Parser::verifyNick(const std::string &nick, Client *client,
     return (false);
   }
   size_t size = nick.size();
-    if (size > gConfig->getLimit(NICKLEN) || std::isdigit(nick[0])) {
+  if (size > gConfig->getLimit(NICKLEN) || std::isdigit(nick[0])) {
     send432ErroneusNickname(*client, nick);
     return (false);
   }

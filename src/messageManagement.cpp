@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 08:28:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:19:37 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 }
 
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
+#ifdef DEBUG
+  std::cout << BRIGHT_GREEN << msg << RESET << std::endl;
+#endif
   commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
   int fd = client.getFd();
@@ -120,17 +123,15 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
     std::string argument = splittedPair[it].second;
     Command cmd = Parser::choseCommand(command);
     clientsMap::iterator itCli = _clients.find(fd);
-    if (itCli == _clients.end())
-      return;
+    if (itCli == _clients.end()) return;
 #ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "Nick:" BLUE << client.getNickname() << RESET
-        << " | UName:" BLUE << client.getUserName() << RESET
-        << " | Command:" BRIGHT_YELLOW << command << RESET
-        << " | Message:" MAGENTA << argument << RESET;
-    printLog(DEBUG_LOG, PARSER, oss.str());
-  }
+    {
+      std::ostringstream oss;
+      oss << "Nick:" BLUE << client.getNickname() << RESET << " | UName:" BLUE
+          << client.getUserName() << RESET << " | Command:" BRIGHT_YELLOW
+          << command << RESET << " | Message:" MAGENTA << argument << RESET;
+      printLog(DEBUG_LOG, PARSER, oss.str());
+    }
 #endif
     if (cmd == UNKNOWN) {
       send421UnknownCommand(client, command);
@@ -157,6 +158,9 @@ void Server::handleClientMessage(int fd) {
     Server::printLog(ERROR_LOG, CLIENT, oss.str());
     return;
   } else if (valread == 0) {
+    std::ostringstream oss;
+    oss << "fd" << fd << ": Connection closed by peer";
+    Server::printLog(ERROR_LOG, CLIENT, oss.str());
     messageBuffer[fd].erase();
     clearClient(fd);
     return;
@@ -173,14 +177,13 @@ void Server::handleClientMessage(int fd) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
-  if (message.empty())
-    return;
+  if (message.empty()) return;
   std::string msgBuf = message;
   msgBuf.erase(0, msgBuf.find_first_not_of("\n"));
   msgBuf.erase(msgBuf.find_last_not_of("\n") + 1);
   std::ostringstream oss;
-  oss << _clients[fd].getNickname() << " (fd" << fd << ") sent a message: "
-      << msgBuf;
+  oss << _clients[fd].getNickname() << " (fd" << fd
+      << ") sent a message: " << msgBuf;
   printLog(INFO_LOG, CLIENT, oss.str());
 
   Client &client = _clients[fd];
@@ -199,7 +202,7 @@ void Server::handleCommand(const std::string &command,
                            const std::string &argument, int fd) {
   if (command.empty()) return;
   if (command == "JOIN") {
-    joinChannel(argument, fd);
+    joinChannel(fd, argument);
   } else if (command == "KICK") {
     kick(fd, argument);
   } else if (command == "INVITE") {
@@ -227,5 +230,7 @@ void Server::handleCommand(const std::string &command,
       send461NeedMoreParams(_clients[fd], command);
     else
       send462AlreadyRegistered(_clients[fd]);
+  } else {
+    return;
   }
 }

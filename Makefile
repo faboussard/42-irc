@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/15 13:41:20 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/19 14:01:35 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,15 +17,14 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-vpath %.cpp src src/commands src/unitTests
+vpath %.cpp src src/commands
 
 HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils \
-               tests
+
 SRCS = main Server Client Channel Parser Config \
        numericReplies messageManagement utils \
        pass nick user \
 	   invite join kick list mode part ping privmsg quit topic who \
-		# joinTest generalTest \ 
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/

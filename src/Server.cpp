@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 08:30:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:38:40 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,6 @@ void Server::closeServer(void) {
   }
   _clients.clear();
   _channels.clear();
-  // Fermer le socket principal
   if (_socketFd != -1) {
     std::ostringstream oss;
     oss << "fd" << _socketFd << ": Server disconnected";
@@ -272,13 +271,6 @@ void Server::sendConnectionMessage(const Client &client) const {
 /*       Broadcast                                                            */
 /*============================================================================*/
 
-// void Server::sendToAllClients(const std::string &message) {
-//   for (clientsMap::iterator it = _clients.begin(); it != _clients.end();
-//   ++it) {
-//     if (it->second.isAccepted()) it->second.receiveMessage(message);
-//   }
-// }
-
 void Server::broadcastInChannel(const Client &sender, const Channel &channel,
                                 const std::string &command,
                                 const std::string &content) {
@@ -345,20 +337,20 @@ void Server::printLog(eLogLevel level, eLogContext context,
     case DEBUG_LOG:
 #ifdef DEBUG
       std::cout << logHeader.str() << CYAN " DEBUG   " RESET
-      << logContext(context) << message << std::endl;
+                << logContext(context) << message << std::endl;
       return;
 #endif
     case INFO_LOG:
-     logHeader << GREEN " INFO    " RESET;
+      logHeader << GREEN " INFO    " RESET;
       break;
     case NOTIFY_LOG:
-     logHeader << BLUE << " NOTICE  " << RESET;
+      logHeader << BLUE << " NOTICE  " << RESET;
       break;
     case WARNING_LOG:
-     logHeader << BRIGHT_YELLOW << " WARNING " << RESET;
+      logHeader << BRIGHT_YELLOW << " WARNING " << RESET;
       break;
     case ERROR_LOG:
-     logHeader << RED << " ERROR   " << RESET;
+      logHeader << RED << " ERROR   " << RESET;
       break;
     default:
       return;

@@ -6,13 +6,14 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 09:38:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 12:12:55 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INCLUDES_CHANNEL_HPP_
 #define INCLUDES_CHANNEL_HPP_
 
+#include <stdint.h>
 #include <ctime>
 #include <map>
 #include <string>
@@ -51,7 +52,7 @@ class Channel {
   Topic _topic;
   Mode _mode;
   std::string _key;
-  int _limit;
+  uint8_t _limit;
 
   clientPMap _channelClients;
   clientPMap _channelOperators;
@@ -72,7 +73,7 @@ class Channel {
   const Mode &getMode(void) const;
   const std::string getChannelModeFlag(void) const;
   const std::string &getKey(void) const;
-  int getLimit(void) const;
+  uint8_t getLimit(void) const;
 
   /*  Setters */
   void setTopic(const std::string &topic, const std::string &author);

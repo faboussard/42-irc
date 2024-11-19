@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 12:02:38 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:01:53 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 #include <string>
 
 #include "../includes/Config.hpp"
-#include "../includes/colors.hpp"
 #include "../includes/Server.hpp"
+#include "../includes/colors.hpp"
 
 extern Config* gConfig;
 
@@ -50,7 +50,7 @@ std::string const& Client::getNickname(void) const { return (_nickname); }
 
 std::string const& Client::getUserName(void) const { return (_userName); }
 
-size_t Client::getChannelsCount() const { return (_channelsCount); }
+uint8_t Client::getChannelsCount() const { return (_channelsCount); }
 
 int Client::getFd(void) const { return (_fd); }
 
@@ -150,7 +150,6 @@ std::string Client::shareMessage(void) {
 void Client::incrementChannelsCount(void) {
   if (_channelsCount <= gConfig->getLimit(CHANLIMIT)) {
     ++_channelsCount;
-
 #ifdef DEBUG
     std::ostringstream oss;
     oss << _nickname << ": currently in " << _channelsCount << " channel(s)";
@@ -162,7 +161,6 @@ void Client::incrementChannelsCount(void) {
 void Client::decrementChannelsCount(void) {
   if (_channelsCount > 0) {
     --_channelsCount;
-
 #ifdef DEBUG
     std::ostringstream oss;
     oss << _nickname << ": currently in " << _channelsCount << " channel(s)";

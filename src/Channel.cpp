@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 11:34:59 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:01:47 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,20 +72,16 @@ const Mode &Channel::getMode(void) const { return _mode; }
 const std::string Channel::getChannelModeFlag(void) const {
   std::ostringstream flagsStream;
   flagsStream << "+";
-  if (_mode.inviteOnly)
-    flagsStream << "i";
-  if (_mode.topicSettableByOpsOnly)
-    flagsStream << "t";
-  if (_mode.keyRequired)
-    flagsStream << "k";
-  if (_mode.limitSet)
-    flagsStream << "l";
+  if (_mode.inviteOnly) flagsStream << "i";
+  if (_mode.topicSettableByOpsOnly) flagsStream << "t";
+  if (_mode.keyRequired) flagsStream << "k";
+  if (_mode.limitSet) flagsStream << "l";
   return (flagsStream.str());
 }
 
 const std::string &Channel::getKey(void) const { return (_key); }
 
-int Channel::getLimit(void) const { return (_limit); }
+uint8_t Channel::getLimit(void) const { return (_limit); }
 
 /*============================================================================*/
 /*       Setters                                                              */
@@ -122,12 +118,17 @@ void Channel::removeClientFromChannelMap(Client *client) {
 
 void Channel::checkAndremoveClientFromTheChannel(int fd) {
   if (_channelClients.find(fd) != _channelClients.end()) {
-    _channelClients[fd]->receiveMessage(
-        "You have been removed from the channel\r\n");
-    std::ostringstream oss;
-    oss << _nameWithPrefix << ": " << _channelClients.at(fd)->getNickname()
-        << " has left";
-    Server::printLog(INFO_LOG, CHANNEL, oss.str());
+    {
+      std::ostringstream oss;
+      _channelClients[fd]->receiveMessage(
+          FROM_SERVER + "NOTICE" + " " +
+          "You have been removed from the channel\r\n");
+    }
+    {
+      std::ostringstream oss;
+      oss << "Client " << fd << " removed from channel " << _name;
+      Server::printLog(INFO_LOG, CHANNEL, oss.str());
+    }
     _channelClients.erase(fd);
   }
 }
@@ -135,18 +136,34 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
 void Channel::addClientToInvitedMap(Client *invited,
                                     const std::string &invitingNick) {
   _invitedClients[invited->getFd()] = invited;
-  std::ostringstream oss;
-  oss << _nameWithPrefix << ": " << invited->getNickname()
-      << " has been invited by " << invitingNick;
-  Server::printLog(INFO_LOG, CHANNEL, oss.str());
+  {
+    std::ostringstream oss;
+    invited->receiveMessage(FROM_SERVER + "NOTICE" + " " +
+                            "You have been invited by " + invitingNick +
+                            "\r\n");
+  }
+  {
+    std::ostringstream oss;
+    oss << _nameWithPrefix << ": " << invited->getNickname()
+        << " has been invited by " << invitingNick;
+    Server::printLog(INFO_LOG, CHANNEL, oss.str());
+  }
 }
 
 void Channel::removeClientFromInvitedMap(Client *client) {
+  {
+    std::ostringstream oss;
+    client->receiveMessage(FROM_SERVER + "NOTICE" + " " +
+                           "You have been removed from the "
+                           "invited clients list\r\n");
+  }
+  {
+    std::ostringstream oss;
+    oss << _nameWithPrefix << ": " << client->getNickname()
+        << " has been removed from invited clients list";
+    Server::printLog(INFO_LOG, CHANNEL, oss.str());
+  }
   _invitedClients.erase(client->getFd());
-  std::ostringstream oss;
-  oss << _nameWithPrefix << ": " << client->getNickname()
-      << " has been removed from invited clients list";
-  Server::printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 bool Channel::isClientInChannel(int fd) const {

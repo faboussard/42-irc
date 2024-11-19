@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 11:50:15 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:15:30 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,7 @@
 #include "../includes/Config.hpp"
 
 void sendNumericReply(int fd, std::string *message) {
-  if (message == NULL)
-    return;
+  if (message == NULL) return;
   if (send(fd, message->c_str(), message->size(), MSG_NOSIGNAL) == -1) {
     std::ostringstream oss;
     oss << RUNTIME_ERROR << " to " << "fd " << fd;
@@ -113,10 +112,8 @@ void send323Listend(int fd, const std::string &nick) {
 
 void send324Channelmodeis(const Client &client, const Channel &channel) {
   std::ostringstream modeArgs;
-  if (channel.getMode().keyRequired)
-    modeArgs <<  channel.getKey() << ' ';
-  if (channel.getMode().limitSet)
-    modeArgs << channel.getLimit();
+  if (channel.getMode().keyRequired) modeArgs << channel.getKey() << ' ';
+  if (channel.getMode().limitSet) modeArgs << channel.getLimit();
   std::string message =
       _324_RPL_CHANNELMODEIS(client.getNickname(), channel.getNameWithPrefix(),
                              channel.getChannelModeFlag(), modeArgs.str());
@@ -139,13 +136,13 @@ void send331Notopic(const Client &client, const Channel &channel) {
 void send332Topic(const Client &client, const Channel &channel) {
   std::string message =
       _332_RPL_TOPIC(client.getNickname(), channel.getNameWithPrefix(),
-      channel.getTopic().topic);
+                     channel.getTopic().topic);
   sendNumericReply(client.getFd(), &message);
 }
 
 void send333Topicwhotime(const Client &client, const Channel &channel) {
-  std::string message =
-      _333_RPL_TOPICWHOTIME(client.getNickname(), channel.getNameWithPrefix(),
+  std::string message = _333_RPL_TOPICWHOTIME(
+      client.getNickname(), channel.getNameWithPrefix(),
       channel.getTopic().author, channel.getTopic().setTime);
   sendNumericReply(client.getFd(), &message);
 }
@@ -184,9 +181,8 @@ void send353Namreply(const Client &client, const Channel &channel) {
       nicknames << it->second->getNickname() << " ";
   }
   chanNameWithSymbol << PUBLIC_CHAN << channel.getName();
-  std::string message =
-      _353_RPL_NAMREPLY(client.getNickname(), chanNameWithSymbol.str(),
-      nicknames.str());
+  std::string message = _353_RPL_NAMREPLY(
+      client.getNickname(), chanNameWithSymbol.str(), nicknames.str());
   sendNumericReply(client.getFd(), &message);
 }
 

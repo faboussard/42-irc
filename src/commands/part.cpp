@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/14 13:33:35 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:52:01 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 
 void Server::quitChannel(int fd, Channel *channel, Client *client) {
   sendPartMessageToClient(fd, client->getNickname(), channel->getName());
-  // broadcastPartMessage(fd, client->getNickname(), channel->getName());
   client->decrementChannelsCount();
   channel->removeClientFromChannelMap(client);
   if (channel->getChannelOperators().find(fd) !=
@@ -43,24 +42,6 @@ void Server::quitAllChannels(int fd) {
     }
   }
 }
-
-// void Server::broadcastPartMessage(int fd, const std::string &nick,
-//                                   const std::string &channelName) {
-//   std::string partMessage = ":" + nick + " PART :#" + channelName + "\r\n";
-
-//   clientPMap clientsInChannel =
-//       findChannelByName(channelName).getChannelClients();
-
-//   for (clientPMap::iterator it = clientsInChannel.begin();
-//        it != clientsInChannel.end(); ++it) {
-//     if (it->first != fd) {
-//       if (send(it->first, partMessage.c_str(), partMessage.length(), 0) ==
-//       -1) {
-//         throw std::runtime_error("Runtime error: send failed");
-//       }
-//     }
-//   }
-// }
 
 void Server::sendPartMessageToClient(int fd, const std::string &nick,
                                      const std::string &channelName) {

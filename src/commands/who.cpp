@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 08:02:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:07:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,6 @@
 
 #include "../../includes/Channel.hpp"
 #include "../../includes/Server.hpp"
-
-// Supports only 2 patterns:
-// WHO
-// WHO <#channel>
-
 
 #ifdef DEBUG
 #define EACH_CHANNEL "WHO: Listing all clients for each Channel"

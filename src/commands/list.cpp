@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:17:50 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 13:19:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:00:56 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,12 +69,12 @@ void Server::listChannels(const stringVector &channels, const Client &client) {
       else
         send403NoSuchChannel(client, *it);
     } else if (prefix == '&' || prefix == '!' || prefix == '+') {
-        if (channelExists(*it))
-          send476BadChanMask(client, *it);
-        else
-          send403NoSuchChannel(client, *it);
-    } else {
+      if (channelExists(*it))
         send476BadChanMask(client, *it);
+      else
+        send403NoSuchChannel(client, *it);
+    } else {
+      send476BadChanMask(client, *it);
     }
   }
 }

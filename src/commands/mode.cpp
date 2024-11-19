@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 14:27:02 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:34:14 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,50 @@ void Server::switchMode(int fd, const char &c, const bool &plusMode,
 }
 
 //  bool Server::modeArgsAreCorrect(const stringVector parsedArgument) {}
+static size_t countNbParamsMustBe(const std::string &str,
+                                  size_t *nbParamsMustBe, size_t *nbO) {
+  size_t i = 0;
+  bool excessivePlusOrMinus = false;
+  while (str[i]) {
+    if (str[i] == 'o' || str[i] == 'k' || str[i] == 'l') ++(*nbParamsMustBe);
+    if (str[i] == 'o') ++(*nbO);
+    if (str[i] == '+' || str[i] == '-') {
+      excessivePlusOrMinus = true;
+      break;
+    }
+    ++i;
+  }
+  if (excessivePlusOrMinus || *nbO > 3) *nbParamsMustBe = SIZE_MAX;
+}
+
+static commandVectorPairs parseModeIntoPairs(const std::string &args) {
+  stringVector plusMinusTab;
+  stringVector argTab;
+
+  std::istringstream iss(args);
+  std::string channel, token;
+  std::vector<std::string> message;
+  size_t nbParamsMustBe = 0;
+  size_t nbO = 0;
+  commandVectorPairs result;
+
+  iss >> channel;
+  while (iss >> token) {
+    if (token[0] == '-' || token[0] == '+')
+      plusMinusTab.push_back(token);
+    else
+      argTab.push_back(token);
+    countNbParamsMustBe(token, &nbParamsMustBe, &nbO);
+    fillModePair();
+    token.clear();
+    if (nbParamsMustBe == SIZE_MAX)
+      return (result);
+  }
+  std::string token;
+  std::pair<std::string, std::string> pair;
+
+  return (result);
+}
 
 bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
   std::istringstream iss(arg);
@@ -86,7 +130,7 @@ bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
 void Server::mode(int fd, const std::string &arg) {
   if (modeChannelNameIsCorrect(fd, arg) == false) return;
   stringVector parsedArgument = Parser::splitCommand(arg);
-  commandVectorPairs pairedArgument = Parser::parseModeIntoPairs(arg);
+  commandVectorPairs pairedArgument = parseModeIntoPairs(arg);
   size_t i = 0;
   bool plusMode = true;
   if (parsedArgument[1][0] == '+' || parsedArgument[1][0] == '-') {

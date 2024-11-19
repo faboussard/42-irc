@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 14:27:02 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:00:54 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "../includes/Channel.hpp"
@@ -45,6 +46,8 @@
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 typedef std::vector<std::string> stringVector;
+typedef std::pair<std::vector<std::string>, std::vector<std::string> >
+    pairOfStringVectors;
 
 extern Config *gConfig;
 
@@ -55,7 +58,6 @@ enum Command {
   TOPIC,
   MODE,
   LIST,
-  NOTICE,
   NICK,
   PRIVMSG,
   QUIT,
@@ -122,7 +124,7 @@ class Server {
   // const clientsMap &getClients() const;
 
   /*  Finders */
-  Channel *findChannelByName(const std::string &name);
+  // Channel *findChannelByName(const std::string &name);
   Client *findClientByNickname(const std::string &nickname);
 
   /*  Log */
@@ -164,29 +166,29 @@ class Server {
   /*  Command  */
   /*-------- JOIN --------*/
   bool isLeaveAllChannelsRequest(const std::string &param);
-  bool isChannelValid(const std::string &channelToCheck, const Client &client);
+  bool isChannelNameValid(const std::string &channelToCheck,
+                          const Client &client);
 
-  void joinChannel(const std::string &param, int fd);
+  void joinChannel(int fd, const std::string &param);
 
-  void addChanneltoServerIfNoExist(const std::string &channelName);
+  void addChanneltoServer(const std::string &channelName);
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
-  void broadcastJoinMessage(int fd, const std::string &nick,
-                            const std::string &channelName);
-  void processJoinRequest(int fd, Client *client,
-                          const std::string &channelName,
-                          const stringVector &keys, size_t channelIndex);
+  void processJoinRequest(int fd, Client *client, Channel *channel);
   void handlePartRequest(int fd, const std::string &param);
   bool handleKey(Client *client, const Channel &channel,
                  const std::string &key);
-  bool isKeyValid(const std::string &keyToCheck);
+  bool isKeyValid(const Channel &channel, const std::string &keyToCheck,
+                  const Client &client);
+  bool isChannelNotFull(const Channel &channel, const Client &client);
+  bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
+                                          const Client &client);
+  pairOfStringVectors parseJoinArguments(const std::string &param);
 
   /*-------- PART --------*/
   void quitAllChannels(int fd);
   void quitChannel(int fd, Channel *channel, Client *client);
-  void broadcastPartMessage(int fd, const std::string &nick,
-                            const std::string &channelName);
   void sendPartMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName);
 
@@ -228,10 +230,9 @@ class Server {
 
   /*-------- KICK --------*/
   void kick(int fd, const std::string &arg);
-  void parseKickParams(std::string *param, const Client &client,
-                       const std::string &channelName,
-                       const std::string &targetNick,
-                       const std::string &reason);
+  void parseKickParams(const std::string &param, const Client &client,
+                       std::string *channelName, std::string *targetNick,
+                       std::string *reason);
 
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);
@@ -240,8 +241,6 @@ class Server {
                                 const std::string &content);
   void sendPrivmsgToClient(const Client &sender, const Client &receiver,
                            const std::string &message);
-  void broadcastToAllOperators(const Client &sender, const std::string &command,
-                               const std::string &content);
   bool parsePrivmsgArguments(const std::string &arg, const Client &client,
                              std::vector<std::string> *targets,
                              std::string *message);

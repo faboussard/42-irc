@@ -6,23 +6,13 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 15:09:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 11:53:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:52:56 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 
 #include "../../includes/Server.hpp"
-
-// ======== PING <server or timestamp> =========================================
-// Replies:
-// PONG <server or timestamp>
-
-// ======== PING (without parameters) ==========================================
-// -- 409 ERR_NOORIGIN
-
-// Hexchat autonmatically adds timestamp when we send /PING
-// netcat doesn't add anything with /PING
 
 void Server::ping(const Client &client, const std::string &token) {
   if (token.empty()) {
