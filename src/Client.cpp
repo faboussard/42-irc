@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 21:54:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 12:24:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ std::string const& Client::getNickname(void) const { return (_nickname); }
 
 std::string const& Client::getUserName(void) const { return (_userName); }
 
-size_t Client::getChannelsCount() const { return (_channelsCount); }
+uint8_t Client::getChannelsCount() const { return (_channelsCount); }
 
 int Client::getFd(void) const { return (_fd); }
 

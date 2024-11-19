@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/15 14:21:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 12:24:17 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class Client {
   bool _passwordGiven;
   bool _accepted;
   uint8_t _nbPassAttempts;
-  size_t _channelsCount;
+  uint8_t _channelsCount;
 
  public:
   explicit Client(int fd = -1, const std::string& ip = "",
@@ -58,7 +58,7 @@ class Client {
   bool isAccepted(void) const;
   bool isCapSend(void) const;
   uint8_t getNbPassAttempts(void) const;
-  size_t getChannelsCount() const;
+  uint8_t getChannelsCount() const;
 
   /* Setters */
   void setFd(int fd);
