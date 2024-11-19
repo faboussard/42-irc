@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 11:45:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 11:53:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,8 +244,8 @@ extern Config *gConfig;
   " :Key is not well-formed\r\n")
 
 #define _696_ERR_INVALIDMODEPARAM(nick, chanName, modeChar, param)          \
-  (FROM_SERVER + "696 " + nick + chanName + modeChar + param + " :" +       \
-  "Invalid mode parameter\r\n")
+  (FROM_SERVER + "696 " + nick + " " + chanName + " " + modeChar + " " +    \
+  param + " :" + "Invalid mode parameter\r\n")
 
 /* Functions */
 
@@ -324,7 +324,7 @@ void send501UmodeUnknownFlag(const Client &client);
 void send525InvalidKey(const Client &client, const Channel &channel);
 void send696InvalidModeParam(const Client &client,
                              const std::string &chanNameWithPrefix,
-                             const std::string &modeChar,
+                             const std::string &modeCharWithPrefix,
                              const std::string &param);
 
 #define _WELCOME(nick)                                                         \

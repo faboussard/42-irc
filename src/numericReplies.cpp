@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 11:44:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 11:50:15 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -367,11 +367,11 @@ void send525InvalidKey(const Client &client, const Channel &channel) {
 
 void send696InvalidModeParam(const Client &client,
                              const std::string &chanNameWithPrefix,
-                             const std::string &modeChar,
+                             const std::string &modeCharWithPrefix,
                              const std::string &param) {
   std::string message = _696_ERR_INVALIDMODEPARAM(client.getNickname(),
-                                                  chanNameWithPrefix, modeChar,
-                                                  param);
+                                                  chanNameWithPrefix,
+                                                  modeCharWithPrefix, param);
   sendNumericReply(client.getFd(), &message);
 }
 
@@ -468,6 +468,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send482ChanOPrivsNeeded(client, kModeChannel);
   send501UmodeUnknownFlag(client);
   send525InvalidKey(client, kModeChannel);
+  send696InvalidModeParam(client, testChannel.getNameWithPrefix(),
+                          "+m", "testParam");
   send(fd, testEnd.c_str(), testEnd.size(), 0);
 }
 #endif
