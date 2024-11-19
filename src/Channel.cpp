@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 12:12:24 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:59:53 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,14 +72,10 @@ const Mode &Channel::getMode(void) const { return _mode; }
 const std::string Channel::getChannelModeFlag(void) const {
   std::ostringstream flagsStream;
   flagsStream << "+";
-  if (_mode.inviteOnly)
-    flagsStream << "i";
-  if (_mode.topicSettableByOpsOnly)
-    flagsStream << "t";
-  if (_mode.keyRequired)
-    flagsStream << "k";
-  if (_mode.limitSet)
-    flagsStream << "l";
+  if (_mode.inviteOnly) flagsStream << "i";
+  if (_mode.topicSettableByOpsOnly) flagsStream << "t";
+  if (_mode.keyRequired) flagsStream << "k";
+  if (_mode.limitSet) flagsStream << "l";
   return (flagsStream.str());
 }
 
@@ -108,8 +104,6 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
 
 void Channel::addClientToChannelMap(Client *client) {
   _channelClients[client->getFd()] = client;
-  // std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
-  //           << " added in channel " << _name << std::endl;
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname() << " has joined";
   Server::printLog(INFO_LOG, CHANNEL, oss.str());
@@ -117,8 +111,6 @@ void Channel::addClientToChannelMap(Client *client) {
 
 void Channel::removeClientFromChannelMap(Client *client) {
   _channelClients.erase(client->getFd());
-  // std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
-  //           << " removed from channel " << _name << std::endl;
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname() << " has left";
   Server::printLog(INFO_LOG, CHANNEL, oss.str());
@@ -133,11 +125,9 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
         << " has left";
     Server::printLog(INFO_LOG, CHANNEL, oss.str());
     _channelClients.erase(fd);
-    // std::cout << "Client " << fd << " removed from channel " << _name
-    //           << std::endl;
-  // } else {
-  //   std::cerr << RED "Client " RESET << fd << " not found in channel "
-  //             << _name << RESET << std::endl;
+    std::ostringstream oss;
+    oss << "Client " << fd << " removed from channel " << _name;
+    Server::printLog(INFO_LOG, CHANNEL, oss.str());
   }
 }
 

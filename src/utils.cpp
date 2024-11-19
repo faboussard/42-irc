@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/13 14:04:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:57:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,8 @@ void strToUpper(std::string *str) {
 
 std::string trimWhiteSpaces(const std::string &input) {
   std::string result = input;
-  result.erase(0, result.find_first_not_of(
-                      " \t\n\r\f\v"));  // Retirer les espaces au début
-  result.erase(result.find_last_not_of(" \t\n\r\f\v") +
-               1);  // Retirer les espaces à la fin
+  result.erase(0, result.find_first_not_of(" \t\n\r\f\v"));
+  result.erase(result.find_last_not_of(" \t\n\r\f\v") + 1);
   return result;
 }
 

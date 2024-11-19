@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/17 17:09:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:55:07 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ int main(int ac, char** argv) {
     return (EXIT_FAILURE);
   }
   ser.closeServer();
-  // std::cout << "The Server is closed" << std::endl;
   Server::printLog(INFO_LOG, SYSTEM, "Server shut down");
   return (EXIT_SUCCESS);
 }

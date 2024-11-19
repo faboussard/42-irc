@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 10:10:53 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 13:19:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:53:14 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,4 @@ void Server::quit(const std::string &argument, Client *client,
     it->second.receiveMessage(message);
   }
 }
-// format ->
-// :<nickname>!<user>@<host> QUIT :<reason>
-// :syrk!kalt@millennium.stealth.net QUIT :Gone to have lunch ; User syrk has
-// quit IRC to have lunch.
+

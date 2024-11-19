@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 15:30:30 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:00:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,16 @@ bool Server::validPrivmsgTargets(const std::string &arg, const Client &client,
                                  stringVector *targets) {
   size_t commaCount = std::count(arg.begin(), arg.end(), ',');
 #ifdef DEBUG
-{
-  std::ostringstream oss;
-  oss << "PRIVMSG: commaCount: " << commaCount;
-  printLog(DEBUG_LOG, COMMAND, oss.str());
-}
-{
-  std::ostringstream oss;
-  oss << "PRIVMSG: MAXTARGETS: " << gConfig->getLimit(MAXTARGETS);
-  printLog(DEBUG_LOG, COMMAND, oss.str());
-}
+  {
+    std::ostringstream oss;
+    oss << "commaCount: " << commaCount;
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
+  {
+    std::ostringstream oss;
+    oss << "MAXTARGETS: " << gConfig->getLimit(MAXTARGETS);
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
 #endif
   if (commaCount + 1 > gConfig->getLimit(MAXTARGETS)) {
     send407TooManyTargets(client);
@@ -55,7 +55,7 @@ bool Server::validPrivmsgTargets(const std::string &arg, const Client &client,
 #ifdef DEBUG
       {
         std::ostringstream oss;
-        oss << "PRIVMSG: target: " << target;
+        oss << "target: " << target;
         printLog(DEBUG_LOG, COMMAND, oss.str());
       }
 #endif
@@ -91,6 +91,9 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
   }
   if (message->empty() || (*message)[0] != ':') {
     send412NoTextToSend(client);
+    client.receiveMessage(":" + std::string(SRV_NAME) + " NOTICE " +
+                          client.getNickname() +
+                          " usage: <target> :message\r\n");
     return (false);
   }
   std::string targetsPart = arg.substr(0, spacePos);
@@ -99,12 +102,12 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "PRIVMSG: targetsPart: " << targetsPart;
+    oss << "targetsPart: " << targetsPart;
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
   {
     std::ostringstream oss;
-    oss << "PRIVMSG: " CYAN "in parsearg: " RESET << message;
+    oss << "message: " << message;
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
@@ -122,15 +125,6 @@ void Server::privmsg(int fd, const std::string &arg) {
   if (parsePrivmsgArguments(arg, sender, &targetsVector, &message) == false) {
     return;
   }
-#ifdef DEBUG
-  // std::cout << "[message]  " << message << std::endl;
-  {
-    std::ostringstream oss;
-    oss << "PRIVMSG: " CYAN "message: " RESET << message;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
-  }
-#endif
-
   bool isChannel = (targetsVector[0][0] == REG_CHAN);
   bool isChanOpPrefix = (targetsVector[0][0] == CHAN_OP);
   stringVector::const_iterator itEnd = targetsVector.end();
@@ -139,11 +133,11 @@ void Server::privmsg(int fd, const std::string &arg) {
     std::string target = *it;
     if (target[0] == CHAN_OP) target = target.substr(1);
 #ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "PRIVMSG: TRIMMED target: " << message;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
-  }
+    {
+      std::ostringstream oss;
+      oss << "TRIMMED channel if any: " << message;
+      printLog(DEBUG_LOG, COMMAND, oss.str());
+    }
 #endif
     if (!channelExists(target) && !findClientByNickname(target)) {
       send401NoSuchNick(sender, target);

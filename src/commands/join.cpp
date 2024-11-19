@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 12:30:47 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:01:02 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,18 @@ void Server::joinChannel(int fd, const std::string &param) {
   }
   pairOfStringVectors channelsAndKeys = parseJoinArguments(param);
   for (size_t i = 0; i < channelsAndKeys.first.size(); ++i) {
+#ifdef DEBUG
+    {
+      std::ostringstream oss;
+      oss << "channel: " << channelsAndKeys.first[i];
+      printLog(DEBUG_LOG, COMMAND, oss.str());
+    }
+    {
+      std::ostringstream oss;
+      oss << "key: " << channelsAndKeys.second[i];
+      printLog(DEBUG_LOG, COMMAND, oss.str());
+    }
+#endif
     const std::string &channelName = channelsAndKeys.first[i];
     const std::string key =
         (i < channelsAndKeys.second.size()) ? channelsAndKeys.second[i] : "";
@@ -82,11 +94,9 @@ pairOfStringVectors Server::parseJoinArguments(const std::string &param) {
 #ifdef DEBUG
   {
     std::ostringstream before, after;
-    before << "JOIN: Before split and trim channel: " CYAN << channelsPart
-           << RESET;
-    after << "JOIN: After split and trim channel: ";
-    for (size_t i = 0; i < channels.size(); ++i)
-      after << CYAN << channels[i] << RESET "|";
+    before << "CHANNELS: Before split and trim channel: " << channelsPart;
+    after << "CHANNELS: After split and trim channel: ";
+    for (size_t i = 0; i < channels.size(); ++i) after << channels[i] << "|";
     printLog(DEBUG_LOG, COMMAND, before.str());
     printLog(DEBUG_LOG, COMMAND, after.str());
   }
@@ -99,8 +109,8 @@ pairOfStringVectors Server::parseJoinArguments(const std::string &param) {
 #ifdef DEBUG
   {
     std::ostringstream before, after;
-    before << "JOIN: Before split and trim key: " CYAN << keysPart << RESET;
-    after << "JOIN: After split and trim key: ";
+    before << "KEYS: Before split and trim key: " CYAN << keysPart << RESET;
+    after << "KEYS: After split and trim key: ";
     for (size_t i = 0; i < keys.size(); ++i)
       after << CYAN << keys[i] << RESET "|";
     printLog(DEBUG_LOG, COMMAND, before.str());
@@ -146,7 +156,7 @@ bool Server::isChannelNameValid(const std::string &channelNameToCheck,
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "JOIN: Channel to check: " << channelNameToCheck;
+    oss << "Channel Name to check: " << channelNameToCheck;
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
@@ -167,8 +177,7 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "JOIN: Join request processing for channel " << REG_CHAN
-        << channel->getName();
+    oss << "Join request for channel: " << REG_CHAN << channel->getName();
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
@@ -189,13 +198,9 @@ bool Server::isLeaveAllChannelsRequest(const std::string &param) {
 void Server::addChanneltoServer(const std::string &channelName) {
   Channel newChannel(channelName);
   _channels[channelName] = newChannel;
-#ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << newChannel.getNameWithPrefix() << ": New channel created";
-    printLog(INFO_LOG, CHANNEL, oss.str());
-  }
-#endif
+  std::ostringstream oss;
+  oss << newChannel.getNameWithPrefix() << ": New channel created";
+  printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
 void Server::sendJoinMessageToClient(int fd, const std::string &nick,

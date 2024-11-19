@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 11:56:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:53:53 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,6 @@
 
 #include "../../includes/Channel.hpp"
 #include "../../includes/Server.hpp"
-
-// Supports only 2 patterns:
-// WHO
-// WHO <#channel>
 
 void Server::who(const Client &client, const std::string &arg) {
   if (arg.empty()) {

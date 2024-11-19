@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 13:19:41 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:00:40 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,13 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
     return (false);
   }
   client->declarePasswordGiven();
-  // std::cout << BBRIGHT_YELLOW "Password IS ACCEPTED !!!!! : " << arg << RESET
-  //           << std::endl;
+#ifdef DEBUG
+  {
+    std::ostringstream oss;
+    oss << "Password IS ACCEPTED !!!!! : " << arg;
+    printLog(DEBUG_LOG, AUTH, oss.str());
+  }
+#endif
   logPassAuthSuccess(*client);
   return (true);
 }
@@ -46,8 +51,8 @@ void logPassAuthFailed(const Client &client) {
   int remainingAttempts = 3 - client.getNbPassAttempts();
   std::ostringstream oss;
   oss << client.getNickname() << " (fd" << client.getFd()
-      << "): Password authentication failed. "
-      << remainingAttempts << " attempt(s) remaining.";
+      << "): Password authentication failed. " << remainingAttempts
+      << " attempt(s) remaining.";
   if (remainingAttempts == 0)
     Server::printLog(WARNING_LOG, AUTH, oss.str());
   else

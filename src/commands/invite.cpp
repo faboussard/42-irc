@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   invite.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 14:48:41 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/17 21:36:11 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:01:04 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void Server::inviteClientToChannel(int invitingClientFd,
     return;
   } else {
     const std::string &invitingNick =
-      _clients.at(invitingClientFd).getNickname();
+        _clients.at(invitingClientFd).getNickname();
     channel.addClientToInvitedMap(invitedClient, invitingNick);
     send341Inviting(_clients.at(invitingClientFd), invitedNick, channel);
 

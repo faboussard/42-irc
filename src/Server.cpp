@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 11:28:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:58:34 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,7 @@ Server::Server(int port, const std::string &password)
 
 Channel *Server::findChannelByName(const std::string &name) {
   channelsMap::iterator it = _channels.find(name);
-  if (it == _channels.end())
-    return (NULL);
+  if (it == _channels.end()) return (NULL);
   return (&it->second);
 }
 
@@ -72,9 +71,6 @@ Client *Server::findClientByNickname(const std::string &nickname) {
 void Server::runServer(void) {
   createSocket();
   fetchStartTime();
-  // std::cout << GREEN "Server started on port " << _port << " at " <<
-  // _startTime
-  //           << RESET << std::endl;
   std::ostringstream oss;
   oss << "Server started on port " << _port;
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
@@ -129,7 +125,6 @@ void Server::acceptAndChat(void) {
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
-      // std::cerr << RED "Error while polling" RESET << std::endl;
       printLog(ERROR_LOG, SYSTEM, "Error while polling");
       break;
     }
@@ -148,7 +143,6 @@ void Server::acceptAndChat(void) {
 void Server::signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGQUIT) {
     _signal = true;
-    // std::cout << std::endl << "Signal Received" << std::endl;
     std::string message;
     if (signal == SIGINT)
       message = "SIGINT Received";
@@ -169,11 +163,7 @@ void Server::closeServer(void) {
   }
   _clients.clear();
   _channels.clear();
-  // Fermer le socket principal
   if (_socketFd != -1) {
-    // std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected"
-    // RESET
-    //           << std::endl;
     std::ostringstream oss;
     oss << "fd" << _socketFd << ": Server disconnected";
     printLog(NOTIFY_LOG, SYSTEM, oss.str());
@@ -198,12 +188,10 @@ void Server::acceptNewClient(void) {
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
-    // std::cerr << RED "Failed to accept new client" RESET << std::endl;
     printLog(ERROR_LOG, SYSTEM, "Failed to accept new client");
     return;
   }
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
-    // std::cerr << "fcntl() failed" << std::endl;
     printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
     return;
   }
@@ -234,9 +222,6 @@ void Server::acceptNewClient(void) {
 void Server::closeClient(int fd) {
   if (fd != -1) {
     close(fd);
-    // std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
-    //           << std::endl;
-
     std::ostringstream oss;
     oss << "fd" << fd << ": Client disconnected";
     printLog(NOTIFY_LOG, SYSTEM, oss.str());
@@ -284,13 +269,6 @@ void Server::sendConnectionMessage(const Client &client) const {
 /*============================================================================*/
 /*       Broadcast                                                            */
 /*============================================================================*/
-
-// void Server::sendToAllClients(const std::string &message) {
-//   for (clientsMap::iterator it = _clients.begin(); it != _clients.end();
-//   ++it) {
-//     if (it->second.isAccepted()) it->second.receiveMessage(message);
-//   }
-// }
 
 void Server::broadcastInChannel(const Client &sender, const Channel &channel,
                                 const std::string &command,
@@ -356,22 +334,22 @@ void Server::printLog(eLogLevel level, eLogContext context,
 
   switch (level) {
     case DEBUG_LOG:
-// #ifdef DEBUG
+      // #ifdef DEBUG
       std::cout << logHeader.str() << CYAN " DEBUG   " RESET
-      << logContext(context) << message << std::endl;
+                << logContext(context) << message << std::endl;
       return;
-// #endif
+      // #endif
     case INFO_LOG:
-     logHeader << GREEN " INFO    " RESET;
+      logHeader << GREEN " INFO    " RESET;
       break;
     case NOTIFY_LOG:
-     logHeader << BLUE << " NOTICE  " << RESET;
+      logHeader << BLUE << " NOTICE  " << RESET;
       break;
     case WARNING_LOG:
-     logHeader << BRIGHT_YELLOW << " WARNING " << RESET;
+      logHeader << BRIGHT_YELLOW << " WARNING " << RESET;
       break;
     case ERROR_LOG:
-     logHeader << RED << " ERROR   " << RESET;
+      logHeader << RED << " ERROR   " << RESET;
       break;
     default:
       return;
