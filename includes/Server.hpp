@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 15:52:26 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 11:36:01 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@
 typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 typedef std::vector<std::string> stringVector;
+typedef std::pair<std::vector<std::string>, std::vector<std::string> >
+    pairOfStringVectors;
 
 extern Config *gConfig;
 
@@ -170,7 +172,7 @@ class Server {
   /*  Command  */
   /*-------- JOIN --------*/
   bool isLeaveAllChannelsRequest(const std::string &param);
-  bool isChannelValid(const std::string &channelToCheck, const Client &client);
+  bool isChannelNameValid(const std::string &channelToCheck, const Client &client);
 
   void joinChannel(int fd, const std::string &param);
 
@@ -179,12 +181,14 @@ class Server {
                                const std::string &channelName,
                                const Client &client);
   void processJoinRequest(int fd, Client *client,
-                          const std::string &channelName,
-                          const stringVector &keys, size_t channelIndex);
+                          Channel *channel);
   void handlePartRequest(int fd, const std::string &param);
   bool handleKey(Client *client, const Channel &channel,
                  const std::string &key);
-  bool isKeyValid(const std::string &keyToCheck);
+  bool isKeyValid(const Channel &channel, const std::string &keyToCheck, const Client &client);
+  bool isChannelNotFull(const Channel &channel, const Client &client);
+  bool isClientAllowedInInviteOnlyChannel(const Channel &channel, const Client &client);
+  pairOfStringVectors parseJoinArguments(const std::string &param);
 
   /*-------- PART --------*/
   void quitAllChannels(int fd);

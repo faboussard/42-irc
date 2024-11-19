@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 13:08:35 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 12:12:24 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ const std::string Channel::getChannelModeFlag(void) const {
 
 const std::string &Channel::getKey(void) const { return (_key); }
 
-int Channel::getLimit(void) const { return (_limit); }
+uint8_t Channel::getLimit(void) const { return (_limit); }
 
 /*============================================================================*/
 /*       Setters                                                              */
