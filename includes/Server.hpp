@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 12:31:21 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:23:25 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ enum Command {
   TOPIC,
   MODE,
   LIST,
-  NOTICE,
   NICK,
   PRIVMSG,
   QUIT,

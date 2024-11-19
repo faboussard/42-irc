@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 09:32:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 13:23:42 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ Command Parser::choseCommand(const std::string& command) {
     return (MODE);
   } else if (command == "LIST") {
     return (LIST);
-  } else if (command == "NOTICE") {
-    return (NOTICE);
   } else if (command == "NICK") {
     return (NICK);
   } else if (command == "PRIVMSG") {
