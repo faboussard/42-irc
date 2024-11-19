@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 11:36:01 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 12:31:21 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <utility>
 
 #include <algorithm>
 #include <cctype>
@@ -69,13 +70,7 @@ enum Command {
   UNKNOWN
 };
 
-enum eLogLevel {
-  DEBUG_LOG,
-  INFO_LOG,
-  NOTIFY_LOG,
-  WARNING_LOG,
-  ERROR_LOG
-};
+enum eLogLevel { DEBUG_LOG, INFO_LOG, NOTIFY_LOG, WARNING_LOG, ERROR_LOG };
 
 enum eLogContext {
   SYSTEM,
@@ -135,7 +130,7 @@ class Server {
 
   /*  Log */
   static void printLog(eLogLevel level, eLogContext context,
-                      const std::string &message);
+                       const std::string &message);
 
  private:
   /* Server Management */
@@ -172,7 +167,8 @@ class Server {
   /*  Command  */
   /*-------- JOIN --------*/
   bool isLeaveAllChannelsRequest(const std::string &param);
-  bool isChannelNameValid(const std::string &channelToCheck, const Client &client);
+  bool isChannelNameValid(const std::string &channelToCheck,
+                          const Client &client);
 
   void joinChannel(int fd, const std::string &param);
 
@@ -180,14 +176,15 @@ class Server {
   void sendJoinMessageToClient(int fd, const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
-  void processJoinRequest(int fd, Client *client,
-                          Channel *channel);
+  void processJoinRequest(int fd, Client *client, Channel *channel);
   void handlePartRequest(int fd, const std::string &param);
   bool handleKey(Client *client, const Channel &channel,
                  const std::string &key);
-  bool isKeyValid(const Channel &channel, const std::string &keyToCheck, const Client &client);
+  bool isKeyValid(const Channel &channel, const std::string &keyToCheck,
+                  const Client &client);
   bool isChannelNotFull(const Channel &channel, const Client &client);
-  bool isClientAllowedInInviteOnlyChannel(const Channel &channel, const Client &client);
+  bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
+                                          const Client &client);
   pairOfStringVectors parseJoinArguments(const std::string &param);
 
   /*-------- PART --------*/
@@ -231,8 +228,8 @@ class Server {
   /*-------- KICK --------*/
   void kick(int fd, const std::string &arg);
   void parseKickParams(const std::string &param, const Client &client,
-                             std::string *channelName, std::string *targetNick,
-                             std::string *reason);
+                       std::string *channelName, std::string *targetNick,
+                       std::string *reason);
 
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);
@@ -242,10 +239,11 @@ class Server {
   void sendPrivmsgToClient(const Client &sender, const Client &receiver,
                            const std::string &message);
   bool parsePrivmsgArguments(const std::string &arg, const Client &client,
-                      std::vector<std::string> *targets, std::string *message);
+                             std::vector<std::string> *targets,
+                             std::string *message);
 
   bool validPrivmsgTargets(const std::string &arg, const Client &client,
-                    stringVector *targets);
+                           stringVector *targets);
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);

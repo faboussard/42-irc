@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 12:16:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 12:30:47 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,10 +112,10 @@ pairOfStringVectors Server::parseJoinArguments(const std::string &param) {
   return channelsAndKeys;
 }
 
-bool Server::isKeyValid(const Channel &channel, const std::string &key, const Client &client)
-{
-  if (channel.getMode().keyRequired && !channel.getKey().empty() && channel.getKey() != key)
-  {
+bool Server::isKeyValid(const Channel &channel, const std::string &key,
+                        const Client &client) {
+  if (channel.getMode().keyRequired && !channel.getKey().empty() &&
+      channel.getKey() != key) {
     send475BadChannelKey(client, channel);
     return (false);
   }
