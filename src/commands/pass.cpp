@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 13:19:41 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 08:11:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 #include "../../includes/Parser.hpp"
 #include "../../includes/colors.hpp"
 
-void logPassAuthFailed(const Client &client);
-void logPassAuthSuccess(const Client &client);
+static void logPassAuthFailed(const Client &client);
+static void logPassAuthSuccess(const Client &client);
 
 bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
   if (client->isPasswordGiven()) {
@@ -36,8 +36,6 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
     return (false);
   }
   client->declarePasswordGiven();
-  // std::cout << BBRIGHT_YELLOW "Password IS ACCEPTED !!!!! : " << arg << RESET
-  //           << std::endl;
   logPassAuthSuccess(*client);
   return (true);
 }

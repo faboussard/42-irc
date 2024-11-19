@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/17 21:54:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 08:20:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,8 +111,6 @@ void Client::receiveMessage(const std::string& message) const {
   if (_fd != -1) {
     std::ostringstream oss;
     if (send(_fd, message.c_str(), message.length(), MSG_NOSIGNAL) == -1) {
-      // std::cerr << RED "Error while sending message to fd " << _fd << ": "
-      //           << strerror(errno) << RESET << std::endl;
       oss << "Error while sending message to fd " << _fd << ": "
           << strerror(errno);
       Server::printLog(ERROR_LOG, CLIENT, oss.str());
@@ -123,7 +121,6 @@ void Client::receiveMessage(const std::string& message) const {
       Server::printLog(INFO_LOG, REPLY, oss.str());
     }
   } else {
-    // std::cerr << RED "Invalid file descriptor" RESET << std::endl;
     Server::printLog(ERROR_LOG, SYSTEM, "Invalid file descriptor");
   }
 }
@@ -131,17 +128,12 @@ void Client::receiveMessage(const std::string& message) const {
 std::string Client::shareMessage(void) {
   char buffer[1024] = {0};
   ssize_t bytesRead = recv(_fd, buffer, sizeof(buffer) - 1, 0);
-  // std::cout << MAGENTA << "Received message from client " << _fd << ": " <<
-  // buffer
-  //           << RESET << std::endl;
   if (bytesRead == -1) {
-    // std::cerr << RED "Error while receiving message: " RESET << std::endl;
     std::ostringstream oss;
     oss << _nickname << _fd << ": Error while receiving message";
     Server::printLog(ERROR_LOG, CLIENT, oss.str());
     return ("");
   } else if (bytesRead == 0) {
-    // std::cerr << RED "Connection closed by peer" RESET << std::endl;
     std::ostringstream oss;
     oss << _nickname << _fd << ": Connection closed by peer";
     Server::printLog(ERROR_LOG, CLIENT, oss.str());
@@ -156,10 +148,6 @@ std::string Client::shareMessage(void) {
 /*============================================================================*/
 
 void Client::incrementChannelsCount(void) {
-// #ifdef DEBUG
-//   std::cout << std::endl << std::endl;
-//   std::cout << "increment _channelsCount " << _channelsCount << std::endl;
-// #endif
   if (_channelsCount <= gConfig->getLimit(CHANLIMIT)) {
     ++_channelsCount;
 
@@ -172,11 +160,6 @@ void Client::incrementChannelsCount(void) {
 }
 
 void Client::decrementChannelsCount(void) {
-// #ifdef DEBUG
-//   std::cout << std::endl << std::endl;
-
-//   std::cout << "decrement _channelsCount " << _channelsCount << std::endl;
-// #endif
   if (_channelsCount > 0) {
     --_channelsCount;
 

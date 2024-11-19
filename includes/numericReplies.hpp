@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 09:24:42 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 08:35:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,14 +319,6 @@ void send482ChanOPrivsNeeded(const Client &client, const Channel &channel);
 void send501UmodeUnknownFlag(const Client &client);
 void send525InvalidKey(const Client &client, const Channel &channel);
 
-/*--------- Test -------------------------------------------------------------*/
-
-void testAllNumericReplies(const std::string &serverStartTime,
-                           const Client &client, const std::string &command,
-                           const std::string &targetNick);
-
-/*--------- Just for fun -----------------------------------------------------*/
-
 #define _WELCOME(nick)                                                         \
   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" +                  \
   "────────────────────────────────────────────────────────────────────\n" +  \
@@ -341,5 +333,12 @@ void testAllNumericReplies(const std::string &serverStartTime,
   "> ^ <" + " ────\n" +                                                       \
   "───────────────── powered by faboussa, mbernard & yusengok with " + "♥" +  \
   " ──" + "\n\r\n")
+
+/*--------- Test -------------------------------------------------------------*/
+#ifdef TESTNUMERICR
+void testAllNumericReplies(const std::string &serverStartTime,
+                           const Client &client, const std::string &command,
+                           const std::string &targetNick);
+#endif
 
 #endif  // INCLUDES_NUMERICREPLIES_HPP_

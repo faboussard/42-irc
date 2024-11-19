@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 13:10:41 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 08:34:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void sendNumericReply(int fd, std::string *message) {
 
   message->erase(0, message->find(' ') + 1);
   Server::printLog(INFO_LOG, REPLY,
-                   message->erase(message->find_last_not_of("\r\n")));
+                   message->erase(message->find_last_not_of("\r\n") + 1));
 }
 
 /*============================================================================*/
@@ -369,7 +369,7 @@ void send525InvalidKey(const Client &client, const Channel &channel) {
 /*       Unit - numeric replies                                               */
 /*============================================================================*/
 
-#ifdef TESTNUMERICREPLIES
+#ifdef TESTNUMERICR
 void testAllNumericReplies(const std::string &serverStartTime,
                            const Client &client, const std::string &command,
                            const std::string &targetNick) {

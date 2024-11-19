@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 11:04:35 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 11:56:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 08:02:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,23 +19,30 @@
 // WHO
 // WHO <#channel>
 
+
+#ifdef DEBUG
+#define EACH_CHANNEL "WHO: Listing all clients for each Channel"
+static void printDebugWho(const std::string &channelName);
+#endif
+
 void Server::who(const Client &client, const std::string &arg) {
   if (arg.empty()) {
 #ifdef DEBUG
-    {
-      std::ostringstream oss;
-      oss << "WHO: Listing all clients for each Channel";
-      printLog(DEBUG_LOG, COMMAND, oss.str());
-    }
+    // {
+    // std::ostringstream oss;
+    // oss << "WHO: Listing all clients for each Channel";
+    printLog(DEBUG_LOG, COMMAND, EACH_CHANNEL);
+    // }
 #endif
     channelsMap::iterator itEnd = _channels.end();
     for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
 #ifdef DEBUG
-      {
-        std::ostringstream oss;
-        oss << "WHO: Listing all clients for " << it->first;
-        printLog(DEBUG_LOG, COMMAND, oss.str());
-      }
+      printDebugWho(it->first);
+      // {
+      //   std::ostringstream oss;
+      //   oss << FOR_CHANNEL << it->first;
+      //   printLog(DEBUG_LOG, COMMAND, oss.str());
+      // }
 #endif
       sendClientsListInChannel(client, it->second);
     }
@@ -44,11 +51,12 @@ void Server::who(const Client &client, const std::string &arg) {
   } else {
     if (channelExists(arg)) {
 #ifdef DEBUG
-      {
-        std::ostringstream oss;
-        oss << "WHO: Listing all clients for " << arg;
-        printLog(DEBUG_LOG, COMMAND, oss.str());
-      }
+      printDebugWho(arg);
+      // {
+      //   std::ostringstream oss;
+      //   oss << FOR_CHANNEL << arg;
+      //   printLog(DEBUG_LOG, COMMAND, oss.str());
+      // }
 #endif
       Channel &channel = _channels.at(arg.substr(1));
       sendClientsListInChannel(client, channel);
@@ -76,3 +84,11 @@ void Server::sendClientsListInChannel(const Client &client,
   }
   send315EndOfWho(client, channel);
 }
+
+#ifdef DEBUG
+void printDebugWho(const std::string &channelName) {
+  std::ostringstream oss;
+  oss << "WHO: Listing all clients for " << channelName;
+  Server::printLog(DEBUG_LOG, COMMAND, oss.str());
+}
+#endif

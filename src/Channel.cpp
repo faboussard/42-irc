@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 13:08:35 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 08:08:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,6 @@ void Channel::setTopic(const std::string &topic, const std::string &author) {
 
 void Channel::addClientToChannelMap(Client *client) {
   _channelClients[client->getFd()] = client;
-  // std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
-  //           << " added in channel " << _name << std::endl;
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname() << " has joined";
   Server::printLog(INFO_LOG, CHANNEL, oss.str());
@@ -117,8 +115,6 @@ void Channel::addClientToChannelMap(Client *client) {
 
 void Channel::removeClientFromChannelMap(Client *client) {
   _channelClients.erase(client->getFd());
-  // std::cout << "[" << _nameWithPrefix << "]" << "Client " << client->getFd()
-  //           << " removed from channel " << _name << std::endl;
   std::ostringstream oss;
   oss << _nameWithPrefix << ": " << client->getNickname() << " has left";
   Server::printLog(INFO_LOG, CHANNEL, oss.str());
@@ -127,17 +123,12 @@ void Channel::removeClientFromChannelMap(Client *client) {
 void Channel::checkAndremoveClientFromTheChannel(int fd) {
   if (_channelClients.find(fd) != _channelClients.end()) {
     _channelClients[fd]->receiveMessage(
-        "You have been removed from the channel");
+        "You have been removed from the channel\r\n");
     std::ostringstream oss;
     oss << _nameWithPrefix << ": " << _channelClients.at(fd)->getNickname()
         << " has left";
     Server::printLog(INFO_LOG, CHANNEL, oss.str());
     _channelClients.erase(fd);
-    // std::cout << "Client " << fd << " removed from channel " << _name
-    //           << std::endl;
-  // } else {
-  //   std::cerr << RED "Client " RESET << fd << " not found in channel "
-  //             << _name << RESET << std::endl;
   }
 }
 
