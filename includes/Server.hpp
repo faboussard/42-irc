@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 09:13:06 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 12:03:28 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@
 #include "../includes/Config.hpp"
 #include "../includes/numericReplies.hpp"
 
-#define SRV_NAME "ircserv.localhost"
+#define SRV_NAME "ircserv"
 #define SRV_VERSION "1.0.0"
 
 typedef std::map<int, Client> clientsMap;
