@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 08:34:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 11:44:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -362,6 +362,16 @@ void send501UmodeUnknownFlag(const Client &client) {
 void send525InvalidKey(const Client &client, const Channel &channel) {
   std::string message =
       _525_ERR_INVALIDKEY(client.getNickname(), channel.getNameWithPrefix());
+  sendNumericReply(client.getFd(), &message);
+}
+
+void send696InvalidModeParam(const Client &client,
+                             const std::string &chanNameWithPrefix,
+                             const std::string &modeChar,
+                             const std::string &param) {
+  std::string message = _696_ERR_INVALIDMODEPARAM(client.getNickname(),
+                                                  chanNameWithPrefix, modeChar,
+                                                  param);
   sendNumericReply(client.getFd(), &message);
 }
 
