@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 12:03:28 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:27:02 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,6 +215,7 @@ class Server {
 
   void Server::switchMode(int fd, const char &c, const bool &plusMode,
                           const stringVector &parsedArgument);
+  bool modeChannelNameIsCorrect(int fd, const std::string &arg);
 
   /*-------- WHO --------*/
   void who(const Client &client, const std::string &arg);

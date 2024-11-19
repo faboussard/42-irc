@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 11:27:32 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:27:02 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,25 +66,29 @@ void Server::switchMode(int fd, const char &c, const bool &plusMode,
   }
 }
 
-static bool modeArgsAreCorrect(const stringVector parsedArgument) {
+//  bool Server::modeArgsAreCorrect(const stringVector parsedArgument) {}
 
+bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
+  std::istringstream iss(arg);
+  std::string channel, arg1;
+
+  if (!(iss >> channel) || !(iss >> arg1)) {
+    send461NeedMoreParams(_clients[fd], "MODE");
+    return (false);
+  }
+  if (_channels.find(channel) == _channels.end()) {
+    send403NoSuchChannel(_clients[fd], channel);
+    return (false);
+  }
+  return (true);
 }
 
 void Server::mode(int fd, const std::string &arg) {
+  if (modeChannelNameIsCorrect(fd, arg) == false) return;
   stringVector parsedArgument = Parser::splitCommand(arg);
-
-  //    check if the args are correct
-  if (parsedArgument.empty() || parsedArgument[0].empty()) {
-    send461NeedMoreParams(_clients[fd], "MODE");
-    return;
-  }
+  commandVectorPairs pairedArgument = Parser::parseModeIntoPairs(arg);
   size_t i = 0;
   bool plusMode = true;
-  //    check if the channel exists
-  if (_channels.find(parsedArgument[0]) == _channels.end()) {
-    send403NoSuchChannel(_clients[fd], parsedArgument[0]);
-    return;
-  }
   if (parsedArgument[1][0] == '+' || parsedArgument[1][0] == '-') {
     ++i;
     if (parsedArgument[0][0] == '-') plusMode = false;
