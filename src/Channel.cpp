@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 13:59:53 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:04:40 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,13 +118,9 @@ void Channel::removeClientFromChannelMap(Client *client) {
 
 void Channel::checkAndremoveClientFromTheChannel(int fd) {
   if (_channelClients.find(fd) != _channelClients.end()) {
+    _channelClients.erase(fd);
     _channelClients[fd]->receiveMessage(
         "You have been removed from the channel");
-    std::ostringstream oss;
-    oss << _nameWithPrefix << ": " << _channelClients.at(fd)->getNickname()
-        << " has left";
-    Server::printLog(INFO_LOG, CHANNEL, oss.str());
-    _channelClients.erase(fd);
     std::ostringstream oss;
     oss << "Client " << fd << " removed from channel " << _name;
     Server::printLog(INFO_LOG, CHANNEL, oss.str());

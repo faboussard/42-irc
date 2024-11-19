@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 13:55:07 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 14:02:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include "../includes/Config.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
-#include "../includes/tests.hpp"
 
 void checkArgs(int port, const std::string& password) {
   if (port <= 1080 || port > 65535) {
