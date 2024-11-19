@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 10:39:48 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/19 11:27:32 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,10 @@ void Server::switchMode(int fd, const char &c, const bool &plusMode,
   }
 }
 
+static bool modeArgsAreCorrect(const stringVector parsedArgument) {
+
+}
+
 void Server::mode(int fd, const std::string &arg) {
   stringVector parsedArgument = Parser::splitCommand(arg);
 
@@ -74,7 +78,6 @@ void Server::mode(int fd, const std::string &arg) {
     send461NeedMoreParams(_clients[fd], "MODE");
     return;
   }
-
   size_t i = 0;
   bool plusMode = true;
   //    check if the channel exists

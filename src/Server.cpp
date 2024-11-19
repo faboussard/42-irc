@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/18 11:28:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 08:30:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,12 @@ Server::Server(int port, const std::string &password)
 /*       Finders                                                              */
 /*============================================================================*/
 
-Channel *Server::findChannelByName(const std::string &name) {
-  channelsMap::iterator it = _channels.find(name);
-  if (it == _channels.end())
-    return (NULL);
-  return (&it->second);
-}
+// Channel *Server::findChannelByName(const std::string &name) {
+//   channelsMap::iterator it = _channels.find(name);
+//   if (it == _channels.end())
+//     return (NULL);
+//   return (&it->second);
+// }
 
 Client *Server::findClientByNickname(const std::string &nickname) {
   clientsMap::iterator itEnd = _clients.end();
@@ -72,9 +72,6 @@ Client *Server::findClientByNickname(const std::string &nickname) {
 void Server::runServer(void) {
   createSocket();
   fetchStartTime();
-  // std::cout << GREEN "Server started on port " << _port << " at " <<
-  // _startTime
-  //           << RESET << std::endl;
   std::ostringstream oss;
   oss << "Server started on port " << _port;
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
@@ -129,7 +126,6 @@ void Server::acceptAndChat(void) {
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
-      // std::cerr << RED "Error while polling" RESET << std::endl;
       printLog(ERROR_LOG, SYSTEM, "Error while polling");
       break;
     }
@@ -148,7 +144,6 @@ void Server::acceptAndChat(void) {
 void Server::signalHandler(int signal) {
   if (signal == SIGINT || signal == SIGQUIT) {
     _signal = true;
-    // std::cout << std::endl << "Signal Received" << std::endl;
     std::string message;
     if (signal == SIGINT)
       message = "SIGINT Received";
@@ -171,9 +166,6 @@ void Server::closeServer(void) {
   _channels.clear();
   // Fermer le socket principal
   if (_socketFd != -1) {
-    // std::cout << RED "Server <" RESET << _socketFd << RED "> Disconnected"
-    // RESET
-    //           << std::endl;
     std::ostringstream oss;
     oss << "fd" << _socketFd << ": Server disconnected";
     printLog(NOTIFY_LOG, SYSTEM, oss.str());
@@ -198,12 +190,10 @@ void Server::acceptNewClient(void) {
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
-    // std::cerr << RED "Failed to accept new client" RESET << std::endl;
     printLog(ERROR_LOG, SYSTEM, "Failed to accept new client");
     return;
   }
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
-    // std::cerr << "fcntl() failed" << std::endl;
     printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
     return;
   }
@@ -226,7 +216,7 @@ void Server::acceptNewClient(void) {
   _pollFds.push_back(newPoll);
 
   std::ostringstream oss;
-  oss << "fd" << newClientFd << ": New client connected from " << clientIp
+  oss << "fd" << newClientFd << ": Listening a new client from " << clientIp
       << ". Waiting for authentification.";
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
 }
@@ -234,9 +224,6 @@ void Server::acceptNewClient(void) {
 void Server::closeClient(int fd) {
   if (fd != -1) {
     close(fd);
-    // std::cout << RED "Client <" RESET << fd << RED "> Disconnected" RESET
-    //           << std::endl;
-
     std::ostringstream oss;
     oss << "fd" << fd << ": Client disconnected";
     printLog(NOTIFY_LOG, SYSTEM, oss.str());
@@ -356,11 +343,11 @@ void Server::printLog(eLogLevel level, eLogContext context,
 
   switch (level) {
     case DEBUG_LOG:
-// #ifdef DEBUG
+#ifdef DEBUG
       std::cout << logHeader.str() << CYAN " DEBUG   " RESET
       << logContext(context) << message << std::endl;
       return;
-// #endif
+#endif
     case INFO_LOG:
      logHeader << GREEN " INFO    " RESET;
       break;

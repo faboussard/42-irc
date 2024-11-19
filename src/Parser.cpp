@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/18 09:32:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 11:37:16 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ std::vector<std::string> split(const std::string& str,
     size_t start = 0;
     size_t end = str.find(delim);
     size_t delimLen = delim.length();
-    // std::cout << str << std::endl;
     while (end != std::string::npos) {
         std::string token = str.substr(start, end - start);
         token = trimBeginWithChar(token, '\n');
@@ -117,8 +116,32 @@ commandVectorPairs Parser::parseCommandIntoPairs(const std::string& command) {
       secondPart = "";
     strToUpper(&firstPart);
     pair = std::make_pair(firstPart, secondPart);
-    // std::cout << CYAN "pair.first : " << pair.first << std::endl;
-    // std::cout << BLUE "pair.second : " << pair.second << RESET << std::endl;
+    std::ostringstream oss;
+    oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN
+        << pair.second << RESET;
+    Server::printLog(DEBUG_LOG, PARSER, oss.str());
+    result.push_back(pair);
+  }
+  return (result);
+}
+
+commandVectorPairs Parser::parseModeIntoPairs(const std::string& args) {
+  std::vector<std::string> cmds = split(args, " ");
+  commandVectorPairs result;
+  std::string token;
+  std::pair<std::string, std::string> pair;
+  size_t size = cmds.size();
+
+  for (size_t i = 0; i < size; ++i) {
+    cmds[i].erase(cmds[i].find_last_not_of("+-") + 1);
+    std::string firstPart = cmds[i].substr(0, cmds[i].find_first_of("+-"));
+    std::string secondPart;
+    if (firstPart.size() != cmds[i].size())
+      secondPart = cmds[i].substr(cmds[i].find_first_of(" ") + 1);
+    else
+      secondPart = "";
+    strToUpper(&firstPart);
+    pair = std::make_pair(firstPart, secondPart);
     std::ostringstream oss;
     oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN
         << pair.second << RESET;

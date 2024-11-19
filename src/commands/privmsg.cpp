@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/18 12:05:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/19 08:19:44 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,6 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
   splitByCommaAndTrim(targetsPart, targetsVector);
 
 #ifdef DEBUG
-  // std::cout << "targetsPart: " << targetsPart << std::endl;
-  // std::cout << "[in parsearg ]  " << message << std::endl;
   {
     std::ostringstream oss;
     oss << "PRIVMSG: targetsPart: " << targetsPart;
