@@ -5,9 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 15:00:54 by mbernard         ###   ########.fr       */
+/*   Created: Invalid date        by 2lyon.fr>         #+#    #+#             */
+/*   Updated: 2024/11/20 10:11:59 by mbernard         ###   ########.fr       */
 /*                                                                            */
+/* ************************************************************************** */
+
 /* ************************************************************************** */
 
 #ifndef INCLUDES_SERVER_HPP_
@@ -157,7 +159,7 @@ class Server {
   bool channelExists(const std::string &channel);
 
   /* Commands handling */
-  void handleCommand(const std::string &command, const std::string &argument,
+  void handleCommand(Command command, const std::string &argument,
                      int fd);
   void broadcastInChannel(const Client &client, const Channel &channel,
                           const std::string &command,
