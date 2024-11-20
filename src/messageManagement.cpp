@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 09:41:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 09:43:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,6 +244,6 @@ void Server::handleCommand(Command command, const std::string &argument,
       send462AlreadyRegistered(_clients[fd]);
       break;
     default:
-      break;
+      botCommands(&_clients.at(fd), command, argument);
   }
 }

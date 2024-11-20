@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 09:40:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 09:43:54 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -254,8 +254,7 @@ class Server {
   void ping(const Client &client, const std::string &token);
 
   /*-------- BOT ---------*/
-  void botCommands(Client *client, const std::string &command,
-                   const std::string &arg);
+  void botCommands(Client *client, Command command, const std::string &arg);
   // void sendBotCommandsList(const Client &client);
   // void sendBotNotLaunched(const Client &client);
   // void sendToBot(const Client &client, Command command,

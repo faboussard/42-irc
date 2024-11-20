@@ -6,19 +6,17 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/20 09:37:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 09:44:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Bot.hpp"
 #include "../../includes/Server.hpp"
 
-// void Server::botCommands(const Client &client, Command command,
-void Server::botCommands(Client *client, const std::string &command,
+void Server::botCommands(Client *client, Command command,
                          const std::string &arg) {
   (void)arg;
-  // if (command == BOT) {
-  if (command == "BOT") {
+  if (command == BOT) {
     // sendBotCommandsList(client);
        client->setBotLaunched(true);
   } else {
