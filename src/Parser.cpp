@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 15:04:42 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:59:59 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,9 @@ std::vector<std::string> split(const std::string& str,
   return (result);
 }
 
-commandVectorPairs Parser::parseCommandIntoPairs(const std::string& command) {
+stringPairsVector Parser::parseCommandIntoPairs(const std::string& command) {
   std::vector<std::string> cmds = split(command, "\r\n");
-  commandVectorPairs result;
+  stringPairsVector result;
   std::string token;
   std::pair<std::string, std::string> pair;
   size_t size = cmds.size();

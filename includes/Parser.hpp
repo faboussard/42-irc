@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 13:21:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:58:33 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 
 extern Config *gConfig;
 
-typedef std::vector<std::pair<std::string, std::string> > commandVectorPairs;
+typedef std::vector<std::pair<std::string, std::string> > stringPairsVector;
 class Parser {
  private:
   Parser(void);
@@ -33,7 +33,7 @@ class Parser {
  public:
   static Command            choseCommand(const std::string& command);
   static stringVector       splitCommand(const std::string& command);
-  static commandVectorPairs parseCommandIntoPairs(const std::string &command);
+  static stringPairsVector parseCommandIntoPairs(const std::string &command);
   static bool verifyPassword(std::string arg, std::string psd, Client *client);
   static bool verifyNick(const std::string &nick,
                          Client *client, clientsMap *cltMap);

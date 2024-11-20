@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by 2lyon.fr>         #+#    #+#             */
-/*   Updated: 2024/11/20 13:21:33 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:59:20 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 typedef std::vector<std::string> stringVector;
 typedef std::pair<std::vector<std::string>, std::vector<std::string> >
-    pairOfStringVectors;
+    stringVectorPairs;
 
 extern Config *gConfig;
 
@@ -183,7 +183,7 @@ class Server {
   bool isChannelNotFull(const Channel &channel, const Client &client);
   bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
                                           const Client &client);
-  pairOfStringVectors parseJoinArguments(const std::string &param);
+  stringVectorPairs parseJoinArguments(const std::string &param);
 
   /*-------- PART --------*/
   void quitAllChannels(int fd);

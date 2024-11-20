@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/20 13:43:07 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 14:00:59 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,33 +83,19 @@
 //   if (excessivePlusOrMinus || *nbO > 3) *nbParamsMustBe = SIZE_MAX;
 // }
 
-// std::vector<std::pair<std::string, std::string>>
-// static commandVectorPairs parseModeIntoPairs(const std::string &args) {
-//   stringVector plusMinusTab;
-//   stringVector argTab;
+stringVectorPairs parseModeIntoPairs(const std::string &args) {
+  std::string channel, token;
+  stringVector modeStringVector;
+  stringVector modeArguments;
 
-//   std::istringstream iss(args);
-//   std::string channel, token;
-//   std::vector<std::string> message;
-//   size_t nbParamsMustBe = 0;
-//   size_t nbO = 0;
-//   commandVectorPairs result;
+  std::istringstream iss(args);
+  stringVectorPairs modeStringAndArguments;
 
-//   iss >> channel;
-//   while (iss >> token) {
-//     if (token[0] == '-' || token[0] == '+')
-//       plusMinusTab.push_back(token);
-//     else
-//       argTab.push_back(token);
-//     countNbParamsMustBe(token, &nbParamsMustBe, &nbO);
-//     token.clear();
-//     if (nbParamsMustBe == SIZE_MAX)
-//       return (result);
-//   }
-//   // result = fillModePair();
+  iss >> channel;
+  while (iss >> token) {
 
-//   return (result);
-// }
+  return (result);
+}
 
 bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
   std::istringstream iss(arg);
@@ -132,8 +118,7 @@ bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
 
 void Server::mode(int fd, const std::string &arg) {
   if (modeChannelNameIsCorrect(fd, arg) == false) return;
-  // stringVector parsedArgument = Parser::splitCommand(arg);
-  // commandVectorPairs pairedArgument = parseModeIntoPairs(arg);
+  pairOfStringVectors pairedArgument = parseModeIntoPairs(arg);
   // size_t i = 0;
   // bool plusMode = true;
   // if (parsedArgument[1][0] == '+' || parsedArgument[1][0] == '-') {

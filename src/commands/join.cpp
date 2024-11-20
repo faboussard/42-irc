@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 14:35:36 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 14:00:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void Server::joinChannel(int fd, const std::string &param) {
     send405TooManyChannels(client);
     return;
   }
-  pairOfStringVectors channelsAndKeys = parseJoinArguments(param);
+  stringVectorPairs channelsAndKeys = parseJoinArguments(param);
   for (size_t i = 0; i < channelsAndKeys.first.size(); ++i) {
 #ifdef DEBUG
     {
@@ -92,8 +92,8 @@ void Server::joinChannel(int fd, const std::string &param) {
   }
 }
 
-pairOfStringVectors Server::parseJoinArguments(const std::string &param) {
-  pairOfStringVectors channelsAndKeys;
+stringVectorPairs Server::parseJoinArguments(const std::string &param) {
+  stringVectorPairs channelsAndKeys;
   stringVector channels;
   std::string::size_type spacePos = param.find(" ");
   std::string channelsPart = param.substr(0, spacePos);
