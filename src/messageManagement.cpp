@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   messageManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 14:19:37 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 09:33:03 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,14 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
   size_t vecSize = splittedPair.size();
 
   for (size_t it = 0; it < vecSize; ++it) {
-    std::string command = splittedPair[it].first;
+    Command command = Parser::choseCommand(splittedPair[it].first);
     std::string argument = splittedPair[it].second;
     std::ostringstream oss;
     oss << "Command: " MAGENTA << command << RESET " | Message: " MAGENTA
         << argument << RESET;
     printLog(DEBUG_LOG, PARSER, oss.str());
 
-    if (command == "QUIT") {
+    if (command == QUIT) {
       quit(argument, client, &_clients);
       return;
     }
@@ -74,10 +74,13 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 #ifdef DEBUG
       clientIsAcceptedMessageToDelete(client, command);
 #endif
-      handleCommand(command, argument, client->getFd());
-    } else if (command == "CAP") {
+      if (command == UNKNOWN)
+        send421UnknownCommand(*client, splittedPair[it].first);
+      else
+        handleCommand(command, argument, client->getFd());
+    } else if (command == CAP) {
       continue;
-    } else if (command == "PASS") {
+    } else if (command == PASS) {
       if (isLastPass(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyPassword(argument, _password, client) == false) {
           if (client->getNbPassAttempts() >= 3) {
@@ -88,7 +91,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       }
     } else if (client->isPasswordGiven() == false) {
       send451NotRegistered(*client);
-    } else if (command == "NICK") {
+    } else if (command == NICK) {
       if (isLastNick(splittedPair, it + 1, vecSize)) {
         if (Parser::verifyNick(argument, client, &_clients) == true &&
             client->isAccepted() == false && client->isUsernameSet()) {
@@ -96,7 +99,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
           sendConnectionMessage(*client);
         }
       }
-    } else if (command == "USER") {
+    } else if (command == USER) {
       if (Parser::verifyUser(argument, client, &_clients) == true &&
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
@@ -138,7 +141,7 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
       continue;
     }
     if (cmd == CAP) continue;
-    handleCommand(command, argument, client.getFd());
+    handleCommand(cmd, argument, client.getFd());
   }
 }
 
@@ -198,39 +201,49 @@ void Server::handleClientMessage(int fd) {
 /*       Commands management                                                  */
 /*============================================================================*/
 
-void Server::handleCommand(const std::string &command,
-                           const std::string &argument, int fd) {
-  if (command.empty()) return;
-  if (command == "JOIN") {
-    joinChannel(fd, argument);
-  } else if (command == "KICK") {
-    kick(fd, argument);
-  } else if (command == "INVITE") {
-    invite(fd, argument);
-  } else if (command == "TOPIC") {
-    topic(fd, argument);
-  } else if (command == "MODE") {
-    mode(fd, argument);
-  } else if (command == "WHO") {
-    who(_clients.at(fd), argument);
-  } else if (command == "LIST") {
-    list(_clients.at(fd), argument);
-  } else if (command == "NICK") {
-    Parser::verifyNick(argument, &_clients[fd], &_clients);
-  } else if (command == "USER") {
-    Parser::verifyUser(argument, &_clients[fd], &_clients);
-  } else if (command == "PRIVMSG") {
-    privmsg(fd, argument);
-  } else if (command == "QUIT") {
-    quit(argument, &_clients[fd], &_clients);
-  } else if (command == "PING") {
-    ping(_clients.at(fd), argument);
-  } else if (command == "PASS" || command == "USER") {
-    if (argument.empty())
-      send461NeedMoreParams(_clients[fd], command);
-    else
+void Server::handleCommand(Command command, const std::string &argument,
+                           int fd) {
+  switch (command) {
+    case JOIN:
+      joinChannel(fd, argument);
+      break;
+    case KICK:
+      kick(fd, argument);
+      break;
+    case INVITE:
+      invite(fd, argument);
+      break;
+    case TOPIC:
+      topic(fd, argument);
+      break;
+    case MODE:
+      mode(fd, argument);
+      break;
+    case WHO:
+      who(_clients.at(fd), argument);
+      break;
+    case LIST:
+      list(_clients.at(fd), argument);
+      break;
+    case NICK:
+      Parser::verifyNick(argument, &_clients[fd], &_clients);
+      break;
+    case USER:
+      Parser::verifyUser(argument, &_clients[fd], &_clients);
+      break;
+    case PRIVMSG:
+      privmsg(fd, argument);
+      break;
+    case QUIT:
+      quit(argument, &_clients[fd], &_clients);
+      break;
+    case PING:
+      ping(_clients.at(fd), argument);
+      break;
+    case PASS:
       send462AlreadyRegistered(_clients[fd]);
-  } else {
-    return;
+      break;
+    default:
+      break;
   }
 }
