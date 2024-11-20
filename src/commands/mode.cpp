@@ -1,126 +1,130 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/20 11:30:01 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:43:07 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Channel.hpp"
 #include "../../includes/Parser.hpp"
 #include "../../includes/Server.hpp"
+#include "../../includes/numericReplies.hpp"
 
 // Parameters: <channel> {[+|-]|o|s|i|t|k|l} [<limit>] [<user>] [<ban mask>]
 
-void Server::switchMode(int fd, const char &c, const bool &plusMode,
-                        const stringVector &parsedArgument) {
-  std::string channelName = parsedArgument[0];
-  u_int8_t i = 2;
-  switch (c) {
-    case 'i':  // Définir/supprimer le canal sur invitation uniquement
-      if (plusMode)
-        _channels[channelName].activateInviteOnlyMode();
-      else
-        _channels[channelName].deactivateInviteOnlyMode();
-      break;
-    case 't':  // Définir/supprimer les restrictions de la commande TOPIC pour
-               // les opérateurs de canaux
-      if (plusMode)
-        _channels[channelName].activateTopicOpsOnlyMode();
-      else
-        _channels[channelName].deactivateTopicOpsOnlyMode();
-      break;
-    case 'k':  // Définir/supprimer la clé du canal (mot de passe)
-      if (plusMode) {
-        _channels[channelName].activateKeyMode(parsedArgument[2], _clients[fd]);
-        _channels[channelName].updateKey(parsedArgument[2]);
-      } else {
-        _channels[channelName].deactivateKeyMode();
-      }
-      break;
-    case 'o':  // Donner/retirer le privilège de l’opérateur de canal
-               //  (pas plus de 3 à la fois)
-      //  If a user attempts to make themselves an operator using the "+o"
-      //  flag, the attempt should be ignored.
-      if (plusMode) {
-        _channels[channelName].addOperator(&_clients[fd]);
-      } else {
-        _channels[channelName].removeOperator(&_clients[fd]);
-      }
-      break;
-    case 'l':  // Définir/supprimer la limite d’utilisateurs pour le canal
-      if (plusMode) {
-        int limit = std::atoi(parsedArgument[2].c_str());
-        _channels[channelName].activateLimitMode(limit, _clients[fd]);
-      } else {
-        _channels[channelName].deactivateLimitMode();
-      }
-      break;
-    default:
-      //      send696InvalidModeParam(_clients[fd], c);
-      break;
-  }
-}
+// void Server::switchMode(int fd, const char &c, const bool &plusMode,
+//                         const stringVector &parsedArgument) {
+//   u_int8_t i = 2;
+//   switch (c) {
+//     case 'i':  // Définir/supprimer le canal sur invitation uniquement
+//       if (plusMode)
+//         _channels[channelName].activateInviteOnlyMode();
+//       else
+//         _channels[channelName].deactivateInviteOnlyMode();
+//       break;
+//     case 't':  // Définir/supprimer les restrictions de la commande TOPIC pour
+//                // les opérateurs de canaux
+//       if (plusMode)
+//         _channels[channelName].activateTopicOpsOnlyMode();
+//       else
+//         _channels[channelName].deactivateTopicOpsOnlyMode();
+//       break;
+//     case 'k':  // Définir/supprimer la clé du canal (mot de passe)
+//       if (plusMode) {
+//         _channels[channelName].activateKeyMode(parsedArgument[2], _clients[fd]);
+//         _channels[channelName].updateKey(parsedArgument[2]);
+//       } else {
+//         _channels[channelName].deactivateKeyMode();
+//       }
+//       break;
+//     case 'o':  // Donner/retirer le privilège de l’opérateur de canal
+//                //  (pas plus de 3 à la fois)
+//       //  If a user attempts to make themselves an operator using the "+o"
+//       //  flag, the attempt should be ignored.
+//       if (plusMode) {
+//         _channels[channelName].addOperator(&_clients[fd]);
+//       } else {
+//         _channels[channelName].removeOperator(&_clients[fd]);
+//       }
+//       break;
+//     case 'l':  // Définir/supprimer la limite d’utilisateurs pour le canal
+//       if (plusMode) {
+//         int limit = std::atoi(parsedArgument[2].c_str());
+//         _channels[channelName].activateLimitMode(limit, _clients[fd]);
+//       } else {
+//         _channels[channelName].deactivateLimitMode();
+//       }
+//       break;
+//     default:
+//       //      send696InvalidModeParam(_clients[fd], c);
+//       break;
+//   }
+// }
 
 //  bool Server::modeArgsAreCorrect(const stringVector parsedArgument) {}
-static size_t countNbParamsMustBe(const std::string &str,
-                                  size_t *nbParamsMustBe, size_t *nbO) {
-  size_t i = 0;
-  bool excessivePlusOrMinus = false;
-  while (str[i]) {
-    if (str[i] == 'o' || str[i] == 'k' || str[i] == 'l') ++(*nbParamsMustBe);
-    if (str[i] == 'o') ++(*nbO);
-    if (str[i] == '+' || str[i] == '-') {
-      excessivePlusOrMinus = true;
-      break;
-    }
-    ++i;
-  }
-  if (excessivePlusOrMinus || *nbO > 3) *nbParamsMustBe = SIZE_MAX;
-}
+// static size_t countNbParamsMustBe(const std::string &str,
+//                                   size_t *nbParamsMustBe, size_t *nbO) {
+//   size_t i = 0;
+//   bool excessivePlusOrMinus = false;
+//   while (str[i]) {
+//     if (str[i] == 'o' || str[i] == 'k' || str[i] == 'l') ++(*nbParamsMustBe);
+//     if (str[i] == 'o') ++(*nbO);
+//     if (str[i] == '+' || str[i] == '-') {
+//       excessivePlusOrMinus = true;
+//       break;
+//     }
+//     ++i;
+//   }
+//   if (excessivePlusOrMinus || *nbO > 3) *nbParamsMustBe = SIZE_MAX;
+// }
 
 // std::vector<std::pair<std::string, std::string>>
-static commandVectorPairs parseModeIntoPairs(const std::string &args) {
-  stringVector plusMinusTab;
-  stringVector argTab;
+// static commandVectorPairs parseModeIntoPairs(const std::string &args) {
+//   stringVector plusMinusTab;
+//   stringVector argTab;
 
-  std::istringstream iss(args);
-  std::string channel, token;
-  std::vector<std::string> message;
-  size_t nbParamsMustBe = 0;
-  size_t nbO = 0;
-  commandVectorPairs result;
+//   std::istringstream iss(args);
+//   std::string channel, token;
+//   std::vector<std::string> message;
+//   size_t nbParamsMustBe = 0;
+//   size_t nbO = 0;
+//   commandVectorPairs result;
 
-  iss >> channel;
-  while (iss >> token) {
-    if (token[0] == '-' || token[0] == '+')
-      plusMinusTab.push_back(token);
-    else
-      argTab.push_back(token);
-    countNbParamsMustBe(token, &nbParamsMustBe, &nbO);
-    token.clear();
-    if (nbParamsMustBe == SIZE_MAX)
-      return (result);
-  }
-  result = fillModePair();
+//   iss >> channel;
+//   while (iss >> token) {
+//     if (token[0] == '-' || token[0] == '+')
+//       plusMinusTab.push_back(token);
+//     else
+//       argTab.push_back(token);
+//     countNbParamsMustBe(token, &nbParamsMustBe, &nbO);
+//     token.clear();
+//     if (nbParamsMustBe == SIZE_MAX)
+//       return (result);
+//   }
+//   // result = fillModePair();
 
-  return (result);
-}
+//   return (result);
+// }
 
 bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
   std::istringstream iss(arg);
-  std::string channel, arg1;
+  std::string channel, modestring;
 
-  if (!(iss >> channel) || !(iss >> arg1)) {
+  if (!(iss >> channel)) {
     send461NeedMoreParams(_clients[fd], "MODE");
     return (false);
   }
-  if (_channels.find(channel) == _channels.end()) {
+  if (_channels.find(channel.substr(1)) == _channels.end()) {
     send403NoSuchChannel(_clients[fd], channel);
+    return (false);
+  }
+  if (!(iss >> modestring)) {
+    send324Channelmodeis(_clients[fd], _channels[channel.substr(1)]);
     return (false);
   }
   return (true);
@@ -129,9 +133,9 @@ bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
 void Server::mode(int fd, const std::string &arg) {
   if (modeChannelNameIsCorrect(fd, arg) == false) return;
   // stringVector parsedArgument = Parser::splitCommand(arg);
-  commandVectorPairs pairedArgument = parseModeIntoPairs(arg);
-  size_t i = 0;
-  bool plusMode = true;
+  // commandVectorPairs pairedArgument = parseModeIntoPairs(arg);
+  // size_t i = 0;
+  // bool plusMode = true;
   // if (parsedArgument[1][0] == '+' || parsedArgument[1][0] == '-') {
   //   ++i;
   //   if (parsedArgument[0][0] == '-') plusMode = false;
@@ -150,13 +154,6 @@ void Server::mode(int fd, const std::string &arg) {
 // -- 324 RPL_CHANNELMODEIS:
 // :<server> 324 <client> <channel> <modestring> <mode arguments>...
 // e.g. :irc.example.com 324 Alice #chatroom +itkl secretpass 25
-
-// -- 329_RPL_CREATIONTIME:
-// creation time of a channel
-// :<server> 329 <client> <channel> <creationtime>
-// :irc.example.com 329 Alice #chatroom 1698544800
-// <creationtime> is a unix timestamp representing when the channel was
-// created
 
 // ======== MODE <prefix><channel> <modestring> <target nick>
 // ================== e.g. MODE #channel +o <target nick> Replies:
@@ -201,80 +198,5 @@ Mode message
            k - set a channel key (password).
            l - set the user limit to channel;
 
-   When using the 'o' and 'b' options, a restriction on a total of three
-   per mode command has been imposed.  That is, any combination of 'o'
-   and
-
-4.2.3.2 User modes
-
-   Parameters: <nickname> {[+|-]|i|w|s|o}
-
-   The user MODEs are typically changes which affect either how the
-   client is seen by others or what 'extra' messages the client is sent.
-   A user MODE command may only be accepted if both the sender of the
-   message and the nickname given as a parameter are both the same.
-
-   The available modes are as follows:
-
-           i - marks a users as invisible;
-           s - marks a user for receipt of server notices;
-           w - user receives wallops;
-           o - operator flag.
-
-   Additional modes may be available later on.
-
-   If a user attempts to make themselves an operator using the "+o"
-   flag, the attempt should be ignored.  There is no restriction,
-   however, on anyone `deopping' themselves (using "-o").  Numeric
-   Replies:
-
-           ERR_NEEDMOREPARAMS              RPL_CHANNELMODEIS
-           ERR_CHANOPRIVSNEEDED            ERR_NOSUCHNICK
-           ERR_NOTONCHANNEL                ERR_KEYSET
-           RPL_BANLIST                     RPL_ENDOFBANLIST
-           ERR_UNKNOWNMODE                 ERR_NOSUCHCHANNEL
-
-           ERR_USERSDONTMATCH              RPL_UMODEIS
-           ERR_UMODEUNKNOWNFLAG
-
-   Examples:
-
-           Use of Channel Modes:
-
-MODE #Finnish +im               ; Makes #Finnish channel moderated and
-                                'invite-only'.
-
-MODE #Finnish +o Kilroy         ; Gives 'chanop' privileges to Kilroy on
-                                channel #Finnish.
-
-MODE #Finnish +v Wiz            ; Allow WiZ to speak on #Finnish.
-
-MODE #Fins -s                   ; Removes 'secret' flag from channel
-                                #Fins.
-
-MODE #42 +k oulu                ; Set the channel key to "oulu".
-
-MODE #eu-opers +l 10            ; Set the limit for the number of users
-                                on channel to 10.
-
-MODE &oulu +b                   ; list ban masks set for channel.
-
-MODE &oulu +b *!*@*             ; prevent all users from joining.
-
-MODE &oulu +b *!*@*.edu         ; prevent any user from a hostname
-                                matching *.edu from joining.
-        Use of user Modes:
-
-:MODE WiZ -w                    ; turns reception of WALLOPS messages
-                                off for WiZ.
-
-:Angel MODE Angel +i            ; Message from Angel to make themselves
-                                invisible.
-
-MODE WiZ -o                     ; WiZ 'deopping' (removing operator
-                                status).  The plain reverse of this
-                                command ("MODE WiZ +o") must not be
-                                allowed from users since would bypass
-                                the OPER command.
 
 */

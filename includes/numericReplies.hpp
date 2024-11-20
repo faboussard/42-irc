@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 11:53:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:42:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,7 +269,6 @@ void send352Whoreply(const Client &client, const Client &clientInChannel, \
                      const Channel &channel);
 
 /*------ Channel related replies ---------------------------------------------*/
-
 void send321Liststart(int fd, const std::string &nick);
 void send322List(int fd, const std::string &nick, const Channel &channel);
 void send323Listend(int fd, const std::string &nick);

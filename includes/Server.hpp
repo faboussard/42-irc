@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by 2lyon.fr>         #+#    #+#             */
-/*   Updated: 2024/11/20 10:11:59 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:21:33 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,9 +178,6 @@ class Server {
                                const std::string &channelName,
                                const Client &client);
   void processJoinRequest(int fd, Client *client, Channel *channel);
-  void handlePartRequest(int fd, const std::string &param);
-  bool handleKey(Client *client, const Channel &channel,
-                 const std::string &key);
   bool isKeyValid(const Channel &channel, const std::string &keyToCheck,
                   const Client &client);
   bool isChannelNotFull(const Channel &channel, const Client &client);
@@ -217,8 +214,8 @@ class Server {
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
 
-  void Server::switchMode(int fd, const char &c, const bool &plusMode,
-                          const stringVector &parsedArgument);
+  // void Server::switchMode(int fd, const char &c, const bool &plusMode,
+                          // const stringVector &parsedArgument);
   bool modeChannelNameIsCorrect(int fd, const std::string &arg);
 
   /*-------- WHO --------*/
@@ -252,9 +249,6 @@ class Server {
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
-
-  /* Tests */
-  void addClient(int fd, const Client &client);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

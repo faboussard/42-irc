@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 14:28:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:21:12 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
   }
   if (message->empty() || (*message)[0] != ':') {
     send412NoTextToSend(client);
-    client.receiveMessage(":" + std::string(SRV_NAME) + " NOTICE " +
+    client.receiveMessage(":" + FROM_SERVER + " NOTICE " +
                           client.getNickname() +
                           " usage: PRIVMSG <target> :message\r\n");
     return (false);
