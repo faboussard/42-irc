@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 09:01:14 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 09:40:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ class Server {
   bool channelExists(const std::string &channel);
 
   /* Commands handling */
-  void handleCommand(const std::string &command, const std::string &argument,
+  void handleCommand(Command command, const std::string &argument,
                      int fd);
   void broadcastInChannel(const Client &client, const Channel &channel,
                           const std::string &command,
