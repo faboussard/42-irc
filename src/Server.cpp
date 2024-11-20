@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 08:33:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 12:49:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ Server::Server(int port, const std::string &password)
 
 // const std::string &Server::getPassword(void) const { return _password; }
 
-// int Server::getPort(void) const { return _port; }
+int Server::getPort(void) const { return _port; }
 
 int Server::getSocketFd(void) const { return _socketFd; }
 

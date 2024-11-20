@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 09:43:54 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 12:49:26 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
 #include <utility>
 #include <vector>
 
+#include "../includes/Bot.hpp"
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
@@ -110,6 +111,8 @@ class Server {
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
 
+  Bot *_bot;
+
  public:
   explicit Server(int port, const std::string &password);
 
@@ -121,9 +124,12 @@ class Server {
   void acceptAndChat(void);
   void closeServer(void);
 
+  /* Bot */
+  void addBot(Bot *bot); // --> Call by Bot in runBot
+
   /*  Getters */
   int getSocketFd() const;
-  // int getPort() const;
+  int getPort() const;
   // const std::string &getPassword() const;
   //  Client &findClientByFd(int fd);
   // const channelsMap &getChannels() const;
