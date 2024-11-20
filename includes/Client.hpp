@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 12:24:17 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 09:02:53 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,9 @@ class Client {
   uint8_t _nbPassAttempts;
   uint8_t _channelsCount;
 
+  /* bonus */
+  bool _botLaunched;
+
  public:
   explicit Client(int fd = -1, const std::string& ip = "",
                   const std::string& hostName = "");
@@ -59,6 +62,7 @@ class Client {
   bool isCapSend(void) const;
   uint8_t getNbPassAttempts(void) const;
   uint8_t getChannelsCount() const;
+  bool botLaunched(void) const;  // bonus
 
   /* Setters */
   void setFd(int fd);
@@ -68,6 +72,7 @@ class Client {
   void setIp(const std::string& ip);
   void setHostName(const std::string& hostname);
   void setCapSend(bool yes);
+  void setBotLaunched(bool lanched);  // bonus
 
   /* Client status */
   void declareAccepted(void);

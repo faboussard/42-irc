@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 15:24:21 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 09:01:14 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,10 @@ enum Command {
   USER,
   PASS,
   WHO,
+  BOT,
+  WEATHER,
+  TRANSLATE,
+  ASCII_ART,
   UNKNOWN
 };
 
@@ -79,7 +83,8 @@ enum eLogContext {
   AUTH,
   CLIENT,
   CHANNEL,
-  REPLY
+  REPLY,
+  BOT_L
 };
 
 /* log contexts */
@@ -91,6 +96,7 @@ enum eLogContext {
 #define CLIENT_LOG "[Client] "
 #define CHANNEL_LOG "[Channel] "
 #define REP_LOG "[Reply] "
+#define BOT_LOG "[Bot] "
 
 class Server {
  private:
@@ -246,6 +252,14 @@ class Server {
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
+
+  /*-------- BOT ---------*/
+  void botCommands(Client *client, const std::string &command,
+                   const std::string &arg);
+  // void sendBotCommandsList(const Client &client);
+  // void sendBotNotLaunched(const Client &client);
+  // void sendToBot(const Client &client, Command command,
+  //                const std::string &arg);
 
   /* Tests */
   void addClient(int fd, const Client &client);

@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 15:28:52 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 08:22:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,6 @@
 
 #include <string>
 #include <vector>
-
-enum eBotCommands {
-  WEATHER,
-  ASCII_ART
-};
 
 class Bot {
  private:

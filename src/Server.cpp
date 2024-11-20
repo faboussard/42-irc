@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 15:24:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 08:33:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -379,6 +379,8 @@ std::string logContext(eLogContext context) {
       return CHANNEL_LOG;
     case REPLY:
       return REP_LOG;
+    case BOT_L:
+      return BOT_LOG;
   }
   return ("");
 }

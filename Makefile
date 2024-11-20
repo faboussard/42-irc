@@ -17,14 +17,17 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-vpath %.cpp src src/commands
+vpath %.cpp src src/commands src/bonus
 
-HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils \
+HEADERS_LIST =  Server Config Client Channel Parser Bot \
+                numericReplies utils \
+                colors
 
-SRCS = main Server Client Channel Parser Config \
+SRCS = main Server Client Channel Parser Config Bot\
        numericReplies messageManagement utils \
        pass nick user \
 	   invite join kick list mode part ping privmsg quit topic who \
+	   botCommands
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/

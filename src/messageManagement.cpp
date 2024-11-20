@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 14:19:37 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 09:01:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,7 @@ void Server::handleClientMessage(int fd) {
 
 void Server::handleCommand(const std::string &command,
                            const std::string &argument, int fd) {
-  if (command.empty()) return;
+  // if (command.empty()) return;
   if (command == "JOIN") {
     joinChannel(fd, argument);
   } else if (command == "KICK") {
@@ -226,11 +226,11 @@ void Server::handleCommand(const std::string &command,
   } else if (command == "PING") {
     ping(_clients.at(fd), argument);
   } else if (command == "PASS" || command == "USER") {
-    if (argument.empty())
-      send461NeedMoreParams(_clients[fd], command);
-    else
-      send462AlreadyRegistered(_clients[fd]);
+    // if (argument.empty())
+    //   send461NeedMoreParams(_clients[fd], command);
+    // else
+    send462AlreadyRegistered(_clients[fd]);
   } else {
-    return;
+    botCommands(&_clients.at(fd), command, argument);
   }
 }
