@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 09:55:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 19:16:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,12 @@ int main(int ac, char** argv) {
   std::string password = argv[2];
   checkArgs(port, password);
   Server ser(port, password);
-  Bot bot(ser);
 
   try {
     signal(SIGINT, Server::signalHandler);
     signal(SIGQUIT, Server::signalHandler);
     initServerConfig();
     ser.runServer();
-    bot.runBot();
   } catch (const std::runtime_error& e) {
     std::cerr << RED << e.what() << RESET << '\n';
     ser.closeServer();

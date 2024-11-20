@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 12:49:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 22:20:41 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ bool Server::_signal = false;
 Server::Server(int port, const std::string &password)
     : _socketFd(-1), _port(port), _password(password) {
   _signal = false;
+  _bot = new Bot(this);
 }
 
 /*============================================================================*/
@@ -75,6 +76,7 @@ void Server::runServer(void) {
   std::ostringstream oss;
   oss << "Server started on port " << _port;
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
+  _bot->runBot();
   acceptAndChat();
 }
 
@@ -123,6 +125,7 @@ void Server::acceptAndChat(void) {
   newPoll.events = POLLIN;
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
+  // Add fds of bot to pollFds
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
@@ -133,6 +136,12 @@ void Server::acceptAndChat(void) {
       if (_pollFds[i].revents & POLLIN && _signal == false) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
+        } else if(_pollFds[i].fd == _bot->getIrcSocketFd()) {
+          // _bot->handleRequest();
+          printLog(DEBUG_LOG, BOT_L, "Received a message from IRC server");
+        } else if(_pollFds[i].fd == _bot->getApiSocketFd()) {
+          // _bot->handleResponse();
+          printLog(DEBUG_LOG, BOT_L, "Received a message from API server");
         } else {
           handleClientMessage(_pollFds[i].fd);
         }
@@ -175,6 +184,7 @@ void Server::closeServer(void) {
   shrink_to_fit(&_pollFds);
   _channels.clear();
   delete gConfig;
+  delete _bot;
 }
 
 /*============================================================================*/
@@ -249,8 +259,6 @@ void Server::clearClient(int fd) {
       break;
     }
   }
-  // if (_clients.at(fd).getChannelsCount() > 0) {  // Decommente after merge
-  // join & part
   _clients.erase(fd);
 }
 

@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 09:43:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 19:20:58 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,16 @@ static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
 }
 
 // To delete later --------------------------------------------------------->//
-#ifdef DEBUG
-static void clientIsAcceptedMessageToDelete(const Client *client,
-                                            const std::string &command) {
-  std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
-            << std::endl;
-  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
-  std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BBRIGHT_YELLOW "Command: " << command << std::endl;
-}
-#endif
+// #ifdef DEBUG
+// static void clientIsAcceptedMessageToDelete(const Client *client,
+//                                             const std::string &command) {
+//   std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
+//             << std::endl;
+//   std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
+//   std::cout << "UserName: " << client->getUserName() << std::endl;
+//   std::cout << BBRIGHT_YELLOW "Command: " << command << std::endl;
+// }
+// #endif
 // <-------------------------------------------------------------------------//
 
 void Server::handleInitialMessage(Client *client, const std::string &msg) {
@@ -71,9 +71,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       return;
     }
     if (client->isAccepted()) {
-#ifdef DEBUG
-      clientIsAcceptedMessageToDelete(client, command);
-#endif
+// #ifdef DEBUG
+//       clientIsAcceptedMessageToDelete(client, command);
+// #endif
       if (command == UNKNOWN)
         send421UnknownCommand(*client, splittedPair[it].first);
       else

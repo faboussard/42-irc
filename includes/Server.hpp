@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 12:49:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 20:49:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,9 @@ enum eLogContext {
 #define BOT_LOG "[Bot] "
 
 class Server {
- private:
+ public:
   static bool _signal;
+ private:
   int _socketFd;
   int _port;
   std::string _startTime;

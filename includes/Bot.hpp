@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/20 14:10:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/20 22:27:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@
 #define API_PORT 8080
 #define API_PORT2 8008
 #define MAX_CLIENTS_BOT 20
+#define LOCALHOST "127.0.0.1"
+
+#define BOT_CONNECTION_FAILED_IRC "Failed to connect to IRC server"
 
 class Server;
 
@@ -52,7 +55,6 @@ class Bot {
   void createSockets(void);
   void connectToIrcServer(void);
   void listenApiServer(void);
-  void pollSockets(void);
 
   /* HTTP requests */
   void handleRequest(void);  // receive, parse, send
@@ -65,13 +67,17 @@ class Bot {
   void sendResponse(const std::string &response);
 
  public:
+  struct pollfd pollFds[2];
+
   Bot(Server *server);
-  ~Bot(void);  //temporary
+  ~Bot(void);
 
   void runBot(void);
+  // void pollSockets(void);
   void closeBot(void);
 
-  // int getIrcSocketFd(void) const;
+  int getIrcSocketFd(void) const;
+  int getApiSocketFd(void) const;
 };
 
 #endif  // INCLUDES_BOT_HPP_
