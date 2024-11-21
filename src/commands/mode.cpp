@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 22:24:48 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 22:53:24 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,55 +18,55 @@
 
 // Parameters: <channel> {[+|-]|o|s|i|t|k|l} [<limit>] [<user>] [<ban mask>]
 
-// void Server::switchMode(int fd, const char &c, const bool &plusMode,
-//                         const stringVector &parsedArgument) {
-//   u_int8_t i = 2;
-//   switch (c) {
-//     case 'i':  // Définir/supprimer le canal sur invitation uniquement
-//       if (plusMode)
-//         _channels[channelName].activateInviteOnlyMode();
-//       else
-//         _channels[channelName].deactivateInviteOnlyMode();
-//       break;
-//     case 't':  // Définir/supprimer les restrictions de la commande TOPIC
-//     pour
-//                // les opérateurs de canaux
-//       if (plusMode)
-//         _channels[channelName].activateTopicOpsOnlyMode();
-//       else
-//         _channels[channelName].deactivateTopicOpsOnlyMode();
-//       break;
-//     case 'k':  // Définir/supprimer la clé du canal (mot de passe)
-//       if (plusMode) {
-//         _channels[channelName].activateKeyMode(parsedArgument[2],
-//         _clients[fd]); _channels[channelName].updateKey(parsedArgument[2]);
-//       } else {
-//         _channels[channelName].deactivateKeyMode();
-//       }
-//       break;
-//     case 'o':  // Donner/retirer le privilège de l’opérateur de canal
-//                //  (pas plus de 3 à la fois)
-//       //  If a user attempts to make themselves an operator using the "+o"
-//       //  flag, the attempt should be ignored.
-//       if (plusMode) {
-//         _channels[channelName].addOperator(&_clients[fd]);
-//       } else {
-//         _channels[channelName].removeOperator(&_clients[fd]);
-//       }
-//       break;
-//     case 'l':  // Définir/supprimer la limite d’utilisateurs pour le canal
-//       if (plusMode) {
-//         int limit = std::atoi(parsedArgument[2].c_str());
-//         _channels[channelName].activateLimitMode(limit, _clients[fd]);
-//       } else {
-//         _channels[channelName].deactivateLimitMode();
-//       }
-//       break;
-//     default:
-//       //      send696InvalidModeParam(_clients[fd], c);
-//       break;
-//   }
-// }
+void Server::switchMode(int fd, const char &c, const bool &plusMode,
+                        const stringVector &parsedArgument) {
+  u_int8_t i = 2;
+  switch (c) {
+    case 'i':  // Définir/supprimer le canal sur invitation uniquement
+      if (plusMode)
+        _channels[channelName].activateInviteOnlyMode();
+      else
+        _channels[channelName].deactivateInviteOnlyMode();
+      break;
+    case 't':  // Définir/supprimer les restrictions de la commande TOPIC
+    pour
+               // les opérateurs de canaux
+      if (plusMode)
+        _channels[channelName].activateTopicOpsOnlyMode();
+      else
+        _channels[channelName].deactivateTopicOpsOnlyMode();
+      break;
+    case 'k':  // Définir/supprimer la clé du canal (mot de passe)
+      if (plusMode) {
+        _channels[channelName].activateKeyMode(parsedArgument[2],
+        _clients[fd]); _channels[channelName].updateKey(parsedArgument[2]);
+      } else {
+        _channels[channelName].deactivateKeyMode();
+      }
+      break;
+    case 'o':  // Donner/retirer le privilège de l’opérateur de canal
+               //  (pas plus de 3 à la fois)
+      //  If a user attempts to make themselves an operator using the "+o"
+      //  flag, the attempt should be ignored.
+      if (plusMode) {
+        _channels[channelName].addOperator(&_clients[fd]);
+      } else {
+        _channels[channelName].removeOperator(&_clients[fd]);
+      }
+      break;
+    case 'l':  // Définir/supprimer la limite d’utilisateurs pour le canal
+      if (plusMode) {
+        int limit = std::atoi(parsedArgument[2].c_str());
+        _channels[channelName].activateLimitMode(limit, _clients[fd]);
+      } else {
+        _channels[channelName].deactivateLimitMode();
+      }
+      break;
+    default:
+      //      send696InvalidModeParam(_clients[fd], c);
+      break;
+  }
+}
 
 bool Server::isModeArgumentValid(const stringVector &modeStrings,
                                  const stringVector &arguments) {
@@ -130,6 +130,13 @@ bool Server::isModeStringValid(const stringVector &argumentToCheck) {
   const std::string plusMinus = "+-";
   for (size_t i = 0; i < argumentToCheck.size(); ++i) {
     const std::string &arg = argumentToCheck[i];
+    #ifdef DEBUG
+    {
+      std::ostringstream oss;
+      oss << "arg: " << arg;
+      printLog(DEBUG_LOG, COMMAND, oss.str());
+    }
+    #endif
 
     if (arg[0] != '+' && arg[0] != '-') {
       #ifdef DEBUG
@@ -176,14 +183,18 @@ void Server::mode(int fd, const std::string &arg) {
   std::string channel, modeString, modeArguments;
   iss >> channel;
   if (isChannelValid(fd, channel) == false) return;
+  const Channel &channelObj = _channels[channel.substr(1)];
   if (!(iss >> modeString)) {
-    send324Channelmodeis(_clients[fd], _channels[channel.substr(1)]);
+    send324Channelmodeis(_clients[fd], channelObj);
+    return;
+  }
+  if (channelObj.isOperator(fd) == false) {
+    send482ChanOPrivsNeeded(_clients[fd], channelObj);
     return;
   }
   KeyValuePairList modestringAndmodeArguments =
       parseCommandIntoKeyValuePairList(modeString, modeArguments);
   if (modestringAndmodeArguments.first.empty()) {
-    std::cout << "hey" << std::endl;
     // send400UnknownError(
     //     client, modeString,
     //     "usage: mode format is <client> <channel> <modestring> <mode "
@@ -193,15 +204,12 @@ void Server::mode(int fd, const std::string &arg) {
   stringVector modeStringVector = modestringAndmodeArguments.first;
   stringVector modeArgumentsVector = modestringAndmodeArguments.second;
 
-  if (!isModeStringValid(modeStringVector) ||
-      !isModeArgumentValid(modeStringVector, modeArgumentsVector)) {
+  if (!isModeStringValid(modeStringVector) || (modeArgumentsVector.size() > 0 &&
+      !isModeArgumentValid(modeStringVector, modeArgumentsVector))) {
     send472UnknownMode(client, modeArguments);
     return;
   }
-  // ERR_CHANOPRIVSNEEDED (482) = f a user does not have appropriate privileges
-  // to change modes on the target channel, the server MUST NOT process the
-  // message, and
-  // switchMode(fd, modeString, modeArguments);
+  switchMode(fd, modeString, modeArguments);
 }
 
 // ======== MODE <prefix><channel>
