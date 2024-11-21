@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 22:20:41 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 08:27:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,9 @@ void Server::acceptAndChat(void) {
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
   // Add fds of bot to pollFds
+
+  int botIrcFd = _bot->getIrcSocketFd();
+  int botApiFd = _bot->getApiSocketFd();
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
@@ -136,10 +139,10 @@ void Server::acceptAndChat(void) {
       if (_pollFds[i].revents & POLLIN && _signal == false) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
-        } else if(_pollFds[i].fd == _bot->getIrcSocketFd()) {
+        } else if (_pollFds[i].fd == botIrcFd) {
           // _bot->handleRequest();
           printLog(DEBUG_LOG, BOT_L, "Received a message from IRC server");
-        } else if(_pollFds[i].fd == _bot->getApiSocketFd()) {
+        } else if (_pollFds[i].fd == botApiFd) {
           // _bot->handleResponse();
           printLog(DEBUG_LOG, BOT_L, "Received a message from API server");
         } else {

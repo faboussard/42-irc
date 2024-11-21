@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 20:49:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 11:35:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,9 +100,8 @@ enum eLogContext {
 #define BOT_LOG "[Bot] "
 
 class Server {
- public:
-  static bool _signal;
  private:
+  static bool _signal;
   int _socketFd;
   int _port;
   std::string _startTime;
@@ -124,9 +123,6 @@ class Server {
   static void signalHandler(int signal);
   void acceptAndChat(void);
   void closeServer(void);
-
-  /* Bot */
-  void addBot(Bot *bot); // --> Call by Bot in runBot
 
   /*  Getters */
   int getSocketFd() const;
@@ -260,9 +256,14 @@ class Server {
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
 
-  /*-------- BOT ---------*/
+/* Bot */
+ public:
+  void addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi);
+
+ private:
   void botCommands(Client *client, Command command, const std::string &arg);
-  // void sendBotCommandsList(const Client &client);
+  void sendBotResponse(const Client &client, const std::string &message);
+  void sendBotInstruction(const Client &client);
   // void sendBotNotLaunched(const Client &client);
   // void sendToBot(const Client &client, Command command,
   //                const std::string &arg);

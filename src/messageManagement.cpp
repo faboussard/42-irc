@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 19:20:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 08:38:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 #ifdef DEBUG
-  std::cout << BRIGHT_GREEN << msg << RESET << std::endl;
+  // std::cout << BRIGHT_GREEN << msg << RESET << std::endl;
 #endif
   commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
