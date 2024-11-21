@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 17:15:56 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 17:47:27 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,22 +68,32 @@
 //   }
 // }
 
-//  bool Server::modeArgsAreCorrect(const stringVector parsedArgument) {}
-// static size_t countNbParamsMustBe(const std::string &str,
-//                                   size_t *nbParamsMustBe, size_t *nbO) {
-//   size_t i = 0;
-//   bool excessivePlusOrMinus = false;
-//   while (str[i]) {
-//     if (str[i] == 'o' || str[i] == 'k' || str[i] == 'l') ++(*nbParamsMustBe);
-//     if (str[i] == 'o') ++(*nbO);
-//     if (str[i] == '+' || str[i] == '-') {
-//       excessivePlusOrMinus = true;
-//       break;
-//     }
-//     ++i;
-//   }
-//   if (excessivePlusOrMinus || *nbO > 3) *nbParamsMustBe = SIZE_MAX;
-// }
+bool Server::isModeArgumentCorrect(const stringVector &argumentToCheck) {
+  // size_t i = 0;
+}
+
+bool Server::isModeStringCorrect(const stringVector &argumentToCheck) {
+  if (argumentToCheck.size() < 2) {
+    return false;
+  }
+
+  const std::string validModes = "itkol";
+  const std::string plusMinus = "+-";
+  for (size_t i = 0; i < argumentToCheck.size(); ++i) {
+    const std::string &arg = argumentToCheck[i];
+
+    if (arg[0] != '+' && arg[0] != '-') {
+      return false;
+    }
+
+    for (size_t j = 1; j < arg.size(); ++j) {
+      if (validModes.find(arg[j]) == std::string::npos) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
 
 bool Server::isChannelValid(int fd, const std::string &channel) {
   if (channel.empty() || channel[0] != REG_CHAN) {
@@ -100,26 +110,34 @@ bool Server::isChannelValid(int fd, const std::string &channel) {
 void Server::mode(int fd, const std::string &arg) {
   const Client &client = _clients.at(fd);
   std::istringstream iss(arg);
-  std::string channel, modestring, modeArguments;
+  std::string channel, modeString, modeArguments;
   iss >> channel;
   if (isChannelValid(fd, channel) == false) return;
-  if (!(iss >> modestring)) {
+  if (!(iss >> modeString)) {
     send324Channelmodeis(_clients[fd], _channels[channel.substr(1)]);
     return;
   }
   KeyValuePairList modestringAndmodeArguments =
-      parseCommandIntoKeyValuePairList(modestring, modeArguments);
+      parseCommandIntoKeyValuePairList(modeString, modeArguments);
   if (modestringAndmodeArguments.first.empty()) {
-send400UnknownError(client, modestring, "usage: mode format is <client> <channel> <modestring> <mode arguments> . it cannot contains commas or blankspaces");
+    send400UnknownError(
+        client, modeString,
+        "usage: mode format is <client> <channel> <modestring> <mode "
+        "arguments> . it cannot contains commas or blankspaces");
     return;
   }
-  //check correct mode arguments
-  //check correct mode strings
-  
-  // while (parsedArgument[1][i]) {
-  //   switchMode(fd, parsedArgument[1][i], plusMode, parsedArgument);
-  //   ++i;
-  // }
+  stringVector modeStringVector = modestringAndmodeArguments.first;
+  stringVector modeArgumentsVector = modestringAndmodeArguments.second;
+
+  if (!isModeArgumentCorrect(modeStringVector) ||
+      !isModeArgumentCorrect(modeArgumentsVector)) {
+    send472UnknownMode(client, modeArguments);
+    return;
+  }
+  // ERR_CHANOPRIVSNEEDED (482) = f a user does not have appropriate privileges
+  // to change modes on the target channel, the server MUST NOT process the
+  // message, and
+  // switchMode(fd, modeString, modeArguments);
 }
 
 // ======== MODE <prefix><channel>
@@ -171,5 +189,12 @@ Mode message
            k - set a channel key (password).
            l - set the user limit to channel;
 
+TESTS: 
 
+ stringVector args1 = {"+i", "-t", "+k", "+o"};        // Valide
+    stringVector args2 = {"+ik", "-tl"};                 // Valide
+    stringVector args3 = {"i", "+x", "-y"};              // Invalide (manque + ou caractères invalides)
+    stringVector args4 = {"+i+t", "-l-k"};               // Invalide (plusieurs signes)
+    stringVector args5 = {"+", "-"};                     // Invalide (trop court)
+    stringVector args6 = {"-ikt"};                       // Valide (tous modes valides)
 */
