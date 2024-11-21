@@ -21,6 +21,8 @@
 #include "../includes/Server.hpp"
 
 typedef std::vector<std::string> stringVector;
+typedef std::pair<std::vector<std::string>, std::vector<std::string> >
+    KeyValuePairList;
 
 void shrink_to_fit(std::vector<struct pollfd> *vec);
 void strToUpper(std::string *str);
@@ -30,6 +32,9 @@ bool isNumeric(const std::string &str);
 std::string trimWhiteSpaces(const std::string &str);
 
 void splitByCommaAndTrim(const std::string &argument, stringVector *args);
+
+KeyValuePairList parseCommandIntoKeyValuePairList(const std::string &key,
+                                                  const std::string &value);
 
 template <typename T>
 std::string toString(const T &value) {

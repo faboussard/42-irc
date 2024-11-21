@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/20 14:00:59 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/21 13:01:38 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "../../includes/Parser.hpp"
 #include "../../includes/Server.hpp"
 #include "../../includes/numericReplies.hpp"
+#include "../../includes/utils.hpp"
 
 // Parameters: <channel> {[+|-]|o|s|i|t|k|l} [<limit>] [<user>] [<ban mask>]
 
@@ -27,7 +28,8 @@
 //       else
 //         _channels[channelName].deactivateInviteOnlyMode();
 //       break;
-//     case 't':  // Définir/supprimer les restrictions de la commande TOPIC pour
+//     case 't':  // Définir/supprimer les restrictions de la commande TOPIC
+//     pour
 //                // les opérateurs de canaux
 //       if (plusMode)
 //         _channels[channelName].activateTopicOpsOnlyMode();
@@ -36,8 +38,8 @@
 //       break;
 //     case 'k':  // Définir/supprimer la clé du canal (mot de passe)
 //       if (plusMode) {
-//         _channels[channelName].activateKeyMode(parsedArgument[2], _clients[fd]);
-//         _channels[channelName].updateKey(parsedArgument[2]);
+//         _channels[channelName].activateKeyMode(parsedArgument[2],
+//         _clients[fd]); _channels[channelName].updateKey(parsedArgument[2]);
 //       } else {
 //         _channels[channelName].deactivateKeyMode();
 //       }
@@ -83,25 +85,8 @@
 //   if (excessivePlusOrMinus || *nbO > 3) *nbParamsMustBe = SIZE_MAX;
 // }
 
-stringVectorPairs parseModeIntoPairs(const std::string &args) {
-  std::string channel, token;
-  stringVector modeStringVector;
-  stringVector modeArguments;
-
-  std::istringstream iss(args);
-  stringVectorPairs modeStringAndArguments;
-
-  iss >> channel;
-  while (iss >> token) {
-
-  return (result);
-}
-
-bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
-  std::istringstream iss(arg);
-  std::string channel, modestring;
-
-  if (!(iss >> channel)) {
+bool Server::isChannelValid(int fd, const std::string &channel) {
+  if (channel.empty() || channel[0] != REG_CHAN) {
     send461NeedMoreParams(_clients[fd], "MODE");
     return (false);
   }
@@ -109,16 +94,27 @@ bool Server::modeChannelNameIsCorrect(int fd, const std::string &arg) {
     send403NoSuchChannel(_clients[fd], channel);
     return (false);
   }
-  if (!(iss >> modestring)) {
-    send324Channelmodeis(_clients[fd], _channels[channel.substr(1)]);
-    return (false);
-  }
   return (true);
 }
 
 void Server::mode(int fd, const std::string &arg) {
-  if (modeChannelNameIsCorrect(fd, arg) == false) return;
-  pairOfStringVectors pairedArgument = parseModeIntoPairs(arg);
+  const Client &client = _clients.at(fd);
+  std::istringstream iss(arg);
+  std::string channel, modestring, modeArguments;
+  iss >> channel;
+  if (isChannelValid(fd, channel) == false) return;
+  if (!(iss >> modestring)) {
+    send324Channelmodeis(_clients[fd], _channels[channel.substr(1)]);
+    return;
+  }
+  KeyValuePairList modestringAndmodeArguments =
+      parseCommandIntoKeyValuePairList(modestring, modeArguments);
+  if (modestringAndmodeArguments.first.empty()) {
+    client.receiveMessage(":" + FROM_SERVER + " NOTICE " +
+                          client.getNickname() +
+                          " usage: modstrings list cannot contain blankspaces\r\n");
+    return;
+  }
   // size_t i = 0;
   // bool plusMode = true;
   // if (parsedArgument[1][0] == '+' || parsedArgument[1][0] == '-') {

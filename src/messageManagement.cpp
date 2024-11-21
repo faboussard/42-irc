@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   messageManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 13:59:48 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/21 11:42:58 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,6 @@ static bool isLastNick(const stringPairsVector &splittedPair, size_t it,
   return (false);
 }
 
-// To delete later --------------------------------------------------------->//
-#ifdef DEBUG
-static void clientIsAcceptedMessageToDelete(const Client *client,
-                                            const std::string &command) {
-  std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
-            << std::endl;
-  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
-  std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BBRIGHT_YELLOW "Command: " << command << std::endl;
-}
-#endif
-// <-------------------------------------------------------------------------//
-
 void Server::handleInitialMessage(Client *client, const std::string &msg) {
   stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
@@ -72,7 +59,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     }
     if (client->isAccepted()) {
 #ifdef DEBUG
-      clientIsAcceptedMessageToDelete(client, command);
+      std::ostringstream oss;
+      oss << "Nick:" << client->getNickname() << " has been accepted";
+      printLog(DEBUG_LOG, PARSER, oss.str());
 #endif
       if (command == UNKNOWN)
         send421UnknownCommand(*client, splittedPair[it].first);
@@ -116,7 +105,10 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 #ifdef DEBUG
-  std::cout << BRIGHT_GREEN << msg << RESET << std::endl;
+  std::ostringstream oss;
+  oss << "Nick:" BLUE << client.getNickname() << RESET << " | UName:" BLUE
+      << client.getUserName() << RESET << " | Message:" MAGENTA << msg << RESET;
+  printLog(DEBUG_LOG, PARSER, oss.str());
 #endif
   stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
@@ -168,12 +160,7 @@ void Server::handleClientMessage(int fd) {
     clearClient(fd);
     return;
   }
-
-  // Accumuler les données reçues
   messageBuffer[fd] += std::string(buffer, valread);
-
-  // Vérifier si le message est complet (par exemple, contient une nouvelle
-  // ligne)
   size_t pos;
   std::string message = "";
   while ((pos = messageBuffer[fd].find("\r\n")) != std::string::npos) {

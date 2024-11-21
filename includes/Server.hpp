@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by 2lyon.fr>         #+#    #+#             */
-/*   Updated: 2024/11/20 13:59:20 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/21 12:27:50 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 typedef std::vector<std::string> stringVector;
 typedef std::pair<std::vector<std::string>, std::vector<std::string> >
-    stringVectorPairs;
+    KeyValuePairList;
 
 extern Config *gConfig;
 
@@ -183,7 +183,6 @@ class Server {
   bool isChannelNotFull(const Channel &channel, const Client &client);
   bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
                                           const Client &client);
-  stringVectorPairs parseJoinArguments(const std::string &param);
 
   /*-------- PART --------*/
   void quitAllChannels(int fd);
@@ -214,9 +213,11 @@ class Server {
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
 
+  bool isChannelValid(int fd, const std::string &channel);
   // void Server::switchMode(int fd, const char &c, const bool &plusMode,
                           // const stringVector &parsedArgument);
   bool modeChannelNameIsCorrect(int fd, const std::string &arg);
+  
 
   /*-------- WHO --------*/
   void who(const Client &client, const std::string &arg);

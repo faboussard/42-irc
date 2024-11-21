@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 14:00:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/21 13:01:32 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "../../includes/colors.hpp"
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
+#include "../../includes/Parser.hpp"
 
 void Server::joinChannel(int fd, const std::string &param) {
   Client &client = _clients.at(fd);
@@ -36,12 +37,12 @@ void Server::joinChannel(int fd, const std::string &param) {
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "JOIN: client.getChannelsCount(): " << client.getChannelsCount();
+    oss << "client.getChannelsCount(): " << client.getChannelsCount();
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
   {
     std::ostringstream oss;
-    oss << "JOIN: gConfig->getLimitchanlimit: " << gConfig->getLimit(CHANLIMIT);
+    oss << "gConfig->getLimitchanlimit: " << gConfig->getLimit(CHANLIMIT);
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
@@ -49,7 +50,16 @@ void Server::joinChannel(int fd, const std::string &param) {
     send405TooManyChannels(client);
     return;
   }
-  stringVectorPairs channelsAndKeys = parseJoinArguments(param);
+  std::string channels, keys;
+  std::istringstream iss(param);
+  iss >> channels >> keys;
+  KeyValuePairList channelsAndKeys = parseCommandIntoKeyValuePairList(channels, keys);
+    if (channelsAndKeys.first.empty()) {
+    client.receiveMessage(":" + FROM_SERVER + " NOTICE " +
+                          client.getNickname() +
+                          " usage: channels list cannot contain blankspaces\r\n");
+    return;
+  }
   for (size_t i = 0; i < channelsAndKeys.first.size(); ++i) {
 #ifdef DEBUG
     {
@@ -90,43 +100,6 @@ void Server::joinChannel(int fd, const std::string &param) {
       }
     }
   }
-}
-
-stringVectorPairs Server::parseJoinArguments(const std::string &param) {
-  stringVectorPairs channelsAndKeys;
-  stringVector channels;
-  std::string::size_type spacePos = param.find(" ");
-  std::string channelsPart = param.substr(0, spacePos);
-  splitByCommaAndTrim(channelsPart, &channels);
-#ifdef DEBUG
-  {
-    std::ostringstream before, after;
-    before << "CHANNELS: Before split and trim channel: " << channelsPart;
-    after << "CHANNELS: After split and trim channel: ";
-    for (size_t i = 0; i < channels.size(); ++i) after << channels[i] << "|";
-    printLog(DEBUG_LOG, COMMAND, before.str());
-    printLog(DEBUG_LOG, COMMAND, after.str());
-  }
-#endif
-  stringVector keys;
-  std::string keysPart =
-      (spacePos != std::string::npos) ? param.substr(spacePos + 1) : "";
-  splitByCommaAndTrim(keysPart, &keys);
-
-#ifdef DEBUG
-  {
-    std::ostringstream before, after;
-    before << "KEYS: Before split and trim key: " CYAN << keysPart << RESET;
-    after << "KEYS: After split and trim key: ";
-    for (size_t i = 0; i < keys.size(); ++i)
-      after << CYAN << keys[i] << RESET "|";
-    printLog(DEBUG_LOG, COMMAND, before.str());
-    printLog(DEBUG_LOG, COMMAND, after.str());
-  }
-#endif
-  channelsAndKeys.first = channels;
-  channelsAndKeys.second = keys;
-  return channelsAndKeys;
 }
 
 bool Server::isKeyValid(const Channel &channel, const std::string &key,
