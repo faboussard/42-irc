@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 11:39:39 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 14:56:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@
 
 #include <string>
 #include <vector>
+
+#include "../includes/types.hpp"
+#include "../includes/utils.hpp"
 
 #define BOT_NAME "ircbot"
 #define IRC_PORT 6668
@@ -54,36 +57,39 @@ class Bot {
   struct sockaddr_in _apiAddress;
   struct pollfd _pollFdApi;
 
-  std::vector<std::string> _instructions;
+  stringVector _instructions;
 
+ public:
+  explicit Bot(Server *server);
+  ~Bot(void);
+
+  void runBot(void);
+  void closeBot(void);
+
+  int getIrcSocketFd(void) const;
+  int getApiSocketFd(void) const;
+  const stringVector &getInstructions(void) const;
+
+  void setBotFdInServer(int fd);
+
+  void handleRequest(void);  // receive, parse, send
+  void handleResponse(void);  // receive, parse, send
+
+  static std::string botCommandStr(Command command);
+
+ private:
   /* Bot launch */
   void createSockets(void);
   void connectToIrcServer(void);
   void listenApiServer(void);
 
   /* HTTP requests */
-  void handleRequest(void);  // receive, parse, send
   bool parseRequest(const std::string &request);
   void sendRequest(const std::string &request);
 
   /* Replies */
-  void handleResponse(void);  // receive, parse, send
   bool parseResponse(const std::string &response);
   void sendResponse(const std::string &response);
-
- public:
-  Bot(Server *server);
-  ~Bot(void);
-
-  void runBot(void);
-  // void pollSockets(void);
-  void closeBot(void);
-
-  int getIrcSocketFd(void) const;
-  int getApiSocketFd(void) const;
-  const std::vector<std::string> &getInstructions(void) const;
-
-  void setBotFdInServer(int fd);
 };
 
 #define BOT_RESPONSE_HEADER (std::string(":") + BOT_NAME + " PRIVMSG ")
@@ -93,9 +99,9 @@ class Bot {
 #define BOT3 "─ U───U────────────────────────────────────────────────────────\n"
 #define BOT4 "         Hello! I'm IRCbot, what can I do for you?"
 #define BOT5 "────────────────────────────────────────────────────────── ♥ ──\n"
-#define BOT6 "🌦️WEATHER: Ask me for a forecast, I'll bring you the skies.\n"
-#define BOT7 "🌐TRANSLATE: Lost in translation? Let me handle the linguistics!\n"
-#define BOT8 "🎨ASCII ART: \n"
+#define BOT6 "🌤️ WEATHER 🌤️ Ask me for a forecast, I'll bring you the skies.\n"
+#define BOT7 "🌐 TRANSLATE 🌐 Lost in translation? I'm multilingual !\n"
+#define BOT8 "🎨 ASCII ART 🎨 \n"
 #define BOT9 "How to use ?\n"
 // "WEATHER → Get weather updates.\n"
 // "TRANSLATE <text> → Translate words in a snap.\n"

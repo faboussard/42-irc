@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/21 12:36:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 15:03:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 
+#include "../includes/Bot.hpp"
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
@@ -140,11 +141,11 @@ void Server::acceptAndChat(void) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
         } else if (_pollFds[i].fd == botIrcFd) {
-          // _bot->handleRequest();
           printLog(DEBUG_LOG, BOT_L, "Received a message from IRC server");
+          _bot->handleRequest();
         } else if (_pollFds[i].fd == botApiFd) {
-          // _bot->handleResponse();
           printLog(DEBUG_LOG, BOT_L, "Received a message from API server");
+          // _bot->handleResponse();
         } else {
           handleClientMessage(_pollFds[i].fd);
         }
@@ -307,12 +308,12 @@ void Server::broadcastToOperatorsOnly(const Client &sender,
   }
 }
 
-  void Server::sendNotice(const Client &client, const std::string &message) {
-    std::ostringstream oss;
-    oss << FROM_SERVER << " NOTICE " << client.getNickname() << " :"
-        << message << "\r\n";
-    client.receiveMessage(oss.str());
-  }
+void Server::sendNotice(const Client &client, const std::string &message) {
+  std::ostringstream oss;
+  oss << FROM_SERVER << " NOTICE " << client.getNickname() << " :" << message
+      << "\r\n";
+  client.receiveMessage(oss.str());
+}
 
 /*============================================================================*/
 /*       Chekers                                                              */

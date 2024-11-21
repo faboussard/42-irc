@@ -21,7 +21,7 @@ vpath %.cpp src src/commands src/bonus
 
 HEADERS_LIST =  Server Config Client Channel Parser Bot \
                 numericReplies utils \
-                colors
+                colors types
 
 SRCS = main Server Client Channel Parser Config Bot\
        numericReplies messageManagement utils \

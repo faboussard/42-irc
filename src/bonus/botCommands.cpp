@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 11:09:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 15:09:18 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,15 @@
 
 #include "../../includes/Bot.hpp"
 #include "../../includes/Server.hpp"
+
+#ifdef DEBUG
+static void logBotCommand(const std::string &nick, Command command,
+                          const std::string &arg);
+#endif
+
+/*============================================================================*/
+/*       Bot setting                                                          */
+/*============================================================================*/
 
 void Server::addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi) {
   _pollFds.push_back(*pollFdIrc);
@@ -46,38 +55,69 @@ void Server::addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi) {
   printLog(INFO_LOG, SYSTEM, oss.str());
 }
 
+/*============================================================================*/
+/*       Bot command handling                                                 */
+/*============================================================================*/
+
 void Server::botCommands(Client *client, Command command,
                          const std::string &arg) {
+#ifdef DEBUG
+  logBotCommand(client->getNickname(), command, arg);
+#endif
   (void)arg;
   if (command == BOT) {
     sendBotInstruction(*client);
     client->setBotLaunched(true);
   } else {
-#ifdef DEBUG
-    std::ostringstream oss;
-    oss << "Bot command received from " << client->getNickname();
-    printLog(DEBUG_LOG, BOT_L, oss.str());
-#endif
     if (client->botLaunched()) {
-      // sendToBot(client, command, arg);
+      sendRequestToBot(*client, command, arg);
     } else {
-      // sendBotNotLaunched(client);
+      sendNotice(*client, "Bot not launched yet. Please type /BOT to launch.");
     }
   }
 }
 
 void Server::sendBotInstruction(const Client &client) {
-  const std::vector<std::string> &instructions = _bot->getInstructions();
-  std::vector<std::string>::const_iterator itEnd = instructions.end();
+  const stringVector &instructions = _bot->getInstructions();
+  stringVector::const_iterator itEnd = instructions.end();
   for (std::vector<std::string>::const_iterator it = instructions.begin();
        it != itEnd; ++it) {
     sendBotResponse(client, *it);
   }
 }
 
+void Server::sendRequestToBot(const Client &client, Command command,
+                              const std::string &arg) {
+  // Do PING to check the connection with bot ?
+  //
+  std::string request;
+  {
+    std::ostringstream oss;
+    oss << client.getNickname() << " " << Bot::botCommandStr(command) << " "
+        << arg;
+    request = oss.str();
+  }
+  if (send(_bot->getIrcSocketFd(), request.c_str(), request.size(),
+           MSG_NOSIGNAL) == -1)
+    printLog(ERROR_LOG, SYSTEM, "Failed to send request to bot");
+  else
+    printLog(INFO_LOG, BOT_L, "IRC Server has sent a request: " + request);
+}
+
 void Server::sendBotResponse(const Client &client, const std::string &message) {
   std::ostringstream oss;
-  oss << BOT_RESPONSE_HEADER << client.getNickname() << " :" 
-      << message << "\r\n";
+  oss << BOT_RESPONSE_HEADER << client.getNickname() << " :" << message
+      << "\r\n";
   client.receiveMessage(oss.str());
 }
+
+#ifdef DEBUG
+void logBotCommand(const std::string &nick, Command command,
+                   const std::string &arg) {
+  std::ostringstream oss;
+  oss << "Server has received from " << nick << ": Command " << CYAN
+      << Bot::botCommandStr(command) << RESET " | " << "arg " << CYAN << arg
+      << RESET;
+  Server::printLog(DEBUG_LOG, BOT_L, oss.str());
+}
+#endif

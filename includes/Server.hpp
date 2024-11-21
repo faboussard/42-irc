@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/21 11:35:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 14:05:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,13 @@
 #include <utility>
 #include <vector>
 
-#include "../includes/Bot.hpp"
+class Bot;
+
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/numericReplies.hpp"
+#include "../includes/types.hpp"
 
 #define SRV_NAME "ircserv"
 #define SRV_VERSION "1.0.0"
@@ -52,27 +54,27 @@ typedef std::pair<std::vector<std::string>, std::vector<std::string> >
 
 extern Config *gConfig;
 
-enum Command {
-  JOIN,
-  KICK,
-  INVITE,
-  TOPIC,
-  MODE,
-  LIST,
-  NICK,
-  PRIVMSG,
-  QUIT,
-  PING,
-  CAP,
-  USER,
-  PASS,
-  WHO,
-  BOT,
-  WEATHER,
-  TRANSLATE,
-  ASCII_ART,
-  UNKNOWN
-};
+// enum Command {
+//   JOIN,
+//   KICK,
+//   INVITE,
+//   TOPIC,
+//   MODE,
+//   LIST,
+//   NICK,
+//   PRIVMSG,
+//   QUIT,
+//   PING,
+//   CAP,
+//   USER,
+//   PASS,
+//   WHO,
+//   BOT,
+//   WEATHER,
+//   TRANSLATE,
+//   ASCII_ART,
+//   UNKNOWN
+// };
 
 enum eLogLevel { DEBUG_LOG, INFO_LOG, NOTIFY_LOG, WARNING_LOG, ERROR_LOG };
 
@@ -166,11 +168,11 @@ class Server {
   bool channelExists(const std::string &channel);
 
   /* Commands handling */
-  void handleCommand(Command command, const std::string &argument,
-                     int fd);
+  void handleCommand(Command command, const std::string &argument, int fd);
   void broadcastInChannel(const Client &client, const Channel &channel,
                           const std::string &command,
                           const std::string &content);
+  void sendNotice(const Client &client, const std::string &message);
 
   /*  Command  */
   /*-------- JOIN --------*/
@@ -256,7 +258,7 @@ class Server {
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
 
-/* Bot */
+  /* Bot */
  public:
   void addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi);
 
@@ -264,9 +266,8 @@ class Server {
   void botCommands(Client *client, Command command, const std::string &arg);
   void sendBotResponse(const Client &client, const std::string &message);
   void sendBotInstruction(const Client &client);
-  // void sendBotNotLaunched(const Client &client);
-  // void sendToBot(const Client &client, Command command,
-  //                const std::string &arg);
+  void sendRequestToBot(const Client &client, Command command,
+                        const std::string &arg);
 
   /* Tests */
   void addClient(int fd, const Client &client);

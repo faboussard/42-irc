@@ -6,13 +6,15 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 11:38:07 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 15:00:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Bot.hpp"
 
 #include <cerrno>
+#include <string>
+#include <vector>
 
 #include "../../includes/Server.hpp"
 
@@ -205,7 +207,45 @@ void Bot::closeBot(void) {
 /*============================================================================*/
 
 void Bot::handleRequest(void) {
-  Server::printLog(INFO_LOG, BOT_L, "Handling request");
+  // Block other requests until the current request is handled
+
+  char buffer[1024] = {0};
+  std::memset(buffer, 0, sizeof(buffer));
+  int valread = recv(_ircSocketFd, buffer, sizeof(buffer), 0);
+
+  if (valread == -1) {
+    std::ostringstream oss;
+    oss << "Error occurred while receiving a message from IRC Server. :"
+        << strerror(errno);
+    Server::printLog(ERROR_LOG, BOT_L, oss.str());
+    return;
+  }
+  if (valread == 0) {
+    std::ostringstream oss;
+    oss << "Connection closed by IRC Server";
+    Server::printLog(ERROR_LOG, BOT_L, oss.str());
+    closeBot();
+    return;
+  }
+  Server::printLog(INFO_LOG, BOT_L, "Handling request: " + std::string(buffer));
+
+  std::stringstream ss;
+  ss << buffer;
+  std::string clientNickname;
+  ss >> clientNickname;
+  std::string command;
+  ss >> command;
+  std::string arg;
+  std::getline(ss >> std::ws, arg);
+
+#ifdef DEBUG
+  {
+    std::ostringstream oss;
+    oss << "Client: " << clientNickname << " Command: " << command
+        << " Arg: " << arg;
+    Server::printLog(DEBUG_LOG, BOT_L, oss.str());
+  }
+#endif
 }
 
 /*============================================================================*/
@@ -214,4 +254,22 @@ void Bot::handleRequest(void) {
 
 void Bot::handleResponse(void) {
   Server::printLog(INFO_LOG, BOT_L, "Handling API response");
+}
+
+/*============================================================================*/
+/*       Helper functions                                                     */
+/*============================================================================*/
+
+std::string Bot::botCommandStr(Command command) {
+  std::string commandStr;
+  switch (command) {
+    case BOT:
+      return ("BOT");
+    case WEATHER:
+      return ("WEATHER");
+    case TRANSLATE:
+      return ("TRANSLATE");
+    default:
+      return ("");
+  }
 }
