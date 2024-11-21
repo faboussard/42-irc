@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 13:03:56 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 17:15:56 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,9 +110,7 @@ void Server::mode(int fd, const std::string &arg) {
   KeyValuePairList modestringAndmodeArguments =
       parseCommandIntoKeyValuePairList(modestring, modeArguments);
   if (modestringAndmodeArguments.first.empty()) {
-    client.receiveMessage(":" + FROM_SERVER + " NOTICE " +
-                          client.getNickname() +
-                          " usage: modstrings list cannot contain blankspaces\r\n");
+send400UnknownError(client, modestring, "usage: mode format is <client> <channel> <modestring> <mode arguments> . it cannot contains commas or blankspaces");
     return;
   }
   //check correct mode arguments
