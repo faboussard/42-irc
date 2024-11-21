@@ -195,40 +195,27 @@ Mode
 
 tests conducted on mode
 
+/mode
+MODE :Not enough parameter
+
+/mode #1 
+Channel #1 modes: +i 
+
+/mode #1 +i
+ #1 :You're not a channel operator
 
 tests conducted on dependencies to mode (channel, user, server)
 
+----  
+
+invite tested for join
+
 join #1
 ->Cannot join #1 (Channel is invite only)
+reverse works too ! 
 
 
-privmsg
-:ircserv.localhost 461 nick PRIVMSG :Not enough parameters
-
- privmsg #s :haha
-:nick PRIVMSG #s :haha
-
-privmsg nick,admin :gg
-:nick PRIVMSG nick :gg
-
-privmsg @#s,@#h :g
-:ircserv.localhost 401 nick #h :No such nick/channel
-
-privmsg #s,admin :h
-:ircserv.localhost 407 nick :Too many targets
-
-privmsg #@s, "h
-:ircserv.localhost 412 nick :No text to send
-
-privmsg #@s :o
-:ircserv.localhost 401 nick #@s :No such nick/channel
-
-privmsg admin,    ,nick :p
-:ircserv.localhost 412 nick :No text to send
-
-privmsg #1,#2,#3,#4,#5 :g
-:ircserv.localhost 407 admin :Too many targets
-
++/-t tested for topic settings 
 
 
 

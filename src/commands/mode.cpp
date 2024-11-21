@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 23:06:08 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 23:44:18 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 // Parameters: <channel> {[+|-]|o|s|i|t|k|l} [<limit>] [<user>] [<ban mask>]
 
-void Server::switchMode( Client *client, const std::string &channelName,
+void Server::switchMode(Client *client, const std::string &channelName,
                         const stringVector &modeStrings,
                         const stringVector &argumentVector) {
   Channel *channel = &_channels[channelName.substr(1)];
@@ -31,7 +31,14 @@ void Server::switchMode( Client *client, const std::string &channelName,
 
     for (size_t j = 1; j < modeString.size(); ++j) {
       const char &c = modeString[j];  // Caractère du mode actuel
-
+#ifdef DEBUG
+      {
+        std::ostringstream oss;
+        oss << "Mode: " << c << " | PlusMode: " << plusMode
+            << " | Argument: " << argumentVector[argumentIndex];
+        printLog(DEBUG_LOG, COMMAND, oss.str());
+      }
+#endif
       switch (c) {
         case 'i':  // Mode invitation uniquement
           if (plusMode)
@@ -53,7 +60,15 @@ void Server::switchMode( Client *client, const std::string &channelName,
               send461NeedMoreParams(*client, "MODE +k");
               return;  // Argument manquant
             }
-            const std::string &key = argumentVector[argumentIndex++];
+            const std::string &key =
+                argumentVector[argumentIndex++];  // ca mrache ???
+#ifdef DEBUG
+            {
+              std::ostringstream oss;
+              oss << "Key: " << key;
+              printLog(DEBUG_LOG, COMMAND, oss.str());
+            }
+#endif
             channel->activateKeyMode(key, *client);
             channel->updateKey(key);
           } else {
@@ -64,7 +79,7 @@ void Server::switchMode( Client *client, const std::string &channelName,
         case 'o':  // Gestion des opérateurs
           if (plusMode) {
             if (!client->getNickname().empty() &&
-                client->getNickname() == channel->getName()) {
+                client->getNickname() == argumentVector[argumentIndex]) {
               break;  // Ignorer si l'utilisateur essaie de s'auto-promouvoir
             }
             channel->addOperator(client);
@@ -210,7 +225,7 @@ void Server::mode(int fd, const std::string &arg) {
   iss >> channel;
   if (isChannelValid(fd, channel) == false) return;
   const Channel &channelObj = _channels[channel.substr(1)];
-  if (!(iss >> modeString)) {
+  if (!(std::getline(iss >> std::ws, modeString))) {
     send324Channelmodeis(client, channelObj);
     return;
   }
@@ -218,13 +233,14 @@ void Server::mode(int fd, const std::string &arg) {
     send482ChanOPrivsNeeded(client, channelObj);
     return;
   }
+  std::getline(iss >> std::ws, modeArguments);
   KeyValuePairList modestringAndmodeArguments =
       parseCommandIntoKeyValuePairList(modeString, modeArguments);
   if (modestringAndmodeArguments.first.empty()) {
-    // send400UnknownError(
-    //     client, modeString,
-    //     "usage: mode format is <client> <channel> <modestring> <mode "
-    //     "arguments> . it cannot contains commas or blankspaces");
+    send400UnknownError(
+        client, modeString,
+        "usage: mode format is <client> <channel> <modestring> <mode "
+        "arguments> . it cannot contains commas or blankspaces");
     return;
   }
   stringVector modeStringVector = modestringAndmodeArguments.first;
@@ -234,6 +250,7 @@ void Server::mode(int fd, const std::string &arg) {
       (modeArgumentsVector.size() > 0 &&
        !isModeArgumentValid(modeStringVector, modeArgumentsVector))) {
     send472UnknownMode(client, modeArguments);
+    sendNotice(client, "usage: MODE <channel> {[+|-]|o|i|t|k|l} [<arguments>]");
     return;
   }
   switchMode(&_clients[fd], channel, modeStringVector, modeArgumentsVector);
@@ -293,8 +310,8 @@ TESTS:
  stringVector args1 = {"+i", "-t", "+k", "+o"};        // Valide
     stringVector args2 = {"+ik", "-tl"};                 // Valide
     stringVector args3 = {"i", "+x", "-y"};              // Invalide (manque +
-ou caractères invalides) stringVector args4 = {"+i+t", "-l-k"};               //
-Invalide (plusieurs signes) stringVector args5 = {"+", "-"}; // Invalide (trop
-court) stringVector args6 = {"-ikt"};                       // Valide (tous
-modes valides)
+ou caractères invalides)
+stringVector args4 = {"+i+t", "-l-k"};               //Invalide (plusieurs
+signes) stringVector args5 = {"+", "-"}; // Invalide (trop court) stringVector
+args6 = {"-ikt"};   // Valide (tousmodes valides)
 */

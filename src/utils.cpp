@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/21 22:19:27 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 23:38:04 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ if (keyVector.size() != static_cast<std::vector<std::string>::size_type>(std::co
     before << "value: Before split and trim value: " << value;
     after << "valueVector: After split and trim valueVector: ";
     for (size_t i = 0; i < valueVector.size(); ++i)
-      after << CYAN << valueVector[i] << RESET "|";
+      after << valueVector[i] << "|";
     Server::printLog(DEBUG_LOG, COMMAND, before.str());
     Server::printLog(DEBUG_LOG, COMMAND, after.str());
   }
