@@ -189,24 +189,18 @@ NExT PR
 _**Implemented Features:**_
 
 
-1. primsg command enhanced
- -> to be used with the command PRVMSG
- -> used by itself when users talk in a channel ! 
+---
 
-// PRIVMSG <target>{,<target>} <:text to be sent>
+Mode
 
-//<target> is the nickname of a client or the name of a channel.
+tests conducted on mode
 
-@ to be handled, not $. 
-PArsing made to avoid a mixmatch of client, channels OPchannels targets
 
-Rest of explanation and numeric replies details are in the file privmsg.cpp
+tests conducted on dependencies to mode (channel, user, server)
 
-2. 
-added numeric reply: 
-void send407TooManyTargets(const Client &client) 
+join #1
+->Cannot join #1 (Channel is invite only)
 
-3. txts conducted :
 
 privmsg
 :ircserv.localhost 461 nick PRIVMSG :Not enough parameters
@@ -235,10 +229,7 @@ privmsg admin,    ,nick :p
 privmsg #1,#2,#3,#4,#5 :g
 :ircserv.localhost 407 admin :Too many targets
 
-4. CHAN_OP = "@" becomes CHAN_OP = '@' (char)
-numeric replies impacted for one function
 
-5. notice not to be handled - removed 
 
 
 DEBUG GDB
