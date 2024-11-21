@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/21 08:27:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 12:36:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,7 +279,7 @@ void Server::sendConnectionMessage(const Client &client) const {
 }
 
 /*============================================================================*/
-/*       Broadcast                                                            */
+/*       Broadcast & send message                                             */
 /*============================================================================*/
 
 void Server::broadcastInChannel(const Client &sender, const Channel &channel,
@@ -306,6 +306,13 @@ void Server::broadcastToOperatorsOnly(const Client &sender,
     if (it->first != sender.getFd()) it->second->receiveMessage(message);
   }
 }
+
+  void Server::sendNotice(const Client &client, const std::string &message) {
+    std::ostringstream oss;
+    oss << FROM_SERVER << " NOTICE " << client.getNickname() << " :"
+        << message << "\r\n";
+    client.receiveMessage(oss.str());
+  }
 
 /*============================================================================*/
 /*       Chekers                                                              */
