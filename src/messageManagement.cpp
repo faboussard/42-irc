@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/21 11:42:58 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 17:09:35 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,6 +231,6 @@ void Server::handleCommand(Command command, const std::string &argument,
       send462AlreadyRegistered(_clients[fd]);
       break;
     default:
-      break;
+      botCommands(&_clients.at(fd), command, argument);
   }
 }

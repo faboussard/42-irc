@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 14:00:25 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/21 13:08:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,10 +104,7 @@ void Server::updateTopic(const Client &client, Channel *channel,
     return;
   }
   if (newTopic.size() > gConfig->getLimit(TOPICLEN)) {
-    send476BadChanMask(client, channel->getNameWithPrefix());
-    client.receiveMessage(FROM_SERVER + "NOTICE " +
-                          "Topic is too long, limit is " +
-                          gConfig->getParam(TOPICLEN) + " characters.\r\n");
+    send400UnknownError(client, channel->getNameWithPrefix(), "Topic too long");
     return;
   }
   std::string oldTopic = channel->getTopic().topic;

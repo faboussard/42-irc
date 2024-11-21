@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/21 12:53:35 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 17:09:00 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,14 @@ Command Parser::choseCommand(const std::string& command) {
     return (PASS);
   } else if (command == "WHO") {
     return (WHO);
+  } else if (command == "BOT") {
+    return (BOT);
+  } else if (command == "WEATHER") {
+    return (WEATHER);
+  } else if (command == "TRANSLATE") {
+    return (TRANSLATE);
+  } else if (command == "ASCII_ART") {
+    return (ASCII_ART);
   }
   return (UNKNOWN);
 }

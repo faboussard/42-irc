@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 14:22:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/20 22:24:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,6 @@ bool Parser::verifyPassword(std::string arg, std::string psd, Client *client) {
     return (false);
   }
   client->declarePasswordGiven();
-#ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "Password IS ACCEPTED !!!!! : " << arg;
-    Server::printLog(DEBUG_LOG, AUTH, oss.str());
-  }
-#endif
   logPassAuthSuccess(*client);
   return (true);
 }

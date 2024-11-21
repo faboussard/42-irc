@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/20 13:42:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:10:08 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,11 @@ extern Config *gConfig;
 
 #define _409_ERR_NOORIGIN(nick) \
   (FROM_SERVER + "409 " + nick + " :No origin specified\r\n")
+
+#define _400_ERR_UNKNOWNERROR(nick, keyword, content) \
+  (FROM_SERVER + "400 " + nick + " " + keyword + " :" + content + "\r\n")
+// Message for errors undefined as numeric replies.
+// keyword is 'channel name with prefix' or 'command'
 
 #define _411_ERR_NORECIPIENT(nick, command) \
   (FROM_SERVER + "411 " + nick + " :No recipient given(" + command + ")\r\n")
@@ -286,6 +291,8 @@ void send366Endofnames(const Client &client, const Channel &channel);
 
 /*------ Error messages ------------------------------------------------------*/
 
+void send400UnknownError(const Client &client, const std::string &command,
+                         const std::string &message);
 void send401NoSuchNick(const Client &client, const std::string &targetNick);
 void send403NoSuchChannel(const Client &client, const std::string &chanName);
 void send404CannotSendToChan(const Client &client, const Channel &channel);
