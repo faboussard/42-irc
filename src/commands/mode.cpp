@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 13:01:38 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 13:03:56 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,15 +115,9 @@ void Server::mode(int fd, const std::string &arg) {
                           " usage: modstrings list cannot contain blankspaces\r\n");
     return;
   }
-  // size_t i = 0;
-  // bool plusMode = true;
-  // if (parsedArgument[1][0] == '+' || parsedArgument[1][0] == '-') {
-  //   ++i;
-  //   if (parsedArgument[0][0] == '-') plusMode = false;
-  // } else {
-  //   // WRONG PARAM
-  //   return;
-  // }
+  //check correct mode arguments
+  //check correct mode strings
+  
   // while (parsedArgument[1][i]) {
   //   switchMode(fd, parsedArgument[1][i], plusMode, parsedArgument);
   //   ++i;

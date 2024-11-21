@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/21 13:01:32 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 17:07:05 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void Server::joinChannel(int fd, const std::string &param) {
     if (channelsAndKeys.first.empty()) {
     client.receiveMessage(":" + FROM_SERVER + " NOTICE " +
                           client.getNickname() +
-                          " usage: channels list cannot contain blankspaces\r\n");
+                          " usage: channel format is #channelName. it cannot contains commas or blankspaces\r\n");
     return;
   }
   for (size_t i = 0; i < channelsAndKeys.first.size(); ++i) {
