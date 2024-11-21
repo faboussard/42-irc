@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/21 12:54:46 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 22:19:27 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ KeyValuePairList parseCommandIntoKeyValuePairList(const std::string& key,
     Server::printLog(DEBUG_LOG, COMMAND, after.str());
   }
 #endif
+std::cout << "keyVector.size(): " << keyVector.size() << "and stdcount" << std::count(key.begin(), key.end(), ',') + 1 << std::endl;
 if (keyVector.size() != static_cast<std::vector<std::string>::size_type>(std::count(key.begin(), key.end(), ',') + 1)) {
     return KeyValuePairList();
 }

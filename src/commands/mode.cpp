@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 17:47:27 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/21 22:24:48 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,12 +68,61 @@
 //   }
 // }
 
-bool Server::isModeArgumentCorrect(const stringVector &argumentToCheck) {
-  // size_t i = 0;
+bool Server::isModeArgumentValid(const stringVector &modeStrings,
+                                 const stringVector &arguments) {
+  std::map<std::string, bool> modesRequiringArgument;
+  modesRequiringArgument["+k"] = true;   // Mode +k nécessite un argument
+  modesRequiringArgument["-k"] = false;  // Mode -k ne nécessite pas un argument
+  modesRequiringArgument["+o"] = false;  // Mode +o ne nécessite pas un argument
+  modesRequiringArgument["-o"] = false;  // Mode -o ne nécessite pas un argument
+  modesRequiringArgument["+l"] = true;   // Mode +l nécessite un argument
+  modesRequiringArgument["-l"] = false;  // Mode -l ne nécessite pas un argument
+  modesRequiringArgument["+t"] = false;  // Mode +t ne nécessite pas un argument
+  modesRequiringArgument["-t"] = false;  // Mode -t ne nécessite pas un argument
+  modesRequiringArgument["+i"] = false;  // Mode +i ne nécessite pas un argument
+  modesRequiringArgument["-i"] =
+      false;  // Mode -i nne nécessite pas un argument
+  size_t argumentIndex = 0;
+  for (size_t i = 0; i < modeStrings.size(); ++i) {
+    const std::string &modeString = modeStrings[i];
+    for (size_t j = 1; j < modeString.size(); ++j) {
+      std::string mode =
+          modeString.substr(0, 1) +
+          modeString[j];  // Extrait le signe et le caractère du mode
+#ifdef DEBUG
+      {
+        std::ostringstream oss;
+        oss << "Mode: " << mode << " | ArgumentIndex: " << argumentIndex
+            << " | "
+            << "Argument: " << arguments[argumentIndex] << " | "
+            << "booleen:" << modesRequiringArgument[mode];
+        printLog(DEBUG_LOG, COMMAND, oss.str());
+      }
+#endif
+      if (modesRequiringArgument.find(mode) == modesRequiringArgument.end()) {
+        return false;  // Mode inconnu
+      }
+      if (modesRequiringArgument[mode]) {
+        if (argumentIndex >= arguments.size()) {
+          return false;  // Argument manquant
+        }
+        ++argumentIndex;  // Consomme un argument
+      }
+    }
+  }
+
+  return true;
 }
 
-bool Server::isModeStringCorrect(const stringVector &argumentToCheck) {
-  if (argumentToCheck.size() < 2) {
+bool Server::isModeStringValid(const stringVector &argumentToCheck) {
+  #ifdef DEBUG
+  {
+    std::ostringstream oss;
+    oss << "argumentToCheck.size(): " << argumentToCheck.size();
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+  }
+  #endif
+  if (argumentToCheck.size() < 1) {
     return false;
   }
 
@@ -83,11 +132,25 @@ bool Server::isModeStringCorrect(const stringVector &argumentToCheck) {
     const std::string &arg = argumentToCheck[i];
 
     if (arg[0] != '+' && arg[0] != '-') {
+      #ifdef DEBUG
+      {
+        std::ostringstream oss;
+        oss << "Mode invalide: " << arg;
+        printLog(DEBUG_LOG, COMMAND, oss.str());
+      }
+      #endif
       return false;
     }
 
     for (size_t j = 1; j < arg.size(); ++j) {
       if (validModes.find(arg[j]) == std::string::npos) {
+#ifdef DEBUG
+        {
+          std::ostringstream oss;
+          oss << "Mode invalide: " << arg[j];
+          printLog(DEBUG_LOG, COMMAND, oss.str());
+        }
+#endif
         return false;
       }
     }
@@ -120,17 +183,18 @@ void Server::mode(int fd, const std::string &arg) {
   KeyValuePairList modestringAndmodeArguments =
       parseCommandIntoKeyValuePairList(modeString, modeArguments);
   if (modestringAndmodeArguments.first.empty()) {
-    send400UnknownError(
-        client, modeString,
-        "usage: mode format is <client> <channel> <modestring> <mode "
-        "arguments> . it cannot contains commas or blankspaces");
+    std::cout << "hey" << std::endl;
+    // send400UnknownError(
+    //     client, modeString,
+    //     "usage: mode format is <client> <channel> <modestring> <mode "
+    //     "arguments> . it cannot contains commas or blankspaces");
     return;
   }
   stringVector modeStringVector = modestringAndmodeArguments.first;
   stringVector modeArgumentsVector = modestringAndmodeArguments.second;
 
-  if (!isModeArgumentCorrect(modeStringVector) ||
-      !isModeArgumentCorrect(modeArgumentsVector)) {
+  if (!isModeStringValid(modeStringVector) ||
+      !isModeArgumentValid(modeStringVector, modeArgumentsVector)) {
     send472UnknownMode(client, modeArguments);
     return;
   }
@@ -189,12 +253,13 @@ Mode message
            k - set a channel key (password).
            l - set the user limit to channel;
 
-TESTS: 
+TESTS:
 
  stringVector args1 = {"+i", "-t", "+k", "+o"};        // Valide
     stringVector args2 = {"+ik", "-tl"};                 // Valide
-    stringVector args3 = {"i", "+x", "-y"};              // Invalide (manque + ou caractères invalides)
-    stringVector args4 = {"+i+t", "-l-k"};               // Invalide (plusieurs signes)
-    stringVector args5 = {"+", "-"};                     // Invalide (trop court)
-    stringVector args6 = {"-ikt"};                       // Valide (tous modes valides)
+    stringVector args3 = {"i", "+x", "-y"};              // Invalide (manque +
+ou caractères invalides) stringVector args4 = {"+i+t", "-l-k"};               //
+Invalide (plusieurs signes) stringVector args5 = {"+", "-"}; // Invalide (trop
+court) stringVector args6 = {"-ikt"};                       // Valide (tous
+modes valides)
 */
