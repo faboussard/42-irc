@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/21 08:38:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/21 21:51:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ void Server::handleClientMessage(int fd) {
   } else if (valread == 0) {
     std::ostringstream oss;
     oss << "fd" << fd << ": Connection closed by peer";
-    Server::printLog(ERROR_LOG, CLIENT, oss.str());
+    Server::printLog(NOTIFY_LOG, CLIENT, oss.str());
     messageBuffer[fd].erase();
     clearClient(fd);
     return;

@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 14:56:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/22 21:45:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -29,67 +30,73 @@
 #include "../includes/utils.hpp"
 
 #define BOT_NAME "ircbot"
-#define IRC_PORT 6668
-#define IRC_PORT2 6669
 #define API_PORT 8080
 #define API_PORT2 8008
 #define MAX_CLIENTS_BOT 20
 #define LOCALHOST "127.0.0.1"
 
-#define BOT_CONNECTION_FAILED_IRC "Failed to connect to IRC server"
-
 class Server;
+
+struct BotRequest {
+  std::string clientNickname;
+  std::string command;
+  std::string arg;
+
+  BotRequest(const std::string& nick, const std::string& cmd,
+             const std::string& argument)
+        : clientNickname(nick), command(cmd), arg(argument) {}
+};
 
 class Bot {
  private:
-  Server *_server;
-
-  int _botFdInServer;
   std::string _name;
+  stringVector _instructions;
 
-  int _ircPort;
-  int _ircSocketFd;
-  struct sockaddr_in _ircAddress;
-  struct pollfd _pollFdIrc;
+  /* Bot - IRC Server communication */
+  Server *_server;
+  int _pipeServerToBot[2];
+  int _pipeBotToServer[2];
+  std::queue<std::string> _requests;
 
+  /* Bot - API Servers communication */
   int _apiPort;
   int _apiSocketFd;
   struct sockaddr_in _apiAddress;
-  struct pollfd _pollFdApi;
-
-  stringVector _instructions;
 
  public:
   explicit Bot(Server *server);
   ~Bot(void);
 
   void runBot(void);
-  void closeBot(void);
 
-  int getIrcSocketFd(void) const;
+  /* Getters */
+  int getServerToBotPipe0(void) const;
+  int getBotToServerPipe0(void) const;
   int getApiSocketFd(void) const;
   const stringVector &getInstructions(void) const;
 
-  void setBotFdInServer(int fd);
-
+  /* Bot - IRC Server communication */
+  void receiveRequestInQueue(const std::string &request);
   void handleRequest(void);  // receive, parse, send
-  void handleResponse(void);  // receive, parse, send
+
+  /* Bot - API Servers communication */
+  void handleApiResponse(void);  // receive, parse, send
 
   static std::string botCommandStr(Command command);
 
  private:
   /* Bot launch */
-  void createSockets(void);
-  void connectToIrcServer(void);
+  void createSocketForApi(void);
   void listenApiServer(void);
 
-  /* HTTP requests */
-  bool parseRequest(const std::string &request);
-  void sendRequest(const std::string &request);
+  /* Requests handling */
+  BotRequest readRequest(void);
+  std::string parseRequest(const BotRequest &request);
+  void sendRequestToApi(const std::string &request);
 
-  /* Replies */
+  /* Responses handling */
   bool parseResponse(const std::string &response);
-  void sendResponse(const std::string &response);
+  void sendResponseToServer(const std::string &response);
 };
 
 #define BOT_RESPONSE_HEADER (std::string(":") + BOT_NAME + " PRIVMSG ")

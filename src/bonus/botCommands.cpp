@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 15:09:18 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/22 21:47:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,34 +25,25 @@ static void logBotCommand(const std::string &nick, Command command,
 /*       Bot setting                                                          */
 /*============================================================================*/
 
-void Server::addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi) {
-  _pollFds.push_back(*pollFdIrc);
-  _pollFds.push_back(*pollFdApi);
+void Server::addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer,
+                          int botFdListenApi) {
+  struct pollfd botPollFromServer;
+  botPollFromServer.fd = pipeFdServerToBot;
+  botPollFromServer.events = POLLIN;
+  botPollFromServer.revents = 0;
+  _pollFds.push_back(botPollFromServer);
 
-  struct sockaddr_in botAddr;
-  socklen_t len = sizeof(botAddr);
+  struct pollfd botPollToServer;
+  botPollToServer.fd = pipeFdBotToServer;
+  botPollToServer.events = POLLIN;
+  botPollToServer.revents = 0;
+  _pollFds.push_back(botPollToServer);
 
-  int botFd = accept(_socketFd, reinterpret_cast<sockaddr *>(&botAddr), &len);
-  if (botFd == -1) {
-    printLog(ERROR_LOG, SYSTEM, "Failed to add bot");
-    return;
-  }
-  if (fcntl(botFd, F_SETFL, O_NONBLOCK) == -1) {
-    printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
-    return;
-  }
-  _bot->setBotFdInServer(botFd);
-
-  struct pollfd newPoll;
-  newPoll.fd = botFd;
-  newPoll.events = POLLIN;
-  newPoll.revents = 0;
-  _pollFds.push_back(newPoll);
-
-  std::ostringstream oss;
-  oss << "Bot has joined to " << gConfig->getParam(NETWORK) << " at fd"
-      << botFd;
-  printLog(INFO_LOG, SYSTEM, oss.str());
+  struct pollfd botPollApi;
+  botPollApi.fd = botFdListenApi;
+  botPollApi.events = POLLIN;
+  botPollApi.revents = 0;
+  _pollFds.push_back(botPollApi);
 }
 
 /*============================================================================*/
@@ -78,37 +69,50 @@ void Server::botCommands(Client *client, Command command,
 }
 
 void Server::sendBotInstruction(const Client &client) {
+  std::string clientNickname = client.getNickname();
   const stringVector &instructions = _bot->getInstructions();
   stringVector::const_iterator itEnd = instructions.end();
   for (std::vector<std::string>::const_iterator it = instructions.begin();
        it != itEnd; ++it) {
-    sendBotResponse(client, *it);
+    std::ostringstream oss;
+    oss << BOT_RESPONSE_HEADER << clientNickname << " :" << *it << "\r\n";
+    client.receiveMessage(oss.str());
   }
 }
 
 void Server::sendRequestToBot(const Client &client, Command command,
                               const std::string &arg) {
-  // Do PING to check the connection with bot ?
-  //
-  std::string request;
-  {
-    std::ostringstream oss;
-    oss << client.getNickname() << " " << Bot::botCommandStr(command) << " "
-        << arg;
-    request = oss.str();
-  }
-  if (send(_bot->getIrcSocketFd(), request.c_str(), request.size(),
-           MSG_NOSIGNAL) == -1)
-    printLog(ERROR_LOG, SYSTEM, "Failed to send request to bot");
-  else
-    printLog(INFO_LOG, BOT_L, "IRC Server has sent a request: " + request);
+  std::ostringstream oss;
+  oss << client.getNickname() << " " << Bot::botCommandStr(command) << " "
+      << arg;
+  std::string request = oss.str();
+  _bot->receiveRequestInQueue(request);
+  printLog(INFO_LOG, BOT_L, "IRC Server has sent a request: " + request);
 }
 
-void Server::sendBotResponse(const Client &client, const std::string &message) {
+void Server::addBotResponseToQueue(const std::string &response) {
+  _responsesFromBot.push(response);
+}
+
+void Server::handleBotResponse(int serverFdListenBot) {
+  // Clear the notification in pipe
+  char buffer[2] {0};
+  read(serverFdListenBot, &buffer, 1);
+
+  if (_responsesFromBot.empty())
+    return;
+  std::stringstream ss(_responsesFromBot.front());
+  _responsesFromBot.pop();
+
+  std::string clientNickname;
+  std::string response;
+  ss >> clientNickname;
+  std::getline(ss >> std::ws, response);
+    // Response must not has \n for PRIVMSG from bot
+
   std::ostringstream oss;
-  oss << BOT_RESPONSE_HEADER << client.getNickname() << " :" << message
-      << "\r\n";
-  client.receiveMessage(oss.str());
+  oss << BOT_RESPONSE_HEADER << clientNickname << " :" << response << "\r\n";
+  findClientByNickname(clientNickname)->receiveMessage(oss.str());
 }
 
 #ifdef DEBUG

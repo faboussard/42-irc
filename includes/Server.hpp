@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/21 14:05:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/22 21:13:12 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <ctime>
 #include <iostream>
 #include <map>
+#include <queue>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -113,8 +114,6 @@ class Server {
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
 
-  Bot *_bot;
-
  public:
   explicit Server(int port, const std::string &password);
 
@@ -127,7 +126,7 @@ class Server {
   void closeServer(void);
 
   /*  Getters */
-  int getSocketFd() const;
+  // int getSocketFd() const;
   int getPort() const;
   // const std::string &getPassword() const;
   //  Client &findClientByFd(int fd);
@@ -259,18 +258,24 @@ class Server {
   void ping(const Client &client, const std::string &token);
 
   /* Bot */
+ private:
+  Bot *_bot;
+  std::queue<std::string> _responsesFromBot;
+
  public:
-  void addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi);
+  void addBotResponseToQueue(const std::string &response);
 
  private:
+  void addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer,
+                    int botFdListenApi);
   void botCommands(Client *client, Command command, const std::string &arg);
-  void sendBotResponse(const Client &client, const std::string &message);
   void sendBotInstruction(const Client &client);
   void sendRequestToBot(const Client &client, Command command,
                         const std::string &arg);
+  void handleBotResponse(int serverFdListenBot);
 
   /* Tests */
-  void addClient(int fd, const Client &client);
+  // void addClient(int fd, const Client &client);
 };
 
 #endif  // INCLUDES_SERVER_HPP_
