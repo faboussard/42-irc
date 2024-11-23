@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/23 16:31:22 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/23 16:42:05 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,6 @@ void Server::switchMode(Client *client, const std::string &channelName,
                      : channel->deactivateTopicOpsOnlyMode();
       } else if (c == 'k') {
         if (plusMode) {
-          if (argumentIndex >= argumentVector.size()) {
-            send461NeedMoreParams(*client, "MODE +k");
-            return;
-          }
           const std::string &key = argumentVector[argumentIndex++];
           channel->activateKeyMode(key, *client);
           channel->updateKey(key);
@@ -57,10 +53,6 @@ void Server::switchMode(Client *client, const std::string &channelName,
           return;
         }
         if (plusMode) {
-          if (argumentIndex - 1 >= argumentVector.size()) {
-            send461NeedMoreParams(*client, "MODE +o");
-            return;
-          }
           if (!client->getNickname().empty() &&
               client->getNickname() == argumentVector[argumentIndex++]) {
             break;
@@ -71,10 +63,6 @@ void Server::switchMode(Client *client, const std::string &channelName,
         }
       } else if (c == 'l') {
         if (plusMode) {
-          if (argumentIndex >= argumentVector.size()) {
-            send461NeedMoreParams(*client, "MODE +l");
-            return;
-          }
           const std::string &limitStr = argumentVector[argumentIndex++];
           if (!isNumeric(limitStr)) {
             sendNotice(*client, "MODE +l argument must be a numeric value.");
@@ -208,11 +196,13 @@ void Server::mode(int fd, const std::string &arg) {
   stringVector modestringVector = modestringAndArguments.first;
   stringVector modeArgumentsVector = modestringAndArguments.second;
 
-  if (!isModeStringValid(modestringVector) ||
-      (modeArgumentsVector.size() > 0 &&
-       !isModeArgumentValid(modestringVector, modeArgumentsVector))) {
+  if (!isModeStringValid(modestringVector)) {
     send472UnknownMode(client, modeArguments);
     sendNotice(client, "usage: MODE <channel> {[+|-]|o|i|t|k|l} [<arguments>]");
+    return;
+  }
+  if (!isModeArgumentValid(modestringVector, modeArgumentsVector)) {
+    send461NeedMoreParams(client, "Mode Argument missing");
     return;
   }
   switchMode(&_clients[fd], channel, modestringVector, modeArgumentsVector);
