@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/21 23:06:55 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/23 15:10:47 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,6 +229,7 @@ class Server {
   bool isChannelValid(int fd, const std::string &channel);
   void switchMode( Client *client, const std::string &channelName, const stringVector &modeStrings,
                         const stringVector &argumentVector);
+  KeyValuePairList parseMode(const std::string &arg);
 
   /*-------- WHO --------*/
   void who(const Client &client, const std::string &arg);

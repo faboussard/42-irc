@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/21 17:10:42 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/23 16:18:09 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ class Client {
   bool isRealnameSet(void) const;
   bool isPasswordGiven(void) const;
   bool isAccepted(void) const;
-  bool isCapSend(void) const;
   uint8_t getNbPassAttempts(void) const;
   uint8_t getChannelsCount() const;
   bool botLaunched(void) const;  // bonus

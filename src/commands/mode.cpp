@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 23:44:18 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/23 16:31:22 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,84 +26,65 @@ void Server::switchMode(Client *client, const std::string &channelName,
 
   for (size_t i = 0; i < modeStrings.size(); ++i) {
     const std::string &modeString = modeStrings[i];
-    bool plusMode =
-        (modeString[0] == '+');  // Déterminer si on ajoute ou enlève un mode
+    bool plusMode = (modeString[0] == '+');
 
     for (size_t j = 1; j < modeString.size(); ++j) {
-      const char &c = modeString[j];  // Caractère du mode actuel
-#ifdef DEBUG
-      {
-        std::ostringstream oss;
-        oss << "Mode: " << c << " | PlusMode: " << plusMode
-            << " | Argument: " << argumentVector[argumentIndex];
-        printLog(DEBUG_LOG, COMMAND, oss.str());
-      }
-#endif
-      switch (c) {
-        case 'i':  // Mode invitation uniquement
-          if (plusMode)
-            channel->activateInviteOnlyMode();
-          else
-            channel->deactivateInviteOnlyMode();
-          break;
+      const char &c = modeString[j];
 
-        case 't':  // Restrictions de modification de sujet
-          if (plusMode)
-            channel->activateTopicOpsOnlyMode();
-          else
-            channel->deactivateTopicOpsOnlyMode();
-          break;
-
-        case 'k':  // Gestion de clé (mot de passe)
-          if (plusMode) {
-            if (argumentIndex >= argumentVector.size()) {
-              send461NeedMoreParams(*client, "MODE +k");
-              return;  // Argument manquant
-            }
-            const std::string &key =
-                argumentVector[argumentIndex++];  // ca mrache ???
-#ifdef DEBUG
-            {
-              std::ostringstream oss;
-              oss << "Key: " << key;
-              printLog(DEBUG_LOG, COMMAND, oss.str());
-            }
-#endif
-            channel->activateKeyMode(key, *client);
-            channel->updateKey(key);
-          } else {
-            channel->deactivateKeyMode();
+      if (c == 'i' || c == 't') {
+        if (plusMode)
+          (c == 'i') ? channel->activateInviteOnlyMode()
+                     : channel->activateTopicOpsOnlyMode();
+        else
+          (c == 'i') ? channel->deactivateInviteOnlyMode()
+                     : channel->deactivateTopicOpsOnlyMode();
+      } else if (c == 'k') {
+        if (plusMode) {
+          if (argumentIndex >= argumentVector.size()) {
+            send461NeedMoreParams(*client, "MODE +k");
+            return;
           }
-          break;
-
-        case 'o':  // Gestion des opérateurs
-          if (plusMode) {
-            if (!client->getNickname().empty() &&
-                client->getNickname() == argumentVector[argumentIndex]) {
-              break;  // Ignorer si l'utilisateur essaie de s'auto-promouvoir
-            }
-            channel->addOperator(client);
-          } else {
-            channel->removeOperator(client);
+          const std::string &key = argumentVector[argumentIndex++];
+          channel->activateKeyMode(key, *client);
+          channel->updateKey(key);
+        } else {
+          channel->deactivateKeyMode();
+        }
+      } else if (c == 'o') {
+        Client *clientToOp = findClientByNickname(argumentVector[argumentIndex++]);
+        if (clientToOp == NULL) {
+          send401NoSuchNick(*client, argumentVector[argumentIndex - 1]);
+          return;
+        }
+        if (plusMode) {
+          if (argumentIndex - 1 >= argumentVector.size()) {
+            send461NeedMoreParams(*client, "MODE +o");
+            return;
           }
-          break;
-
-        case 'l':  // Limite d’utilisateurs
-          if (plusMode) {
-            if (argumentIndex >= argumentVector.size()) {
-              send461NeedMoreParams(*client, "MODE +l");
-              return;  // Argument manquant
-            }
-            int limit = std::atoi(argumentVector[argumentIndex++].c_str());
-            channel->activateLimitMode(limit, *client);
-          } else {
-            channel->deactivateLimitMode();
+          if (!client->getNickname().empty() &&
+              client->getNickname() == argumentVector[argumentIndex++]) {
+            break;
           }
-          break;
-
-        default:
-          send472UnknownMode(*client, std::string(1, c));
-          return;  // Mode invalide
+          channel->addOperator(clientToOp);
+        } else {
+          channel->removeOperator(clientToOp);
+        }
+      } else if (c == 'l') {
+        if (plusMode) {
+          if (argumentIndex >= argumentVector.size()) {
+            send461NeedMoreParams(*client, "MODE +l");
+            return;
+          }
+          const std::string &limitStr = argumentVector[argumentIndex++];
+          if (!isNumeric(limitStr)) {
+            sendNotice(*client, "MODE +l argument must be a numeric value.");
+            return;
+          }
+          int limit = std::atoi(limitStr.c_str());
+          channel->activateLimitMode(limit, *client);
+        } else {
+          channel->deactivateLimitMode();
+        }
       }
     }
   }
@@ -121,8 +102,7 @@ bool Server::isModeArgumentValid(const stringVector &modeStrings,
   modesRequiringArgument["+t"] = false;  // Mode +t ne nécessite pas un argument
   modesRequiringArgument["-t"] = false;  // Mode -t ne nécessite pas un argument
   modesRequiringArgument["+i"] = false;  // Mode +i ne nécessite pas un argument
-  modesRequiringArgument["-i"] =
-      false;  // Mode -i nne nécessite pas un argument
+  modesRequiringArgument["-i"] = false;  // Mode -i ne nécessite pas un argument
   size_t argumentIndex = 0;
   for (size_t i = 0; i < modeStrings.size(); ++i) {
     const std::string &modeString = modeStrings[i];
@@ -178,18 +158,6 @@ bool Server::isModeStringValid(const stringVector &argumentToCheck) {
       printLog(DEBUG_LOG, COMMAND, oss.str());
     }
 #endif
-
-    if (arg[0] != '+' && arg[0] != '-') {
-#ifdef DEBUG
-      {
-        std::ostringstream oss;
-        oss << "Mode invalide: " << arg;
-        printLog(DEBUG_LOG, COMMAND, oss.str());
-      }
-#endif
-      return false;
-    }
-
     for (size_t j = 1; j < arg.size(); ++j) {
       if (validModes.find(arg[j]) == std::string::npos) {
 #ifdef DEBUG
@@ -225,35 +193,78 @@ void Server::mode(int fd, const std::string &arg) {
   iss >> channel;
   if (isChannelValid(fd, channel) == false) return;
   const Channel &channelObj = _channels[channel.substr(1)];
-  if (!(std::getline(iss >> std::ws, modeString))) {
-    send324Channelmodeis(client, channelObj);
-    return;
-  }
+
   if (channelObj.isOperator(fd) == false) {
     send482ChanOPrivsNeeded(client, channelObj);
     return;
   }
-  std::getline(iss >> std::ws, modeArguments);
-  KeyValuePairList modestringAndmodeArguments =
-      parseCommandIntoKeyValuePairList(modeString, modeArguments);
-  if (modestringAndmodeArguments.first.empty()) {
-    send400UnknownError(
-        client, modeString,
-        "usage: mode format is <client> <channel> <modestring> <mode "
-        "arguments> . it cannot contains commas or blankspaces");
+   std::string remainingArgs;
+  std::getline(iss, remainingArgs); 
+  KeyValuePairList modestringAndArguments = parseMode(remainingArgs);
+  if (modestringAndArguments.first.empty()) {
+    send324Channelmodeis(client, channelObj);
     return;
   }
-  stringVector modeStringVector = modestringAndmodeArguments.first;
-  stringVector modeArgumentsVector = modestringAndmodeArguments.second;
+  stringVector modestringVector = modestringAndArguments.first;
+  stringVector modeArgumentsVector = modestringAndArguments.second;
 
-  if (!isModeStringValid(modeStringVector) ||
+  if (!isModeStringValid(modestringVector) ||
       (modeArgumentsVector.size() > 0 &&
-       !isModeArgumentValid(modeStringVector, modeArgumentsVector))) {
+       !isModeArgumentValid(modestringVector, modeArgumentsVector))) {
     send472UnknownMode(client, modeArguments);
     sendNotice(client, "usage: MODE <channel> {[+|-]|o|i|t|k|l} [<arguments>]");
     return;
   }
-  switchMode(&_clients[fd], channel, modeStringVector, modeArgumentsVector);
+  switchMode(&_clients[fd], channel, modestringVector, modeArgumentsVector);
+}
+
+stringVector split(const std::string &str) {
+  stringVector tokens;
+  std::istringstream iss(str);
+  std::string token;
+  while (iss >> token) {
+    tokens.push_back(token);
+  }
+  return tokens;
+}
+
+KeyValuePairList Server::parseMode(const std::string &arg) {
+  stringVector keyVector;
+  stringVector valueVector;
+  KeyValuePairList list;
+
+  // Utilisation de la fonction split pour découper la chaîne
+  stringVector tokens = split(arg);
+
+  // Parcours des tokens pour les classer dans keyVector ou valueVector
+  for (size_t i = 0; i < tokens.size(); ++i) {
+    if (!tokens[i].empty() && (tokens[i][0] == '+' || tokens[i][0] == '-')) {
+      keyVector.push_back(tokens[i]);
+    } else {
+      valueVector.push_back(tokens[i]);
+    }
+  }
+
+#ifdef DEBUG
+  {
+    std::ostringstream before, afterKey, afterValue;
+    before << "arg: Before split and process: " << arg;
+    afterKey << "keyVector: ";
+    for (size_t i = 0; i < keyVector.size(); ++i)
+      afterKey << keyVector[i] << "|";
+    afterValue << "valueVector: ";
+    for (size_t i = 0; i < valueVector.size(); ++i)
+      afterValue << valueVector[i] << "|";
+    Server::printLog(DEBUG_LOG, COMMAND, before.str());
+    Server::printLog(DEBUG_LOG, COMMAND, afterKey.str());
+    Server::printLog(DEBUG_LOG, COMMAND, afterValue.str());
+  }
+#endif
+
+  // Remplir la liste avec les clés et les valeurs
+  list.first = keyVector;
+  list.second = valueVector;
+  return list;
 }
 
 // ======== MODE <prefix><channel>
