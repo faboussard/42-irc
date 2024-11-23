@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/23 18:08:37 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 22:49:20 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,26 @@
 #define MAX_CLIENTS_BOT 20
 #define LOCALHOST "127.0.0.1"
 
+#define NUMBERS_HOST "numbersapi.com"
+#define NUMBERS_PORT 80
+#define JOKE_HOST "v2.jokeapi.dev"
+#define JOKE_PORT 443
+
 class Server;
 
 struct BotRequest {
   std::string clientNickname;
-  std::string command;
+  Command command;
   std::string arg;
 
-  BotRequest(const std::string& nick, const std::string& cmd,
+  int socketFd;
+  std::string apiHost;
+  int apiPort;
+
+  BotRequest(const std::string& nick, Command command,
              const std::string& argument)
-        : clientNickname(nick), command(cmd), arg(argument) {}
+        : clientNickname(nick), command(command), arg(argument),
+          socketFd(-1), apiHost(""), apiPort(0) {}
 };
 
 class Bot {
@@ -50,16 +60,11 @@ class Bot {
   std::string _name;
   stringVector _instructions;
 
-  /* Bot - IRC Server communication */
+  /* Bot-IRC Server & Bot-API Servers communication */
   Server *_server;
   int _pipeServerToBot[2];
   int _pipeBotToServer[2];
-  std::queue<std::string> _requests;
-
-  /* Bot - API Servers communication */
-  // int _socketFds[5];
-  // int _socketFd;
-  std::vector<int> _socketFds;
+  std::queue<BotRequest> _requestDatas;
 
  public:
   explicit Bot(Server *server);
@@ -70,11 +75,10 @@ class Bot {
   /* Getters */
   int getServerToBotPipe0(void) const;
   int getBotToServerPipe0(void) const;
-  // int getApiSocketFd(void) const;
   const stringVector &getInstructions(void) const;
 
   /* Bot - IRC Server communication */
-  void receiveRequestInQueue(const std::string &request);
+  void receiveRequestInQueue(BotRequest newRequest);
   void handleRequest(void);  // receive, parse, send
 
   /* Bot - API Servers communication */
@@ -84,12 +88,13 @@ class Bot {
 
  private:
   /* Bot launch */
-  void createSocketForApi(const std::string &host, int port);
-  bool connectToApiServer(const std::string &host, int port, int socketFd);
+  void createSocketForApi(BotRequest *request);
+  bool connectToApiServer(BotRequest *request);
 
   /* Requests handling */
-  BotRequest readRequest(void);
+  // BotRequest readRequest(void);
   std::string parseRequest(const BotRequest &request);
+  void findApiInfo(BotRequest *request);
   void sendRequestToApi(const std::string &request, int socketFd);
 
   /* Responses handling */
@@ -114,11 +119,12 @@ class Bot {
 // "ASCIIART <topic> → Create ASCII art magic.\n")
 
 /* Log */
-static void logcreatSocketForApi(int fd, const std::string &host, int port);
+void logcreatSocketForApi(const BotRequest &request);
+void logApiResponse(int fd);
 #ifdef DEBUG
-static void debugLogPipe(int ServerToBot0, int ServerToBot1, int BotToServer0,
+void debugLogPipe(int ServerToBot0, int ServerToBot1, int BotToServer0,
                          int BotToServer1);
-static void debugLogReadRequest(BotRequest request);
+void debugLogReadRequest(BotRequest request);
 #endif
 
 #endif  // INCLUDES_BOT_HPP_

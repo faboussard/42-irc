@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 13:59:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 14:05:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 21:23:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ enum Command {
   BOT,
   WEATHER,
   TRANSLATE,
-  ASCII_ART,
+  NUMBERS,
+  JOKE,
   UNKNOWN
 };
 

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 08:22:15 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 21:24:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,10 @@ Command Parser::choseCommand(const std::string& command) {
     return (WEATHER);
   } else if (command == "TRANSLATE") {
     return (TRANSLATE);
-  } else if (command == "ASCII_ART") {
-    return (ASCII_ART);
+  } else if (command == "NUMBERS") {
+    return (NUMBERS);
+  } else if (command == "JOKE") {
+    return (JOKE);
   }
   return (UNKNOWN);
 }

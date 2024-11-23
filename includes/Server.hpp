@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/23 18:09:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 22:12:37 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@
 #include <vector>
 
 class Bot;
+struct BotRequest;
 
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
@@ -260,14 +261,15 @@ class Server {
   /* Bot */
  private:
   Bot *_bot;
-  std::vector<int> *_botToApiSocketFds;  // --> will create Class BotRequest
+  std::vector<int> _botToApiSocketFds;  // --> will create Class BotRequest
   std::queue<std::string> _responsesFromBot;
 
  public:
-  void set_botToApiSocketFds(std::vector<int> *botToApiSocketFds);
+  // void set_botToApiSocketFds(std::vector<int> *botToApiSocketFds);
   void addBotResponseToQueue(const std::string &response);
-  void addBotApiSocketFdToPoll(int newFd);
+  void addBotSocketFdToPoll(int newFd);
   void removeApiSocketFdFromPoll(int soketFd);
+  const std::vector<int> &getBotToApiSocketFds(void) const;
 
  private:
   void addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer);

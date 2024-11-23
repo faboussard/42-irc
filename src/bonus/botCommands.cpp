@@ -6,28 +6,29 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/23 17:39:07 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 23:07:41 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <poll.h>
+
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "../../includes/Bot.hpp"
 #include "../../includes/Server.hpp"
 
+void logRequestSentToBot(const std::string &nick, Command command,
+                         const std::string &arg);
 #ifdef DEBUG
 static void logBotCommand(const std::string &nick, Command command,
                           const std::string &arg);
 #endif
 
 /*============================================================================*/
-/*       Bot setting                                                          */
+/*      Poll handling                                                         */
 /*============================================================================*/
-
- void Server::set_botToApiSocketFds(std::vector<int> *botToApiSocketFds) {
-  _botToApiSocketFds = botToApiSocketFds;
- }
 
 void Server::addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer) {
   struct pollfd botPollFromServer;
@@ -43,9 +44,8 @@ void Server::addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer) {
   _pollFds.push_back(botPollToServer);
 }
 
-void Server::addBotApiSocketFdToPoll(int newFd) {
-  // _botToApiSocketFds.push_back(newFd);
-
+void Server::addBotSocketFdToPoll(int newFd) {
+  _botToApiSocketFds.push_back(newFd);
   struct pollfd botPollApi;
   botPollApi.fd = newFd;
   botPollApi.events = POLLIN;
@@ -53,6 +53,22 @@ void Server::addBotApiSocketFdToPoll(int newFd) {
   _pollFds.push_back(botPollApi);
 }
 
+void Server::removeApiSocketFdFromPoll(int soketFd) {
+  for (size_t i = 0; i < _pollFds.size(); ++i) {
+    if (_pollFds[i].fd == soketFd) {
+      _pollFds.erase(_pollFds.begin() + i);
+      break;
+    }
+  }
+  std::vector<int>::iterator it = std::find(_botToApiSocketFds.begin(),
+                                            _botToApiSocketFds.end(), soketFd);
+  if (it != _botToApiSocketFds.end())
+    _botToApiSocketFds.erase(it);
+}
+
+const std::vector<int> &Server::getBotToApiSocketFds(void) const {
+  return (_botToApiSocketFds);
+}
 
 /*============================================================================*/
 /*       Bot command handling                                                 */
@@ -90,12 +106,11 @@ void Server::sendBotInstruction(const Client &client) {
 
 void Server::sendRequestToBot(const Client &client, Command command,
                               const std::string &arg) {
-  std::ostringstream oss;
-  oss << client.getNickname() << " " << Bot::botCommandStr(command) << " "
-      << arg;
-  std::string request = oss.str();
-  _bot->receiveRequestInQueue(request);
-  printLog(INFO_LOG, BOT_L, "IRC Server has sent a request: " + request);
+  const std::string &nick = client.getNickname();
+  BotRequest newRequest(nick, command, arg);
+  _bot->receiveRequestInQueue(newRequest);
+
+  logRequestSentToBot(nick, command, arg);
 }
 
 void Server::addBotResponseToQueue(const std::string &response) {
@@ -124,16 +139,15 @@ void Server::handleBotResponse(int serverFdListenBot) {
 }
 
 /*============================================================================*/
-/*      Poll handling                                                         */
+/*       Logs                                                                 */
 /*============================================================================*/
 
-void Server::removeApiSocketFdFromPoll(int soketFd) {
-  for (size_t i = 0; i < _pollFds.size(); ++i) {
-    if (_pollFds[i].fd == soketFd) {
-      _pollFds.erase(_pollFds.begin() + i);
-      break;
-    }
-  }
+void logRequestSentToBot(const std::string &nick, Command command,
+                         const std::string &arg) {
+  std::ostringstream oss;
+  oss << "IRC Server has sent a request from " << nick
+      << Bot::botCommandStr(command) << " " << arg;
+  Server::printLog(INFO_LOG, BOT_L, oss.str());
 }
 
 #ifdef DEBUG
