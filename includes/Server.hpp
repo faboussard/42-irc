@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/22 21:13:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:09:38 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,14 +260,17 @@ class Server {
   /* Bot */
  private:
   Bot *_bot;
+  std::vector<int> *_botToApiSocketFds;  // --> will create Class BotRequest
   std::queue<std::string> _responsesFromBot;
 
  public:
+  void set_botToApiSocketFds(std::vector<int> *botToApiSocketFds);
   void addBotResponseToQueue(const std::string &response);
+  void addBotApiSocketFdToPoll(int newFd);
+  void removeApiSocketFdFromPoll(int soketFd);
 
  private:
-  void addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer,
-                    int botFdListenApi);
+  void addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer);
   void botCommands(Client *client, Command command, const std::string &arg);
   void sendBotInstruction(const Client &client);
   void sendRequestToBot(const Client &client, Command command,

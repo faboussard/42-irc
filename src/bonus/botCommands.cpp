@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/22 21:47:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 17:39:07 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,11 @@ static void logBotCommand(const std::string &nick, Command command,
 /*       Bot setting                                                          */
 /*============================================================================*/
 
-void Server::addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer,
-                          int botFdListenApi) {
+ void Server::set_botToApiSocketFds(std::vector<int> *botToApiSocketFds) {
+  _botToApiSocketFds = botToApiSocketFds;
+ }
+
+void Server::addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer) {
   struct pollfd botPollFromServer;
   botPollFromServer.fd = pipeFdServerToBot;
   botPollFromServer.events = POLLIN;
@@ -38,13 +41,18 @@ void Server::addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer,
   botPollToServer.events = POLLIN;
   botPollToServer.revents = 0;
   _pollFds.push_back(botPollToServer);
+}
+
+void Server::addBotApiSocketFdToPoll(int newFd) {
+  // _botToApiSocketFds.push_back(newFd);
 
   struct pollfd botPollApi;
-  botPollApi.fd = botFdListenApi;
+  botPollApi.fd = newFd;
   botPollApi.events = POLLIN;
   botPollApi.revents = 0;
   _pollFds.push_back(botPollApi);
 }
+
 
 /*============================================================================*/
 /*       Bot command handling                                                 */
@@ -96,7 +104,7 @@ void Server::addBotResponseToQueue(const std::string &response) {
 
 void Server::handleBotResponse(int serverFdListenBot) {
   // Clear the notification in pipe
-  char buffer[2] {0};
+  char buffer[2] = {0};
   read(serverFdListenBot, &buffer, 1);
 
   if (_responsesFromBot.empty())
@@ -113,6 +121,19 @@ void Server::handleBotResponse(int serverFdListenBot) {
   std::ostringstream oss;
   oss << BOT_RESPONSE_HEADER << clientNickname << " :" << response << "\r\n";
   findClientByNickname(clientNickname)->receiveMessage(oss.str());
+}
+
+/*============================================================================*/
+/*      Poll handling                                                         */
+/*============================================================================*/
+
+void Server::removeApiSocketFdFromPoll(int soketFd) {
+  for (size_t i = 0; i < _pollFds.size(); ++i) {
+    if (_pollFds[i].fd == soketFd) {
+      _pollFds.erase(_pollFds.begin() + i);
+      break;
+    }
+  }
 }
 
 #ifdef DEBUG

@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/22 21:45:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:08:37 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@
 #include "../includes/utils.hpp"
 
 #define BOT_NAME "ircbot"
-#define API_PORT 8080
-#define API_PORT2 8008
 #define MAX_CLIENTS_BOT 20
 #define LOCALHOST "127.0.0.1"
 
@@ -59,9 +57,9 @@ class Bot {
   std::queue<std::string> _requests;
 
   /* Bot - API Servers communication */
-  int _apiPort;
-  int _apiSocketFd;
-  struct sockaddr_in _apiAddress;
+  // int _socketFds[5];
+  // int _socketFd;
+  std::vector<int> _socketFds;
 
  public:
   explicit Bot(Server *server);
@@ -72,7 +70,7 @@ class Bot {
   /* Getters */
   int getServerToBotPipe0(void) const;
   int getBotToServerPipe0(void) const;
-  int getApiSocketFd(void) const;
+  // int getApiSocketFd(void) const;
   const stringVector &getInstructions(void) const;
 
   /* Bot - IRC Server communication */
@@ -80,21 +78,22 @@ class Bot {
   void handleRequest(void);  // receive, parse, send
 
   /* Bot - API Servers communication */
-  void handleApiResponse(void);  // receive, parse, send
+  void handleApiResponse(int fd);  // receive, parse, send
 
   static std::string botCommandStr(Command command);
 
  private:
   /* Bot launch */
-  void createSocketForApi(void);
-  void listenApiServer(void);
+  void createSocketForApi(const std::string &host, int port);
+  bool connectToApiServer(const std::string &host, int port, int socketFd);
 
   /* Requests handling */
   BotRequest readRequest(void);
   std::string parseRequest(const BotRequest &request);
-  void sendRequestToApi(const std::string &request);
+  void sendRequestToApi(const std::string &request, int socketFd);
 
   /* Responses handling */
+  std::string receiveResponseFromApi(int fd);
   bool parseResponse(const std::string &response);
   void sendResponseToServer(const std::string &response);
 };
@@ -113,5 +112,13 @@ class Bot {
 // "WEATHER → Get weather updates.\n"
 // "TRANSLATE <text> → Translate words in a snap.\n"
 // "ASCIIART <topic> → Create ASCII art magic.\n")
+
+/* Log */
+static void logcreatSocketForApi(int fd, const std::string &host, int port);
+#ifdef DEBUG
+static void debugLogPipe(int ServerToBot0, int ServerToBot1, int BotToServer0,
+                         int BotToServer1);
+static void debugLogReadRequest(BotRequest request);
+#endif
 
 #endif  // INCLUDES_BOT_HPP_

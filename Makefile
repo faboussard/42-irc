@@ -27,7 +27,7 @@ SRCS = main Server Client Channel Parser Config Bot\
        numericReplies messageManagement utils \
        pass nick user \
 	   invite join kick list mode part ping privmsg quit topic who \
-	   botCommands
+	   botCommands handleClientRequests handleApiResponse
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/

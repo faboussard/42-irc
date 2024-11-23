@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/22 21:42:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/23 18:03:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,10 +127,9 @@ void Server::acceptAndChat(void) {
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
 
-  int botFdListenServer = _bot->getServerToBotPipe0();
-  int botFdListenApi = _bot->getApiSocketFd();
+  int botFdServerRead = _bot->getServerToBotPipe0();
   int serverFdListenBot = _bot->getBotToServerPipe0();
-  addBotToPoll(botFdListenServer, serverFdListenBot, botFdListenApi);
+  addBotToPoll(botFdServerRead, serverFdListenBot);
 
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
@@ -142,16 +141,18 @@ void Server::acceptAndChat(void) {
       if (_pollFds[i].revents & POLLIN && _signal == false) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
-        } else if (_pollFds[i].fd == botFdListenServer) {
+        } else if (_pollFds[i].fd == botFdServerRead) {
           printLog(INFO_LOG, BOT_L, "Request has received by Bot");
           _bot->handleRequest();
         } else if (_pollFds[i].fd == serverFdListenBot) {
           printLog(INFO_LOG, BOT_L,
                    "Response to request has received by Server");
           handleBotResponse(serverFdListenBot);
-        } else if (_pollFds[i].fd == botFdListenApi) {
-          printLog(DEBUG_LOG, BOT_L, "Received a message from API server");
-          // Handle API server response
+        } else if (std::find(_botToApiSocketFds->begin(),
+                             _botToApiSocketFds->end(), _pollFds[i].fd)
+                            != _botToApiSocketFds->end()) {
+          printLog(INFO_LOG, BOT_L, "Received a response from API server");
+          _bot->handleApiResponse(_pollFds[i].fd);
         } else {
           handleClientMessage(_pollFds[i].fd);
         }
