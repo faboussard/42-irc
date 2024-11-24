@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/24 12:42:34 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/24 12:57:14 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,14 +94,14 @@ void Server::switchMode(Client *client, const std::string &channelName,
 std::string Server::checkArguments(const stringVector &modeStrings,
                                    const stringVector &arguments) {
   std::map<char, bool> modesRequiringArgument;
-  modesRequiringArgument['k'] = true;   // Mode +k nécessite un argument
-  modesRequiringArgument['o'] = true;  // Mode +o ne nécessite pas un argument
-  modesRequiringArgument['l'] = true;   // Mode +l nécessite un argument
+  modesRequiringArgument['k'] = true;   // Mode +k nécessite un argument si +
+  modesRequiringArgument['o'] = true;  // Mode +o nécessite un argument
+  modesRequiringArgument['l'] = true;   // Mode +l nécessite un argument si +
   modesRequiringArgument['t'] = false;  // Mode +t ne nécessite pas un argument
   modesRequiringArgument['i'] = false;  // Mode +i ne nécessite pas un argument
 
   size_t argumentIndex = 0;
-  bool plusMode = true;  // Default to plus mode
+  bool plusMode = true;
 
   for (size_t i = 0; i < modeStrings.size(); ++i) {
     const std::string &modeString = modeStrings[i];
@@ -252,11 +252,7 @@ KeyValuePairList Server::parseMode(const std::string &arg) {
   stringVector keyVector;
   stringVector valueVector;
   KeyValuePairList list;
-
-  // Utilisation de la fonction split pour découper la chaîne
   stringVector tokens = split(arg);
-
-  // Parcours des tokens pour les classer dans keyVector ou valueVector
   for (size_t i = 0; i < tokens.size(); ++i) {
     if (!tokens[i].empty() && (tokens[i][0] == '+' || tokens[i][0] == '-')) {
       keyVector.push_back(tokens[i]);
@@ -280,8 +276,6 @@ KeyValuePairList Server::parseMode(const std::string &arg) {
     Server::printLog(DEBUG_LOG, COMMAND, afterValue.str());
   }
 #endif
-
-  // Remplir la liste avec les clés et les valeurs
   list.first = keyVector;
   list.second = valueVector;
   return list;
