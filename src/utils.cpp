@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/21 23:38:04 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/24 13:54:51 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ void splitByCommaAndTrim(const std::string &argument, stringVector *args) {
   }
 }
 
-KeyValuePairList parseCommandIntoKeyValuePairList(const std::string& key,
-                                                  const std::string& value) {
+KeyValuePairList parseCommandIntoKeyValuePairList(const std::string &key,
+                                                  const std::string &value) {
   stringVector keyVector;
   stringVector valueVector;
   KeyValuePairList list;
@@ -64,16 +64,17 @@ KeyValuePairList parseCommandIntoKeyValuePairList(const std::string& key,
     std::ostringstream before, after;
     before << "key: Before split and trim key: " << key;
     after << "keyVector: After split and trim keyVector: ";
-    for (size_t i = 0; i < keyVector.size(); ++i)
-      after << keyVector[i] << "|";
+    for (size_t i = 0; i < keyVector.size(); ++i) after << keyVector[i] << "|";
     Server::printLog(DEBUG_LOG, COMMAND, before.str());
     Server::printLog(DEBUG_LOG, COMMAND, after.str());
   }
 #endif
-std::cout << "keyVector.size(): " << keyVector.size() << "and stdcount" << std::count(key.begin(), key.end(), ',') + 1 << std::endl;
-if (keyVector.size() != static_cast<std::vector<std::string>::size_type>(std::count(key.begin(), key.end(), ',') + 1)) {
+  std::cout << "keyVector.size(): " << keyVector.size() << "and stdcount"
+            << std::count(key.begin(), key.end(), ',') + 1 << std::endl;
+  if (keyVector.size() != static_cast<std::vector<std::string>::size_type>(
+                              std::count(key.begin(), key.end(), ',') + 1)) {
     return KeyValuePairList();
-}
+  }
   splitByCommaAndTrim(value, &valueVector);
 #ifdef DEBUG
   {

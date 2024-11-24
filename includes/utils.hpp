@@ -17,6 +17,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "../includes/Server.hpp"
 

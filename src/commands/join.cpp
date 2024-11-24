@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/24 13:30:20 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/24 13:54:27 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@
 #include <vector>
 
 #include "../../includes/Client.hpp"
+#include "../../includes/Parser.hpp"
 #include "../../includes/Server.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
-#include "../../includes/Parser.hpp"
 
 void Server::joinChannel(int fd, const std::string &param) {
   Client &client = _clients.at(fd);
@@ -53,17 +53,18 @@ void Server::joinChannel(int fd, const std::string &param) {
   std::string channels, keys;
   std::istringstream iss(param);
   iss >> channels >> keys;
-  KeyValuePairList channelsAndKeys = parseCommandIntoKeyValuePairList(channels, keys);
-    if (channelsAndKeys.first.empty()) {
+  KeyValuePairList channelsAndKeys =
+      parseCommandIntoKeyValuePairList(channels, keys);
+  if (channelsAndKeys.first.empty()) {
     send400UnknownError(client, channels, "channel name is empty");
     return;
   }
   for (size_t i = 0; i < channelsAndKeys.first.size(); ++i) {
 #ifdef DEBUG
     {
-        std::ostringstream oss;
-        oss << "after parseJoinArguments: \n";
-        printLog(DEBUG_LOG, COMMAND, oss.str());
+      std::ostringstream oss;
+      oss << "after parseJoinArguments: \n";
+      printLog(DEBUG_LOG, COMMAND, oss.str());
       if (i < channelsAndKeys.first.size()) {
         std::ostringstream oss;
         oss << "channel: " << channelsAndKeys.first[i];
