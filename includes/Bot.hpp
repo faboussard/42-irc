@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/23 22:49:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/24 23:04:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <queue>
+#include <algorithm>
+#include <deque>
 #include <string>
 #include <vector>
 
@@ -30,13 +31,13 @@
 #include "../includes/utils.hpp"
 
 #define BOT_NAME "ircbot"
-#define MAX_CLIENTS_BOT 20
+// #define MAX_CLIENTS_BOT 20
 #define LOCALHOST "127.0.0.1"
 
 #define NUMBERS_HOST "numbersapi.com"
 #define NUMBERS_PORT 80
-#define JOKE_HOST "v2.jokeapi.dev"
-#define JOKE_PORT 443
+#define JOKE_HOST "icanhazdadjoke.com"
+#define JOKE_PORT 80
 
 class Server;
 
@@ -64,7 +65,7 @@ class Bot {
   Server *_server;
   int _pipeServerToBot[2];
   int _pipeBotToServer[2];
-  std::queue<BotRequest> _requestDatas;
+  std::deque<BotRequest> _requestDatas;
 
  public:
   explicit Bot(Server *server);

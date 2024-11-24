@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/23 23:16:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/24 23:05:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void Bot::receiveRequestInQueue(BotRequest newRequest) {
 //   ss >> command;
 //   std::getline(ss >> std::ws, arg);
 //   BotRequest newRequest(clientNickname, command, arg);
-  _requestDatas.push(newRequest);
+  _requestDatas.push_back(newRequest);
   char notify = 1;
   write(_pipeServerToBot[1], &notify, sizeof(notify));
 }
@@ -43,10 +43,18 @@ void Bot::handleRequest(void) {
 
 /* ------------ TEST ---------------*/
   std::ostringstream oss;
-  oss << "GET /42 HTTP/1.1\r\n"
-        "Host: numbersapi.com\r\n"
-        "Connection: close\r\n"
-        "\r\n";
+  if (request.command == NUMBERS)
+    oss << "GET /42 HTTP/1.1\r\n"
+          "Host: numbersapi.com\r\n"
+          "Connection: close\r\n"
+          "\r\n";
+  else if (request.command == JOKE)
+    oss << "GET https://icanhazdadjoke.com/ HTTP/1.1\r\n"
+      "Host: icanhazdadjoke.com\r\n"
+      "User-Agent: ft_irc\r\n"
+      "Accept: application/json\r\n"
+      "Connection: close\r\n"
+      "\r\n";
   std::string httpRequest = oss.str();
 /* ------------ TEST ---------------*/
 
