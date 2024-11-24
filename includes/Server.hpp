@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/24 12:05:09 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/24 12:18:35 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,7 +224,7 @@ class Server {
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
   std::string checkArguments(const stringVector &modeStrings, const stringVector &arguments);
-  bool isModeStringValid(const stringVector &argumentToCheck);
+   std::string  checkModeString(const stringVector &argumentToCheck);
 
   bool isChannelValid(int fd, const std::string &channel);
   void switchMode( Client *client, const std::string &channelName, const stringVector &modeStrings,
