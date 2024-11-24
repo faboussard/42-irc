@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/24 12:57:14 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/24 13:31:30 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,19 @@ void Server::switchMode(Client *client, const std::string &channelName,
       const char &c = modeString[j];
 
       if (c == 'i' || c == 't') {
-        if (plusMode)
-          (c == 'i') ? channel->activateInviteOnlyMode()
-                     : channel->activateTopicOpsOnlyMode();
-        else
-          (c == 'i') ? channel->deactivateInviteOnlyMode()
-                     : channel->deactivateTopicOpsOnlyMode();
+        if (plusMode) {
+          if (c == 'i') {
+            channel->activateInviteOnlyMode();
+          } else {
+            channel->activateTopicOpsOnlyMode();
+          }
+        } else {
+          if (c == 'i') {
+            channel->deactivateInviteOnlyMode();
+          } else {
+            channel->deactivateTopicOpsOnlyMode();
+          }
+        }
       } else if (c == 'k') {
         if (plusMode) {
           if (argumentIndex >= argumentVector.size()) {
@@ -88,6 +95,7 @@ void Server::switchMode(Client *client, const std::string &channelName,
         }
       }
     }
+    sendNotice(*client, "MODE " + channelName + " " + modeString);
   }
 }
 
