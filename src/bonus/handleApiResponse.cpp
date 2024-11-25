@@ -6,20 +6,17 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/25 08:04:35 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/25 08:41:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cerrno>
+#include <deque>
 #include <string>
 
 #include "../../includes/Bot.hpp"
 
 void Bot::handleApiResponse(int fd) {
-  Server::printLog(DEBUG_LOG, BOT_L, "Handling API response");
-
-  std::string response = receiveResponseFromApi(fd);
-  
   BotRequest *request;
   std::deque<BotRequest>::iterator it = _requestDatas.begin();
   std::deque<BotRequest>::iterator itEnd = _requestDatas.end();
@@ -29,30 +26,29 @@ void Bot::handleApiResponse(int fd) {
       break;
     }
   }
-  // sendResponseToServer(response);
-  if (it != itEnd)
-    _requestDatas.erase(it);
-  (void)request;
+  std::string response = receiveResponseFromApi(fd, it);
 
-  std::ostringstream oss;
-  oss << _requestDatas.size() <<  " requests are waiting";
-  Server::printLog(DEBUG_LOG, BOT_L, oss.str());
+  // sendResponseToServer(response);
+  (void)request;
 }
 
-std::string Bot::receiveResponseFromApi(int fd) {
+std::string Bot::receiveResponseFromApi(
+    int fd, std::deque<BotRequest>::iterator itRequest) {
   char buffer[4096];
   std::string response;
   ssize_t bytesRead = recv(fd, buffer, sizeof(buffer) - 1, 0);
   if (bytesRead == -1) {
     Server::printLog(ERROR_LOG, BOT_L,
-                     "Failed to receive response from API server: "
-                    + std::string(strerror(errno)));
+                     "Failed to receive response from API server: " +
+                         std::string(strerror(errno)));
   } else if (bytesRead == 0) {
     close(fd);
+    _requestDatas.erase(itRequest);
     _server->removeApiSocketFdFromPoll(fd);
-    std::ostringstream oss;
-    oss << "fd" << fd << ": API server closed the connection with Bot";
-    Server::printLog(INFO_LOG, BOT_L, oss.str());
+    logApiConnectionClosed(fd);
+#ifdef DEBUG
+    debugLogWaitingRequests();
+#endif
   } else {
     buffer[bytesRead] = '\0';
     logApiResponse(fd);

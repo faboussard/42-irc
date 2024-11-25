@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/24 23:04:25 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/25 08:35:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,14 @@ struct BotRequest {
   std::string apiHost;
   int apiPort;
 
-  BotRequest(const std::string& nick, Command command,
-             const std::string& argument)
-        : clientNickname(nick), command(command), arg(argument),
-          socketFd(-1), apiHost(""), apiPort(0) {}
+  BotRequest(const std::string &nick, Command command,
+             const std::string &argument)
+      : clientNickname(nick),
+        command(command),
+        arg(argument),
+        socketFd(-1),
+        apiHost(""),
+        apiPort(0) {}
 };
 
 class Bot {
@@ -99,9 +103,21 @@ class Bot {
   void sendRequestToApi(const std::string &request, int socketFd);
 
   /* Responses handling */
-  std::string receiveResponseFromApi(int fd);
+  std::string receiveResponseFromApi(
+      int fd, std::deque<BotRequest>::iterator itRequest);
   bool parseResponse(const std::string &response);
   void sendResponseToServer(const std::string &response);
+
+  /* Log */
+  void logcreatSocketForApi(const BotRequest &request);
+  void logApiResponse(int fd);
+  void logApiConnectionClosed(int fd);
+#ifdef DEBUG
+  void debugLogPipe(int ServerToBot0, int ServerToBot1, int BotToServer0,
+                    int BotToServer1);
+  void debugLogReadRequest(BotRequest request);
+  void debugLogWaitingRequests(void);
+#endif
 };
 
 #define BOT_RESPONSE_HEADER (std::string(":") + BOT_NAME + " PRIVMSG ")
@@ -118,14 +134,5 @@ class Bot {
 // "WEATHER → Get weather updates.\n"
 // "TRANSLATE <text> → Translate words in a snap.\n"
 // "ASCIIART <topic> → Create ASCII art magic.\n")
-
-/* Log */
-void logcreatSocketForApi(const BotRequest &request);
-void logApiResponse(int fd);
-#ifdef DEBUG
-void debugLogPipe(int ServerToBot0, int ServerToBot1, int BotToServer0,
-                         int BotToServer1);
-void debugLogReadRequest(BotRequest request);
-#endif
 
 #endif  // INCLUDES_BOT_HPP_

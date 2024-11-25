@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/25 08:11:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/25 08:41:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,31 +26,30 @@ void Bot::handleRequest(void) {
   char buffer[2] = {0};
   read(_pipeServerToBot[0], buffer, sizeof(buffer) - 1);
 
-  if (_requestDatas.empty())
-    return;
+  if (_requestDatas.empty()) return;
   BotRequest &request = _requestDatas.front();
 
   // std::string httpRequest = parseRequest(request);
 
-/* ------------ TEST ---------------*/
+  /* ------------ TEST ---------------*/
   std::ostringstream oss;
   if (request.command == NUMBERS)
     oss << "GET /42 HTTP/1.1\r\n"
-          "Host: numbersapi.com\r\n"
-          "Connection: close\r\n"
-          "\r\n";
+           "Host: numbersapi.com\r\n"
+           "Connection: close\r\n"
+           "\r\n";
   else if (request.command == JOKE)
     oss << "GET https://icanhazdadjoke.com/ HTTP/1.1\r\n"
-      "Host: icanhazdadjoke.com\r\n"
-      "User-Agent: ft_irc\r\n"
-      "Accept: application/json\r\n"
-      "Connection: close\r\n"
-      "\r\n";
+           "Host: icanhazdadjoke.com\r\n"
+           "User-Agent: ft_irc\r\n"
+           "Accept: application/json\r\n"
+           "Connection: close\r\n"
+           "\r\n";
   std::string httpRequest = oss.str();
-/* ------------ TEST ---------------*/
+  /* ------------ TEST ---------------*/
 
   if (httpRequest.empty()) {
-//   send error message to server that sends it to client
+    //   send error message to server that sends it to client
     return;
   }
 
@@ -104,8 +103,8 @@ void Bot::createSocketForApi(BotRequest *request) {
                              std::string(strerror(errno)));
   }
   int en = 1;
-  if (setsockopt(request->socketFd, SOL_SOCKET, SO_REUSEADDR,
-                 &en, sizeof(en)) == -1) {
+  if (setsockopt(request->socketFd, SOL_SOCKET, SO_REUSEADDR, &en,
+                 sizeof(en)) == -1) {
     throw std::runtime_error("Failed to set option SO_REUSEADDR on socket: " +
                              std::string(strerror(errno)));
   }
@@ -119,22 +118,22 @@ void Bot::createSocketForApi(BotRequest *request) {
 bool Bot::connectToApiServer(BotRequest *request) {
   struct addrinfo hints, *res;
   memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_INET;  // IPv4
+  hints.ai_family = AF_INET;        // IPv4
   hints.ai_socktype = SOCK_STREAM;  // TCP socket
 
   int status = getaddrinfo(request->apiHost.c_str(),
-                           toString(request->apiPort).c_str(),
-                           &hints, &res);
+                           toString(request->apiPort).c_str(), &hints, &res);
   if (status != 0) {
-    Server::printLog(ERROR_LOG, BOT_L, "getaddrinfo error: " +
-                     std::string(gai_strerror(status)));
+    Server::printLog(ERROR_LOG, BOT_L,
+                     "getaddrinfo error: " + std::string(gai_strerror(status)));
     return (false);
   }
 
   if (connect(request->socketFd, res->ai_addr, res->ai_addrlen) == -1) {
     if (errno != EINPROGRESS) {
-      Server::printLog(ERROR_LOG, BOT_L, "Failed to connect to API server: "
-                       + std::string(strerror(errno)));
+      Server::printLog(
+          ERROR_LOG, BOT_L,
+          "Failed to connect to API server: " + std::string(strerror(errno)));
       freeaddrinfo(res);
       return (false);
     }
@@ -146,8 +145,8 @@ bool Bot::connectToApiServer(BotRequest *request) {
 
     int pollRet = poll(&pollFd, 1, 10000);
     if (pollRet == -1) {
-      Server::printLog(ERROR_LOG, BOT_L, "poll error: " +
-                       std::string(strerror(errno)));
+      Server::printLog(ERROR_LOG, BOT_L,
+                       "poll error: " + std::string(strerror(errno)));
       freeaddrinfo(res);
       return (false);
     } else if (pollRet == 0) {
@@ -160,15 +159,17 @@ bool Bot::connectToApiServer(BotRequest *request) {
     socklen_t len = sizeof(so_error);
     getsockopt(request->socketFd, SOL_SOCKET, SO_ERROR, &so_error, &len);
     if (so_error != 0) {
-      Server::printLog(ERROR_LOG, BOT_L, "Failed to connect to API server: " +
-                       std::string(strerror(so_error)));
+      Server::printLog(ERROR_LOG, BOT_L,
+                       "Failed to connect to API server: " +
+                           std::string(strerror(so_error)));
       freeaddrinfo(res);
       return (false);
     }
   }
 
-  Server::printLog(INFO_LOG, BOT_L, "Connected to API server at fd" +
-                   toString(request->socketFd));
+  Server::printLog(
+      INFO_LOG, BOT_L,
+      "Connected to API server at fd" + toString(request->socketFd));
   freeaddrinfo(res);
   _server->addBotSocketFdToPoll(request->socketFd);
 
@@ -180,7 +181,7 @@ void Bot::sendRequestToApi(const std::string &request, int socketFd) {
   if (bytesSent == -1) {
     Server::printLog(ERROR_LOG, BOT_L,
                      "Failed to send request to API server: " +
-                     std::string(strerror(errno)));
+                         std::string(strerror(errno)));
   } else {
     Server::printLog(INFO_LOG, BOT_L, "Sent request to API server");
     Server::printLog(DEBUG_LOG, BOT_L, "Request sent: " + request);
