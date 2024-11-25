@@ -6,25 +6,16 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/24 23:05:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/25 08:11:47 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cerrno>
 #include <string>
 
 #include "../../includes/Bot.hpp"
 
-// void Bot::receiveRequestInQueue(const std::string &request) {
-//   _requests.push(request);
 void Bot::receiveRequestInQueue(BotRequest newRequest) {
-//   std::stringstream ss(request);
-//   std::string clientNickname;
-//   std::string command;
-//   std::string arg;
-//   ss >> clientNickname;
-//   ss >> command;
-//   std::getline(ss >> std::ws, arg);
-//   BotRequest newRequest(clientNickname, command, arg);
   _requestDatas.push_back(newRequest);
   char notify = 1;
   write(_pipeServerToBot[1], &notify, sizeof(notify));
@@ -85,7 +76,9 @@ void Bot::handleRequest(void) {
 void Bot::findApiInfo(BotRequest *request) {
   switch (request->command) {
     case WEATHER:
+      break;
     case TRANSLATE:
+      break;
     case NUMBERS:
       request->apiHost = NUMBERS_HOST;
       request->apiPort = NUMBERS_PORT;
@@ -130,7 +123,7 @@ bool Bot::connectToApiServer(BotRequest *request) {
   hints.ai_socktype = SOCK_STREAM;  // TCP socket
 
   int status = getaddrinfo(request->apiHost.c_str(),
-                           std::to_string(request->apiPort).c_str(),
+                           toString(request->apiPort).c_str(),
                            &hints, &res);
   if (status != 0) {
     Server::printLog(ERROR_LOG, BOT_L, "getaddrinfo error: " +
