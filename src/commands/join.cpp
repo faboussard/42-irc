@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/24 13:54:27 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/25 12:18:40 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
                             *client);
     send353Namreply(*client, *channel);
     send366Endofnames(*client, *channel);
-    broadcastInChannel(*client, *channel, "JOIN", "say hello!");
+  broadcastInChannel(*client, *channel, "JOIN", "say hello!");
   }
 }
 bool Server::isLeaveAllChannelsRequest(const std::string &param) {
