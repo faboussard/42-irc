@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Bot.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 15:00:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:03:45 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,16 +260,3 @@ void Bot::handleResponse(void) {
 /*       Helper functions                                                     */
 /*============================================================================*/
 
-std::string Bot::botCommandStr(Command command) {
-  std::string commandStr;
-  switch (command) {
-    case BOT:
-      return ("BOT");
-    case WEATHER:
-      return ("WEATHER");
-    case TRANSLATE:
-      return ("TRANSLATE");
-    default:
-      return ("");
-  }
-}

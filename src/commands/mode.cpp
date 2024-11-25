@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/25 13:33:24 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:19:22 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,8 @@ void Server::switchMode(Client *client, const std::string &channelName,
   }
 }
 
-std::string Server::checkArguments(const stringVector &modeStrings,
-                                   const stringVector &arguments) {
+char Server::checkModeArguments(
+    const stringVector &modeStrings, const stringVector &arguments) {
   std::map<char, bool> modesRequiringArgument;
   modesRequiringArgument['k'] = true;   // Mode +k nécessite un argument si +
   modesRequiringArgument['o'] = true;   // Mode +o nécessite un argument
@@ -121,39 +121,29 @@ std::string Server::checkArguments(const stringVector &modeStrings,
         plusMode = true;
       } else if (c == '-') {
         plusMode = false;
-      } else {
-        if (modesRequiringArgument.find(c) == modesRequiringArgument.end()) {
-          std::string message = "unknown mode " + std::string(1, c);
-          return message;  // Mode inconnu
-        }
-
+      }
 #ifdef DEBUG
-        {
-          std::ostringstream oss;
-          oss << "Mode: " << (plusMode ? "+" : "-") << c << " | "
-              << "Argument: "
-              << (argumentIndex < arguments.size() ? arguments[argumentIndex]
-                                                   : "N/A")
-              << " | "
-              << "booleen:" << modesRequiringArgument[c];
-          printLog(DEBUG_LOG, COMMAND, oss.str());
-        }
+      {
+        std::ostringstream oss;
+        oss << "Mode: " << (plusMode ? "+" : "-") << c << " | "
+            << "Argument: "
+            << (argumentIndex < arguments.size() ? arguments[argumentIndex]
+                                                 : "N/A")
+            << " | "
+            << "booleen:" << modesRequiringArgument[c];
+        printLog(DEBUG_LOG, COMMAND, oss.str());
+      }
 #endif
-
-        if ((plusMode && modesRequiringArgument[c]) ||
-            (modesRequiringArgument[c] && c == 'o')) {
-          if (argumentIndex >= arguments.size()) {
-            std::string message =
-                "missing argument for mode " + std::string(1, c);
-            return message;
-          }
-          ++argumentIndex;
+      if ((plusMode && modesRequiringArgument[c]) ||
+          (modesRequiringArgument[c] && c == 'o')) {
+        if (argumentIndex >= arguments.size()) {
+          return c;
         }
+        ++argumentIndex;
       }
     }
   }
-
-  return "";  // Return an empty string if no errors
+  return 0;
 }
 
 std::string Server::checkModeString(const stringVector &modestringToCheck) {
@@ -165,9 +155,8 @@ std::string Server::checkModeString(const stringVector &modestringToCheck) {
   }
 #endif
   if (modestringToCheck.empty()) {
-    return "";  // Return an empty string if modestringToCheck is empty
+    return "";
   }
-
   const std::string validModes = "itkol";
   const std::string plusMinus = "+-";
   for (size_t i = 0; i < modestringToCheck.size(); ++i) {
@@ -179,12 +168,13 @@ std::string Server::checkModeString(const stringVector &modestringToCheck) {
       printLog(DEBUG_LOG, COMMAND, oss.str());
     }
 #endif
+    if (mode[0] != plusMinus[0] && mode[0] != plusMinus[1]) return mode;
     for (size_t j = 1; j < mode.size(); ++j) {
       if (validModes.find(mode[j]) == std::string::npos) {
 #ifdef DEBUG
         {
           std::ostringstream oss;
-          oss << "Mode invalide: " << mode[j];
+          oss << "Invalid Mode: " << mode[j];
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
@@ -210,10 +200,10 @@ bool Server::isChannelValid(int fd, const std::string &channel) {
 void Server::mode(int fd, const std::string &arg) {
   const Client &client = _clients.at(fd);
   std::istringstream iss(arg);
-  std::string channel, modeString;
-  iss >> channel;
-  if (isChannelValid(fd, channel) == false) return;
-  const Channel &channelObj = _channels[channel.substr(1)];
+  std::string channelName, modeString;
+  iss >> channelName;
+  if (isChannelValid(fd, channelName) == false) return;
+  const Channel &channelObj = _channels[channelName.substr(1)];
 
   if (channelObj.isOperator(fd) == false) {
     send482ChanOPrivsNeeded(client, channelObj);
@@ -236,10 +226,11 @@ void Server::mode(int fd, const std::string &arg) {
     sendNotice(client, "usage: MODE <channel> {[+|-]|o|i|t|k|l} [<arguments>]");
     return;
   }
-  std::string errorModeArguments =
-      checkArguments(modestringVector, modeArgumentsVector);
-  if (!errorModeArguments.empty()) {
-    send461NeedMoreParams(client, errorModeArguments);
+  char errorModeArguments =
+      checkModeArguments(modestringVector, modeArgumentsVector);
+  if (errorModeArguments != 0) {
+    send696InvalidModeParam(client, channelName, "Mode:",
+                            std::string(1, errorModeArguments));
     return;
   }
 #ifdef DEBUG
@@ -249,7 +240,7 @@ void Server::mode(int fd, const std::string &arg) {
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
-  switchMode(&_clients[fd], channel, modestringVector, modeArgumentsVector);
+  switchMode(&_clients[fd], channelName, modestringVector, modeArgumentsVector);
 }
 
 stringVector split(const std::string &str) {

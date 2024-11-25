@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   messageManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/21 17:09:35 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/25 16:04:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     Command command = Parser::choseCommand(splittedPair[it].first);
     std::string argument = splittedPair[it].second;
     std::ostringstream oss;
-    oss << "Command: " MAGENTA << command << RESET " | Message: " MAGENTA
+    oss << "Command: " MAGENTA << commandToString(command) << RESET " | Message: " MAGENTA
         << argument << RESET;
     printLog(DEBUG_LOG, PARSER, oss.str());
 

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/25 13:42:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:47:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,5 +80,44 @@ void splitByCommaAndTrim(const std::string &argument, stringVector *args) {
   std::string token;
   while (std::getline(ss, token, ',')) {
     args->push_back(trimWhiteSpaces(token));
+  }
+}
+
+std::string commandToString(Command command) {
+  switch (command) {
+    case JOIN:
+      return "JOIN";
+    case KICK:
+      return "KICK";
+    case INVITE:
+      return "INVITE";
+    case TOPIC:
+      return "TOPIC";
+    case MODE:
+      return "MODE";
+    case WHO:
+      return "WHO";
+    case LIST:
+      return "LIST";
+    case NICK:
+      return "NICK";
+    case USER:
+      return "USER";
+    case PRIVMSG:
+      return "PRIVMSG";
+    case QUIT:
+      return "QUIT";
+    case PING:
+      return "PING";
+    case PASS:
+      return "PASS";
+    case BOT:
+      return "BOT";
+    case WEATHER:
+      return "WEATHER";
+    case TRANSLATE:
+      return "TRANSLATE";
+    default:
+      return """";
   }
 }

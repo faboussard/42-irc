@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/25 13:54:52 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:16:21 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,7 @@ class Server {
 
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
-  std::string checkArguments(const stringVector &modeStrings,
+  char checkModeArguments(const stringVector &modeStrings,
                              const stringVector &arguments);
   std::string checkModeString(const stringVector &argumentToCheck);
 
@@ -270,13 +270,15 @@ class Server {
   /* Bot */
  public:
   void addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi);
+  void botCommands(Client *client, Command command, const std::string &arg);
+
 
  private:
-  void botCommands(Client *client, Command command, const std::string &arg);
   void sendBotResponse(const Client &client, const std::string &message);
   void sendBotInstruction(const Client &client);
   void sendRequestToBot(const Client &client, Command command,
                         const std::string &arg);
+ 
 
   /* Tests */
   void addClient(int fd, const Client &client);
