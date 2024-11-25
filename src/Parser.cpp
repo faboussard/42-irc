@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/21 17:09:00 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/25 13:41:40 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,37 +73,6 @@ std::vector<std::string> Parser::splitCommand(const std::string& command) {
     token.clear();
   }
   return (message);
-}
-
-static std::string trimBeginWithChar(const std::string& str, const char c) {
-  std::string::const_iterator it = str.begin();
-  std::string::const_iterator itEnd = str.end();
-
-  while (it != itEnd && (*it == c || std::isspace(*it))) ++it;
-
-  return (std::string(it, itEnd));
-}
-
-std::vector<std::string> split(const std::string& str,
-                               const std::string& delim) {
-  std::vector<std::string> result;
-  size_t start = 0;
-  size_t end = str.find(delim);
-  size_t delimLen = delim.length();
-  while (end != std::string::npos) {
-    std::string token = str.substr(start, end - start);
-    token = trimBeginWithChar(token, '\n');
-    if (!token.empty()) {
-      result.push_back(token);
-    }
-    start = end + delimLen;
-    end = str.find(delim, start);
-  }
-  std::string token = trimBeginWithChar(str.substr(start), '\n');
-  if (!token.empty()) {
-    result.push_back(token);
-  }
-  return (result);
 }
 
 stringPairsVector Parser::parseCommandIntoPairs(const std::string& command) {

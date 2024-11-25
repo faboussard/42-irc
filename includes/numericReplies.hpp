@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 17:10:08 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/25 13:46:52 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,10 +248,6 @@ extern Config *gConfig;
   (FROM_SERVER + "525 " + nick + " " + chanName + \
   " :Key is not well-formed\r\n")
 
-#define _696_ERR_INVALIDMODEPARAM(nick, chanName, modeChar, param)          \
-  (FROM_SERVER + "696 " + nick + " " + chanName + " " + modeChar + " " +    \
-  param + " :" + "Invalid mode parameter\r\n")
-
 /* Functions */
 
 void sendNumericReply(int fd, std::string *message);
@@ -328,10 +324,6 @@ void send481NoPrivileges(const Client &client);
 void send482ChanOPrivsNeeded(const Client &client, const Channel &channel);
 void send501UmodeUnknownFlag(const Client &client);
 void send525InvalidKey(const Client &client, const Channel &channel);
-void send696InvalidModeParam(const Client &client,
-                             const std::string &chanNameWithPrefix,
-                             const std::string &modeCharWithPrefix,
-                             const std::string &param);
 
 #define _WELCOME(nick)                                                         \
   (std::string(":") + SRV_NAME + " NOTICE " + nick + " :\n" +                  \

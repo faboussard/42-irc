@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/24 13:52:12 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/25 13:33:24 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,7 @@ void Server::mode(int fd, const std::string &arg) {
   }
   std::string remainingArgs;
   std::getline(iss, remainingArgs);
-  KeyValuePairList modestringAndArguments = parseMode(remainingArgs);
+  StringVectorPair modestringAndArguments = parseMode(remainingArgs);
   if (modestringAndArguments.first.empty()) {
     send324Channelmodeis(client, channelObj);
     return;
@@ -262,10 +262,10 @@ stringVector split(const std::string &str) {
   return tokens;
 }
 
-KeyValuePairList Server::parseMode(const std::string &arg) {
+StringVectorPair Server::parseMode(const std::string &arg) {
   stringVector keyVector;
   stringVector valueVector;
-  KeyValuePairList list;
+  StringVectorPair list;
   stringVector tokens = split(arg);
   for (size_t i = 0; i < tokens.size(); ++i) {
     if (!tokens[i].empty() && (tokens[i][0] == '+' || tokens[i][0] == '-')) {

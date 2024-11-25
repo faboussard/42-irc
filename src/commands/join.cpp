@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/25 12:18:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/25 13:55:49 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,12 @@ void Server::joinChannel(int fd, const std::string &param) {
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "client.getChannelsCount(): " << client.getChannelsCount();
+    oss << "JOIN: client.getChannelsCount(): " << client.getChannelsCount();
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
   {
     std::ostringstream oss;
-    oss << "gConfig->getLimitchanlimit: " << gConfig->getLimit(CHANLIMIT);
+    oss << "JOIN: gConfig->getLimitchanlimit: " << gConfig->getLimit(CHANLIMIT);
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
@@ -53,8 +53,7 @@ void Server::joinChannel(int fd, const std::string &param) {
   std::string channels, keys;
   std::istringstream iss(param);
   iss >> channels >> keys;
-  KeyValuePairList channelsAndKeys =
-      parseCommandIntoKeyValuePairList(channels, keys);
+  StringVectorPair channelsAndKeys = parsejoin(channels, keys);
   if (channelsAndKeys.first.empty()) {
     send400UnknownError(client, channels, "channel name is empty");
     return;
@@ -63,18 +62,18 @@ void Server::joinChannel(int fd, const std::string &param) {
 #ifdef DEBUG
     {
       std::ostringstream oss;
-      oss << "after parseJoinArguments: \n";
+      oss << "JOIN: after parseJoinArguments: \n";
       printLog(DEBUG_LOG, COMMAND, oss.str());
       if (i < channelsAndKeys.first.size()) {
         std::ostringstream oss;
-        oss << "channel: " << channelsAndKeys.first[i];
+        oss << "JOIN: channel: " << channelsAndKeys.first[i];
         printLog(DEBUG_LOG, COMMAND, oss.str());
       }
     }
     {
       if (i < channelsAndKeys.second.size()) {
         std::ostringstream oss;
-        oss << "key: " << channelsAndKeys.second[i];
+        oss << "JOIN: key: " << channelsAndKeys.second[i];
         printLog(DEBUG_LOG, COMMAND, oss.str());
       }
     }
@@ -99,6 +98,44 @@ void Server::joinChannel(int fd, const std::string &param) {
       }
     }
   }
+}
+
+StringVectorPair Server::parsejoin(const std::string &key,
+                                   const std::string &value) {
+  stringVector keyVector;
+  stringVector valueVector;
+  StringVectorPair list;
+  splitByCommaAndTrim(key, &keyVector);
+
+#ifdef DEBUG
+  {
+    std::ostringstream before, after;
+    before << "JOIN: key: Before split and trim key: " << key;
+    after << "JOIN: keyVector: After split and trim keyVector: ";
+    for (size_t i = 0; i < keyVector.size(); ++i) after << keyVector[i] << "|";
+    Server::printLog(DEBUG_LOG, COMMAND, before.str());
+    Server::printLog(DEBUG_LOG, COMMAND, after.str());
+  }
+#endif
+  if (keyVector.size() != static_cast<std::vector<std::string>::size_type>(
+                              std::count(key.begin(), key.end(), ',') + 1)) {
+    return StringVectorPair();
+  }
+  splitByCommaAndTrim(value, &valueVector);
+#ifdef DEBUG
+  {
+    std::ostringstream before, after;
+    before << "JOIN: value: Before split and trim value: " << value;
+    after << "JOIN: valueVector: After split and trim valueVector: ";
+    for (size_t i = 0; i < valueVector.size(); ++i)
+      after << valueVector[i] << "|";
+    Server::printLog(DEBUG_LOG, COMMAND, before.str());
+    Server::printLog(DEBUG_LOG, COMMAND, after.str());
+  }
+#endif
+  list.first = keyVector;
+  list.second = valueVector;
+  return (list);
 }
 
 bool Server::isKeyValid(const Channel &channel, const std::string &key,
@@ -135,7 +172,7 @@ bool Server::isChannelNameValid(const std::string &channelNameToCheck,
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "Channel Name to check: " << channelNameToCheck;
+    oss << "JOIN: Channel Name to check: " << channelNameToCheck;
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
@@ -156,7 +193,7 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "Join request for channel: " << REG_CHAN << channel->getName();
+    oss << "JOIN: Join request for channel: " << REG_CHAN << channel->getName();
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
@@ -164,12 +201,15 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     channel->addClientToChannelMap(client);
     client->incrementChannelsCount();
-    sendJoinMessageToClient(fd, client->getNickname(), channel->getName(),
-                            *client);
+    sendJoinMessageToClient(client->getNickname(), channel->getName(), *client);
     send353Namreply(*client, *channel);
     send366Endofnames(*client, *channel);
-  broadcastInChannel(*client, *channel, "JOIN", "say hello!");
+    broadcastInChannel(*client, *channel, "JOIN", "say hello!");
   }
+  if (channel->getTopic().topic.empty())
+    send331Notopic(*client, *channel);
+  else
+    send332Topic(*client, *channel);
 }
 bool Server::isLeaveAllChannelsRequest(const std::string &param) {
   return (param == "0");
@@ -182,16 +222,9 @@ void Server::addChanneltoServer(const std::string &channelName) {
   printLog(INFO_LOG, CHANNEL, oss.str());
 }
 
-void Server::sendJoinMessageToClient(int fd, const std::string &nick,
+void Server::sendJoinMessageToClient(const std::string &nick,
                                      const std::string &channelName,
                                      const Client &client) {
   std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
-  if (send(fd, joinMessage.c_str(), joinMessage.length(), 0) == -1) {
-    printLog(ERROR_LOG, SYSTEM, "JOIN: send failed");
-    throw std::runtime_error(RUNTIME_ERROR);
-  }
-  if (_channels[channelName].getTopic().topic.empty())
-    send331Notopic(client, _channels[channelName]);
-  else
-    send332Topic(client, _channels[channelName]);
+  client.receiveMessage(joinMessage);
 }

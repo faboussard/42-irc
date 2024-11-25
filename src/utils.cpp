@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/24 13:54:51 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/25 13:42:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,37 @@ void strToUpper(std::string *str) {
   }
 }
 
+static std::string trimBeginWithChar(const std::string &str, const char c) {
+  std::string::const_iterator it = str.begin();
+  std::string::const_iterator itEnd = str.end();
+
+  while (it != itEnd && (*it == c || std::isspace(*it))) ++it;
+
+  return (std::string(it, itEnd));
+}
+
+std::vector<std::string> split(const std::string &str,
+                               const std::string &delim) {
+  std::vector<std::string> result;
+  size_t start = 0;
+  size_t end = str.find(delim);
+  size_t delimLen = delim.length();
+  while (end != std::string::npos) {
+    std::string token = str.substr(start, end - start);
+    token = trimBeginWithChar(token, '\n');
+    if (!token.empty()) {
+      result.push_back(token);
+    }
+    start = end + delimLen;
+    end = str.find(delim, start);
+  }
+  std::string token = trimBeginWithChar(str.substr(start), '\n');
+  if (!token.empty()) {
+    result.push_back(token);
+  }
+  return (result);
+}
+
 std::string trimWhiteSpaces(const std::string &input) {
   std::string result = input;
   result.erase(0, result.find_first_not_of(" \t\n\r\f\v"));
@@ -50,44 +81,4 @@ void splitByCommaAndTrim(const std::string &argument, stringVector *args) {
   while (std::getline(ss, token, ',')) {
     args->push_back(trimWhiteSpaces(token));
   }
-}
-
-KeyValuePairList parseCommandIntoKeyValuePairList(const std::string &key,
-                                                  const std::string &value) {
-  stringVector keyVector;
-  stringVector valueVector;
-  KeyValuePairList list;
-  splitByCommaAndTrim(key, &keyVector);
-
-#ifdef DEBUG
-  {
-    std::ostringstream before, after;
-    before << "key: Before split and trim key: " << key;
-    after << "keyVector: After split and trim keyVector: ";
-    for (size_t i = 0; i < keyVector.size(); ++i) after << keyVector[i] << "|";
-    Server::printLog(DEBUG_LOG, COMMAND, before.str());
-    Server::printLog(DEBUG_LOG, COMMAND, after.str());
-  }
-#endif
-  std::cout << "keyVector.size(): " << keyVector.size() << "and stdcount"
-            << std::count(key.begin(), key.end(), ',') + 1 << std::endl;
-  if (keyVector.size() != static_cast<std::vector<std::string>::size_type>(
-                              std::count(key.begin(), key.end(), ',') + 1)) {
-    return KeyValuePairList();
-  }
-  splitByCommaAndTrim(value, &valueVector);
-#ifdef DEBUG
-  {
-    std::ostringstream before, after;
-    before << "value: Before split and trim value: " << value;
-    after << "valueVector: After split and trim valueVector: ";
-    for (size_t i = 0; i < valueVector.size(); ++i)
-      after << valueVector[i] << "|";
-    Server::printLog(DEBUG_LOG, COMMAND, before.str());
-    Server::printLog(DEBUG_LOG, COMMAND, after.str());
-  }
-#endif
-  list.first = keyVector;
-  list.second = valueVector;
-  return (list);
 }

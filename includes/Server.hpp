@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/24 13:55:16 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/25 13:54:52 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 typedef std::vector<std::string> stringVector;
 typedef std::pair<std::vector<std::string>, std::vector<std::string> >
-    KeyValuePairList;
+    StringVectorPair;
 
 extern Config *gConfig;
 
@@ -185,7 +185,7 @@ class Server {
   void joinChannel(int fd, const std::string &param);
 
   void addChanneltoServer(const std::string &channelName);
-  void sendJoinMessageToClient(int fd, const std::string &nick,
+  void sendJoinMessageToClient(const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
   void processJoinRequest(int fd, Client *client, Channel *channel);
@@ -194,6 +194,8 @@ class Server {
   bool isChannelNotFull(const Channel &channel, const Client &client);
   bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
                                           const Client &client);
+  StringVectorPair parsejoin(const std::string &channels,
+                                                   const std::string &keys);
 
   /*-------- PART --------*/
   void quitAllChannels(int fd);
@@ -231,7 +233,7 @@ class Server {
   void switchMode(Client *client, const std::string &channelName,
                   const stringVector &modeStrings,
                   const stringVector &argumentVector);
-  KeyValuePairList parseMode(const std::string &arg);
+  StringVectorPair parseMode(const std::string &arg);
 
   /*-------- WHO --------*/
   void who(const Client &client, const std::string &arg);
