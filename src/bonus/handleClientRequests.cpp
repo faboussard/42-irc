@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 10:59:48 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/26 12:21:31 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,35 +18,40 @@
 void Bot::receiveRequestInQueue(BotRequest newRequest) {
   _requestDatas.push_back(newRequest);
   char notify = 1;
-  write(_pipeServerToBot[1], &notify, sizeof(notify));
+  if (write(_pipeServerToBot[1], &notify, sizeof(notify)) == -1) {
+   Server::printLog(ERROR_LOG, BOT_L, "Failed to write to pipe");
+   return;
+  }
 }
 
 void Bot::handleRequest(void) {
   // Clear the notification in pipe
   char buffer[2] = {0};
-  read(_pipeServerToBot[0], buffer, sizeof(buffer) - 1);
+  if (read(_pipeServerToBot[0], buffer, sizeof(buffer) - 1) == -1)
+  {
+    Server::printLog(ERROR_LOG, BOT_L, "Failed to read from pipe");
+  }
 
   if (_requestDatas.empty()) return;
   BotRequest &request = _requestDatas.front();
-  #ifdef DEBUG
+#ifdef DEBUG
   std::ostringstream oss;
-  oss << "Request: " << request.clientNickname << " | " << commandToString(request.command) << " | " << request.arg;
+  oss << "Request: " << request.clientNickname << " | " << "command "
+      << commandToString(request.command) << " | "
+      << "argument: " << request.arg;
   Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-  #endif
+#endif
 
   /* ------------ TEST ---------------*/
 
-  if (request.command == NUMBERS)
-  {
-  request.ApiString = "GET /42 HTTP/1.1\r\n"
-                      "Host: numbersapi.com\r\n"
-                      "Connection: close\r\n"
-                      "\r\n";
-    #ifndef DEBUG
-    std::ostringstream oss;
-    oss << request.ApiString;
-    Server::printLog(INFO_LOG, BOT_L, oss.str());
-    #endif
+  if (request.command == NUMBERS) {
+    std::string number = request.arg;
+    if (number.empty()) number = "42";
+    request.ApiString = "GET /" + number +
+                        " HTTP/1.1\r\n"
+                        "Host: numbersapi.com\r\n"
+                        "Connection: close\r\n"
+                        "\r\n";
   }
   // else if (request.command == JOKE)
   //   oss << "GET https://icanhazdadjoke.com/ HTTP/1.1\r\n"
@@ -56,11 +61,11 @@ void Bot::handleRequest(void) {
   //          "Connection: close\r\n"
   //          "\r\n";
   /* ------------ TEST ---------------*/
-
-  if (request.ApiString.empty()) {
-    //   send error message to server that sends it to client
-    return;
-  }
+#ifndef DEBUG
+  std::ostringstream oss;
+  oss << request.ApiString;
+  Server::printLog(INFO_LOG, BOT_L, oss.str());
+#endif
 
   findApiInfo(&request);  // pair of host and port
   createSocketForApi(&request);

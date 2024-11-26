@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 08:56:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 11:57:36 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,10 @@ std::string commandToString(Command command) {
       return "WEATHER";
     case TRANSLATE:
       return "TRANSLATE";
+    case NUMBERS:
+      return "NUMBERS";
     default:
-      return """";
+      return ""
+             "";
   }
 }

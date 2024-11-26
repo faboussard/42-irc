@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 10:59:11 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/26 12:13:06 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,8 +120,11 @@ void Server::addBotResponseToQueue(const std::string &response) {
 void Server::handleBotResponse(int serverFdListenBot) {
   // Clear the notification in pipe
   char buffer[2] = {0};
-  read(serverFdListenBot, &buffer, 1);
-
+  if (read(serverFdListenBot, &buffer, 1) == -1) {
+    Server::printLog(ERROR_LOG, BOT_L, "Failed to read from pipe");
+    return;
+  }
+  
   if (_responsesFromBot.empty())
     return;
   std::stringstream ss(_responsesFromBot.front());
