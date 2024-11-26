@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 14:15:30 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:19:06 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,13 @@ void send366Endofnames(const Client &client, const Channel &channel) {
 /*       Error messages                                                       */
 /*============================================================================*/
 
+void send400UnknownError(const Client &client, const std::string &keyword,
+                         const std::string &content) {
+  std::string message =
+      _400_ERR_UNKNOWNERROR(client.getNickname(), keyword, content);
+  sendNumericReply(client.getFd(), &message);
+}
+
 void send401NoSuchNick(const Client &client, const std::string &targetNick) {
   std::string message = _401_ERR_NOSUCHNICK(client.getNickname(), targetNick);
   sendNumericReply(client.getFd(), &message);
@@ -365,9 +372,8 @@ void send696InvalidModeParam(const Client &client,
                              const std::string &chanNameWithPrefix,
                              const std::string &modeCharWithPrefix,
                              const std::string &param) {
-  std::string message = _696_ERR_INVALIDMODEPARAM(client.getNickname(),
-                                                  chanNameWithPrefix,
-                                                  modeCharWithPrefix, param);
+  std::string message = _696_ERR_INVALIDMODEPARAM(
+      client.getNickname(), chanNameWithPrefix, modeCharWithPrefix, param);
   sendNumericReply(client.getFd(), &message);
 }
 
@@ -418,7 +424,6 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send104Myinfo(fd, nick);
   send005Isupport(fd, nick);
   /* User */
-  // send221Umodeis(client);
   send352Whoreply(client, testOp, testChannel);
   send315EndOfWho(client, testChannel);
   /* Channel */
@@ -464,8 +469,8 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send482ChanOPrivsNeeded(client, kModeChannel);
   send501UmodeUnknownFlag(client);
   send525InvalidKey(client, kModeChannel);
-  send696InvalidModeParam(client, testChannel.getNameWithPrefix(),
-                          "+m", "testParam");
+  send696InvalidModeParam(client, testChannel.getNameWithPrefix(), "+m",
+                          "testParam");
   send(fd, testEnd.c_str(), testEnd.size(), 0);
 }
 #endif

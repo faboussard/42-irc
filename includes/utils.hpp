@@ -17,10 +17,14 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "../includes/Server.hpp"
+#include "../includes/types.hpp"
 
 typedef std::vector<std::string> stringVector;
+typedef std::pair<std::vector<std::string>, std::vector<std::string> >
+    StringVectorPair;
 
 void shrink_to_fit(std::vector<struct pollfd> *vec);
 void strToUpper(std::string *str);
@@ -29,7 +33,12 @@ bool isNumeric(const std::string &str);
 
 std::string trimWhiteSpaces(const std::string &str);
 
+std::vector<std::string> split(const std::string& str,
+                               const std::string& delim);
+
 void splitByCommaAndTrim(const std::string &argument, stringVector *args);
+
+std::string commandToString(Command command);
 
 template <typename T>
 std::string toString(const T &value) {

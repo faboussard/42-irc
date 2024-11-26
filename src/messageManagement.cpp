@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   messageManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 09:33:03 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:04:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
 
-static bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
+static bool isLastPass(const stringPairsVector &splittedPair, size_t it,
                        size_t vecSize) {
   while (it < vecSize && splittedPair[it].first != "PASS") {
     ++it;
@@ -29,7 +29,7 @@ static bool isLastPass(const commandVectorPairs &splittedPair, size_t it,
   return (false);
 }
 
-static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
+static bool isLastNick(const stringPairsVector &splittedPair, size_t it,
                        size_t vecSize) {
   while (it < vecSize && splittedPair[it].first != "NICK" &&
          splittedPair[it].first != "USER") {
@@ -41,28 +41,15 @@ static bool isLastNick(const commandVectorPairs &splittedPair, size_t it,
   return (false);
 }
 
-// To delete later --------------------------------------------------------->//
-#ifdef DEBUG
-static void clientIsAcceptedMessageToDelete(const Client *client,
-                                            const std::string &command) {
-  std::cout << BRIGHT_GREEN "CLIENT ACCEPTED !!!!!!!  WELCOME ^__^"
-            << std::endl;
-  std::cout << BLUE "NickName: " << client->getNickname() << std::endl;
-  std::cout << "UserName: " << client->getUserName() << std::endl;
-  std::cout << BBRIGHT_YELLOW "Command: " << command << std::endl;
-}
-#endif
-// <-------------------------------------------------------------------------//
-
 void Server::handleInitialMessage(Client *client, const std::string &msg) {
-  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
+  stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
 
   for (size_t it = 0; it < vecSize; ++it) {
     Command command = Parser::choseCommand(splittedPair[it].first);
     std::string argument = splittedPair[it].second;
     std::ostringstream oss;
-    oss << "Command: " MAGENTA << command << RESET " | Message: " MAGENTA
+    oss << "Command: " MAGENTA << commandToString(command) << RESET " | Message: " MAGENTA
         << argument << RESET;
     printLog(DEBUG_LOG, PARSER, oss.str());
 
@@ -72,7 +59,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     }
     if (client->isAccepted()) {
 #ifdef DEBUG
-      clientIsAcceptedMessageToDelete(client, command);
+      std::ostringstream oss;
+      oss << "Nick:" << client->getNickname() << " has been accepted";
+      printLog(DEBUG_LOG, PARSER, oss.str());
 #endif
       if (command == UNKNOWN)
         send421UnknownCommand(*client, splittedPair[it].first);
@@ -116,9 +105,12 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 #ifdef DEBUG
-  std::cout << BRIGHT_GREEN << msg << RESET << std::endl;
+  std::ostringstream oss;
+  oss << "Nick:" BLUE << client.getNickname() << RESET << " | UName:" BLUE
+      << client.getUserName() << RESET << " | Message:" MAGENTA << msg << RESET;
+  printLog(DEBUG_LOG, PARSER, oss.str());
 #endif
-  commandVectorPairs splittedPair = Parser::parseCommandIntoPairs(msg);
+  stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg);
   size_t vecSize = splittedPair.size();
   int fd = client.getFd();
   for (size_t it = 0; it < vecSize; ++it) {
@@ -168,12 +160,7 @@ void Server::handleClientMessage(int fd) {
     clearClient(fd);
     return;
   }
-
-  // Accumuler les données reçues
   messageBuffer[fd] += std::string(buffer, valread);
-
-  // Vérifier si le message est complet (par exemple, contient une nouvelle
-  // ligne)
   size_t pos;
   std::string message = "";
   while ((pos = messageBuffer[fd].find("\r\n")) != std::string::npos) {
@@ -244,6 +231,6 @@ void Server::handleCommand(Command command, const std::string &argument,
       send462AlreadyRegistered(_clients[fd]);
       break;
     default:
-      break;
+      botCommands(&_clients.at(fd), command, argument);
   }
 }

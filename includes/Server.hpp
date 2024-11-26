@@ -1,13 +1,15 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 09:04:18 by mbernard         ###   ########.fr       */
+/*   Updated: 2024/11/25 16:16:21 by faboussa         ###   ########.fr       */
 /*                                                                            */
+/* ************************************************************************** */
+
 /* ************************************************************************** */
 
 #ifndef INCLUDES_SERVER_HPP_
@@ -35,10 +37,13 @@
 #include <utility>
 #include <vector>
 
+class Bot;
+
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/numericReplies.hpp"
+#include "../includes/types.hpp"
 
 #define SRV_NAME "ircserv"
 #define SRV_VERSION "1.0.0"
@@ -47,27 +52,31 @@ typedef std::map<int, Client> clientsMap;
 typedef std::map<std::string, Channel> channelsMap;
 typedef std::vector<std::string> stringVector;
 typedef std::pair<std::vector<std::string>, std::vector<std::string> >
-    pairOfStringVectors;
+    StringVectorPair;
 
 extern Config *gConfig;
 
-enum Command {
-  JOIN,
-  KICK,
-  INVITE,
-  TOPIC,
-  MODE,
-  LIST,
-  NICK,
-  PRIVMSG,
-  QUIT,
-  PING,
-  CAP,
-  USER,
-  PASS,
-  WHO,
-  UNKNOWN
-};
+// enum Command {
+//   JOIN,
+//   KICK,
+//   INVITE,
+//   TOPIC,
+//   MODE,
+//   LIST,
+//   NICK,
+//   PRIVMSG,
+//   QUIT,
+//   PING,
+//   CAP,
+//   USER,
+//   PASS,
+//   WHO,
+//   BOT,
+//   WEATHER,
+//   TRANSLATE,
+//   ASCII_ART,
+//   UNKNOWN
+// };
 
 enum eLogLevel { DEBUG_LOG, INFO_LOG, NOTIFY_LOG, WARNING_LOG, ERROR_LOG };
 
@@ -79,7 +88,8 @@ enum eLogContext {
   AUTH,
   CLIENT,
   CHANNEL,
-  REPLY
+  REPLY,
+  BOT_L
 };
 
 /* log contexts */
@@ -91,6 +101,7 @@ enum eLogContext {
 #define CLIENT_LOG "[Client] "
 #define CHANNEL_LOG "[Channel] "
 #define REP_LOG "[Reply] "
+#define BOT_LOG "[Bot] "
 
 class Server {
  private:
@@ -104,6 +115,8 @@ class Server {
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
 
+  Bot *_bot;
+
  public:
   explicit Server(int port, const std::string &password);
 
@@ -116,8 +129,8 @@ class Server {
   void closeServer(void);
 
   /*  Getters */
-  // int getSocketFd() const;
-  // int getPort() const;
+  int getSocketFd() const;
+  int getPort() const;
   // const std::string &getPassword() const;
   //  Client &findClientByFd(int fd);
   // const channelsMap &getChannels() const;
@@ -157,11 +170,11 @@ class Server {
   bool channelExists(const std::string &channel);
 
   /* Commands handling */
-  void handleCommand(Command command, const std::string &argument,
-                     int fd);
+  void handleCommand(Command command, const std::string &argument, int fd);
   void broadcastInChannel(const Client &client, const Channel &channel,
                           const std::string &command,
                           const std::string &content);
+  void sendNotice(const Client &client, const std::string &message);
 
   /*  Command  */
   /*-------- JOIN --------*/
@@ -172,19 +185,17 @@ class Server {
   void joinChannel(int fd, const std::string &param);
 
   void addChanneltoServer(const std::string &channelName);
-  void sendJoinMessageToClient(int fd, const std::string &nick,
+  void sendJoinMessageToClient(const std::string &nick,
                                const std::string &channelName,
                                const Client &client);
   void processJoinRequest(int fd, Client *client, Channel *channel);
-  void handlePartRequest(int fd, const std::string &param);
-  bool handleKey(Client *client, const Channel &channel,
-                 const std::string &key);
   bool isKeyValid(const Channel &channel, const std::string &keyToCheck,
                   const Client &client);
   bool isChannelNotFull(const Channel &channel, const Client &client);
   bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
                                           const Client &client);
-  pairOfStringVectors parseJoinArguments(const std::string &param);
+  StringVectorPair parsejoin(const std::string &channels,
+                                                   const std::string &keys);
 
   /*-------- PART --------*/
   void quitAllChannels(int fd);
@@ -214,6 +225,15 @@ class Server {
 
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
+  char checkModeArguments(const stringVector &modeStrings,
+                             const stringVector &arguments);
+  std::string checkModeString(const stringVector &argumentToCheck);
+
+  bool isChannelValid(int fd, const std::string &channel);
+  void switchMode(Client *client, const std::string &channelName,
+                  const stringVector &modeStrings,
+                  const stringVector &argumentVector);
+  StringVectorPair parseMode(const std::string &arg);
 
   /*-------- WHO --------*/
   void who(const Client &client, const std::string &arg);
@@ -246,6 +266,19 @@ class Server {
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
+
+  /* Bot */
+ public:
+  void addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi);
+  void botCommands(Client *client, Command command, const std::string &arg);
+
+
+ private:
+  void sendBotResponse(const Client &client, const std::string &message);
+  void sendBotInstruction(const Client &client);
+  void sendRequestToBot(const Client &client, Command command,
+                        const std::string &arg);
+ 
 
   /* Tests */
   void addClient(int fd, const Client &client);

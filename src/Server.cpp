@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 14:38:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/25 13:53:23 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 
+#include "../includes/Bot.hpp"
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
@@ -28,6 +29,7 @@ bool Server::_signal = false;
 Server::Server(int port, const std::string &password)
     : _socketFd(-1), _port(port), _password(password) {
   _signal = false;
+  _bot = new Bot(this);
 }
 
 /*============================================================================*/
@@ -40,9 +42,9 @@ Server::Server(int port, const std::string &password)
 
 // const std::string &Server::getPassword(void) const { return _password; }
 
-// int Server::getPort(void) const { return _port; }
+int Server::getPort(void) const { return _port; }
 
-// int Server::getSocketFd(void) const { return _socketFd; }
+int Server::getSocketFd(void) const { return _socketFd; }
 
 /*============================================================================*/
 /*       Finders                                                              */
@@ -75,6 +77,7 @@ void Server::runServer(void) {
   std::ostringstream oss;
   oss << "Server started on port " << _port;
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
+  _bot->runBot();
   acceptAndChat();
 }
 
@@ -123,6 +126,10 @@ void Server::acceptAndChat(void) {
   newPoll.events = POLLIN;
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
+  // Add fds of bot to pollFds
+
+  int botIrcFd = _bot->getIrcSocketFd();
+  int botApiFd = _bot->getApiSocketFd();
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
@@ -133,6 +140,12 @@ void Server::acceptAndChat(void) {
       if (_pollFds[i].revents & POLLIN && _signal == false) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
+        } else if (_pollFds[i].fd == botIrcFd) {
+          printLog(DEBUG_LOG, BOT_L, "Received a message from IRC server");
+          _bot->handleRequest();
+        } else if (_pollFds[i].fd == botApiFd) {
+          printLog(DEBUG_LOG, BOT_L, "Received a message from API server");
+          // _bot->handleResponse();
         } else {
           handleClientMessage(_pollFds[i].fd);
         }
@@ -175,6 +188,7 @@ void Server::closeServer(void) {
   shrink_to_fit(&_pollFds);
   _channels.clear();
   delete gConfig;
+  delete _bot;
 }
 
 /*============================================================================*/
@@ -249,8 +263,6 @@ void Server::clearClient(int fd) {
       break;
     }
   }
-  // if (_clients.at(fd).getChannelsCount() > 0) {  // Decommente after merge
-  // join & part
   _clients.erase(fd);
 }
 
@@ -268,7 +280,7 @@ void Server::sendConnectionMessage(const Client &client) const {
 }
 
 /*============================================================================*/
-/*       Broadcast                                                            */
+/*       Broadcast & send message                                             */
 /*============================================================================*/
 
 void Server::broadcastInChannel(const Client &sender, const Channel &channel,
@@ -279,7 +291,10 @@ void Server::broadcastInChannel(const Client &sender, const Channel &channel,
   const clientPMap &allClients = channel.getChannelClients();
   clientPMap::const_iterator itEnd = allClients.end();
   for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
-    if (it->first != sender.getFd()) it->second->receiveMessage(message);
+    if (it->first == sender.getFd() &&
+        (command == "PRIVMSG" || command == "JOIN"))
+      continue;
+    it->second->receiveMessage(message);
   }
 }
 
@@ -294,6 +309,13 @@ void Server::broadcastToOperatorsOnly(const Client &sender,
   for (clientPMap::const_iterator it = operators.begin(); it != itEnd; ++it) {
     if (it->first != sender.getFd()) it->second->receiveMessage(message);
   }
+}
+
+void Server::sendNotice(const Client &client, const std::string &message) {
+  std::ostringstream oss;
+  oss << FROM_SERVER << " NOTICE " << client.getNickname() << " :" << message
+      << "\r\n";
+  client.receiveMessage(oss.str());
 }
 
 /*============================================================================*/
@@ -379,6 +401,8 @@ std::string logContext(eLogContext context) {
       return CHANNEL_LOG;
     case REPLY:
       return REP_LOG;
+    case BOT_L:
+      return BOT_LOG;
   }
   return ("");
 }

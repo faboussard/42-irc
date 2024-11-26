@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/19 14:01:35 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/25 16:21:47 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,14 +17,17 @@ MKDIR = mkdir -p
 RMDIR = rm -rf
 
 # ---------------------------------- Sources --------------------------------- #
-vpath %.cpp src src/commands
+vpath %.cpp src src/commands src/bonus
 
-HEADERS_LIST = colors Server Config Client Channel Parser numericReplies utils \
+HEADERS_LIST =  Server Config Client Channel Parser Bot \
+                numericReplies utils \
+                colors types
 
-SRCS = main Server Client Channel Parser Config \
+SRCS = main Server Client Channel Parser Config Bot\
        numericReplies messageManagement utils \
        pass nick user \
 	   invite join kick list mode part ping privmsg quit topic who \
+	   botCommands
 
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
@@ -64,20 +67,10 @@ fsan:
 	$(RMDIR) $(DIR_OBJS)
 	$(MAKE) CFLAGS="-g3 -fsanitize=address"
 	$(MAKE) clean
-# ---------------------------------- valgrind -------------------------------- #
+# ---------------------------------- Valgrind -------------------------------- #
 valgrind: $(NAME) debug
 			valgrind --track-fds=yes --leak-check=full \
 			--show-leak-kinds=all -s ./$(NAME) 6667 pass
-
-# ---------------------------------- fsanitize ------------------------------- #
-fsanitize: C = g++
-fsanitize: CFLAGS += -fsanitize=address -g
-fsanitize: clean create_dirs ${NAME}
-
-# ---------------------------------- Test ------------------------------------ #
-test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
-test: CFLAGS += -DTEST
-test: clean create_dirs ${NAME}
 
 # ---------------------------------- Tests ----------------------------------- #
 testnumericr: CFLAGS += -DTESTNUMERICR

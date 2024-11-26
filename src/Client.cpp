@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 14:14:22 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:09:42 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ Client::Client(int fd, const std::string& ip, const std::string& hostName)
       _passwordGiven(false),
       _accepted(false),
       _nbPassAttempts(0),
-      _channelsCount(0) {}
+      _channelsCount(0),
+      _botLaunched(false) {}
 
 /*============================================================================*/
 /*       Getters                                                              */
@@ -72,6 +73,8 @@ bool Client::isAccepted(void) const { return (_accepted); }
 
 uint8_t Client::getNbPassAttempts(void) const { return (_nbPassAttempts); }
 
+bool Client::botLaunched(void) const { return (_botLaunched); }
+
 /*============================================================================*/
 /*       Setters                                                              */
 /*============================================================================*/
@@ -102,6 +105,8 @@ void Client::declareAccepted(void) { _accepted = true; }
 void Client::declarePasswordGiven(void) { _passwordGiven = true; }
 
 void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
+
+void Client::setBotLaunched(bool launched) { _botLaunched = launched; }
 
 /*============================================================================*/
 /*       Messages handling                                                    */
