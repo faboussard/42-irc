@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   handleClientRequests.cpp                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 08:45:33 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 10:59:48 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,27 +28,36 @@ void Bot::handleRequest(void) {
 
   if (_requestDatas.empty()) return;
   BotRequest &request = _requestDatas.front();
-
-  // std::string httpRequest = parseRequest(request);
-
-  /* ------------ TEST ---------------*/
+  #ifdef DEBUG
   std::ostringstream oss;
-  if (request.command == NUMBERS)
-    oss << "GET /42 HTTP/1.1\r\n"
-           "Host: numbersapi.com\r\n"
-           "Connection: close\r\n"
-           "\r\n";
-  else if (request.command == JOKE)
-    oss << "GET https://icanhazdadjoke.com/ HTTP/1.1\r\n"
-           "Host: icanhazdadjoke.com\r\n"
-           "User-Agent: ft_irc\r\n"
-           "Accept: application/json\r\n"
-           "Connection: close\r\n"
-           "\r\n";
-  std::string httpRequest = oss.str();
+  oss << "Request: " << request.clientNickname << " | " << commandToString(request.command) << " | " << request.arg;
+  Server::printLog(DEBUG_LOG, BOT_L, oss.str());
+  #endif
+
   /* ------------ TEST ---------------*/
 
-  if (httpRequest.empty()) {
+  if (request.command == NUMBERS)
+  {
+  request.ApiString = "GET /42 HTTP/1.1\r\n"
+                      "Host: numbersapi.com\r\n"
+                      "Connection: close\r\n"
+                      "\r\n";
+    #ifndef DEBUG
+    std::ostringstream oss;
+    oss << request.ApiString;
+    Server::printLog(INFO_LOG, BOT_L, oss.str());
+    #endif
+  }
+  // else if (request.command == JOKE)
+  //   oss << "GET https://icanhazdadjoke.com/ HTTP/1.1\r\n"
+  //          "Host: icanhazdadjoke.com\r\n"
+  //          "User-Agent: ft_irc\r\n"
+  //          "Accept: application/json\r\n"
+  //          "Connection: close\r\n"
+  //          "\r\n";
+  /* ------------ TEST ---------------*/
+
+  if (request.ApiString.empty()) {
     //   send error message to server that sends it to client
     return;
   }
@@ -57,7 +66,7 @@ void Bot::handleRequest(void) {
   createSocketForApi(&request);
   connectToApiServer(&request);
 
-  sendRequestToApi(httpRequest, request.socketFd);
+  sendRequestToApi(request.ApiString, request.socketFd);
 }
 
 /*============================================================================*/

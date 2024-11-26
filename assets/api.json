@@ -1,4 +1,4 @@
-// curl "https://opentdb.com/api.php?amount=1&category=9&type=multiple"
+//  curl "https://opentdb.com/api.php?amount=1&category=9&type=multiple"
 
 {
 	"response_code":0,

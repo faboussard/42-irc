@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/26 08:49:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 10:17:48 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,11 +142,11 @@ void Server::acceptAndChat(void) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
         } else if (_pollFds[i].fd == botFdServerRead) {
-          printLog(INFO_LOG, BOT_L, "Request has received by Bot");
+          printLog(INFO_LOG, BOT_L, "Request has been received by Bot");
           _bot->handleRequest();
         } else if (_pollFds[i].fd == serverFdListenBot) {
           printLog(INFO_LOG, BOT_L,
-                   "Response to request has received by Server");
+                   "Response to request has been received by Server");
           handleBotResponse(serverFdListenBot);
         } else if (std::find(_botToApiSocketFds.begin(),
                              _botToApiSocketFds.end(), _pollFds[i].fd)

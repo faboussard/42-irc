@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 08:50:50 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 10:20:10 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,20 +84,6 @@ void Bot::runBot(void) {
 /*============================================================================*/
 /*       Helper functions & log                                               */
 /*============================================================================*/
-
-std::string Bot::botCommandStr(Command command) {
-  std::string commandStr;
-  switch (command) {
-    case BOT:
-      return ("BOT");
-    case WEATHER:
-      return ("WEATHER");
-    case TRANSLATE:
-      return ("TRANSLATE");
-    default:
-      return ("");
-  }
-}
 
 /*============================================================================*/
 /*       Logs                                                                 */

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 08:51:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 10:59:11 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ void Server::handleBotResponse(int serverFdListenBot) {
   std::string response;
   ss >> clientNickname;
   std::getline(ss >> std::ws, response);
-    // Response must not has \n for PRIVMSG from bot
+    // Response must not have \n for PRIVMSG from bot
 
   std::ostringstream oss;
   oss << BOT_RESPONSE_HEADER << clientNickname << " :" << response << "\r\n";
@@ -146,7 +146,7 @@ void logRequestSentToBot(const std::string &nick, Command command,
                          const std::string &arg) {
   std::ostringstream oss;
   oss << "IRC Server has sent a request from " << nick
-      << Bot::botCommandStr(command) << " " << arg;
+      << commandToString(command) << " " << arg;
   Server::printLog(INFO_LOG, BOT_L, oss.str());
 }
 
@@ -155,7 +155,7 @@ void logBotCommand(const std::string &nick, Command command,
                    const std::string &arg) {
   std::ostringstream oss;
   oss << "Server has received from " << nick << ": Command " << CYAN
-      << Bot::commandToString(command) << RESET " | " << "arg " << CYAN << arg
+      << commandToString(command) << RESET " | " << "arg " << CYAN << arg
       << RESET;
   Server::printLog(DEBUG_LOG, BOT_L, oss.str());
 }
