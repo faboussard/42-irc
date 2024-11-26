@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 08:56:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 12:07:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,37 +86,41 @@ void splitByCommaAndTrim(const std::string &argument, stringVector *args) {
 std::string commandToString(Command command) {
   switch (command) {
     case JOIN:
-      return "JOIN";
+      return ("JOIN");
     case KICK:
-      return "KICK";
+      return ("KICK");
     case INVITE:
-      return "INVITE";
+      return ("INVITE");
     case TOPIC:
-      return "TOPIC";
+      return ("TOPIC");
     case MODE:
-      return "MODE";
+      return ("MODE");
     case WHO:
-      return "WHO";
+      return ("WHO");
     case LIST:
-      return "LIST";
+      return ("LIST");
     case NICK:
-      return "NICK";
+      return ("NICK");
     case USER:
-      return "USER";
+      return ("USER");
     case PRIVMSG:
-      return "PRIVMSG";
+      return ("PRIVMSG");
     case QUIT:
-      return "QUIT";
+      return ("QUIT");
     case PING:
-      return "PING";
+      return ("PING");
     case PASS:
-      return "PASS";
+      return ("PASS");
     case BOT:
-      return "BOT";
-    case WEATHER:
-      return "WEATHER";
-    case TRANSLATE:
-      return "TRANSLATE";
+      return ("BOT");
+    case NUMBERS:
+      return ("NUMBERS");
+    case JOKE:
+      return ("JOKE");
+    case FILM:
+      return ("FILM");
+    case QUIZ:
+      return ("QUIZ");
     default:
       return """";
   }

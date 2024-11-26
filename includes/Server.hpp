@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/26 08:48:24 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 16:13:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,15 @@
 #include <utility>
 #include <vector>
 
-class Bot;
-struct BotRequest;
+// class Bot;
+// struct BotRequest;
 
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
+#include "../includes/Log.hpp"
 #include "../includes/numericReplies.hpp"
-#include "../includes/types.hpp"
+#include "../includes/enums.hpp"
 
 #define SRV_NAME "ircserv"
 #define SRV_VERSION "1.0.0"
@@ -58,52 +59,7 @@ typedef std::pair<std::vector<std::string>, std::vector<std::string> >
 
 extern Config *gConfig;
 
-// enum Command {
-//   JOIN,
-//   KICK,
-//   INVITE,
-//   TOPIC,
-//   MODE,
-//   LIST,
-//   NICK,
-//   PRIVMSG,
-//   QUIT,
-//   PING,
-//   CAP,
-//   USER,
-//   PASS,
-//   WHO,
-//   BOT,
-//   WEATHER,
-//   TRANSLATE,
-//   ASCII_ART,
-//   UNKNOWN
-// };
-
-enum eLogLevel { DEBUG_LOG, INFO_LOG, NOTIFY_LOG, WARNING_LOG, ERROR_LOG };
-
-enum eLogContext {
-  SYSTEM,
-  SIGNAL,
-  PARSER,
-  COMMAND,
-  AUTH,
-  CLIENT,
-  CHANNEL,
-  REPLY,
-  BOT_L
-};
-
-/* log contexts */
-#define SYSTEM_LOG "[System] "
-#define SIGNAL_LOG "[Signal] "
-#define PARSER_LOG "[Parser] "
-#define COMMAND_LOG "[Command] "
-#define AUTH_LOG "[Auth] "
-#define CLIENT_LOG "[Client] "
-#define CHANNEL_LOG "[Channel] "
-#define REP_LOG "[Reply] "
-#define BOT_LOG "[Bot] "
+#define BOT_NAME "ircbot"
 
 class Server {
  private:
@@ -269,24 +225,33 @@ class Server {
 
   /* Bot */
  private:
-  Bot *_bot;
-  std::vector<int> _botToApiSocketFds;  // --> will create Class BotRequest
-  std::queue<std::string> _responsesFromBot;
-
- public:
-  // void set_botToApiSocketFds(std::vector<int> *botToApiSocketFds);
-  void addBotResponseToQueue(const std::string &response);
-  void addBotSocketFdToPoll(int newFd);
-  void removeApiSocketFdFromPoll(int soketFd);
-  const std::vector<int> &getBotToApiSocketFds(void) const;
-
- private:
-  void addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer);
+  Client *_bot;
   void botCommands(Client *client, Command command, const std::string &arg);
-  void sendBotInstruction(const Client &client);
   void sendRequestToBot(const Client &client, Command command,
                         const std::string &arg);
-  void handleBotResponse(int serverFdListenBot);
+
+//   void addBot(void);
+
+//  public:
+
+
+// /*---------- OLD VERSION -----------------------------------------------*/
+//  private:
+//   Bot *_bot;
+//   std::vector<int> _botToApiSocketFds;  // --> will create Class BotRequest
+//   std::queue<std::string> _responsesFromBot;
+
+//  public:
+//   // void set_botToApiSocketFds(std::vector<int> *botToApiSocketFds);
+//   void addBotResponseToQueue(const std::string &response);
+//   void addBotSocketFdToPoll(int newFd);
+//   void removeApiSocketFdFromPoll(int soketFd);
+//   const std::vector<int> &getBotToApiSocketFds(void) const;
+
+//  private:
+//   void addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer);
+//   void sendBotInstruction(const Client &client);
+//   void handleBotResponse(int serverFdListenBot);
 
   /* Tests */
   // void addClient(int fd, const Client &client);

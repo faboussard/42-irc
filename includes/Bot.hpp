@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 08:31:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 17:01:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,20 @@
 #include <string>
 #include <vector>
 
-#include "../includes/types.hpp"
+#include "../includes/colors.hpp"
+#include "../includes/enums.hpp"
 #include "../includes/utils.hpp"
 
 #define BOT_NAME "ircbot"
 // #define MAX_CLIENTS_BOT 20
 #define LOCALHOST "127.0.0.1"
 
-#define NUMBERS_HOST "numbersapi.com"
-#define NUMBERS_PORT 80
-#define JOKE_HOST "icanhazdadjoke.com"
-#define JOKE_PORT 443
+#define BOT_SOCKET_PORT 6668
+#define BOT_SOCKET_PORT2 6669
+#define BOT_NICK "ircbot"
+#define BOT_USER "ircbot 0 * :ircbot"
 
-#define NUMBERS_URL "http://numbersapi.com/"
+#define NUMBERS_URL "http://numbersapi.com/" curl
 #define JOKE_URL "https://icanhazdadjoke.com/"
 
 class Server;
@@ -49,24 +50,37 @@ struct BotRequest {
   Command command;
   std::string arg;
 
-  int socketFd;
-  std::string apiHost;
-  int apiPort;
+  std::string apiResponse;
 
   BotRequest(const std::string &nick, Command command,
              const std::string &argument)
       : clientNickname(nick),
         command(command),
         arg(argument),
-        socketFd(-1),
-        apiHost(""),
-        apiPort(0) {}
+        apiResponse(""){}
+};
+
+class Bot;
+
+struct ThreadData {
+  Bot* bot;
+  std::string requestBuffer;
 };
 
 class Bot {
  private:
-  std::string _name;
+  static bool _signal;
+  const std::string _nick;
+  const std::string _user;
+
   stringVector _instructions;
+
+  int _serverPort;
+  const std::string _serverPass;
+
+  // struct sockaddr_in _botAddress;
+  int _botPort;
+  int _botSocketFd;
 
   /* Bot-IRC Server & Bot-API Servers communication */
   Server *_server;
@@ -75,34 +89,38 @@ class Bot {
   std::deque<BotRequest> _requestDatas;
 
  public:
-  explicit Bot(Server *server);
+  explicit Bot(int serverPort, const std::string &serverPass, int botPort);
   ~Bot(void);
 
   void runBot(void);
+  static void signalHandler(int signal);
 
   /* Getters */
-  int getServerToBotPipe0(void) const;
-  int getBotToServerPipe0(void) const;
-  const stringVector &getInstructions(void) const;
+  // int getServerToBotPipe0(void) const;
+  // int getBotToServerPipe0(void) const;
+  // const stringVector &getInstructions(void) const;
 
   /* Bot - IRC Server communication */
-  void receiveRequestInQueue(BotRequest newRequest);
-  void handleRequest(void);  // receive, parse, send
+  // void receiveRequestInQueue(BotRequest newRequest);
 
   /* Bot - API Servers communication */
   void handleApiResponse(int fd);  // receive, parse, send
 
-  static std::string botCommandStr(Command command);
-
  private:
   /* Bot launch */
-  void createSocketForApi(BotRequest *request);
-  bool connectToApiServer(BotRequest *request);
+  void createSocket(void);
+  void connectToIrcServer(void);
+  void listenToIrcServer(void);
+  bool authenticate(void);
+
+  std::string readMessageFromServer(void);
+  bool sendMessageToServer(const std::string &message);
 
   /* Requests handling */
+  void handleRequest(void);  // receive, parse, send
   // BotRequest readRequest(void);
   std::string parseRequest(const BotRequest &request);
-  void findApiInfo(BotRequest *request);
+  // void findApiInfo(BotRequest *request);
   void sendRequestToApi(const std::string &request, int socketFd);
 
   /* Responses handling */
@@ -112,7 +130,7 @@ class Bot {
   void sendResponseToServer(const std::string &response);
 
   /* Log */
-  void logcreatSocketForApi(const BotRequest &request);
+  void logcreatSocketForApi(void);
   void logApiResponse(int fd);
   void logApiConnectionClosed(int fd);
 #ifdef DEBUG

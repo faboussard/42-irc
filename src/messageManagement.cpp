@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 08:56:37 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 15:04:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,13 +85,19 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
         if (Parser::verifyNick(argument, client, &_clients) == true &&
             client->isAccepted() == false && client->isUsernameSet()) {
           client->declareAccepted();
+          if (client->getNickname() == BOT_NAME) {
+            _bot = client;
+            Server::printLog(INFO_LOG, BOT_L, "Bot connected to IRC Server");
+          } else {
           sendConnectionMessage(*client);
+          }
         }
       }
     } else if (command == USER) {
       if (Parser::verifyUser(argument, client, &_clients) == true &&
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
+
         sendConnectionMessage(*client);
 #ifdef TESTNUMERICR
         testAllNumericReplies(_startTime, *client, "COMMAND", "puppy");
