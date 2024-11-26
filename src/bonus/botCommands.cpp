@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 12:13:06 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/26 12:25:38 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,16 @@ void Server::sendRequestToBot(const Client &client, Command command,
 
 void Server::addBotResponseToQueue(const std::string &response) {
   _responsesFromBot.push(response);
+  #ifdef DEBUG
+  std::ostringstream oss;
+  std::queue<std::string>::iterator ite = _responsesFromBot.end();
+  for (std::queue<std::string>::iterator it = _responsesFromBot.begin();
+       it != ite; ++it) {
+    oss << *it << " | ";
+  }
+  oss << "Response added to queue: " << response;
+  printLog(DEBUG_LOG, BOT_L, oss.str());
+  #endif
 }
 
 void Server::handleBotResponse(int serverFdListenBot) {
