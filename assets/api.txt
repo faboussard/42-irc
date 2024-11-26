@@ -1,0 +1,68 @@
+// curl "https://opentdb.com/api.php?amount=1&category=9&type=multiple"
+
+{
+	"response_code":0,
+	"results":[{"type":"multiple","difficulty":"medium","category":"General Knowledge",
+	"question":"What direction does the Statue of Liberty face?",
+	"correct_answer":"Southeast",
+	"incorrect_answers":["Southwest","Northwest","Northeast"]}]
+}
+
+// curl "https://opentdb.com/api.php?amount=5&category=9&type=multiple"
+{
+	"response_code":0,
+	"results":[{"type":"multiple","difficulty":"easy","category":"General Knowledge",
+	"question":"The drug cartel run by Pablo Escobar originated in which South American city?",
+	"correct_answer":"Medell&iacute;n","incorrect_answers":["Bogot&aacute;","Quito","Cali"]},
+	{"type":"multiple","difficulty":"easy","category":"General Knowledge",
+	"question":"What was the name of the WWF professional wrestling tag team made up of the wrestlers Ax and Smash?",
+	"correct_answer":"Demolition","incorrect_answers":["The Dream Team","The Bushwhackers","The British Bulldogs"]},
+	{"type":"multiple","difficulty":"easy","category":"General Knowledge",
+	"question":"Who is the youngest person to recieve a Nobel Prize?",
+	"correct_answer":"Malala Yousafzai","incorrect_answers":["Lawrence Bragg","Werner Heisenberg","Yasser Arafat"]},
+	{"type":"multiple","difficulty":"medium","category":"General Knowledge",
+	"question":"Who is the founder of &quot;The Lego Group&quot;?",
+	"correct_answer":"Ole Kirk Christiansen","incorrect_answers":[" Jens Niels Christiansen","Kirstine Christiansen"," Gerhardt Kirk Christiansen"]},{"type":"multiple","difficulty":"easy","category":"General Knowledge",
+	"question":" Which chemical element, number 11 in the Periodic table, has the symbol Na?",
+	"correct_answer":"Sodium","incorrect_answers":["Carbon","Lead","Nitrogen"]}]
+}
+
+
+// ~ curl -X GET "https://api.themoviedb.org/3/search/movie?query=Inception&api_key=54243c25328a99fba37f1470d10fc31e"
+
+{
+	"page":1,"results":[
+		{
+			"adult":false,"backdrop_path":"/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg","genre_ids":[28,878,12],"id":27205,
+			"original_language":"en",
+			"original_title":"Inception",
+			"overview":"Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets is offered a chance to regain his old life as payment for a task considered to be impossible: \"inception\", the implantation of another person's idea into a target's subconscious.","popularity":113.404,
+			"poster_path":"/ljsZTbVsrQSqZgWeep2B1QiDKuh.jpg",
+			"release_date":"2010-07-15",
+			"title":"Inception",
+			"video":false,"vote_average":8.369,"vote_count":36567
+		},
+		{
+			"adult":false,"backdrop_path":"/JeGkRdNsOuMrgwBdtB0hp763MU.jpg","genre_ids":[18,53],"id":613092,
+			"original_language":"es",
+			"original_title":"El crack cero",
+			"overview":"Madrid, Spain, 1975; shortly after the end of the Franco dictatorship. Six months after the mysterious death of his lover, a prestigious tailor, a married woman visits the office of the young Germán Areta, a former police officer turned private detective, to request his professional services.",
+			"popularity":4.224,
+			"poster_path":"/kzgPu2CMxBr4YZZxC1Off4cUfR9.jpg",
+			"release_date":"2019-10-04",
+			"title":"The Crack: Inception",
+			"video":false,"vote_average":6.684,"vote_count":38
+		},
+		{
+			"adult":false,"backdrop_path":null,"genre_ids":[16,28,53,878],"id":64956,
+			"original_language":"en",
+			"original_title":"Inception: The Cobol Job",
+			"overview":"This \"Inception\" prequel unfolds courtesy of a beautiful Motion Comic, and explains how Cobb, Arthur and Nash were enlisted by Cobol Engineering.",
+			"popularity":9.919,"poster_path":"/7k5ITghCoHFSLLW7SildCbsURRX.jpg",
+			"release_date":"2010-12-07",
+			"title":"Inception: The Cobol Job",
+			"video":false,"vote_average":7.3,"vote_count":304
+		},
+		{
+			"adult":false,"backdrop_path":null,"genre_ids":[],"id":350632,"original_language":"en","original_title":"Nātyārambham","overview":"On certain Adavus: the basic steps in Bharatanatyam. The first part covers Tatta Adavu, Natta Adavu, Visharu Adavu , Tatti Metti Adavu and Teermanam Adavu.","popularity":0.383,"poster_path":null,"release_date":"","title":"The Inception of Dramatic Representation","video":true,"vote_average":5.8,"vote_count":3},{"adult":false,"backdrop_path":"/x7ZzkFECLu9JUiKGzj52TWlnwir.jpg","genre_ids":[18],"id":1359046,"original_language":"mn","original_title":"Эхлэл","overview":"This film shows how ordinary people work to build the Erdenet factory, and how the finished product becomes the result of collective labor, and tells about the friendship of workers from Mongolia.","popularity":1.586,"poster_path":null,"release_date":"1980-01-23","title":"Inception","video":false,"vote_average":0.0,"vote_count":0},{"adult":false,"backdrop_path":null,"genre_ids":[99,18],"id":1370380,"original_language":"hr","original_title":"Sindrom Halla, začetak hrvatskog profesionalnog filma – rođenog da umre","overview":"One hundred years after the invention of film, Croatian film icon Mr. Fulir, who serves as the author’s alter-ego, comes up with the Faustian idea to bring back his youth. With a group of famous actors, he enthusiastically attempts to remake lost Croatian films from the silent era.","popularity":0.37,"poster_path":null,"release_date":"2017-01-01","title":"Syndrome Halla, the Inception of Croatian Professional Film – Born to Die","video":false,"vote_average":0.0,"vote_count":0},{"adult":false,"backdrop_path":null,"genre_ids":[35],"id":542438,"original_language":"en","original_title":"Bikini Inception","overview":"Two flunky Janitors in an Arctic Lab perform unauthorized experiments transporting them to a beach dream world in Malibu California w/50 beautiful young girls and a female Brazilian PhD Student wearing only a bra and panties. A '67 Muscle car races chases horses guns fights surfing, sumo wrestler, wolf monster, underwater scenes tons of gorgeous models. Sexy sci-fi fun.","popularity":1.821,"poster_path":"/mNASlEOFX2c9upxaSbgeKFvIr1L.jpg","release_date":"2015-05-19","title":"Bikini Inception","video":false,"vote_average":7.0,"vote_count":1},{"adult":false,"backdrop_path":null,"genre_ids":[10402],"id":973484,"original_language":"en","original_title":"Inception: Music from the Motion Picture","overview":"The Special Features Blu-ray disc contains a lossless DTS-HD MA 5.1 surround mix of the Inception soundtrack.","popularity":0.637,"poster_path":"/7uM4DyRVAcgagvhZoWrkrqMPbqV.jpg","release_date":"2010-12-07","title":"Inception: Music from the Motion Picture","video":true,"vote_average":6.0,"vote_count":1},{"adult":false,"backdrop_path":null,"genre_ids":[],"id":250845,"original_language":"en","original_title":"WWA The Inception","overview":"The first World Wrestling Allstars pay per view, live from Sydney, Australia! A tournament titled \"7 Deadly Sins\", each round having a stipulation match, the winner will be crowned the first ever WWA Heavyweight Champion! Wrestlers such as Jeff Jarrett, Road Dogg, Jerry Lawler all compete in the tournament, with the WWA Commissioner, Bret Hart not too far away to make sure nothing gets to far out of hand!","popularity":0.758,"poster_path":null,"release_date":"2001-10-26","title":"WWA The Inception","video":true,"vote_average":3.1,"vote_count":5}],"total_pages":1,"total_results":9
+}

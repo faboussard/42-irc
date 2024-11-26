@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/25 08:35:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 08:31:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,10 @@
 #define NUMBERS_HOST "numbersapi.com"
 #define NUMBERS_PORT 80
 #define JOKE_HOST "icanhazdadjoke.com"
-#define JOKE_PORT 80
+#define JOKE_PORT 443
+
+#define NUMBERS_URL "http://numbersapi.com/"
+#define JOKE_URL "https://icanhazdadjoke.com/"
 
 class Server;
 
