@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/26 10:17:48 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/26 13:04:46 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void Server::acceptAndChat(void) {
         } else if (std::find(_botToApiSocketFds.begin(),
                              _botToApiSocketFds.end(), _pollFds[i].fd)
                             != _botToApiSocketFds.end()) {
-          // printLog(INFO_LOG, BOT_L, "Received a response from API server");
+          printLog(INFO_LOG, BOT_L, "Received a response from API server");
           _bot->handleApiResponse(_pollFds[i].fd);
         } else {
           handleClientMessage(_pollFds[i].fd);

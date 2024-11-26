@@ -6,14 +6,14 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 12:16:36 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/26 13:23:55 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cerrno>
 #include <deque>
-#include <string>
 #include <sstream>
+#include <string>
 
 #include "../../includes/Bot.hpp"
 
@@ -32,14 +32,14 @@ void Bot::handleApiResponse(int fd) {
     return;
   }
   std::string response = receiveResponseFromApi(fd, it);
-  #ifdef DEBUG
+#ifdef DEBUG
   std::ostringstream oss;
-  oss << "Response: " << response;
+  oss << "Response: " << response << " | "
+      << "client : " << Server::findClientByFD(fd);
   Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-  #endif
+#endif
   sendResponseToServer(response);
 }
-
 
 std::string Bot::receiveResponseFromApi(
     int fd, std::deque<BotRequest>::iterator request) {
@@ -71,6 +71,6 @@ void Bot::sendResponseToServer(const std::string &response) {
   _server->addBotResponseToQueue(response);
   char notify = 1;
   if (write(_pipeBotToServer[1], &notify, 1) == -1)
-  Server::printLog(INFO_LOG, BOT_L, "Response has to be sent to Server");
+    Server::printLog(INFO_LOG, BOT_L, "Response has to be sent to Server");
   return;
 }

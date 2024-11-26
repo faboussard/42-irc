@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 12:25:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/26 13:06:53 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,10 +117,15 @@ void Server::addBotResponseToQueue(const std::string &response) {
   _responsesFromBot.push(response);
   #ifdef DEBUG
   std::ostringstream oss;
-  std::queue<std::string>::iterator ite = _responsesFromBot.end();
-  for (std::queue<std::string>::iterator it = _responsesFromBot.begin();
-       it != ite; ++it) {
+  std::deque<std::string> tempQueue;
+  while (!_responsesFromBot.empty()) {
+    tempQueue.push_back(_responsesFromBot.front());
+    _responsesFromBot.pop();
+  }
+  for (std::deque<std::string>::iterator it = tempQueue.begin();
+       it != tempQueue.end(); ++it) {
     oss << *it << " | ";
+    _responsesFromBot.push(*it); // Push back to the original queue
   }
   oss << "Response added to queue: " << response;
   printLog(DEBUG_LOG, BOT_L, oss.str());
@@ -128,27 +133,41 @@ void Server::addBotResponseToQueue(const std::string &response) {
 }
 
 void Server::handleBotResponse(int serverFdListenBot) {
-  // Clear the notification in pipe
-  char buffer[2] = {0};
-  if (read(serverFdListenBot, &buffer, 1) == -1) {
-    Server::printLog(ERROR_LOG, BOT_L, "Failed to read from pipe");
-    return;
-  }
-  
-  if (_responsesFromBot.empty())
-    return;
-  std::stringstream ss(_responsesFromBot.front());
-  _responsesFromBot.pop();
+    // Clear the notification in pipe
+    char buffer[2] = {0};
+    if (read(serverFdListenBot, &buffer, 1) == -1) {
+        Server::printLog(ERROR_LOG, BOT_L, "Failed to read from pipe");
+        return;
+    }
 
-  std::string clientNickname;
-  std::string response;
-  ss >> clientNickname;
-  std::getline(ss >> std::ws, response);
+    if (_responsesFromBot.empty()) {
+        Server::printLog(DEBUG_LOG, BOT_L, "No responses from bot");
+        return;
+    }
+
+    std::stringstream ss(_responsesFromBot.front());
+    _responsesFromBot.pop();
+
+    std::string clientNickname;
+    std::string response;
+    ss >> clientNickname;
+    std::getline(ss >> std::ws, response);
     // Response must not have \n for PRIVMSG from bot
 
-  std::ostringstream oss;
-  oss << BOT_RESPONSE_HEADER << clientNickname << " :" << response << "\r\n";
-  findClientByNickname(clientNickname)->receiveMessage(oss.str());
+    Server::printLog(DEBUG_LOG, BOT_L, "Client nickname: " + clientNickname);
+    Server::printLog(DEBUG_LOG, BOT_L, "Response: " + response);
+
+    // Assuming findClientByNickname and Client class are defined elsewhere
+    Client* client = findClientByNickname(clientNickname);
+    if (client == NULL) {
+        Server::printLog(ERROR_LOG, BOT_L, "Client not found: " + clientNickname);
+        return;
+    }
+
+    std::ostringstream oss;
+    oss << "BOT_RESPONSE_HEADER" << clientNickname << " :" << response << "\r\n";
+    Server::printLog(DEBUG_LOG, BOT_L, "Sending message: " + oss.str());
+    client->receiveMessage(oss.str());
 }
 
 /*============================================================================*/
