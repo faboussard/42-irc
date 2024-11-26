@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 13:04:17 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/25 15:19:06 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -424,7 +424,6 @@ void testAllNumericReplies(const std::string &serverStartTime,
   send104Myinfo(fd, nick);
   send005Isupport(fd, nick);
   /* User */
-  // send221Umodeis(client);
   send352Whoreply(client, testOp, testChannel);
   send315EndOfWho(client, testChannel);
   /* Channel */

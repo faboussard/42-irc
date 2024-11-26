@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/20 09:02:53 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 08:52:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ class Client {
   bool isRealnameSet(void) const;
   bool isPasswordGiven(void) const;
   bool isAccepted(void) const;
-  bool isCapSend(void) const;
   uint8_t getNbPassAttempts(void) const;
   uint8_t getChannelsCount() const;
   bool botLaunched(void) const;  // bonus
@@ -71,7 +70,6 @@ class Client {
   void setRealName(const std::string& realname);
   void setIp(const std::string& ip);
   void setHostName(const std::string& hostname);
-  void setCapSend(bool yes);
   void setBotLaunched(bool lanched);  // bonus
 
   /* Client status */

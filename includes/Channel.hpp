@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 12:12:55 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/25 13:53:38 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define INCLUDES_CHANNEL_HPP_
 
 #include <stdint.h>
+
 #include <ctime>
 #include <map>
 #include <string>

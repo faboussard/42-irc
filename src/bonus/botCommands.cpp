@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   botCommands.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/23 23:07:41 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/26 08:51:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,7 @@ void logBotCommand(const std::string &nick, Command command,
                    const std::string &arg) {
   std::ostringstream oss;
   oss << "Server has received from " << nick << ": Command " << CYAN
-      << Bot::botCommandStr(command) << RESET " | " << "arg " << CYAN << arg
+      << Bot::commandToString(command) << RESET " | " << "arg " << CYAN << arg
       << RESET;
   Server::printLog(DEBUG_LOG, BOT_L, oss.str());
 }

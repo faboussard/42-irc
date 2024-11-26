@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 14:28:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/26 08:57:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
   }
   if (message->empty() || (*message)[0] != ':') {
     send412NoTextToSend(client);
-    client.receiveMessage(":" + std::string(SRV_NAME) + " NOTICE " +
+    client.receiveMessage(":" + FROM_SERVER + " NOTICE " +
                           client.getNickname() +
                           " usage: PRIVMSG <target> :message\r\n");
     return (false);
@@ -151,7 +151,8 @@ void Server::privmsg(int fd, const std::string &arg) {
       }
       Channel &channel = _channels.at(target.substr(1));
       if (channel.getMode().inviteOnly &&
-          !channel.isClientInvited(sender.getFd())) {
+          !channel.isClientInvited(sender.getFd()) &&
+          !channel.isClientInChannel(sender.getFd())) {
         send404CannotSendToChan(sender, channel);
         return;
       }

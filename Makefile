@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/19 14:01:35 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/25 16:21:47 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,20 +70,10 @@ fsan:
 	$(RMDIR) $(DIR_OBJS)
 	$(MAKE) CFLAGS="-g3 -fsanitize=address"
 	$(MAKE) clean
-# ---------------------------------- valgrind -------------------------------- #
+# ---------------------------------- Valgrind -------------------------------- #
 valgrind: $(NAME) debug
 			valgrind --track-fds=yes --leak-check=full \
 			--show-leak-kinds=all -s ./$(NAME) 6667 pass
-
-# ---------------------------------- fsanitize ------------------------------- #
-fsanitize: C = g++
-fsanitize: CFLAGS += -fsanitize=address -g
-fsanitize: clean create_dirs ${NAME}
-
-# ---------------------------------- Test ------------------------------------ #
-test: CFLAGS := $(filter-out -Werror, $(CFLAGS))
-test: CFLAGS += -DTEST
-test: clean create_dirs ${NAME}
 
 # ---------------------------------- Tests ----------------------------------- #
 testnumericr: CFLAGS += -DTESTNUMERICR

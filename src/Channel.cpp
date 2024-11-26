@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 14:39:30 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/19 15:01:47 by mbernard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,6 +240,7 @@ void Channel::activateKeyMode(const std::string &key, const Client &client) {
     Server::printLog(INFO_LOG, CHANNEL, oss.str());
   }
 }
+
 void Channel::deactivateKeyMode(void) {
   _mode.keyRequired = false;
   _key = "";
