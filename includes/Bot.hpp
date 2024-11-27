@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 21:24:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 22:12:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,19 +139,16 @@ class Bot {
 #endif
 };
 
-// #define BOT_RESPONSE_HEADER (std::string(":") + BOT_NICK + " PRIVMSG ")
-
-#define BOT1 "  /\\_/\\\n"
-#define BOT2 " ( o.o )\n"
-#define BOT3 "─ U───U────────────────────────────────────────────────────────\n"
+#define BOT1 "  /\\_/\\"
+#define BOT2 " ( o.o )"
+#define BOT3 "─ U───U────────────────────────────────────────────────────────"
 #define BOT4 "         Hello! I'm IRCbot, what can I do for you?"
-#define BOT5 "────────────────────────────────────────────────────────── ♥ ──\n"
-#define BOT6 "🌤️ WEATHER 🌤️ Ask me for a forecast, I'll bring you the skies.\n"
-#define BOT7 "🌐 TRANSLATE 🌐 Lost in translation? I'm multilingual !\n"
-#define BOT8 "🎨 ASCII ART 🎨 \n"
-#define BOT9 "How to use ?\n"
-// "WEATHER → Get weather updates.\n"
-// "TRANSLATE <text> → Translate words in a snap.\n"
-// "ASCIIART <topic> → Create ASCII art magic.\n")
+#define BOT5 "────────────────────────────────────────────────────────── ♥ ──"
+#define BOT6 " NUMBERS <number>: Ask me about a number, get a fun fact (∞ᴗ∞)"
+#define BOT7 " JOKE: Feeling down? I'll lift you up with a dad joke (๑˃̵ᴗ˂̵)"
+#define BOT8 " INSULTME: Craving some sass? I can roast you (•̀ᴗ•́)و ̑̑"
+#define BOT9 " MOVIE <title>: Looking for a movie? Let me help you (｡•̀ᴗ-)✧"
+#define BOT10 ""
+#define BOT11 " RANDOM >> Bored? Let's spice it up with something fun (⊙_☉)"
 
 #endif  // INCLUDES_BOT_HPP_
