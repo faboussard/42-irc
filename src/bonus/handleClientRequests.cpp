@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   handleClientRequests.cpp                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 12:21:31 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/27 10:12:37 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void Bot::receiveRequestInQueue(BotRequest newRequest) {
   _requestDatas.push_back(newRequest);
   char notify = 1;
   if (write(_pipeServerToBot[1], &notify, sizeof(notify)) == -1) {
-   Server::printLog(ERROR_LOG, BOT_L, "Failed to write to pipe");
+   Server::printLog(ERROR_LOG, BOT_L, "Failed to write to pipe in receiveRequestInQueue");
    return;
   }
 }

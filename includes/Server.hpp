@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/26 08:48:24 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 11:15:53 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,14 +132,15 @@ class Server {
   // int getSocketFd() const;
   int getPort() const;
   // const std::string &getPassword() const;
-  //  Client &findClientByFd(int fd);
   // const channelsMap &getChannels() const;
   // const clientsMap &getClients() const;
+
+
 
   /*  Finders */
   // Channel *findChannelByName(const std::string &name);
   Client *findClientByNickname(const std::string &nickname);
-
+  Client *findClientByFd(int fd);
   /*  Log */
   static void printLog(eLogLevel level, eLogContext context,
                        const std::string &message);
@@ -271,11 +272,11 @@ class Server {
  private:
   Bot *_bot;
   std::vector<int> _botToApiSocketFds;  // --> will create Class BotRequest
-  std::queue<std::string> _responsesFromBot;
+    std::queue<std::pair<std::string, std::string> > _responsesFromBot;
 
  public:
   // void set_botToApiSocketFds(std::vector<int> *botToApiSocketFds);
-  void addBotResponseToQueue(const std::string &response);
+    void addBotResponseToQueue(const std::string &clientNickname, const std::string &response);
   void addBotSocketFdToPoll(int newFd);
   void removeApiSocketFdFromPoll(int soketFd);
   const std::vector<int> &getBotToApiSocketFds(void) const;

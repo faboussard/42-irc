@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Bot.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 10:53:39 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/27 11:20:02 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ class Bot {
   /* Bot - API Servers communication */
   void handleApiResponse(int fd);  // receive, parse, send
 
-  static std::string botCommandStr(Command command);
 
  private:
   /* Bot launch */
@@ -110,8 +109,9 @@ class Bot {
   /* Responses handling */
   std::string receiveResponseFromApi(
       int fd, std::deque<BotRequest>::iterator itRequest);
-  bool parseResponse(const std::string &response);
-  void sendResponseToServer(const std::string &response);
+  void sendResponseToServer(const std::string &nickname, const std::string &response);
+std::string parseResponse(const std::string &response);
+std::string parseNumbersResponse(const std::string &response);
 
   /* Log */
   void logcreatSocketForApi(const BotRequest &request);

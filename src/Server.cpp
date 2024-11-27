@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/26 13:04:46 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/27 10:48:41 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@ Server::Server(int port, const std::string &password)
 
 int Server::getPort(void) const { return _port; }
 
+Client *Server::findClientByFd(int fd) { return &_clients.at(fd); }
+
+
 // int Server::getSocketFd(void) const { return _socketFd; }
 
 /*============================================================================*/
@@ -66,6 +69,7 @@ Client *Server::findClientByNickname(const std::string &nickname) {
   }
   return (NULL);
 }
+
 
 /*============================================================================*/
 /*       Server Mounting                                                      */

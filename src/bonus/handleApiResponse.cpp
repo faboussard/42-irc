@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   handleApiResponse.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 13:23:55 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/27 11:23:39 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@
 #include "../../includes/Bot.hpp"
 
 void Bot::handleApiResponse(int fd) {
+   std::string userClientNickname;
   std::deque<BotRequest>::iterator it = _requestDatas.begin();
   std::deque<BotRequest>::iterator itEnd = _requestDatas.end();
   for (; it != itEnd; ++it) {
     if (it->socketFd == fd) {
+      userClientNickname = it->clientNickname;
       break;
     }
   }
@@ -32,13 +34,8 @@ void Bot::handleApiResponse(int fd) {
     return;
   }
   std::string response = receiveResponseFromApi(fd, it);
-#ifdef DEBUG
-  std::ostringstream oss;
-  oss << "Response: " << response << " | "
-      << "client : " << Server::findClientByFD(fd);
-  Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-#endif
-  sendResponseToServer(response);
+std::string parsedResponse = parseResponse(response);
+  sendResponseToServer(userClientNickname, parsedResponse);
 }
 
 std::string Bot::receiveResponseFromApi(
@@ -62,15 +59,46 @@ std::string Bot::receiveResponseFromApi(
     buffer[bytesRead] = '\0';
     logApiResponse(fd);
     response = std::string(buffer);
-    Server::printLog(DEBUG_LOG, BOT_L, "Response: " + response);
+    Server::printLog(DEBUG_LOG, BOT_L, "ReceiveResponseFromApi - Response: " + response);
   }
   return (response);
 }
 
-void Bot::sendResponseToServer(const std::string &response) {
-  _server->addBotResponseToQueue(response);
-  char notify = 1;
-  if (write(_pipeBotToServer[1], &notify, 1) == -1)
-    Server::printLog(INFO_LOG, BOT_L, "Response has to be sent to Server");
-  return;
+void Bot::sendResponseToServer(const std::string &clientNickname, const std::string &response) {
+    _server->addBotResponseToQueue(clientNickname, response);
+    char notify = 1;
+    if (write(_pipeBotToServer[1], &notify, 1) == -1)
+        _server->printLog(INFO_LOG, BOT_L, "Failed to write to pipe in sendResponseToServer");
+}
+
+std::string Bot::parseResponse(const std::string &response) {
+  std::string parsedResponse;
+ switch (_requestDatas.front().command) {
+    case NUMBERS:
+      parsedResponse = parseNumbersResponse(response);
+      break;
+    case JOKE:
+      parsedResponse = response;
+      break;
+    default:
+      parsedResponse = response;
+      break;
+  }
+  #ifdef DEBUG
+  std::ostringstream oss;
+  oss << "Parsed response: " << parsedResponse;
+  Server::printLog(DEBUG_LOG, BOT_L, oss.str());
+  #endif
+  return (parsedResponse);
+}
+
+std::string Bot::parseNumbersResponse(const std::string &response) {
+  std::string parsedResponse;
+  std::string line;
+  std::string lastLine;
+  std::istringstream iss(response);
+  while (std::getline(iss, line))
+    lastLine = line;
+  parsedResponse = lastLine;
+  return (parsedResponse);
 }

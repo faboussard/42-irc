@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   botCommands.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 13:06:53 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/27 11:22:25 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,23 +113,23 @@ void Server::sendRequestToBot(const Client &client, Command command,
   logRequestSentToBot(nick, command, arg);
 }
 
-void Server::addBotResponseToQueue(const std::string &response) {
-  _responsesFromBot.push(response);
-  #ifdef DEBUG
-  std::ostringstream oss;
-  std::deque<std::string> tempQueue;
-  while (!_responsesFromBot.empty()) {
-    tempQueue.push_back(_responsesFromBot.front());
-    _responsesFromBot.pop();
-  }
-  for (std::deque<std::string>::iterator it = tempQueue.begin();
-       it != tempQueue.end(); ++it) {
-    oss << *it << " | ";
-    _responsesFromBot.push(*it); // Push back to the original queue
-  }
-  oss << "Response added to queue: " << response;
-  printLog(DEBUG_LOG, BOT_L, oss.str());
-  #endif
+void Server::addBotResponseToQueue(const std::string &clientNickname, const std::string &response) {
+    _responsesFromBot.push(std::make_pair(clientNickname, response));
+#ifdef DEBUG
+    std::ostringstream oss;
+    std::deque<std::pair<std::string, std::string> > tempQueue;
+    while (!_responsesFromBot.empty()) {
+        tempQueue.push_back(_responsesFromBot.front());
+        _responsesFromBot.pop();
+    }
+    for (std::deque<std::pair<std::string, std::string> >::iterator it = tempQueue.begin();
+         it != tempQueue.end(); ++it) {
+        oss << "Client: " << it->first << " | Response: " << it->second << " | ";
+        _responsesFromBot.push(*it); // Push back to the original queue
+    }
+    oss << "Response added to queue for client: " << clientNickname << " | Response: " << response;
+    printLog(DEBUG_LOG, BOT_L, oss.str());
+#endif
 }
 
 void Server::handleBotResponse(int serverFdListenBot) {
@@ -144,14 +144,14 @@ void Server::handleBotResponse(int serverFdListenBot) {
         Server::printLog(DEBUG_LOG, BOT_L, "No responses from bot");
         return;
     }
+  
 
-    std::stringstream ss(_responsesFromBot.front());
+    std::string clientNickname = _responsesFromBot.front().first;
+    std::istringstream ss(_responsesFromBot.front().second);
+    std::string response;
+    std::getline(ss >> std::ws, response);
     _responsesFromBot.pop();
 
-    std::string clientNickname;
-    std::string response;
-    ss >> clientNickname;
-    std::getline(ss >> std::ws, response);
     // Response must not have \n for PRIVMSG from bot
 
     Server::printLog(DEBUG_LOG, BOT_L, "Client nickname: " + clientNickname);
