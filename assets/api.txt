@@ -28,7 +28,7 @@
 }
 
 
-// ~ curl -X GET "https://api.themoviedb.org/3/search/movie?query=Inception&api_key=54243c25328a99fba37f1470d10fc31e"
+// ~ curl -X GET "https://api.themoviedb.org/3/search/movie?query=Inception&api_key=<key>"
 
 {
 	"page":1,"results":[
