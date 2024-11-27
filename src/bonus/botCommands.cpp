@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 11:22:25 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/27 11:36:37 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,11 +163,14 @@ void Server::handleBotResponse(int serverFdListenBot) {
         Server::printLog(ERROR_LOG, BOT_L, "Client not found: " + clientNickname);
         return;
     }
-
     std::ostringstream oss;
-    oss << "BOT_RESPONSE_HEADER" << clientNickname << " :" << response << "\r\n";
+    oss << BOT_RESPONSE_HEADER << clientNickname << " :" << response << "\r\n";
     Server::printLog(DEBUG_LOG, BOT_L, "Sending message: " + oss.str());
-    client->receiveMessage(oss.str());
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // a changer quand bot sera un client
+    sendPrivmsgToClient(*client, *client, oss.str());
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
 }
 
 /*============================================================================*/
