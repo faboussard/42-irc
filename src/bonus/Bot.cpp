@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 17:20:19 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 12:41:18 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,16 @@
 
 #include "../../includes/Log.hpp"
 
-bool Bot::_signal = false;
+/*============================================================================*/
+/*       Initialization / Constructor / Destructor                            */
+/*============================================================================*/
 
-/*============================================================================*/
-/*       Constructor & destructor                                             */
-/*============================================================================*/
+bool Bot::_signal = false;
 
 Bot::Bot(int serverPort, const std::string &serverPass, int botPort)
     : _nick(BOT_NICK),
       _user(BOT_USER),
+      _connectedToServer(false),
       _serverPort(serverPort),
       _serverPass(serverPass),
       _botPort(botPort),
@@ -97,9 +98,9 @@ void Bot::connectToIrcServer(void) {
     pollFd.events = POLLOUT;
 
     int pollRet = poll(&pollFd, 1, 10000);
-    if (pollRet == -1)
+    if (pollRet == -1) {
       throw std::runtime_error("Poll error: " + std::string(strerror(errno)));
-    else if (pollRet == 0) {
+    } else if (pollRet == 0) {
       throw std::runtime_error("Connection to IRC server timed out");
 
       int so_error;
@@ -111,22 +112,35 @@ void Bot::connectToIrcServer(void) {
     }
   }
   Log::printLog(INFO_LOG, BOT_L,
-                "Connected to IRC server at fd" + toString(_botSocketFd));
+                "Connected to IRC server at fd " + toString(_botSocketFd));
   freeaddrinfo(res);
   if (!authenticate())
     throw std::runtime_error("Failed to authenticate to IRC server");
 }
 
 void Bot::listenToIrcServer(void) {
-  struct pollfd botPolls[1];
-  botPolls[0].fd = _botSocketFd;
-  botPolls[0].events = POLLIN;
+  struct pollfd newPoll;
+  newPoll.fd = _botSocketFd;
+  newPoll.events = POLLIN;
+  newPoll.revents = 0;
+  _botPollFds.push_back(newPoll);
 
   while (_signal == false) {
-    int pollRet = poll(botPolls, 1, -1);
+    int pollRet = poll(&_botPollFds[0], _botPollFds.size(), -1);
     if (pollRet == -1 && _signal == false)
       throw std::runtime_error("Poll error: " + std::string(strerror(errno)));
-    if (botPolls[0].revents & POLLIN && _signal == false) handleRequest();
+    for (size_t i = 0; i < _botPollFds.size(); ++i) {
+      if (_botPollFds[i].revents & POLLIN && _signal == false) {
+        if (_botPollFds[i].fd == _botSocketFd)
+          handleServerMessage();
+        else
+          handleApiResponse(_botPollFds[i].fd);
+      }
+      // if (!checkServerConneciion() && _signal == false) {
+      //     Log::printLog(ERROR_LOG, BOT_L, "Connection to IRC server
+      //     interrupted"); return;
+      // }
+    }
   }
 }
 
@@ -138,15 +152,10 @@ bool Bot::authenticate(void) {
                   "Failed to send authentication message to Server");
     return (false);
   }
-  if (!sendMessageToServer("PING :ft_irc\r\n")) {
-    Log::printLog(ERROR_LOG, BOT_L, "Failed to send PING message to Server");
-    return (false);
-  }
-  // std::string response = readMessageFromServer();
-  // if (response != "PONG :ft_irc\r\n") {
-  //   Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
-  //   return (false);
-  // }
+  // check if authentication is successful ?
+#ifdef DEBUG
+  sendMessageToServer("PING :ft_irc\r\n");
+#endif
   return (true);
 }
 
@@ -160,6 +169,13 @@ void Bot::signalHandler(int signal) {
       message = "SIGQUIT Received";
     Log::printLog(NOTIFY_LOG, SIGNAL, message);
   }
+}
+
+bool Bot::checkServerConneciion(void) {
+  _connectedToServer = false;
+  sendMessageToServer("PING :ft_irc\r\n");
+  sleep(1);
+  return (_connectedToServer);
 }
 
 /*============================================================================*/

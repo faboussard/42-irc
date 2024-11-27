@@ -6,12 +6,12 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 13:59:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 12:06:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 12:38:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INCLUDES_TYPES_HPP_
-#define INCLUDES_TYPES_HPP_
+#ifndef INCLUDES_ENUMS_HPP_
+#define INCLUDES_ENUMS_HPP_
 
 enum Command {
   JOIN,
@@ -24,6 +24,7 @@ enum Command {
   PRIVMSG,
   QUIT,
   PING,
+  PONG,
   CAP,
   USER,
   PASS,
@@ -33,7 +34,8 @@ enum Command {
   JOKE,
   FILM,
   QUIZ,
+  INSULTME,
   UNKNOWN
 };
 
-#endif  // INCLUDES_TYPES_HPP_
+#endif  // INCLUDES_ENUMS_HPP_

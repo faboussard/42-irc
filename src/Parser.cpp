@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 17:10:01 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 10:48:16 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 #include <vector>
 
 #include "../includes/colors.hpp"
+#include "../includes/enums.hpp"
+#include "../includes/Log.hpp"
 #include "../includes/utils.hpp"
 
 Command Parser::choseCommand(const std::string& command) {
@@ -43,6 +45,8 @@ Command Parser::choseCommand(const std::string& command) {
     return (QUIT);
   } else if (command == "PING") {
     return (PING);
+  } else if (command == "PONG") {
+    return (PONG);
   } else if (command == "CAP") {
     return (CAP);
   } else if (command == "USER") {
@@ -59,6 +63,8 @@ Command Parser::choseCommand(const std::string& command) {
     return (JOKE);
   } else if (command == "FILM") {
     return (FILM);
+  } else if (command == "INSULTME") {
+    return (INSULTME);
   }
   return (UNKNOWN);
 }
@@ -95,7 +101,7 @@ stringPairsVector Parser::parseCommandIntoPairs(const std::string& command) {
     std::ostringstream oss;
     oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN
         << pair.second << RESET;
-    Server::printLog(DEBUG_LOG, PARSER, oss.str());
+    Log::printLog(DEBUG_LOG, PARSER, oss.str());
     result.push_back(pair);
   }
   return (result);

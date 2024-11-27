@@ -12,7 +12,6 @@
 
 C = c++
 NAME = ircserv
-NAME_BOT = ircbot
 CFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98
 MKDIR = mkdir -p
 RMDIR = rm -rf
@@ -20,11 +19,11 @@ RMDIR = rm -rf
 # ---------------------------------- Sources --------------------------------- #
 vpath %.cpp src src/commands src/bonus
 
-HEADERS_LIST =  Server Config Client Channel Parser Bot \
+HEADERS_LIST =  Server Config Client Channel Parser Log \
                 numericReplies utils \
                 colors enums
 
-SRCS = main Server Client Channel Parser Config \
+SRCS = main Server Client Channel Parser Log Config \
        numericReplies messageManagement utils \
        pass nick user \
 	   invite join kick list mode part ping privmsg quit topic who \
@@ -38,15 +37,6 @@ INCLUDES = -I ${HEADERS_DIR}
 DEPS = ${OBJS:.o=.d}
 HEADERS = ${addprefix ${HEADERS_DIR}, ${addsuffix .hpp, ${HEADERS_LIST}}}
 
-# ---------------------------------- Bot ------------------------------------- #
-HEADERS_LIST_BOT = Bot Log utils colors enums
-SRCS_BOT = mainBot Bot Log botLog handleClientRequests handleApiResponse \
-           utils
-
-OBJS_DIR_BOT = .objs_bot/
-OBJS_BOT = ${addprefix ${OBJS_DIR_BOT}, ${addsuffix .o, ${SRCS_BOT}}}
-INCLUDES_BOT = $(addprefix -I$(HEADERS_DIR), $(HEADERS_LIST_BOT))
-HEADERS_BOT = ${addprefix ${HEADERS_DIR}, ${addsuffix .hpp, ${HEADERS_LIST_BOT}}}
 
 # ---------------------------------- Compilation ----------------------------- #
 all: create_dirs ${NAME}
@@ -62,18 +52,6 @@ create_dirs:
 
 -include ${DEPS}
 
-# ---------------------------------- Compilation  Bot ------------------------ #
-create_dirs_bot:
-	@${MKDIR} ${OBJS_DIR_BOT}
-
-bot: create_dirs_bot ${NAME_BOT}
-
-${NAME_BOT}: ${OBJS_BOT} Makefile
-	${C} ${CFLAGS} ${OBJS_BOT} ${INCLUDES_BOT} -o $@
-
-${OBJS_DIR_BOT}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR_BOT}
-	${C} ${CFLAGS} ${INCLUDES_BOT} -c $< -o $@
-
 # ---------------------------------- Create Repertory ------------------------ #
 ${OBJS_DIR}:
 			${MKDIR} ${OBJS_DIR}
@@ -86,13 +64,45 @@ debug: clean create_dirs ${NAME}
 
 #----------------------------------- Fsanitize ------------------------------- #
 fsan:
-	$(RMDIR) $(DIR_OBJS)
-	$(MAKE) CFLAGS="-g3 -fsanitize=address"
-	$(MAKE) clean
+	${RMDIR} ${DIR_OBJS}
+	${MAKE} CFLAGS="-g3 -fsanitize=address"
+	${MAKE} clean
+
 # ---------------------------------- Valgrind -------------------------------- #
-valgrind: $(NAME) debug
+valgrind: debug
 			valgrind --track-fds=yes --leak-check=full \
-			--show-leak-kinds=all -s ./$(NAME) 6667 pass
+			--show-leak-kinds=all -s ./${NAME} 6667 pass
+
+# ---------------------------------- Bot ------------------------------------- #
+NAME_BOT = ircbot
+HEADERS_LIST_BOT = Bot Parser Log utils colors enums
+SRCS_BOT = mainBot Bot botLog handleServerMessage handleApiResponse processCommands \
+		   Parser Log utils
+
+OBJS_DIR_BOT = .objs_bot/
+OBJS_BOT = ${addprefix ${OBJS_DIR_BOT}, ${addsuffix .o, ${SRCS_BOT}}}
+INCLUDES_BOT = ${addprefix -I${HEADERS_DIR}, ${HEADERS_LIST_BOT}}
+HEADERS_BOT = ${addprefix ${HEADERS_DIR}, ${addsuffix .hpp, ${HEADERS_LIST_BOT}}}
+
+create_dirs_bot:
+	@${MKDIR} ${OBJS_DIR_BOT}
+
+bot: create_dirs_bot ${NAME_BOT}
+
+${NAME_BOT}: ${OBJS_BOT} Makefile
+	${C} ${CFLAGS} ${OBJS_BOT} ${INCLUDES_BOT} -o $@
+
+${OBJS_DIR_BOT}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR_BOT}
+	${C} ${CFLAGS} ${INCLUDES_BOT} -c $< -o $@
+
+debug_bot: CFLAGS := ${filter-out -Werror, ${CFLAGS}}
+debug_bot: C = g++
+debug_bot: CFLAGS += -DDEBUG -g3
+debug_bot: clean create_dirs_bot ${NAME_BOT}
+
+valgrind_bot: debug_bot
+				valgrind --track-fds=yes --leak-check=full \
+				--show-leak-kinds=all -s ./${NAME_BOT} 6667 pass 6668
 
 # ---------------------------------- Tests ----------------------------------- #
 testnumericr: CFLAGS += -DTESTNUMERICR
@@ -104,9 +114,11 @@ testlist: fclean ${OBJS_DIR} ${NAME}
 # ---------------------------------- Clean ----------------------------------- #
 clean:
 	${RMDIR} ${OBJS_DIR}
+	${RMDIR} ${OBJS_DIR_BOT}
 
 fclean: clean
 	${RM} ${NAME}
+	${RM} ${NAME_BOT}
 
 re: fclean all
 

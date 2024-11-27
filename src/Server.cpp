@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/26 13:02:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 10:14:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,10 +126,6 @@ void Server::acceptAndChat(void) {
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
 
-  // int botFdServerRead = _bot->getServerToBotPipe0();
-  // int serverFdListenBot = _bot->getBotToServerPipe0();
-  // addBotToPoll(botFdServerRead, serverFdListenBot);
-
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
@@ -140,18 +136,6 @@ void Server::acceptAndChat(void) {
       if (_pollFds[i].revents & POLLIN && _signal == false) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
-        // } else if (_pollFds[i].fd == botFdServerRead) {
-        //   printLog(INFO_LOG, BOT_L, "Request has received by Bot");
-        //   _bot->handleRequest();
-        // } else if (_pollFds[i].fd == serverFdListenBot) {
-        //   printLog(INFO_LOG, BOT_L,
-        //            "Response to request has received by Server");
-        //   handleBotResponse(serverFdListenBot);
-        // } else if (std::find(_botToApiSocketFds.begin(),
-        //                      _botToApiSocketFds.end(), _pollFds[i].fd)
-        //                     != _botToApiSocketFds.end()) {
-        //   // printLog(INFO_LOG, BOT_L, "Received a response from API server");
-        //   _bot->handleApiResponse(_pollFds[i].fd);
         } else {
           handleClientMessage(_pollFds[i].fd);
         }
@@ -179,6 +163,7 @@ void Server::signalHandler(int signal) {
 void Server::closeServer(void) {
   clientsMap::iterator itEnd = _clients.end();
   for (clientsMap::iterator it = _clients.begin(); it != itEnd; ++it) {
+    std::cout << "Closing client " << it->second.getNickname() << std::endl;
     closeClient(it->second.getFd());
   }
   _clients.clear();
@@ -246,6 +231,11 @@ void Server::closeClient(int fd) {
     std::ostringstream oss;
     oss << "fd" << fd << ": Client disconnected";
     printLog(NOTIFY_LOG, SYSTEM, oss.str());
+  }
+  if (_clients.find(fd) != _clients.end()) {
+    if (_clients[fd].getNickname() == BOT_NAME) {
+      _bot = NULL;
+    }
   }
 }
 

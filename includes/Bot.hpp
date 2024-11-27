@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 17:01:32 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 12:37:20 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,14 @@
 #include "../includes/enums.hpp"
 #include "../includes/utils.hpp"
 
-#define BOT_NAME "ircbot"
-// #define MAX_CLIENTS_BOT 20
 #define LOCALHOST "127.0.0.1"
-
-#define BOT_SOCKET_PORT 6668
-#define BOT_SOCKET_PORT2 6669
 #define BOT_NICK "ircbot"
 #define BOT_USER "ircbot 0 * :ircbot"
 
-#define NUMBERS_URL "http://numbersapi.com/" curl
+#define NUMBERS_URL "http://numbersapi.com/"  // Need to add a number at the end
 #define JOKE_URL "https://icanhazdadjoke.com/"
-
-class Server;
+#define INSULTME_URL \
+  "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 
 struct BotRequest {
   std::string clientNickname;
@@ -57,14 +52,7 @@ struct BotRequest {
       : clientNickname(nick),
         command(command),
         arg(argument),
-        apiResponse(""){}
-};
-
-class Bot;
-
-struct ThreadData {
-  Bot* bot;
-  std::string requestBuffer;
+        apiResponse("") {}
 };
 
 class Bot {
@@ -72,20 +60,17 @@ class Bot {
   static bool _signal;
   const std::string _nick;
   const std::string _user;
+  bool _connectedToServer;
 
   stringVector _instructions;
 
   int _serverPort;
   const std::string _serverPass;
 
-  // struct sockaddr_in _botAddress;
+  /* Bot-IRC Server communication */
   int _botPort;
   int _botSocketFd;
-
-  /* Bot-IRC Server & Bot-API Servers communication */
-  Server *_server;
-  int _pipeServerToBot[2];
-  int _pipeBotToServer[2];
+  std::vector<struct pollfd> _botPollFds;
   std::deque<BotRequest> _requestDatas;
 
  public:
@@ -112,14 +97,15 @@ class Bot {
   void connectToIrcServer(void);
   void listenToIrcServer(void);
   bool authenticate(void);
+  bool checkServerConneciion(void);
 
   std::string readMessageFromServer(void);
   bool sendMessageToServer(const std::string &message);
 
   /* Requests handling */
-  void handleRequest(void);  // receive, parse, send
-  // BotRequest readRequest(void);
-  std::string parseRequest(const BotRequest &request);
+  void handleServerMessage(void);  // receive, parse, send
+  BotRequest parseRequest(const std::string &requestBuffer);
+  // std::string parseRequest(const BotRequest &request);
   // void findApiInfo(BotRequest *request);
   void sendRequestToApi(const std::string &request, int socketFd);
 
@@ -128,6 +114,13 @@ class Bot {
       int fd, std::deque<BotRequest>::iterator itRequest);
   bool parseResponse(const std::string &response);
   void sendResponseToServer(const std::string &response);
+
+  /* Commands handling */
+  void bot(BotRequest *request);
+  void numbers(BotRequest *request);
+  void joke(BotRequest *request);
+  void film(BotRequest *request);
+  void insultMe(BotRequest *request);
 
   /* Log */
   void logcreatSocketForApi(void);
@@ -141,7 +134,7 @@ class Bot {
 #endif
 };
 
-#define BOT_RESPONSE_HEADER (std::string(":") + BOT_NAME + " PRIVMSG ")
+#define BOT_RESPONSE_HEADER (std::string(":") + BOT_NICK + " PRIVMSG ")
 
 #define BOT1 "  /\\_/\\\n"
 #define BOT2 " ( o.o )\n"

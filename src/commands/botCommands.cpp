@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 16:23:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 12:38:46 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void Server::botCommands(Client *client, Command command,
     } else {
       // send command BOT to ircbot (and bot reply with instructions)
       sendRequestToBot(*client, command, "menu");
-    } 
+    }
   } else {
     if (client->botLaunched()) {
       sendRequestToBot(*client, command, arg);
@@ -98,7 +98,7 @@ void logBotCommand(const std::string &nick, Command command,
                    const std::string &arg) {
   std::ostringstream oss;
   oss << "Server has received from " << nick << ": Command " << CYAN
-      << Bot::commandToString(command) << RESET " | " << "arg " << CYAN << arg
+      << commandToString(command) << RESET " | " << "arg " << CYAN << arg
       << RESET;
   Server::printLog(DEBUG_LOG, BOT_L, oss.str());
 }

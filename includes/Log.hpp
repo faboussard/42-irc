@@ -6,12 +6,14 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:57:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 13:12:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 12:37:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INCLUDES_LOG_HPP_
 #define INCLUDES_LOG_HPP_
+
+#include <string>
 
 enum eLogLevel { DEBUG_LOG, INFO_LOG, NOTIFY_LOG, WARNING_LOG, ERROR_LOG };
 
@@ -44,7 +46,7 @@ class Log {
   static void printLog(eLogLevel level, eLogContext context,
                        const std::string &message);
 
-private:
+ private:
   static std::string logContext(eLogContext context);
 };
 
