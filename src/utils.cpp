@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 12:07:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 20:03:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,8 @@ std::string commandToString(Command command) {
       return ("NUMBERS");
     case JOKE:
       return ("JOKE");
+    case INSULTME:
+      return ("INSULTME");
     case FILM:
       return ("FILM");
     case QUIZ:

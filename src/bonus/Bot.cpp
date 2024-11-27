@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 14:12:14 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 21:30:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,5 +205,6 @@ bool Bot::sendMessageToServer(const std::string &message) {
                       std::string(strerror(errno)));
     return (false);
   }
+  Log::printLog(INFO_LOG, BOT_L, "Message sent to IRC server: " + message);
   return (true);
 }

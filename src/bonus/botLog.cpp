@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 11:15:40 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 13:23:37 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 21:23:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,12 @@ void Bot::logcreatSocketForApi(void) {
   std::ostringstream oss;
   oss << "fd" << _botSocketFd
       << ": Socket ready to communicate with IRC Server at port " << _botPort;
+  Log::printLog(INFO_LOG, BOT_L, oss.str());
+}
+
+void Bot::logApiRequest(int fd, const std::string &apiHost) {
+  std::ostringstream oss;
+  oss << "fd" << fd << ": API request sent to " << apiHost;
   Log::printLog(INFO_LOG, BOT_L, oss.str());
 }
 

@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 14:30:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 21:29:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,27 @@ void Bot::handleApiResponse(int fd) {
   std::deque<BotRequest>::iterator it = _requestDatas.begin();
   std::deque<BotRequest>::iterator itEnd = _requestDatas.end();
   for (; it != itEnd; ++it) {
+    std::cout << "command " << it->command << std::endl;
     if (it->fdForApi == fd) {
+      std::cout << "FOUND" << std::endl;
       break;
     }
   }
   receiveResponseFromApi(it);
   sendResponseToServer(it);
+
   // remove from pollfds
+  std::vector<struct pollfd>::iterator itPollEnd = _botPollFds.end();
+  for (std::vector<struct pollfd>::iterator itPoll = _botPollFds.begin();
+       itPoll != itPollEnd; ++itPoll) {
+    if (itPoll->fd == fd) {
+      _botPollFds.erase(itPoll);
+      break;
+    }
+  }
   _requestDatas.erase(it);
+  Log::printLog(INFO_LOG, BOT_L, "Request removed from queue. Remaining requests count: " +
+                                     toString(_requestDatas.size()));
 }
 
 void Bot::receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest) {

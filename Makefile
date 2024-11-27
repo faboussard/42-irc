@@ -87,6 +87,7 @@ HEADERS_BOT = ${addprefix ${HEADERS_DIR}, ${addsuffix .hpp, ${HEADERS_LIST_BOT}}
 create_dirs_bot:
 	@${MKDIR} ${OBJS_DIR_BOT}
 
+bot: CFLAGS += DBOT
 bot: create_dirs_bot ${NAME_BOT}
 
 ${NAME_BOT}: ${OBJS_BOT} Makefile

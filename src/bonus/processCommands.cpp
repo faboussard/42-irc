@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:31:27 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 14:36:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 21:25:17 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,27 +36,34 @@ void Bot::bot(BotRequest *request) {
                   "Bot menu sent to " + request->clientNickname);
   // sendInstructions(request->clientNickname);
   }
+  // remove request from queue
 }
 
 void Bot::numbers(BotRequest *request) {
-  _requestDatas.push_back(*request);
+  // _requestDatas.push_back(*request);
   // send API request to numbersapi.com
 }
 
 void Bot::joke(BotRequest *request) {
-  _requestDatas.push_back(*request);
   std::string curlCommand = "curl -s ";  // -s for silent mode
   curlCommand += JOKE_URL;
   FILE *fp = popen(curlCommand.c_str(), "r");
-  // if (fp == NULL) error
-
+  if (fp == NULL) {
+    // Handle error
+  }
   request->fpForApi = fp;
   request->fdForApi = fileno(fp);
-#ifdef DEBUG
-  std::ostringstream oss;
-  oss << "fd" << request->fdForApi << ": API request sent to " << JOKE_URL;
-  Log::printLog(DEBUG_LOG, BOT_L, oss.str());
-#endif
+  _requestDatas.push_back(*request);
+
+  struct pollfd newPoll;
+  newPoll.fd = request->fdForApi;
+  newPoll.events = POLLIN;
+  newPoll.revents = 0;
+  _botPollFds.push_back(newPoll);
+
+  // Set timeout for API response
+
+  logApiRequest(request->fdForApi, JOKEAPI_HOST);
 }
 
 void Bot::film(BotRequest *request) {
@@ -65,6 +72,23 @@ void Bot::film(BotRequest *request) {
 }
 
 void Bot::insultMe(BotRequest *request) {
+  std::string curlCommand = "curl -s ";  // -s for silent mode
+  curlCommand += INSULTME_URL;
+  FILE *fp = popen(curlCommand.c_str(), "r");
+  if (fp == NULL) {
+    // Handle error
+  }
+  request->fpForApi = fp;
+  request->fdForApi = fileno(fp);
   _requestDatas.push_back(*request);
-  // send API request to evilinsult.com
+
+  struct pollfd newPoll;
+  newPoll.fd = request->fdForApi;
+  newPoll.events = POLLIN;
+  newPoll.revents = 0;
+  _botPollFds.push_back(newPoll);
+
+  // Set timeout for API response
+
+  logApiRequest(request->fdForApi, INSULTMEAPI_HOST);
 }

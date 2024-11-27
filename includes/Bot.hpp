@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 14:15:42 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 21:24:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,10 @@
 #define LOCALHOST "127.0.0.1"
 #define BOT_NICK "ircbot"
 #define BOT_USER "ircbot 0 * :ircbot"
+
+#define NUMBERSAPI_HOST "numbersapi.com"
+#define JOKEAPI_HOST "icanhazdadjoke.com"
+#define INSULTMEAPI_HOST "evilinsult.com"
 
 #define NUMBERS_URL "http://numbersapi.com/"  // Need to add a number at the end
 #define JOKE_URL "https://icanhazdadjoke.com/"
@@ -111,7 +115,7 @@ class Bot {
   BotRequest parseRequest(const std::string &requestBuffer);
   // std::string parseRequest(const BotRequest &request);
   // void findApiInfo(BotRequest *request);
-  void sendRequestToApi(const std::string &request, int socketFd);
+  // void sendRequestToApi(const std::string &request, int socketFd);
 
   /* Responses handling */
   void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
@@ -127,11 +131,9 @@ class Bot {
 
   /* Log */
   void logcreatSocketForApi(void);
+  void logApiRequest(int fd, const std::string &apiHost);
   void logApiResponse(int fd);
-  void logApiConnectionClosed(int fd);
 #ifdef DEBUG
-  void debugLogPipe(int ServerToBot0, int ServerToBot1, int BotToServer0,
-                    int BotToServer1);
   void debugLogReadRequest(BotRequest request);
   void debugLogWaitingRequests(void);
 #endif
