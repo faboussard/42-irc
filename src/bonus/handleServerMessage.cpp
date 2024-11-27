@@ -6,11 +6,9 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 12:26:01 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 14:02:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include <pthread.h>
 
 #include <cerrno>
 #include <string>

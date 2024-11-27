@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 07:52:23 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 12:38:46 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 13:36:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,20 +59,6 @@ void Server::botCommands(Client *client, Command command,
     }
   }
 }
-
-// (NUMBERS nick arg)
-
-// void Server::sendBotInstruction(const Client &client) {
-//   std::string clientNickname = client.getNickname();
-//   const stringVector &instructions = _bot->getInstructions();
-//   stringVector::const_iterator itEnd = instructions.end();
-//   for (std::vector<std::string>::const_iterator it = instructions.begin();
-//        it != itEnd; ++it) {
-//     std::ostringstream oss;
-//     oss << BOT_RESPONSE_HEADER << clientNickname << " :" << *it << "\r\n";
-//     client.receiveMessage(oss.str());
-//   }
-// }
 
 void Server::sendRequestToBot(const Client &client, Command command,
                               const std::string &arg) {

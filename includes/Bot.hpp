@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 12:37:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 14:15:42 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ struct BotRequest {
   Command command;
   std::string arg;
 
+  int fdForApi;
+  FILE *fpForApi;
   std::string apiResponse;
 
   BotRequest(const std::string &nick, Command command,
@@ -52,6 +54,8 @@ struct BotRequest {
       : clientNickname(nick),
         command(command),
         arg(argument),
+        fdForApi(-1),
+        fpForApi(NULL),
         apiResponse("") {}
 };
 
@@ -110,10 +114,9 @@ class Bot {
   void sendRequestToApi(const std::string &request, int socketFd);
 
   /* Responses handling */
-  std::string receiveResponseFromApi(
-      int fd, std::deque<BotRequest>::iterator itRequest);
-  bool parseResponse(const std::string &response);
-  void sendResponseToServer(const std::string &response);
+  void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
+  std::string parseResponse(std::deque<BotRequest>::iterator itRequest);
+  void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Commands handling */
   void bot(BotRequest *request);
@@ -134,7 +137,7 @@ class Bot {
 #endif
 };
 
-#define BOT_RESPONSE_HEADER (std::string(":") + BOT_NICK + " PRIVMSG ")
+// #define BOT_RESPONSE_HEADER (std::string(":") + BOT_NICK + " PRIVMSG ")
 
 #define BOT1 "  /\\_/\\\n"
 #define BOT2 " ( o.o )\n"

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 12:41:18 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 14:12:14 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,18 @@ void Bot::runBot(void) {
   createSocket();
   connectToIrcServer();
   listenToIrcServer();
+}
+
+void Bot::signalHandler(int signal) {
+  if (signal == SIGINT || signal == SIGQUIT) {
+    _signal = true;
+    std::string message;
+    if (signal == SIGINT)
+      message = "SIGINT Received";
+    else
+      message = "SIGQUIT Received";
+    Log::printLog(NOTIFY_LOG, SIGNAL, message);
+  }
 }
 
 void Bot::createSocket(void) {
@@ -118,6 +130,21 @@ void Bot::connectToIrcServer(void) {
     throw std::runtime_error("Failed to authenticate to IRC server");
 }
 
+bool Bot::authenticate(void) {
+  if (!sendMessageToServer("PASS " + _serverPass + "\r\n") ||
+      !sendMessageToServer("NICK " + _nick + "\r\n") ||
+      !sendMessageToServer("USER " + _user + "\r\n")) {
+    Log::printLog(ERROR_LOG, BOT_L,
+                  "Failed to send authentication message to Server");
+    return (false);
+  }
+  // check if authentication is successful ?
+#ifdef DEBUG
+  sendMessageToServer("PING :ft_irc\r\n");
+#endif
+  return (true);
+}
+
 void Bot::listenToIrcServer(void) {
   struct pollfd newPoll;
   newPoll.fd = _botSocketFd;
@@ -136,38 +163,12 @@ void Bot::listenToIrcServer(void) {
         else
           handleApiResponse(_botPollFds[i].fd);
       }
-      // if (!checkServerConneciion() && _signal == false) {
-      //     Log::printLog(ERROR_LOG, BOT_L, "Connection to IRC server
-      //     interrupted"); return;
-      // }
     }
-  }
-}
-
-bool Bot::authenticate(void) {
-  if (!sendMessageToServer("PASS " + _serverPass + "\r\n") ||
-      !sendMessageToServer("NICK " + _nick + "\r\n") ||
-      !sendMessageToServer("USER " + _user + "\r\n")) {
-    Log::printLog(ERROR_LOG, BOT_L,
-                  "Failed to send authentication message to Server");
-    return (false);
-  }
-  // check if authentication is successful ?
-#ifdef DEBUG
-  sendMessageToServer("PING :ft_irc\r\n");
-#endif
-  return (true);
-}
-
-void Bot::signalHandler(int signal) {
-  if (signal == SIGINT || signal == SIGQUIT) {
-    _signal = true;
-    std::string message;
-    if (signal == SIGINT)
-      message = "SIGINT Received";
-    else
-      message = "SIGQUIT Received";
-    Log::printLog(NOTIFY_LOG, SIGNAL, message);
+    // if (!checkServerConneciion() && _signal == false) {
+    //     Log::printLog(ERROR_LOG, BOT_L, "Connection to IRC server interrupted");
+    //     return;
+    // }
+    // Chec timeout of api response
   }
 }
 
@@ -195,18 +196,6 @@ std::string Bot::readMessageFromServer(void) {
   newMessage += std::string(buffer, valread);
   return (newMessage);
 }
-
-// static std::map<int, std::string> messageBuffer;
-// char buffer[1024] = {0};
-// std::memset(buffer, 0, sizeof(buffer));
-// int valread = recv(fd, buffer, sizeof(buffer), 0);
-
-// if (valread == -1) {
-//   std::ostringstream oss;
-//   oss << "fd" << fd << ": Error occurred while receiving a message.";
-//   Server::printLog(ERROR_LOG, CLIENT, oss.str());
-//   return;
-// }
 
 bool Bot::sendMessageToServer(const std::string &message) {
   ssize_t bytesSent = send(_botSocketFd, message.c_str(), message.length(), 0);
