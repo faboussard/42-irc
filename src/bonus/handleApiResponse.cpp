@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 11:23:39 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/27 16:51:04 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,15 @@ std::string Bot::parseResponse(const std::string &response) {
     case JOKE:
       parsedResponse = response;
       break;
+    case WEATHER:
+      parsedResponse = response;
+      break;
+    case ADVICE:
+      parsedResponse = parseResponseByKey(response, commandToString(ADVICE));
+      break;
+    case INSULT:
+      parsedResponse = parseResponseByKey(response, commandToString(INSULT));
+      break;
     default:
       parsedResponse = response;
       break;
@@ -102,3 +111,29 @@ std::string Bot::parseNumbersResponse(const std::string &response) {
   parsedResponse = lastLine;
   return (parsedResponse);
 }
+
+
+std::string Bot::parseResponseByKey(const std::string &response, const std::string &key)
+{
+    // Construire le modèle clé à rechercher dans la réponse
+    std::string keyPattern = "\"" + key + "\":\"";
+    std::size_t start = response.find(keyPattern);
+    if (start == std::string::npos)
+    {
+        _server->printLog(ERROR_LOG, BOT_L, ("Key '" + key + "' not found in response").c_str());
+        return "";
+    }
+
+    // Trouver le début de la valeur associée à la clé
+    start += keyPattern.length();
+    std::size_t end = response.find("\"", start);
+    if (end == std::string::npos)
+    {
+        _server->printLog(ERROR_LOG, BOT_L, ("Value for key '" + key + "' is not properly terminated").c_str());
+        return "";
+    }
+
+    // Extraire et retourner la valeur de la clé
+    return response.substr(start, end - start);
+}
+

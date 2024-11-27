@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 14:54:32 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/27 16:29:19 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,11 +94,39 @@ void Bot::handleRequest(void) {
 //   // parse for translate
 // }
 
+
+Command Bot::selectRandomMode(BotRequest *request) {
+    std::srand(std::time(NULL));
+    Command modes[] = { WEATHER, ADVICE, INSULT, NUMBERS };
+    Command selectedMode = modes[std::rand() % 4];
+    switch (selectedMode) {
+        case WEATHER:
+            request->apiHost = WEATHER_HOST;
+            request->apiPort = WEATHER_PORT;
+            break;
+        case ADVICE:
+            request->apiHost = ADVICE_HOST;
+            request->apiPort = ADVICE_PORT;
+            break;
+        case INSULT:
+            request->apiHost = INSULT_HOST;
+            request->apiPort = INSULT_PORT;
+            break;
+        case NUMBERS:
+            request->apiHost = NUMBERS_HOST;
+            request->apiPort = NUMBERS_PORT;
+            break;
+    }
+    return (NUMBERS);
+}
+
 void Bot::findApiInfo(BotRequest *request) {
   switch (request->command) {
     case WEATHER:
       break;
-    case TRANSLATE:
+    case ADVICE:
+      request->apiHost = ADVICE_HOST;
+      request->apiPort = ADVICE_PORT;
       break;
     case NUMBERS:
       request->apiHost = NUMBERS_HOST;
@@ -107,6 +135,9 @@ void Bot::findApiInfo(BotRequest *request) {
     case JOKE:
       request->apiHost = JOKE_HOST;
       request->apiPort = JOKE_PORT;
+      break;
+    case RANDOM:
+      request->command = selectRandomMode(request);
       break;
     // case ***:
     default:

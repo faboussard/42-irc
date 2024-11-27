@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Bot.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 10:20:10 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/27 16:32:30 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,10 @@ Bot::Bot(Server *server)
   _instructions.push_back(BOT7);
   _instructions.push_back(BOT8);
   _instructions.push_back(BOT9);
+  _instructions.push_back(BOT10);
+  _instructions.push_back(BOT11);
+  _instructions.push_back(BOT12);
+  _instructions.push_back(BOT13);
 }
 
 Bot::~Bot(void) {

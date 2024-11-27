@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 08:49:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 15:57:50 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,6 @@ Command Parser::choseCommand(const std::string& command) {
     return (BOT);
   } else if (command == "WEATHER") {
     return (WEATHER);
-  } else if (command == "TRANSLATE") {
-    return (TRANSLATE);
   } else if (command == "NUMBERS") {
     return (NUMBERS);
   } else if (command == "JOKE") {

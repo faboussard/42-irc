@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 15:03:25 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/27 16:50:03 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,26 @@
 
 #define NUMBERS_HOST "numbersapi.com"
 #define NUMBERS_PORT 80
+
 #define JOKE_HOST "icanhazdadjoke.com"
 #define JOKE_PORT 443
 
-#define NUMBERS_URL "http://numbersapi.com/"
-#define JOKE_URL "https://icanhazdadjoke.com/"
+
+#define ADVICE_HOST "api.adviceslip.com"
+#define ADVICE_PORT 443
+
+#define WEATHER_HOST "api.openweathermap.org"
+#define WEATHER_PORT 443
+
+#define INSULT_HOST "evilinsult.com/generate_insult.php?lang=en&type=json"
+#define INSULT_PORT 443
+
+
+// #define WEATHER_URL "https://api.openweathermap.org/data/2.5/weather"
+// #define NUMBERS_URL "http://numbersapi.com/"
+// #define JOKE_URL "https://icanhazdadjoke.com/"
+// #define ADVICE_URL "https://api.adviceslip.com/advice"
+// #define INSULT_URL "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 
 class Server;
 
@@ -102,7 +117,6 @@ class Bot {
 
   /* Requests handling */
   // BotRequest readRequest(void);
-  std::string parseRequest(const BotRequest &request);
   void findApiInfo(BotRequest *request);
   void sendRequestToApi(const std::string &request, int socketFd);
 
@@ -112,7 +126,12 @@ class Bot {
   void sendResponseToServer(const std::string &nickname, const std::string &response);
 std::string parseResponse(const std::string &response);
 std::string parseNumbersResponse(const std::string &response);
+std::string parseJokeResponse(const std::string &response);
+std::string parseWeatherResponse(const std::string &response);
+std::string parseResponseByKey(const std::string &response, const std::string &key);
 
+  /* Helpers */
+Command selectRandomMode(BotRequest *request); 
   /* Log */
   void logcreatSocketForApi(const BotRequest &request);
   void logApiResponse(int fd);
@@ -133,17 +152,21 @@ std::string parseNumbersResponse(const std::string &response);
 #define BOT4 "         Hello! I'm IRCbot, what can I do for you?"
 #define BOT5 "────────────────────────────────────────────────────────── ♥ ──\n"
 #define BOT6 "🌤️ WEATHER 🌤️ Ask me for a forecast, I'll bring you the skies.\n"
-#define BOT7 "💡 ADVICE 💡 Need some wisdom? Ask me for advice!\n"
+#define BOT7 "🎲 RANDOM 🎲 Feeling lucky? let see what mood is the cat in\n"
 #define BOT8 "😂 JOKE 😂 Ready for a laugh? Ask me for a joke!\n"
-#define BOT9 "🚫 INSULT 🚫 Feeling brave? Ask me for an insult!\n"
-#define BOT10 "🌐 TRANSLATE 🌐 Lost in translation? I'm multilingual!\n"
-#define BOT11 "🎨 ASCII ART 🎨 Want some art? Ask me for ASCII art!\n"
-#define BOT12 "📜 QUOTE 📜 Need inspiration? Ask me for a quote!\n"
-#define BOT13 "🔍 FACT 🔍 Want to learn something new? Ask me for a fact!\n"
-#define BOT14 "🎲 RANDOM 🎲 Feeling lucky? Ask me for something random!\n"
-#define BOT15 "📅 DATE 📅 Curious about today's date? Ask me!\n"
-#define BOT16 "🕒 TIME 🕒 Want to know the time? Just ask!\n"
-#define BOT17 "how to use ? \n"
-#define BOT18 "just type / and the command you want to use\n"
+#define BOT9 "📜 ADVICE 📜 Need inspiration? Ask me for an advice!\n"
+#define BOT10 "📜 NUMBERS 📜 Need inspiration? Ask me for a quote!\n"
+#define BOT11 "🚫 INSULT 🚫 Feeling brave? Ask me for an insult!\n"
+
+#define BOT12 "how to use ? \n"
+#define BOT13 "just type / and the command you want to use\n"
+
+
+// #define BOT10 "🌐 TRANSLATE 🌐 Lost in translation? I'm multilingual!\n"
+// #define BOT11 "🎨 ASCII ART 🎨 Want some art? Ask me for ASCII art!\n"
+// #define BOT15 "📅 DATE 📅 Curious about today's date? Ask me!\n"
+// #define BOT16 "🕒 TIME 🕒 Want to know the time? Just ask!\n"
+// #define BOT13 "🔍 FACT 🔍 Want to learn something new? Ask me for a fact!\n"
+
 
 #endif  // INCLUDES_BOT_HPP_
