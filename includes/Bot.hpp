@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 11:20:02 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/27 15:03:25 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,11 +133,17 @@ std::string parseNumbersResponse(const std::string &response);
 #define BOT4 "         Hello! I'm IRCbot, what can I do for you?"
 #define BOT5 "────────────────────────────────────────────────────────── ♥ ──\n"
 #define BOT6 "🌤️ WEATHER 🌤️ Ask me for a forecast, I'll bring you the skies.\n"
-#define BOT7 "🌐 TRANSLATE 🌐 Lost in translation? I'm multilingual !\n"
-#define BOT8 "🎨 ASCII ART 🎨 \n"
-#define BOT9 "How to use ?\n"
-// "WEATHER → Get weather updates.\n"
-// "TRANSLATE <text> → Translate words in a snap.\n"
-// "ASCIIART <topic> → Create ASCII art magic.\n")
+#define BOT7 "💡 ADVICE 💡 Need some wisdom? Ask me for advice!\n"
+#define BOT8 "😂 JOKE 😂 Ready for a laugh? Ask me for a joke!\n"
+#define BOT9 "🚫 INSULT 🚫 Feeling brave? Ask me for an insult!\n"
+#define BOT10 "🌐 TRANSLATE 🌐 Lost in translation? I'm multilingual!\n"
+#define BOT11 "🎨 ASCII ART 🎨 Want some art? Ask me for ASCII art!\n"
+#define BOT12 "📜 QUOTE 📜 Need inspiration? Ask me for a quote!\n"
+#define BOT13 "🔍 FACT 🔍 Want to learn something new? Ask me for a fact!\n"
+#define BOT14 "🎲 RANDOM 🎲 Feeling lucky? Ask me for something random!\n"
+#define BOT15 "📅 DATE 📅 Curious about today's date? Ask me!\n"
+#define BOT16 "🕒 TIME 🕒 Want to know the time? Just ask!\n"
+#define BOT17 "how to use ? \n"
+#define BOT18 "just type / and the command you want to use\n"
 
 #endif  // INCLUDES_BOT_HPP_

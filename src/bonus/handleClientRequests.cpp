@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 10:12:37 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/27 14:54:32 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,21 @@ void Bot::handleRequest(void) {
                         "Connection: close\r\n"
                         "\r\n";
   }
-  // else if (request.command == JOKE)
-  //   oss << "GET https://icanhazdadjoke.com/ HTTP/1.1\r\n"
-  //          "Host: icanhazdadjoke.com\r\n"
-  //          "User-Agent: ft_irc\r\n"
-  //          "Accept: application/json\r\n"
-  //          "Connection: close\r\n"
-  //          "\r\n";
+  else if (request.command == JOKE)
+    request.ApiString  ="GET https://icanhazdadjoke.com/ HTTP/1.1\r\n"
+           "Host: icanhazdadjoke.com\r\n"
+           "User-Agent: ft_irc\r\n"
+           "Accept: application/json\r\n"
+           "Connection: close\r\n"
+           "\r\n";
+
+  else if (request.command == WEATHER)
+    request.ApiString  ="GET https://icanhazdadjoke.com/ HTTP/1.1\r\n"
+           "Host: icanhazdadjoke.com\r\n"
+           "User-Agent: ft_irc\r\n"
+           "Accept: application/json\r\n"
+           "Connection: close\r\n"
+           "\r\n";
   /* ------------ TEST ---------------*/
 #ifndef DEBUG
   std::ostringstream oss;
