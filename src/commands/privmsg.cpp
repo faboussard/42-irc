@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 13:54:14 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 15:43:57 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,9 @@ bool Server::validPrivmsgTargets(const Client &client, stringVector *targets) {
     }
     if (channelsCount != TargetsSize && clientsCount != TargetsSize &&
         chanOpPrefixCount != TargetsSize) {
-      sendNotice(client, "targets must be of same type (all clients, all channels or all operators)");
+      sendNotice(client,
+                 "targets must be of same type (all clients, all channels or "
+                 "all operators)");
       return (false);
     }
   }
@@ -87,11 +89,13 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
   } else {
     *message = "";
   }
-  if (message->empty() || (*message)[0] != ':') {
+  if (message->empty()) {
     send412NoTextToSend(client);
-    client.receiveMessage(":" + FROM_SERVER + " NOTICE " +
-                          client.getNickname() +
-                          " usage: PRIVMSG <target> :message\r\n");
+    sendNotice(client, "no text to send");
+    return (false);
+  }
+  if ((*message)[0] != ':') {
+    sendNotice(client, "message must start with a colon");
     return (false);
   }
   std::string targetsPart = arg.substr(0, spacePos);
@@ -156,8 +160,8 @@ void Server::privmsg(int fd, const std::string &arg) {
 #ifdef DEBUG
         {
           std::ostringstream oss;
-          oss << "broadcast to operators only: " << target << " message: "
-              << messageWithoutColon;
+          oss << "broadcast to operators only: " << target
+              << " message: " << messageWithoutColon;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
@@ -167,12 +171,13 @@ void Server::privmsg(int fd, const std::string &arg) {
 #ifdef DEBUG
         {
           std::ostringstream oss;
-          oss << "broadcast in channel: " << target << " message: "
-              << messageWithoutColon;
+          oss << "broadcast in channel: " << target
+              << " message: " << messageWithoutColon;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
-        broadcastInChannelWithSender(sender, channel, "PRIVMSG", messageWithoutColon);
+        broadcastInChannelWithSender(sender, channel, "PRIVMSG",
+                                     messageWithoutColon);
       }
     } else {
       Client *client = findClientByNickname(target);
@@ -180,8 +185,8 @@ void Server::privmsg(int fd, const std::string &arg) {
 #ifdef DEBUG
         {
           std::ostringstream oss;
-          oss << "send privmsg to client: " << target << " message: "
-              << messageWithoutColon;
+          oss << "send privmsg to client: " << target
+              << " message: " << messageWithoutColon;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 14:40:23 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 15:38:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,6 @@ void Bot::handleServerMessage(void) {
       break;
     case ADVICE:
       advice(&newRequest);
-      break;
-    case RANDOM_BOT_COMMAND:
-      randomCommand(&newRequest);
       break;
     case UNKNOWN_BOT_COMMAND:
       sendUnknownCommand(newRequest);
