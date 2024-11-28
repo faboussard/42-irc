@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 08:50:50 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 21:30:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,22 @@
 #include <string>
 #include <vector>
 
-#include "../../includes/Server.hpp"
+#include "../../includes/Log.hpp"
 
 /*============================================================================*/
-/*       Constructors                                                         */
+/*       Initialization / Constructor / Destructor                            */
 /*============================================================================*/
 
-Bot::Bot(Server *server)
-    : _name(BOT_NAME),
-      _server(server) {
+bool Bot::_signal = false;
+
+Bot::Bot(int serverPort, const std::string &serverPass, int botPort)
+    : _nick(BOT_NICK),
+      _user(BOT_USER),
+      _connectedToServer(false),
+      _serverPort(serverPort),
+      _serverPass(serverPass),
+      _botPort(botPort),
+      _botSocketFd(-1) {
   _instructions.push_back(BOT1);
   _instructions.push_back(BOT2);
   _instructions.push_back(BOT3);
@@ -38,110 +45,166 @@ Bot::Bot(Server *server)
   _instructions.push_back(BOT9);
 }
 
-Bot::~Bot(void) {
-  close(_pipeServerToBot[0]);
-  close(_pipeServerToBot[1]);
-  close(_pipeBotToServer[0]);
-  close(_pipeBotToServer[1]);
-  const std::vector<int>socketFds = _server->getBotToApiSocketFds();
-  std::vector<int>::const_iterator itEnd = socketFds.end();
-  for (std::vector<int>::const_iterator it = socketFds.begin(); it != itEnd;
-      ++it) {
-    close(*it);
-  }
-}
-
-/*============================================================================*/
-/*       Getters                                                              */
-/*============================================================================*/
-
-int Bot::getServerToBotPipe0(void) const { return _pipeServerToBot[0]; }
-
-int Bot::getBotToServerPipe0(void) const { return _pipeBotToServer[0]; }
-
-const std::vector<std::string> &Bot::getInstructions(void) const {
-  return (_instructions);
-}
-
-/*============================================================================*/
-/*       Setters                                                              */
-/*============================================================================*/
+Bot::~Bot(void) { close(_botSocketFd); }
 
 /*============================================================================*/
 /*       Bot launch                                                           */
 /*============================================================================*/
 
 void Bot::runBot(void) {
-  if (pipe(_pipeServerToBot) == -1 || pipe(_pipeBotToServer) == -1)
-    Server::printLog(ERROR_LOG, BOT_L, "Failed to create pipe");
-#ifdef DEBUG
-  debugLogPipe(_pipeServerToBot[0], _pipeServerToBot[1], _pipeBotToServer[0],
-               _pipeBotToServer[1]);
-#endif
-  Server::printLog(INFO_LOG, BOT_L, "Ready to communicate with IRC server");
+  createSocket();
+  connectToIrcServer();
+  listenToIrcServer();
 }
 
-/*============================================================================*/
-/*       Helper functions & log                                               */
-/*============================================================================*/
-
-std::string Bot::botCommandStr(Command command) {
-  std::string commandStr;
-  switch (command) {
-    case BOT:
-      return ("BOT");
-    case WEATHER:
-      return ("WEATHER");
-    case TRANSLATE:
-      return ("TRANSLATE");
-    default:
-      return ("");
+void Bot::signalHandler(int signal) {
+  if (signal == SIGINT || signal == SIGQUIT) {
+    _signal = true;
+    std::string message;
+    if (signal == SIGINT)
+      message = "SIGINT Received";
+    else
+      message = "SIGQUIT Received";
+    Log::printLog(NOTIFY_LOG, SIGNAL, message);
   }
 }
 
-/*============================================================================*/
-/*       Logs                                                                 */
-/*============================================================================*/
-
-void Bot::logcreatSocketForApi(const BotRequest &request) {
-  std::ostringstream oss;
-  oss << "fd" << request.socketFd << ": Ready to communicate with API Server "
-      << request.apiHost << ":" << request.apiPort;
-  Server::printLog(INFO_LOG, BOT_L, oss.str());
+void Bot::createSocket(void) {
+  _botSocketFd = socket(AF_INET, SOCK_STREAM, 0);
+  if (_botSocketFd == -1) {
+    throw std::runtime_error("Failed to create socket: " +
+                             std::string(strerror(errno)));
+  }
+  int en = 1;
+  if (setsockopt(_botSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) ==
+      -1) {
+    throw std::runtime_error("Failed to set option SO_REUSEADDR on socket: " +
+                             std::string(strerror(errno)));
+  }
+  if (fcntl(_botSocketFd, F_SETFL, O_NONBLOCK) == -1) {
+    throw std::runtime_error("Failed to set option O_NONBLOCK on socket: " +
+                             std::string(strerror(errno)));
+  }
+  logcreatSocketForApi();
 }
 
-void Bot::logApiResponse(int fd) {
-  std::ostringstream oss;
-  oss << "fd" << fd << ": Received API response";
-  Server::printLog(INFO_LOG, BOT_L, oss.str());
+void Bot::connectToIrcServer(void) {
+  struct addrinfo hints, *res;
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_INET;        // IPv4
+  hints.ai_socktype = SOCK_STREAM;  // TCP socket
+
+  int status =
+      getaddrinfo(LOCALHOST, toString(_serverPort).c_str(), &hints, &res);
+  if (status != 0)
+    throw std::runtime_error("getaddrinfo error: " +
+                             std::string(gai_strerror(status)));
+  if (connect(_botSocketFd, res->ai_addr, res->ai_addrlen) == -1) {
+    if (errno != EINPROGRESS)
+      throw std::runtime_error("Failed to connect to API server: " +
+                               std::string(strerror(errno)));
+
+    // Wait for connection to be established
+    struct pollfd pollFd;
+    pollFd.fd = _botSocketFd;
+    pollFd.events = POLLOUT;
+
+    int pollRet = poll(&pollFd, 1, 10000);
+    if (pollRet == -1) {
+      throw std::runtime_error("Poll error: " + std::string(strerror(errno)));
+    } else if (pollRet == 0) {
+      throw std::runtime_error("Connection to IRC server timed out");
+
+      int so_error;
+      socklen_t len = sizeof(so_error);
+      getsockopt(_botSocketFd, SOL_SOCKET, SO_ERROR, &so_error, &len);
+      if (so_error != 0)
+        throw std::runtime_error("Failed to connect to IRC server: " +
+                                 std::string(strerror(so_error)));
+    }
+  }
+  Log::printLog(INFO_LOG, BOT_L,
+                "Connected to IRC server at fd " + toString(_botSocketFd));
+  freeaddrinfo(res);
+  if (!authenticate())
+    throw std::runtime_error("Failed to authenticate to IRC server");
 }
 
-void Bot::logApiConnectionClosed(int fd) {
-  std::ostringstream oss;
-  oss << "fd" << fd << ": API server closed the connection with Bot";
-  Server::printLog(INFO_LOG, BOT_L, oss.str());
-}
-
+bool Bot::authenticate(void) {
+  if (!sendMessageToServer("PASS " + _serverPass + "\r\n") ||
+      !sendMessageToServer("NICK " + _nick + "\r\n") ||
+      !sendMessageToServer("USER " + _user + "\r\n")) {
+    Log::printLog(ERROR_LOG, BOT_L,
+                  "Failed to send authentication message to Server");
+    return (false);
+  }
+  // check if authentication is successful ?
 #ifdef DEBUG
-void Bot::debugLogPipe(int ServerToBot0, int ServerToBot1, int BotToServer0,
-                  int BotToServer1) {
-  std::ostringstream oss;
-  oss << "Pipes created: ServerToBot(" << ServerToBot0 << ", " << ServerToBot1
-      << ") | BotToServer(" << BotToServer0 << ", " << BotToServer1 << ")";
-  Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-}
-
-void Bot::debugLogReadRequest(BotRequest request) {
-  std::ostringstream oss;
-  oss << "New request from " CYAN << request.clientNickname
-      << RESET ": Command " << CYAN << request.command
-      << RESET " | " << "arg " << CYAN << request.arg << RESET;
-  Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-}
-
-void Bot::debugLogWaitingRequests(void) {
-    std::ostringstream oss;
-    oss << _requestDatas.size() <<  " requests are waiting";
-    Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-}
+  sendMessageToServer("PING :ft_irc\r\n");
 #endif
+  return (true);
+}
+
+void Bot::listenToIrcServer(void) {
+  struct pollfd newPoll;
+  newPoll.fd = _botSocketFd;
+  newPoll.events = POLLIN;
+  newPoll.revents = 0;
+  _botPollFds.push_back(newPoll);
+
+  while (_signal == false) {
+    int pollRet = poll(&_botPollFds[0], _botPollFds.size(), -1);
+    if (pollRet == -1 && _signal == false)
+      throw std::runtime_error("Poll error: " + std::string(strerror(errno)));
+    for (size_t i = 0; i < _botPollFds.size(); ++i) {
+      if (_botPollFds[i].revents & POLLIN && _signal == false) {
+        if (_botPollFds[i].fd == _botSocketFd)
+          handleServerMessage();
+        else
+          handleApiResponse(_botPollFds[i].fd);
+      }
+    }
+    // if (!checkServerConneciion() && _signal == false) {
+    //     Log::printLog(ERROR_LOG, BOT_L, "Connection to IRC server interrupted");
+    //     return;
+    // }
+    // Chec timeout of api response
+  }
+}
+
+bool Bot::checkServerConneciion(void) {
+  _connectedToServer = false;
+  sendMessageToServer("PING :ft_irc\r\n");
+  sleep(1);
+  return (_connectedToServer);
+}
+
+/*============================================================================*/
+/*       Communicate with Server                                              */
+/*============================================================================*/
+
+std::string Bot::readMessageFromServer(void) {
+  std::string newMessage = "";
+  char buffer[1024] = {0};
+  std::memset(buffer, 0, sizeof(buffer));
+  int valread = recv(_botSocketFd, buffer, sizeof(buffer), 0);
+  if (valread == -1)
+    throw std::runtime_error("Failed to receive message from IRC server");
+  // if (valread == 0)
+  //   return;
+  buffer[valread] = '\0';
+  newMessage += std::string(buffer, valread);
+  return (newMessage);
+}
+
+bool Bot::sendMessageToServer(const std::string &message) {
+  ssize_t bytesSent = send(_botSocketFd, message.c_str(), message.length(), 0);
+  if (bytesSent == -1) {
+    Log::printLog(ERROR_LOG, BOT_L,
+                  "Failed to send message to IRC server: " +
+                      std::string(strerror(errno)));
+    return (false);
+  }
+  Log::printLog(INFO_LOG, BOT_L, "Message sent to IRC server: " + message);
+  return (true);
+}

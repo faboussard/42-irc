@@ -6,61 +6,72 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/25 08:41:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/27 21:29:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <cerrno>
 #include <deque>
 #include <string>
 
 #include "../../includes/Bot.hpp"
+#include "../../includes/Log.hpp"
 
 void Bot::handleApiResponse(int fd) {
-  BotRequest *request;
+  logApiResponse(fd);
   std::deque<BotRequest>::iterator it = _requestDatas.begin();
   std::deque<BotRequest>::iterator itEnd = _requestDatas.end();
   for (; it != itEnd; ++it) {
-    if (it->socketFd == fd) {
-      request = &(*it);
+    std::cout << "command " << it->command << std::endl;
+    if (it->fdForApi == fd) {
+      std::cout << "FOUND" << std::endl;
       break;
     }
   }
-  std::string response = receiveResponseFromApi(fd, it);
+  receiveResponseFromApi(it);
+  sendResponseToServer(it);
 
-  // sendResponseToServer(response);
-  (void)request;
-}
-
-std::string Bot::receiveResponseFromApi(
-    int fd, std::deque<BotRequest>::iterator itRequest) {
-  char buffer[4096];
-  std::string response;
-  ssize_t bytesRead = recv(fd, buffer, sizeof(buffer) - 1, 0);
-  if (bytesRead == -1) {
-    Server::printLog(ERROR_LOG, BOT_L,
-                     "Failed to receive response from API server: " +
-                         std::string(strerror(errno)));
-  } else if (bytesRead == 0) {
-    close(fd);
-    _requestDatas.erase(itRequest);
-    _server->removeApiSocketFdFromPoll(fd);
-    logApiConnectionClosed(fd);
-#ifdef DEBUG
-    debugLogWaitingRequests();
-#endif
-  } else {
-    buffer[bytesRead] = '\0';
-    logApiResponse(fd);
-    response = std::string(buffer);
-    Server::printLog(DEBUG_LOG, BOT_L, "Response: " + response);
+  // remove from pollfds
+  std::vector<struct pollfd>::iterator itPollEnd = _botPollFds.end();
+  for (std::vector<struct pollfd>::iterator itPoll = _botPollFds.begin();
+       itPoll != itPollEnd; ++itPoll) {
+    if (itPoll->fd == fd) {
+      _botPollFds.erase(itPoll);
+      break;
+    }
   }
-  return (response);
+  _requestDatas.erase(it);
+  Log::printLog(INFO_LOG, BOT_L, "Request removed from queue. Remaining requests count: " +
+                                     toString(_requestDatas.size()));
 }
 
-void Bot::sendResponseToServer(const std::string &response) {
-  _server->addBotResponseToQueue(response);
-  char notify = 1;
-  write(_pipeBotToServer[1], &notify, 1);
-  Server::printLog(INFO_LOG, BOT_L, "Response has to be sent to Server");
+void Bot::receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest) {
+  char buffer[1024];
+  while (fgets(buffer, sizeof(buffer), itRequest->fpForApi) != NULL) {
+    itRequest->apiResponse += buffer;
+  }
+  pclose(itRequest->fpForApi);
+  Log::printLog(INFO_LOG, BOT_L,
+                "API response received: " + itRequest->apiResponse);
+#ifdef DEBUG
+  debugLogWaitingRequests();
+#endif
+}
+
+void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
+  // std::string content = parseResponse(itRequest);
+  // if (content.empty()) return;
+
+  /* test */
+  std::string content = "Yeah, but you're ugly and confused.";
+
+  std::string response =
+      "PRIVMSG " + itRequest->clientNickname + " :" + content + "\r\n";
+  sendMessageToServer(response);
+  Log::printLog(INFO_LOG, BOT_L, "Response has to be sent to Server");
 }
