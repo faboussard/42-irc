@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 17:04:10 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:23:52 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,11 @@ void Bot::receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest) {
 }
 
 void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
-  std::string content = itRequest->apiResponse;
+    std::string content;
+  if (itRequest->command == ADVICE)
+    content = parseResponseByKey(itRequest->apiResponse, "advice");
+  else
+     content = itRequest->apiResponse;
   #ifdef DEBUG
     std::ostringstream oss;
     oss << "Response to send: " << content;
@@ -78,4 +82,21 @@ void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
   sendMessageToServer(response);
   displayAsciiByCommand(&(*itRequest), itRequest->command);
   Log::printLog(INFO_LOG, BOT_L, "Response has to be sent to Server");
+}
+
+std::string Bot::parseResponseByKey(const std::string &response, const std::string &key)
+{
+    std::string keyPattern = "\"" + key + "\": \"";
+    std::size_t start = response.find(keyPattern);
+    if (start == std::string::npos)
+    {
+        return "I cannot find any advice for you !";
+    }
+    start += keyPattern.length();
+    std::size_t end = response.find("\"", start);
+    if (end == std::string::npos)
+    {
+        return "I cannot find any advice for you !";
+    }
+    return response.substr(start, end - start);
 }

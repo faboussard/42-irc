@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 17:07:22 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:18:47 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,8 @@ class Bot {
   std::string readMessageFromServer(void);
   bool sendMessageToServer(const std::string &message);
   BotRequest parseRequest(const std::string &requestBuffer);
+  std::string parseResponseByKey(const std::string &response,
+                                 const std::string &key);
 
   /* Commands handling */
   void displayAsciiByCommand(BotRequest *request, eBotCommand command);
@@ -173,5 +175,5 @@ class Bot {
 #define DEFAULT_CAT_1 "     /\\_/\\"
 #define DEFAULT_CAT_2 "    ( o.o )   I'm confused!"
 #define DEFAULT_CAT_3 "     > ^ < 🐾"
-#define DEFAULT_CAT_4 " Try !MENU for a list of commands!
+#define DEFAULT_CAT_4 " Try !MENU for a list of commands!"
 #endif  // INCLUDES_BOT_HPP_

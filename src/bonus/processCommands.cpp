@@ -88,6 +88,7 @@ void Bot::displayAsciiByCommand(BotRequest *request, eBotCommand command) {
     unknown.push_back(DEFAULT_CAT_1);
     unknown.push_back(DEFAULT_CAT_2);
     unknown.push_back(DEFAULT_CAT_3);
+    unknown.push_back(DEFAULT_CAT_4);
 
     for (std::vector<std::string>::const_iterator it = unknown.begin();
          it != unknown.end(); ++it) {
