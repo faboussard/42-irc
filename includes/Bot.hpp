@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 17:18:47 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:38:16 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@
 #include "../includes/utils.hpp"
 
 #define LOCALHOST "127.0.0.1"
-#define BOT_NICK "ircbot"
-#define BOT_USER "ircbot 0 * :ircbot"
+#define BOT_NICK "kawaiBot"
+#define BOT_USER "kawaiBot 0 * :kawaiBot"
 #define PING_MSG "PING ft_irc\r\n"
 #define PONG_MSG "PONG ft_irc\r\n"
 
