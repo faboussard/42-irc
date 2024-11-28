@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:31:27 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 09:50:18 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:08:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,12 @@ void Bot::menu(BotRequest *request) {
   }
 }
 
-void Bot::numbers(BotRequest *request) { (void)request; }
+void Bot::numbers(BotRequest *request) {
+  (void)request;
+}
 
 void Bot::joke(BotRequest *request) {
-  std::string curlCommand = "curl -s ";  // -s for silent mode
+  std::string curlCommand = "curl -s ";
   curlCommand += JOKE_URL;
   FILE *fp = popen(curlCommand.c_str(), "r");
   if (fp == NULL) {
