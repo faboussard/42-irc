@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/25 16:04:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 11:23:44 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     Command command = Parser::choseCommand(splittedPair[it].first);
     std::string argument = splittedPair[it].second;
     std::ostringstream oss;
-    oss << "Command: " MAGENTA << commandToString(command) << RESET " | Message: " MAGENTA
-        << argument << RESET;
+    oss << "Command: " MAGENTA << commandToString(command)
+        << RESET " | Message: " MAGENTA << argument << RESET;
     printLog(DEBUG_LOG, PARSER, oss.str());
 
     if (command == QUIT) {
@@ -155,7 +155,7 @@ void Server::handleClientMessage(int fd) {
   } else if (valread == 0) {
     std::ostringstream oss;
     oss << "fd" << fd << ": Connection closed by peer";
-    Server::printLog(ERROR_LOG, CLIENT, oss.str());
+    Server::printLog(NOTIFY_LOG, CLIENT, oss.str());
     messageBuffer[fd].erase();
     clearClient(fd);
     return;
@@ -231,6 +231,6 @@ void Server::handleCommand(Command command, const std::string &argument,
       send462AlreadyRegistered(_clients[fd]);
       break;
     default:
-      botCommands(&_clients.at(fd), command, argument);
+      break;
   }
 }

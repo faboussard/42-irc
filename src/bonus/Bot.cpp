@@ -6,257 +6,206 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/25 16:03:45 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:01:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Bot.hpp"
 
+#include <unistd.h>
+
 #include <cerrno>
 #include <string>
 #include <vector>
 
-#include "../../includes/Server.hpp"
+#include "../../includes/Log.hpp"
 
 /*============================================================================*/
-/*       Constructors                                                         */
+/*       Initialization / Constructor / Destructor                            */
 /*============================================================================*/
 
-Bot::Bot(Server *server)
-    : _server(server),
-      _name(BOT_NAME),
-      _ircPort(IRC_PORT),
-      _ircSocketFd(-1),
-      _apiPort(API_PORT),
-      _apiSocketFd(-1) {
-  _instructions.push_back(BOT1);
-  _instructions.push_back(BOT2);
-  _instructions.push_back(BOT3);
-  _instructions.push_back(BOT4);
-  _instructions.push_back(BOT5);
-  _instructions.push_back(BOT6);
-  _instructions.push_back(BOT7);
-  _instructions.push_back(BOT8);
-  _instructions.push_back(BOT9);
+bool Bot::_signal = false;
+
+Bot::Bot(int serverPort, const std::string &serverPass, int botPort)
+    : _nick(BOT_NICK),
+      _user(BOT_USER),
+      _connectedToServer(false),
+      _serverPort(serverPort),
+      _serverPass(serverPass),
+      _botPort(botPort),
+      _botSocketFd(-1) {
+  _instructions.push_back(BOT_MENU1);
+  _instructions.push_back(BOT_MENU2);
+  _instructions.push_back(BOT_MENU3);
+  _instructions.push_back(BOT_MENU4);
+  _instructions.push_back(BOT_MENU5);
+  _instructions.push_back(BOT_MENU6);
+  _instructions.push_back(BOT_MENU7);
+  _instructions.push_back(BOT_MENU8);
+  _instructions.push_back(BOT_MENU9);
+  _instructions.push_back(BOT_MENU10);
 }
 
-Bot::~Bot(void) { closeBot(); }
-
-/*============================================================================*/
-/*       Getters                                                              */
-/*============================================================================*/
-
-int Bot::getIrcSocketFd(void) const { return _ircSocketFd; }
-
-int Bot::getApiSocketFd(void) const { return _apiSocketFd; }
-
-const std::vector<std::string> &Bot::getInstructions(void) const {
-  return (_instructions);
-}
-
-/*============================================================================*/
-/*       Setters                                                              */
-/*============================================================================*/
-
-void Bot::setBotFdInServer(int fd) { _botFdInServer = fd; }
+Bot::~Bot(void) { close(_botSocketFd); }
 
 /*============================================================================*/
 /*       Bot launch                                                           */
 /*============================================================================*/
 
 void Bot::runBot(void) {
-  if (_server->getPort() == IRC_PORT) _ircPort = IRC_PORT2;
-  if (_server->getPort() == API_PORT) _apiPort = API_PORT2;
-  createSockets();
+  createSocket();
   connectToIrcServer();
-  listenApiServer();
-  _pollFdIrc.fd = _ircSocketFd;
-  _pollFdIrc.events = POLLIN;
-  _pollFdIrc.revents = 0;
-  _pollFdApi.fd = _apiSocketFd;
-  _pollFdApi.events = POLLIN;
-  _pollFdApi.revents = 0;
-  _server->addBot(&_pollFdIrc, &_pollFdApi);
+  listenToIrcServer();
 }
 
-void Bot::createSockets(void) {
-  // Creat socket for IRC Server
-  _ircSocketFd = socket(AF_INET, SOCK_STREAM, 0);
-  if (_ircSocketFd == -1) throw std::runtime_error("Failed to create socket");
+void Bot::signalHandler(int signal) {
+  if (signal == SIGINT || signal == SIGQUIT) {
+    _signal = true;
+    std::string message;
+    if (signal == SIGINT)
+      message = "SIGINT Received";
+    else
+      message = "SIGQUIT Received";
+    Log::printLog(NOTIFY_LOG, SIGNAL, message);
+  }
+}
 
+void Bot::createSocket(void) {
+  _botSocketFd = socket(AF_INET, SOCK_STREAM, 0);
+  if (_botSocketFd == -1) {
+    throw std::runtime_error("Failed to create socket: " +
+                             std::string(strerror(errno)));
+  }
   int en = 1;
-  if (setsockopt(_ircSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1)
-    throw std::runtime_error("Failed to set option SO_REUSEADDR on socket");
-
-  if (fcntl(_ircSocketFd, F_SETFL, O_NONBLOCK) == -1)
-    throw std::runtime_error("Failed to set option O_NONBLOCK on socket");
-    // int flags = fcntl(_ircSocketFd, F_GETFL, 0);
-    // fcntl(_ircSocketFd, F_SETFL, flags | O_NONBLOCK);
-#ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "Socket for IRC server created at Port " << _ircPort << " (fd"
-        << _ircSocketFd << ")";
-    Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-  }
-#endif
-
-  // Creat socket for API Server
-  _apiSocketFd = socket(AF_INET, SOCK_STREAM, 0);
-  if (_apiSocketFd == -1) {
-    throw std::runtime_error("Failed to create socket");
-  }
-  en = 1;
-  if (setsockopt(_apiSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) ==
+  if (setsockopt(_botSocketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) ==
       -1) {
-    throw std::runtime_error("Failed to set option SO_REUSEADDR on socket");
+    throw std::runtime_error("Failed to set option SO_REUSEADDR on socket: " +
+                             std::string(strerror(errno)));
   }
-  if (fcntl(_apiSocketFd, F_SETFL, O_NONBLOCK) == -1) {
-    throw std::runtime_error("Failed to set option O_NONBLOCK on socket");
+  if (fcntl(_botSocketFd, F_SETFL, O_NONBLOCK) == -1) {
+    throw std::runtime_error("Failed to set option O_NONBLOCK on socket: " +
+                             std::string(strerror(errno)));
   }
-#ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "Socket for API server created at Port " << _apiPort << " (fd"
-        << _apiSocketFd << ")";
-    Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-  }
-#endif
-}
-
-void Bot::listenApiServer(void) {
-  _apiAddress.sin_family = AF_INET;
-  _apiAddress.sin_addr.s_addr = INADDR_ANY;
-  _apiAddress.sin_port = htons(_apiPort);
-  if (bind(_apiSocketFd, (struct sockaddr *)&_apiAddress,
-           sizeof(_apiAddress)) == -1) {
-    throw std::runtime_error(
-        "Failed to bind socket. Port might be used elsewhere");
-  }
-  if (listen(_apiSocketFd, SOMAXCONN) == -1) {
-    throw std::runtime_error("Failed to listen on socket");
-  }
+  logcreatSocketForApi();
 }
 
 void Bot::connectToIrcServer(void) {
-  _ircAddress.sin_family = AF_INET;
-  _ircAddress.sin_port = htons(_server->getPort());
-  _ircAddress.sin_addr.s_addr = inet_addr(LOCALHOST);
-#ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "Attempting to connect to IRC server at " LOCALHOST << ":"
-        << _server->getPort();
-    Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-  }
-#endif
+  struct addrinfo hints, *res;
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_INET;        // IPv4
+  hints.ai_socktype = SOCK_STREAM;  // TCP socket
 
-  if (connect(_ircSocketFd, (struct sockaddr *)&_ircAddress,
-              sizeof(_ircAddress)) == -1) {
-    if (errno != EINPROGRESS) {
-      throw std::runtime_error(BOT_CONNECTION_FAILED_IRC);
-    }
+  int status =
+      getaddrinfo(LOCALHOST, toString(_serverPort).c_str(), &hints, &res);
+  if (status != 0)
+    throw std::runtime_error("getaddrinfo error: " +
+                             std::string(gai_strerror(status)));
+  if (connect(_botSocketFd, res->ai_addr, res->ai_addrlen) == -1) {
+    if (errno != EINPROGRESS)
+      throw std::runtime_error("Failed to connect to API server: " +
+                               std::string(strerror(errno)));
 
     // Wait for connection to be established
     struct pollfd pollFd;
-    pollFd.fd = _ircSocketFd;
+    pollFd.fd = _botSocketFd;
     pollFd.events = POLLOUT;
 
-    int pollRet = poll(&pollFd, 1, -1);
+    int pollRet = poll(&pollFd, 1, 10000);
     if (pollRet == -1) {
-      throw std::runtime_error(BOT_CONNECTION_FAILED_IRC);
+      throw std::runtime_error("Poll error: " + std::string(strerror(errno)));
     } else if (pollRet == 0) {
-      throw std::runtime_error("Failed to connect to IRC server: Poll timeout");
-    }
+      throw std::runtime_error("Connection to IRC server timed out");
 
-    // Check if connection was successful
-    int socketError;
-    socklen_t len = sizeof(socketError);
-    getsockopt(_ircSocketFd, SOL_SOCKET, SO_ERROR, &socketError, &len);
-    if (socketError != 0) {
-      throw std::runtime_error(BOT_CONNECTION_FAILED_IRC);
+      int so_error;
+      socklen_t len = sizeof(so_error);
+      getsockopt(_botSocketFd, SOL_SOCKET, SO_ERROR, &so_error, &len);
+      if (so_error != 0)
+        throw std::runtime_error("Failed to connect to IRC server: " +
+                                 std::string(strerror(so_error)));
     }
   }
-  Server::printLog(INFO_LOG, BOT_L, "Bot is ready to listen to IRC server");
+  Log::printLog(INFO_LOG, BOT_L,
+                "Connected to IRC server at fd " + toString(_botSocketFd));
+  freeaddrinfo(res);
+  if (!authenticate())
+    throw std::runtime_error("Failed to authenticate to IRC server");
+}
+
+bool Bot::authenticate(void) {
+  if (!sendMessageToServer("PASS " + _serverPass + "\r\n") ||
+      !sendMessageToServer("NICK " + _nick + "\r\n") ||
+      !sendMessageToServer("USER " + _user + "\r\n")) {
+    Log::printLog(ERROR_LOG, BOT_L,
+                  "Failed to send authentication message to Server");
+    return (false);
+  }
+  // check if authentication is successful ?
+#ifdef DEBUG
+  sendMessageToServer("PING :ft_irc\r\n");
+#endif
+  return (true);
+}
+
+void Bot::listenToIrcServer(void) {
+  struct pollfd newPoll;
+  newPoll.fd = _botSocketFd;
+  newPoll.events = POLLIN;
+  newPoll.revents = 0;
+  _botPollFds.push_back(newPoll);
+
+  while (_signal == false) {
+    int pollRet = poll(&_botPollFds[0], _botPollFds.size(), -1);
+    if (pollRet == -1 && _signal == false)
+      throw std::runtime_error("Poll error: " + std::string(strerror(errno)));
+    for (size_t i = 0; i < _botPollFds.size(); ++i) {
+      if (_botPollFds[i].revents & POLLIN && _signal == false) {
+        if (_botPollFds[i].fd == _botSocketFd)
+          handleServerMessage();
+        else
+          handleApiResponse(_botPollFds[i].fd);
+      }
+    }
+    // if (!checkServerConneciion() && _signal == false) {
+    //     Log::printLog(ERROR_LOG, BOT_L, "Connection to IRC server interrupted");
+    //     return;
+    // }
+    // Chec timeout of api response
+  }
+}
+
+bool Bot::checkServerConneciion(void) {
+  _connectedToServer = false;
+  sendMessageToServer("PING :ft_irc\r\n");
+  sleep(1);
+  return (_connectedToServer);
 }
 
 /*============================================================================*/
-/*       Bot shut down                                                        */
+/*       Communicate with Server                                              */
 /*============================================================================*/
 
-void Bot::closeBot(void) {
-  if (_botFdInServer != -1) {
-    close(_botFdInServer);
-    _botFdInServer = -1;
-    Server::printLog(INFO_LOG, SYSTEM, "Bot disconnected");
-    if (_ircSocketFd != -1) {
-      close(_ircSocketFd);
-      _ircSocketFd = -1;
-      Server::printLog(DEBUG_LOG, BOT_L, "IRC socket closed");
-    }
-    if (_apiSocketFd != -1) {
-      close(_apiSocketFd);
-      _apiSocketFd = -1;
-      Server::printLog(DEBUG_LOG, BOT_L, "API socket closed");
-    }
-  }
-}
-
-/*============================================================================*/
-/*       Client requests handling                                             */
-/*============================================================================*/
-
-void Bot::handleRequest(void) {
-  // Block other requests until the current request is handled
-
+std::string Bot::readMessageFromServer(void) {
+  std::string newMessage = "";
   char buffer[1024] = {0};
   std::memset(buffer, 0, sizeof(buffer));
-  int valread = recv(_ircSocketFd, buffer, sizeof(buffer), 0);
-
-  if (valread == -1) {
-    std::ostringstream oss;
-    oss << "Error occurred while receiving a message from IRC Server. :"
-        << strerror(errno);
-    Server::printLog(ERROR_LOG, BOT_L, oss.str());
-    return;
-  }
-  if (valread == 0) {
-    std::ostringstream oss;
-    oss << "Connection closed by IRC Server";
-    Server::printLog(ERROR_LOG, BOT_L, oss.str());
-    closeBot();
-    return;
-  }
-  Server::printLog(INFO_LOG, BOT_L, "Handling request: " + std::string(buffer));
-
-  std::stringstream ss;
-  ss << buffer;
-  std::string clientNickname;
-  ss >> clientNickname;
-  std::string command;
-  ss >> command;
-  std::string arg;
-  std::getline(ss >> std::ws, arg);
-
-#ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "Client: " << clientNickname << " Command: " << command
-        << " Arg: " << arg;
-    Server::printLog(DEBUG_LOG, BOT_L, oss.str());
-  }
-#endif
+  int valread = recv(_botSocketFd, buffer, sizeof(buffer), 0);
+  if (valread == -1)
+    throw std::runtime_error("Failed to receive message from IRC server");
+  // if (valread == 0)
+  //   return;
+  buffer[valread] = '\0';
+  newMessage += std::string(buffer, valread);
+  return (newMessage);
 }
 
-/*============================================================================*/
-/*       API Servers responses handling                                       */
-/*============================================================================*/
-
-void Bot::handleResponse(void) {
-  Server::printLog(INFO_LOG, BOT_L, "Handling API response");
+bool Bot::sendMessageToServer(const std::string &message) {
+  ssize_t bytesSent = send(_botSocketFd, message.c_str(), message.length(), 0);
+  if (bytesSent == -1) {
+    Log::printLog(ERROR_LOG, BOT_L,
+                  "Failed to send message to IRC server: " +
+                      std::string(strerror(errno)));
+    return (false);
+  }
+  Log::printLog(INFO_LOG, BOT_L, "Message sent to IRC server: " + message);
+  return (true);
 }
-
-/*============================================================================*/
-/*       Helper functions                                                     */
-/*============================================================================*/
-

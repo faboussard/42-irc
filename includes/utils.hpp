@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/07 09:23:32 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 10:09:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <utility>
 
 #include "../includes/Server.hpp"
-#include "../includes/types.hpp"
+#include "../includes/enums.hpp"
 
 typedef std::vector<std::string> stringVector;
 typedef std::pair<std::vector<std::string>, std::vector<std::string> >
@@ -39,6 +39,7 @@ std::vector<std::string> split(const std::string& str,
 void splitByCommaAndTrim(const std::string &argument, stringVector *args);
 
 std::string commandToString(Command command);
+std::string commandToString(eBotCommand command);
 
 template <typename T>
 std::string toString(const T &value) {

@@ -1,5 +1,6 @@
 # Nom de l'exécutable et répertoire objets
 ircserv
+ircbot
 .objs
 
 # Fichiers de configuration locaux
@@ -21,6 +22,7 @@ obj/
 *.o
 *.so
 *.exe
+*.d
 
 # Fichiers de dépendances
 *.lock

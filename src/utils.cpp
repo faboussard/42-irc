@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/25 15:47:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 11:16:42 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,38 +86,51 @@ void splitByCommaAndTrim(const std::string &argument, stringVector *args) {
 std::string commandToString(Command command) {
   switch (command) {
     case JOIN:
-      return "JOIN";
+      return ("JOIN");
     case KICK:
-      return "KICK";
+      return ("KICK");
     case INVITE:
-      return "INVITE";
+      return ("INVITE");
     case TOPIC:
-      return "TOPIC";
+      return ("TOPIC");
     case MODE:
-      return "MODE";
+      return ("MODE");
     case WHO:
-      return "WHO";
+      return ("WHO");
     case LIST:
-      return "LIST";
+      return ("LIST");
     case NICK:
-      return "NICK";
+      return ("NICK");
     case USER:
-      return "USER";
+      return ("USER");
     case PRIVMSG:
-      return "PRIVMSG";
+      return ("PRIVMSG");
     case QUIT:
-      return "QUIT";
+      return ("QUIT");
     case PING:
-      return "PING";
+      return ("PING");
     case PASS:
-      return "PASS";
-    case BOT:
-      return "BOT";
-    case WEATHER:
-      return "WEATHER";
-    case TRANSLATE:
-      return "TRANSLATE";
+      return ("PASS");
     default:
       return """";
+  }
+}
+
+std::string commandToString(eBotCommand command) {
+  switch (command) {
+    case MENU:
+      return ("MENU");
+    case NUMBERS:
+      return ("NUMBERS");
+    case JOKE:
+      return ("JOKE");
+    case INSULTME:
+      return ("INSULTME");
+    case ADVICE:
+      return ("ADVICE");
+    case RANDOM_BOT_COMMAND:
+      return ("RANDOM");
+    default:
+      return ("UNKNOWN_BOT_COMMAND");
   }
 }

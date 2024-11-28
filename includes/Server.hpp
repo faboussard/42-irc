@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 12:07:44 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:15:40 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,18 @@
 #include <ctime>
 #include <iostream>
 #include <map>
+#include <queue>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
 
-class Bot;
-
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
+#include "../includes/Log.hpp"
 #include "../includes/numericReplies.hpp"
-#include "../includes/types.hpp"
+#include "../includes/enums.hpp"
 
 #define SRV_NAME "ircserv"
 #define SRV_VERSION "1.0.0"
@@ -55,53 +55,6 @@ typedef std::pair<std::vector<std::string>, std::vector<std::string> >
     StringVectorPair;
 
 extern Config *gConfig;
-
-// enum Command {
-//   JOIN,
-//   KICK,
-//   INVITE,
-//   TOPIC,
-//   MODE,
-//   LIST,
-//   NICK,
-//   PRIVMSG,
-//   QUIT,
-//   PING,
-//   CAP,
-//   USER,
-//   PASS,
-//   WHO,
-//   BOT,
-//   WEATHER,
-//   TRANSLATE,
-//   ASCII_ART,
-//   UNKNOWN
-// };
-
-enum eLogLevel { DEBUG_LOG, INFO_LOG, NOTIFY_LOG, WARNING_LOG, ERROR_LOG };
-
-enum eLogContext {
-  SYSTEM,
-  SIGNAL,
-  PARSER,
-  COMMAND,
-  AUTH,
-  CLIENT,
-  CHANNEL,
-  REPLY,
-  BOT_L
-};
-
-/* log contexts */
-#define SYSTEM_LOG "[System] "
-#define SIGNAL_LOG "[Signal] "
-#define PARSER_LOG "[Parser] "
-#define COMMAND_LOG "[Command] "
-#define AUTH_LOG "[Auth] "
-#define CLIENT_LOG "[Client] "
-#define CHANNEL_LOG "[Channel] "
-#define REP_LOG "[Reply] "
-#define BOT_LOG "[Bot] "
 
 class Server {
  private:
@@ -115,8 +68,6 @@ class Server {
   std::vector<struct pollfd> _pollFds;
   channelsMap _channels;
 
-  Bot *_bot;
-
  public:
   explicit Server(int port, const std::string &password);
 
@@ -129,7 +80,7 @@ class Server {
   void closeServer(void);
 
   /*  Getters */
-  int getSocketFd() const;
+  // int getSocketFd() const;
   int getPort() const;
   // const std::string &getPassword() const;
   //  Client &findClientByFd(int fd);
@@ -267,21 +218,10 @@ class Server {
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
 
-  /* Bot */
- public:
-  void addBot(struct pollfd *pollFdIrc, struct pollfd *pollFdApi);
-  void botCommands(Client *client, Command command, const std::string &arg);
 
-
- private:
-  void sendBotResponse(const Client &client, const std::string &message);
-  void sendBotInstruction(const Client &client);
-  void sendRequestToBot(const Client &client, Command command,
-                        const std::string &arg);
- 
 
   /* Tests */
-  void addClient(int fd, const Client &client);
+  // void addClient(int fd, const Client &client);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

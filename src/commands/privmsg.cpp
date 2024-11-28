@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 12:11:47 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:15:13 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,8 @@ void Server::privmsg(int fd, const std::string &arg) {
       }
       Channel &channel = _channels.at(target.substr(1));
       if (channel.getMode().inviteOnly &&
-          !channel.isClientInvited(sender.getFd()) && !channel.isClientInChannel(sender.getFd())) {
+          !channel.isClientInvited(sender.getFd()) &&
+          !channel.isClientInChannel(sender.getFd())) {
         send404CannotSendToChan(sender, channel);
         return;
       }

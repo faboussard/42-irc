@@ -6,9 +6,12 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/25 16:19:22 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/26 08:58:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <map>
+#include <string>
 
 #include "../../includes/Channel.hpp"
 #include "../../includes/Parser.hpp"

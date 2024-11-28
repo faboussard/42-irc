@@ -6,12 +6,12 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 13:59:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 14:05:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 10:26:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INCLUDES_TYPES_HPP_
-#define INCLUDES_TYPES_HPP_
+#ifndef INCLUDES_ENUMS_HPP_
+#define INCLUDES_ENUMS_HPP_
 
 enum Command {
   JOIN,
@@ -24,15 +24,22 @@ enum Command {
   PRIVMSG,
   QUIT,
   PING,
+  PONG,
   CAP,
   USER,
   PASS,
   WHO,
-  BOT,
-  WEATHER,
-  TRANSLATE,
-  ASCII_ART,
   UNKNOWN
 };
 
-#endif  // INCLUDES_TYPES_HPP_
+enum eBotCommand {
+  MENU,
+  NUMBERS,
+  JOKE,
+  INSULTME,
+  ADVICE,
+  RANDOM_BOT_COMMAND,
+  UNKNOWN_BOT_COMMAND
+};
+
+#endif  // INCLUDES_ENUMS_HPP_

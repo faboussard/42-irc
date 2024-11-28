@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/25 13:53:23 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 11:31:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <iostream>
 #include <string>
 
-#include "../includes/Bot.hpp"
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
@@ -29,7 +28,6 @@ bool Server::_signal = false;
 Server::Server(int port, const std::string &password)
     : _socketFd(-1), _port(port), _password(password) {
   _signal = false;
-  _bot = new Bot(this);
 }
 
 /*============================================================================*/
@@ -44,7 +42,7 @@ Server::Server(int port, const std::string &password)
 
 int Server::getPort(void) const { return _port; }
 
-int Server::getSocketFd(void) const { return _socketFd; }
+// int Server::getSocketFd(void) const { return _socketFd; }
 
 /*============================================================================*/
 /*       Finders                                                              */
@@ -77,7 +75,6 @@ void Server::runServer(void) {
   std::ostringstream oss;
   oss << "Server started on port " << _port;
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
-  _bot->runBot();
   acceptAndChat();
 }
 
@@ -126,10 +123,7 @@ void Server::acceptAndChat(void) {
   newPoll.events = POLLIN;
   newPoll.revents = 0;
   _pollFds.push_back(newPoll);
-  // Add fds of bot to pollFds
 
-  int botIrcFd = _bot->getIrcSocketFd();
-  int botApiFd = _bot->getApiSocketFd();
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
@@ -140,12 +134,6 @@ void Server::acceptAndChat(void) {
       if (_pollFds[i].revents & POLLIN && _signal == false) {
         if (_pollFds[i].fd == _socketFd) {
           acceptNewClient();
-        } else if (_pollFds[i].fd == botIrcFd) {
-          printLog(DEBUG_LOG, BOT_L, "Received a message from IRC server");
-          _bot->handleRequest();
-        } else if (_pollFds[i].fd == botApiFd) {
-          printLog(DEBUG_LOG, BOT_L, "Received a message from API server");
-          // _bot->handleResponse();
         } else {
           handleClientMessage(_pollFds[i].fd);
         }
@@ -173,6 +161,7 @@ void Server::signalHandler(int signal) {
 void Server::closeServer(void) {
   clientsMap::iterator itEnd = _clients.end();
   for (clientsMap::iterator it = _clients.begin(); it != itEnd; ++it) {
+    std::cout << "Closing client " << it->second.getNickname() << std::endl;
     closeClient(it->second.getFd());
   }
   _clients.clear();
@@ -188,7 +177,6 @@ void Server::closeServer(void) {
   shrink_to_fit(&_pollFds);
   _channels.clear();
   delete gConfig;
-  delete _bot;
 }
 
 /*============================================================================*/

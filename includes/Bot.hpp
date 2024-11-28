@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 14:56:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:12:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,89 +22,126 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <cstdio>
+#include <deque>
 #include <string>
 #include <vector>
 
-#include "../includes/types.hpp"
+#include "../includes/colors.hpp"
+#include "../includes/enums.hpp"
 #include "../includes/utils.hpp"
 
-#define BOT_NAME "ircbot"
-#define IRC_PORT 6668
-#define IRC_PORT2 6669
-#define API_PORT 8080
-#define API_PORT2 8008
-#define MAX_CLIENTS_BOT 20
 #define LOCALHOST "127.0.0.1"
+#define BOT_NICK "ircbot"
+#define BOT_USER "ircbot 0 * :ircbot"
+#define PING_MSG "PING ft_irc\r\n"
+#define PONG_MSG "PONG ft_irc\r\n"
 
-#define BOT_CONNECTION_FAILED_IRC "Failed to connect to IRC server"
+#define NUMBERSAPI_HOST "numbersapi.com"
+#define JOKEAPI_HOST "icanhazdadjoke.com"
+#define INSULTMEAPI_HOST "evilinsult.com"
 
-class Server;
+#define NUMBERS_URL "http://numbersapi.com/"  // Need to add a number at the end
+#define JOKE_URL "https://icanhazdadjoke.com/"
+#define INSULTME_URL \
+  "https://evilinsult.com/generate_insult.php?lang=en&type=json"
+
+struct BotRequest {
+  std::string clientNickname;
+  eBotCommand command;
+  std::string arg;
+
+  int fdForApi;
+  FILE *fpForApi;
+  std::string apiResponse;
+
+  BotRequest(const std::string &nick, eBotCommand command,
+             const std::string &argument)
+      : clientNickname(nick),
+        command(command),
+        arg(argument),
+        fdForApi(-1),
+        fpForApi(NULL),
+        apiResponse("") {}
+};
 
 class Bot {
  private:
-  Server *_server;
-
-  int _botFdInServer;
-  std::string _name;
-
-  int _ircPort;
-  int _ircSocketFd;
-  struct sockaddr_in _ircAddress;
-  struct pollfd _pollFdIrc;
-
-  int _apiPort;
-  int _apiSocketFd;
-  struct sockaddr_in _apiAddress;
-  struct pollfd _pollFdApi;
+  static bool _signal;
+  const std::string _nick;
+  const std::string _user;
+  bool _connectedToServer;
 
   stringVector _instructions;
 
+  int _serverPort;
+  const std::string _serverPass;
+
+  /* Bot-IRC Server communication */
+  int _botPort;
+  int _botSocketFd;
+  std::vector<struct pollfd> _botPollFds;
+  std::deque<BotRequest> _requestDatas;
+
  public:
-  explicit Bot(Server *server);
+  explicit Bot(int serverPort, const std::string &serverPass, int botPort);
   ~Bot(void);
 
   void runBot(void);
-  void closeBot(void);
-
-  int getIrcSocketFd(void) const;
-  int getApiSocketFd(void) const;
-  const stringVector &getInstructions(void) const;
-
-  void setBotFdInServer(int fd);
-
-  void handleRequest(void);  // receive, parse, send
-  void handleResponse(void);  // receive, parse, send
-
-  static std::string botCommandStr(Command command);
+  static void signalHandler(int signal);
 
  private:
   /* Bot launch */
-  void createSockets(void);
+  void createSocket(void);
   void connectToIrcServer(void);
-  void listenApiServer(void);
+  void listenToIrcServer(void);
+  bool authenticate(void);
+  bool checkServerConneciion(void);
 
-  /* HTTP requests */
-  bool parseRequest(const std::string &request);
-  void sendRequest(const std::string &request);
+  /* Requests handling */
+  void handleServerMessage(void);
+  std::string readMessageFromServer(void);
+  bool sendMessageToServer(const std::string &message);
+  BotRequest parseRequest(const std::string &requestBuffer);
+  void sendUnknownCommand(const BotRequest& newRequest);
 
-  /* Replies */
-  bool parseResponse(const std::string &response);
-  void sendResponse(const std::string &response);
+  /* Commands handling */
+  void menu(BotRequest *request);
+  void numbers(BotRequest *request);
+  void joke(BotRequest *request);
+  void insultMe(BotRequest *request);
+  void advice(BotRequest *request);
+  void randomCommand(BotRequest *request);
+
+  /* Responses handling */
+  void handleApiResponse(int fd);
+  void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
+  std::string parseResponse(std::deque<BotRequest>::iterator itRequest);
+  void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
+
+  /* Log */
+  void logcreatSocketForApi(void);
+  void logApiRequest(int fd, const std::string &apiHost);
+  void logApiResponse(int fd);
+#ifdef DEBUG
+  void debugLogServerMessageSplit(const std::string &clientNickname,
+                                     const std::string &commandStr,
+                                     const std::string &arg);
+  void debugLogParsedMessage(BotRequest request);
+  void debugLogWaitingRequests(void);
+#endif
 };
 
-#define BOT_RESPONSE_HEADER (std::string(":") + BOT_NAME + " PRIVMSG ")
-
-#define BOT1 "  /\\_/\\\n"
-#define BOT2 " ( o.o )\n"
-#define BOT3 "─ U───U────────────────────────────────────────────────────────\n"
-#define BOT4 "         Hello! I'm IRCbot, what can I do for you?"
-#define BOT5 "────────────────────────────────────────────────────────── ♥ ──\n"
-#define BOT6 "🌤️ WEATHER 🌤️ Ask me for a forecast, I'll bring you the skies.\n"
-#define BOT7 "🌐 TRANSLATE 🌐 Lost in translation? I'm multilingual !\n"
-#define BOT8 "🎨 ASCII ART 🎨 \n"
-#define BOT9 "How to use ?\n"
-// "WEATHER → Get weather updates.\n"
-// "TRANSLATE <text> → Translate words in a snap.\n"
-// "ASCIIART <topic> → Create ASCII art magic.\n")
+#define BOT_MENU1 "  /\\_/\\"
+#define BOT_MENU2 " ( o.o )"
+#define BOT_MENU3 "─ U───U────────────────────────────────────────────────────────"
+#define BOT_MENU4 "         Hello! I'm IRCbot, what can I do for you?"
+#define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
+#define BOT_MENU6 "🔢 Ask me about a number, get a fun fact. 👉 NUMBERS <number>"
+#define BOT_MENU7 "🤣 Feeling down? I'll lift you up with a dad joke. 👉 JOKE"
+#define BOT_MENU8 "😈 Craving some sass? I can roast you. 👉 INSULTME"
+#define BOT_MENU9 "👼 Need guidance? Let me share some wisdom with you. 👉 ADVICE"
+#define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉 RANDOM"
 
 #endif  // INCLUDES_BOT_HPP_
