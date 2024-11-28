@@ -50,3 +50,6 @@ test-results/
 *~
 *.bak
 ft_irc-tester
+
+# Confidentiel
+.env

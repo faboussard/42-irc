@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 12:35:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 16:56:54 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ void Bot::handleServerMessage(void) {
     case MENU:
       menu(&newRequest);
       break;
-    case NUMBERS:
-      numbers(&newRequest);
+    case WEATHER:
+      // weather(&newRequest);
       break;
     case JOKE:
       joke(&newRequest);
@@ -48,11 +48,8 @@ void Bot::handleServerMessage(void) {
     case ADVICE:
       advice(&newRequest);
       break;
-    case RANDOM_BOT_COMMAND:
-      randomCommand(&newRequest);
-      break;
     case UNKNOWN_BOT_COMMAND:
-      sendUnknownCommand(newRequest);
+      unknownCommand(newRequest);
       break;
     default:
       break;
@@ -66,14 +63,14 @@ void Bot::handleServerMessage(void) {
 static eBotCommand selectCommand(const std::string& command) {
   if (command == "MENU") {
     return (MENU);
-  } else if (command == "NUMBERS") {
-    return (NUMBERS);
   } else if (command == "JOKE") {
     return (JOKE);
   } else if (command == "INSULTME") {
     return (INSULTME);
   } else if (command == "ADVICE") {
     return (ADVICE);
+  } else if (command == "WEATHER") {
+    return (WEATHER);
   } else if (command == "RANDOM") {
     return (RANDOM_BOT_COMMAND);
   }
@@ -83,9 +80,9 @@ static eBotCommand selectCommand(const std::string& command) {
 BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   Log::printLog(INFO_LOG, BOT_L, "Handling a new message from Server...");
   std::stringstream ss(requestBuffer);
-  std::string clientNickname;  // :clientnick
-  std::string commandStr;      // !numbers
-  std::string arg;             // 42
+  std::string clientNickname;
+  std::string commandStr;
+  std::string arg;
   ss >> clientNickname >> commandStr >> commandStr >> commandStr;
   std::getline(ss >> std::ws, arg);
 #ifdef DEBUG
@@ -96,15 +93,4 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr),
                         arg);
   return (newRequest);
-}
-
-/*============================================================================*/
-/*       Unknown command                                                      */
-/*============================================================================*/
-
-void Bot::sendUnknownCommand(const BotRequest& newRequest) {
-  std::ostringstream oss;
-  oss << "PRIVMSG " << newRequest.clientNickname
-      << " :Hmm, I'm not sure what you'd like me to do" << "\r\n";
-  sendMessageToServer(oss.str());
 }

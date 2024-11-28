@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 12:12:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 16:50:03 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,20 @@
 #define PING_MSG "PING ft_irc\r\n"
 #define PONG_MSG "PONG ft_irc\r\n"
 
-#define NUMBERSAPI_HOST "numbersapi.com"
 #define JOKEAPI_HOST "icanhazdadjoke.com"
 #define INSULTMEAPI_HOST "evilinsult.com"
+#define ADVICEAPI_HOST "api.adviceslip.com"
+#define WEATHERAPI_HOST "weatherapi.com"
 
-#define NUMBERS_URL "http://numbersapi.com/"  // Need to add a number at the end
+#define CURL "curl -s "  // -s for silent mode
 #define JOKE_URL "https://icanhazdadjoke.com/"
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
+#define ADVICE_URL "https://api.adviceslip.com/advice"
+// #define WEATHER_URL "wttr.in/Paris\?n"
+#define WEATHER_URL1 "\"https://api.weatherapi.com/v1/forecast.json?key="
+#define WEATHER_URL2 "&q="
+#define WEATHER_URL3 "&days=1&aqi=no&alerts=no\""
 
 struct BotRequest {
   std::string clientNickname;
@@ -104,14 +110,15 @@ class Bot {
   std::string readMessageFromServer(void);
   bool sendMessageToServer(const std::string &message);
   BotRequest parseRequest(const std::string &requestBuffer);
-  void sendUnknownCommand(const BotRequest& newRequest);
+  void unknownCommand(const BotRequest& request);
 
   /* Commands handling */
+  FILE *openCurl(BotRequest *request, std::string url);
   void menu(BotRequest *request);
-  void numbers(BotRequest *request);
   void joke(BotRequest *request);
   void insultMe(BotRequest *request);
   void advice(BotRequest *request);
+  void weather(BotRequest *request);
   void randomCommand(BotRequest *request);
 
   /* Responses handling */
@@ -138,10 +145,10 @@ class Bot {
 #define BOT_MENU3 "─ U───U────────────────────────────────────────────────────────"
 #define BOT_MENU4 "         Hello! I'm IRCbot, what can I do for you?"
 #define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
-#define BOT_MENU6 "🔢 Ask me about a number, get a fun fact. 👉 NUMBERS <number>"
-#define BOT_MENU7 "🤣 Feeling down? I'll lift you up with a dad joke. 👉 JOKE"
-#define BOT_MENU8 "😈 Craving some sass? I can roast you. 👉 INSULTME"
-#define BOT_MENU9 "👼 Need guidance? Let me share some wisdom with you. 👉 ADVICE"
-#define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉 RANDOM"
+#define BOT_MENU6 "🤣 Feeling down? I'll lift you up with a dad joke. 👉!JOKE"
+#define BOT_MENU7 "😈 Craving some sass? I can roast you. 👉!INSULTME"
+#define BOT_MENU8 "👼 Need guidance? Let me share some wisdom with you. 👉!ADVICE"
+#define BOT_MENU9 "🌤️ Wondering about the weather? Ask away. 👉!WEATHER <city name>"
+#define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉!RANDOM"
 
 #endif  // INCLUDES_BOT_HPP_
