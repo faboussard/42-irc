@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 08:27:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 10:39:17 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@
 #define LOCALHOST "127.0.0.1"
 #define BOT_NICK "ircbot"
 #define BOT_USER "ircbot 0 * :ircbot"
+#define PING_MSG "PING ft_irc\r\n"
+#define PONG_MSG "PONG ft_irc\r\n"
 
 #define NUMBERSAPI_HOST "numbersapi.com"
 #define JOKEAPI_HOST "icanhazdadjoke.com"
@@ -44,26 +46,16 @@
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 
-enum eBotCommand {
-  MENU,
-  NUMBERS,
-  JOKE,
-  INSULTME,
-  ADVICE,
-  RAMDOM,
-  UNKNOWN
-};
-
 struct BotRequest {
   std::string clientNickname;
-  Command command;
+  eBotCommand command;
   std::string arg;
 
   int fdForApi;
   FILE *fpForApi;
   std::string apiResponse;
 
-  BotRequest(const std::string &nick, Command command,
+  BotRequest(const std::string &nick, eBotCommand command,
              const std::string &argument)
       : clientNickname(nick),
         command(command),
@@ -118,14 +110,12 @@ class Bot {
   bool checkServerConneciion(void);
 
   std::string readMessageFromServer(void);
+  void handleServerMessage(void);  // receive, parse, send
   bool sendMessageToServer(const std::string &message);
 
   /* Requests handling */
-  void handleServerMessage(void);  // receive, parse, send
   BotRequest parseRequest(const std::string &requestBuffer);
-  // std::string parseRequest(const BotRequest &request);
-  // void findApiInfo(BotRequest *request);
-  // void sendRequestToApi(const std::string &request, int socketFd);
+  void sendUnknownCommand(const BotRequest& newRequest);
 
   /* Responses handling */
   void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
@@ -133,18 +123,22 @@ class Bot {
   void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Commands handling */
-  void bot(BotRequest *request);
+  void menu(BotRequest *request);
   void numbers(BotRequest *request);
   void joke(BotRequest *request);
-  void film(BotRequest *request);
   void insultMe(BotRequest *request);
+  void advice(BotRequest *request);
+  void randomCommand(BotRequest *request);
 
   /* Log */
   void logcreatSocketForApi(void);
   void logApiRequest(int fd, const std::string &apiHost);
   void logApiResponse(int fd);
 #ifdef DEBUG
-  void debugLogReadRequest(BotRequest request);
+  void debugLogServerMessageSplit(const std::string &clientNickname,
+                                     const std::string &commandStr,
+                                     const std::string &arg);
+  void debugLogParsedMessage(BotRequest request);
   void debugLogWaitingRequests(void);
 #endif
 };

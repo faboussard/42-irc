@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 08:16:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 10:38:54 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,43 +16,47 @@
 #include "../../includes/Bot.hpp"
 #include "../../includes/Log.hpp"
 #include "../../includes/Parser.hpp"
-
-// :yusengok PRIVMSG ircbot !insultme
+#include "../../includes/colors.hpp"
+#include "../../includes/utils.hpp"
 
 void Bot::handleServerMessage(void) {
-    std::string requestBuffer = readMessageFromServer();
-    if (requestBuffer.empty()) return;
+  std::string requestBuffer = readMessageFromServer();
+  Log::printLog(DEBUG_LOG, BOT_L, "Received from Server: " + requestBuffer);
+  if (requestBuffer.empty()) return;
+  if (requestBuffer == PONG_MSG) {
+    _connectedToServer = true;
+    return;
+  }
+  if (requestBuffer[0] != ':' ||
+      requestBuffer.find("PRIVMSG") == std::string::npos)
+    return;
   BotRequest newRequest = parseRequest(requestBuffer);
-  // _requestDatas.push_back(newRequest);
+#ifdef DEBUG
+    debugLogParsedMessage(newRequest);
+#endif
   switch (newRequest.command) {
-    case PONG:
-      _connectedToServer = true;
-      break;
-    case BOT:
-      bot(&newRequest);
+    case MENU:
+      menu(&newRequest);
       break;
     case NUMBERS:
-      _requestDatas.push_back(newRequest);
       numbers(&newRequest);
       break;
     case JOKE:
-      _requestDatas.push_back(newRequest);
       joke(&newRequest);
       break;
-    case FILM:
-      _requestDatas.push_back(newRequest);
-      film(&newRequest);
-      break;
     case INSULTME:
-      // _requestDatas.push_back(newRequest);
       insultMe(&newRequest);
-      // newRequest.fpForApi = insultMe(&newRequest);
-      // newRequest.fdForApi = fileno(newRequest.fpForApi);
-      // _botPollFds.push_back({newRequest.fdForApi, POLLIN, 0});
-      std::cout << "fd for api " << newRequest.fdForApi << std::endl;
+      break;
+    case ADVICE:
+      advice(&newRequest);
+      break;
+    case RANDOM_BOT_COMMAND:
+      randomCommand(&newRequest);
+      break;
+    case UNKNOWN_BOT_COMMAND:
+      sendUnknownCommand(newRequest);
       break;
     default:
-      break;
   }
 }
 
@@ -60,36 +64,48 @@ void Bot::handleServerMessage(void) {
 /*       Parse requests                                                       */
 /*============================================================================*/
 
-BotRequest Bot::parseRequest(const std::string &requestBuffer) {
+static eBotCommand selectCommand(const std::string& command) {
+  if (command == "MENU") {
+    return (MENU);
+  } else if (command == "NUMBERS") {
+    return (NUMBERS);
+  } else if (command == "JOKE") {
+    return (JOKE);
+  } else if (command == "INSULTME") {
+    return (INSULTME);
+  } else if (command == "ADVICE") {
+    return (ADVICE);
+  } else if (command == "RANDOM") {
+    return (RANDOM_BOT_COMMAND);
+  }
+  return (UNKNOWN_BOT_COMMAND);
+}
+
+BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   Log::printLog(INFO_LOG, BOT_L, "Handling a new message from Server...");
-#ifdef DEBUG
-  Log::printLog(DEBUG_LOG, BOT_L, "Message received: " + requestBuffer);
-#endif
   std::stringstream ss(requestBuffer);
-  std::string commandStr;
-  std::string clientNickname;
-  std::string arg;
-  ss >> commandStr >> clientNickname;
+  std::string clientNickname;  // :clientnick
+  std::string commandStr;      // !numbers
+  std::string arg;             // 42
+  ss >> clientNickname >> commandStr >> commandStr >> commandStr;
   std::getline(ss >> std::ws, arg);
-  Log::printLog(DEBUG_LOG, BOT_L,
-                "< PARSED> Command: " + commandStr +
-                " | Nickname: " + clientNickname + " | Argument: " + arg);
-  BotRequest newRequest(clientNickname, Parser::choseCommand(commandStr), arg);
+#ifdef DEBUG
+  debugLogServerMessageSplit(clientNickname, commandStr, arg);
+#endif
+  commandStr.substr(1);
+  strToUpper(&commandStr);
+  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr),
+                        arg);
   return (newRequest);
 }
 
 /*============================================================================*/
-/*       Send to API                                                          */
+/*       Unknown command                                                      */
 /*============================================================================*/
 
-// void Bot::sendRequestToApi(const std::string &request, int socketFd) {
-//   ssize_t bytesSent = send(socketFd, request.c_str(), request.size(), 0);
-//   if (bytesSent == -1) {
-//     Log::printLog(ERROR_LOG, BOT_L,
-//                   "Failed to send request to API server: " +
-//                       std::string(strerror(errno)));
-//   } else {
-//     Log::printLog(INFO_LOG, BOT_L, "Sent request to API server");
-//     Log::printLog(DEBUG_LOG, BOT_L, "Request sent: " + request);
-//   }
-// }
+void Bot::sendUnknownCommand(const BotRequest& newRequest) {
+  std::ostringstream oss;
+  oss << "PRIVMSG " << newRequest.clientNickname
+      << " :I don't know what you'd like to do with me" << "\r\n";
+  sendMessageToServer(oss.str());
+}

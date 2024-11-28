@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 13:59:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 12:38:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 10:26:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,17 @@ enum Command {
   USER,
   PASS,
   WHO,
-  BOT,
+  UNKNOWN
+};
+
+enum eBotCommand {
+  MENU,
   NUMBERS,
   JOKE,
-  FILM,
-  QUIZ,
   INSULTME,
-  UNKNOWN
+  ADVICE,
+  RANDOM_BOT_COMMAND,
+  UNKNOWN_BOT_COMMAND
 };
 
 #endif  // INCLUDES_ENUMS_HPP_

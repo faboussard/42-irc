@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 11:15:40 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 21:23:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 10:41:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,27 +32,23 @@ void Bot::logApiResponse(int fd) {
   Log::printLog(INFO_LOG, BOT_L, oss.str());
 }
 
-// void Bot::logApiConnectionClosed(int fd) {
-//   std::ostringstream oss;
-//   oss << "fd" << fd << ": API server closed the connection with Bot";
-//   Log::printLog(INFO_LOG, BOT_L, oss.str());
-// }
-
 #ifdef DEBUG
-// void Bot::debugLogPipe(int ServerToBot0, int ServerToBot1, int BotToServer0,
-//                        int BotToServer1) {
-//   std::ostringstream oss;
-//   oss << "Pipes created: ServerToBot(" << ServerToBot0 << ", " << ServerToBot1
-//       << ") | BotToServer(" << BotToServer0 << ", " << BotToServer1 << ")";
-//   Log::printLog(DEBUG_LOG, BOT_L, oss.str());
-// }
+void Bot::debugLogServerMessageSplit(const std::string &clientNickname,
+                                     const std::string &commandStr,
+                                     const std::string &arg) {
+    std::ostringstream oss;
+    oss << "< SPLIT >: clientNickname: " CYAN << clientNickname
+        << RESET " | Bot command: " CYAN << commandStr << RESET " | Arg: " CYAN
+        << arg << RESET;
+    Log::printLog(DEBUG_LOG, PARSER, oss.str());
+}
 
-void Bot::debugLogReadRequest(BotRequest request) {
+void Bot::debugLogParsedMessage(BotRequest request) {
   std::ostringstream oss;
-  oss << "New request from " CYAN << request.clientNickname
-      << RESET ": Command " << CYAN << request.command << RESET " | " << "arg "
-      << CYAN << request.arg << RESET;
-  Log::printLog(DEBUG_LOG, BOT_L, oss.str());
+  oss << "New request from " << request.clientNickname
+      << " | Command: " << request.command << " " << commandToString(request.command)
+      << " | Arg: " << request.arg;
+  Log::printLog(DEBUG_LOG, PARSER, oss.str());
 }
 
 void Bot::debugLogWaitingRequests(void) {

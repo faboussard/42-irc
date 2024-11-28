@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/27 10:14:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 09:14:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ bool Server::_signal = false;
 /*============================================================================*/
 
 Server::Server(int port, const std::string &password)
-    : _socketFd(-1), _port(port), _password(password), _bot(NULL) {
+    : _socketFd(-1), _port(port), _password(password) {
   _signal = false;
 }
 
@@ -179,7 +179,7 @@ void Server::closeServer(void) {
   shrink_to_fit(&_pollFds);
   _channels.clear();
   delete gConfig;
-  delete _bot;
+  // delete _bot;
 }
 
 /*============================================================================*/
@@ -233,9 +233,9 @@ void Server::closeClient(int fd) {
     printLog(NOTIFY_LOG, SYSTEM, oss.str());
   }
   if (_clients.find(fd) != _clients.end()) {
-    if (_clients[fd].getNickname() == BOT_NAME) {
-      _bot = NULL;
-    }
+    // if (_clients[fd].getNickname() == BOT_NAME) {
+    //   _bot = NULL;
+    // }
   }
 }
 

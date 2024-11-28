@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/27 10:48:16 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 09:06:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,16 +55,16 @@ Command Parser::choseCommand(const std::string& command) {
     return (PASS);
   } else if (command == "WHO") {
     return (WHO);
-  } else if (command == "BOT") {
-    return (BOT);
-  } else if (command == "NUMBERS") {
-    return (NUMBERS);
-  } else if (command == "JOKE") {
-    return (JOKE);
-  } else if (command == "FILM") {
-    return (FILM);
-  } else if (command == "INSULTME") {
-    return (INSULTME);
+  // } else if (command == "BOT") {
+  //   return (BOT);
+  // } else if (command == "NUMBERS") {
+  //   return (NUMBERS);
+  // } else if (command == "JOKE") {
+  //   return (JOKE);
+  // } else if (command == "FILM") {
+  //   return (FILM);
+  // } else if (command == "INSULTME") {
+  //   return (INSULTME);
   }
   return (UNKNOWN);
 }

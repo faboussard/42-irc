@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/27 20:03:57 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 10:26:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,19 +111,26 @@ std::string commandToString(Command command) {
       return ("PING");
     case PASS:
       return ("PASS");
-    case BOT:
-      return ("BOT");
+    default:
+      return """";
+  }
+}
+
+std::string commandToString(eBotCommand command) {
+  switch (command) {
+    case MENU:
+      return ("MENU");
     case NUMBERS:
       return ("NUMBERS");
     case JOKE:
       return ("JOKE");
     case INSULTME:
       return ("INSULTME");
-    case FILM:
-      return ("FILM");
-    case QUIZ:
-      return ("QUIZ");
+    case ADVICE:
+      return ("ADVICE");
+    case RANDOM_BOT_COMMAND:
+      return ("RANDOM");
     default:
-      return """";
+      return ("UNKNOWN_BOT_COMMAND");
   }
 }

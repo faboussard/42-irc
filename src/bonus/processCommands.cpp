@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:31:27 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 21:25:17 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 09:50:18 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,30 +19,19 @@
 
 #include "../../includes/Bot.hpp"
 
-void Bot::bot(BotRequest *request) {
-  if (request->arg == "welcome") {
-    Log::printLog(INFO_LOG, BOT_L,
-                  "Welcome message sent to " + request->clientNickname);
+void Bot::menu(BotRequest *request) {
+  Log::printLog(INFO_LOG, BOT_L, "Bot menu sent to " + request->clientNickname);
 
-    stringVector::const_iterator itEnd = _instructions.end();
-    for (std::vector<std::string>::const_iterator it = _instructions.begin();
-         it != itEnd; ++it) {
-      std::ostringstream oss;
-      oss << "PRIVMSG " << request->clientNickname << " :" << *it << "\r\n";
-      sendMessageToServer(oss.str());
-    } 
-  } else if (request->arg == "menu") {
-    Log::printLog(INFO_LOG, BOT_L,
-                  "Bot menu sent to " + request->clientNickname);
-  // sendInstructions(request->clientNickname);
+  stringVector::const_iterator itEnd = _instructions.end();
+  for (std::vector<std::string>::const_iterator it = _instructions.begin();
+       it != itEnd; ++it) {
+    std::ostringstream oss;
+    oss << "PRIVMSG " << request->clientNickname << " :" << *it << "\r\n";
+    sendMessageToServer(oss.str());
   }
-  // remove request from queue
 }
 
-void Bot::numbers(BotRequest *request) {
-  // _requestDatas.push_back(*request);
-  // send API request to numbersapi.com
-}
+void Bot::numbers(BotRequest *request) { (void)request; }
 
 void Bot::joke(BotRequest *request) {
   std::string curlCommand = "curl -s ";  // -s for silent mode
@@ -66,11 +55,6 @@ void Bot::joke(BotRequest *request) {
   logApiRequest(request->fdForApi, JOKEAPI_HOST);
 }
 
-void Bot::film(BotRequest *request) {
-  _requestDatas.push_back(*request);
-  // send API request to omdbapi.com
-}
-
 void Bot::insultMe(BotRequest *request) {
   std::string curlCommand = "curl -s ";  // -s for silent mode
   curlCommand += INSULTME_URL;
@@ -92,3 +76,10 @@ void Bot::insultMe(BotRequest *request) {
 
   logApiRequest(request->fdForApi, INSULTMEAPI_HOST);
 }
+
+void Bot::advice(BotRequest *request) {
+  _requestDatas.push_back(*request);
+  // send API request to omdbapi.com
+}
+
+void Bot::randomCommand(BotRequest *request) { (void)request; }

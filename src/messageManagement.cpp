@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/27 09:31:07 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 09:12:50 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,25 +85,25 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
         if (Parser::verifyNick(argument, client, &_clients) == true &&
             client->isAccepted() == false && client->isUsernameSet()) {
           client->declareAccepted();
-          if (client->getNickname() == BOT_NAME) {
-            _bot = client;
-            Server::printLog(INFO_LOG, BOT_L, "Bot connected to IRC Server");
-          } else {
+          // if (client->getNickname() == BOT_NAME) {
+          //   _bot = client;
+          //   Server::printLog(INFO_LOG, BOT_L, "Bot connected to IRC Server");
+          // } else {
           sendConnectionMessage(*client);
-          }
+          // }
         }
       }
     } else if (command == USER) {
       if (Parser::verifyUser(argument, client, &_clients) == true &&
           client->isAccepted() == false && client->isNicknameSet()) {
         client->declareAccepted();
-        if (client->getNickname() == BOT_NAME) {
-          _bot = client;
-          Server::printLog(INFO_LOG, BOT_L, "Bot connected to IRC Server");
-        } else {
-        sendConnectionMessage(*client);
-        }
+        // if (client->getNickname() == BOT_NAME) {
+        //   _bot = client;
+        //   Server::printLog(INFO_LOG, BOT_L, "Bot connected to IRC Server");
+        // // } else {
         // sendConnectionMessage(*client);
+        // }
+        sendConnectionMessage(*client);
 #ifdef TESTNUMERICR
         testAllNumericReplies(_startTime, *client, "COMMAND", "puppy");
 #endif
@@ -242,6 +242,7 @@ void Server::handleCommand(Command command, const std::string &argument,
       send462AlreadyRegistered(_clients[fd]);
       break;
     default:
-      botCommands(&_clients.at(fd), command, argument);
+      // botCommands(&_clients.at(fd), command, argument);
+      break;
   }
 }
