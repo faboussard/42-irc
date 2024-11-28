@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Bot.cpp                                            :+:      :+:    :+:   */
+/*   Bot.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 12:12:31 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 14:41:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,16 @@
 #define PING_MSG "PING ft_irc\r\n"
 #define PONG_MSG "PONG ft_irc\r\n"
 
-#define NUMBERSAPI_HOST "numbersapi.com"
+#define CURL "curl -s "  // -s for silent mode
+
 #define JOKEAPI_HOST "icanhazdadjoke.com"
 #define INSULTMEAPI_HOST "evilinsult.com"
+#define ADVICEAPI_HOST "api.adviceslip.com"
 
-#define NUMBERS_URL "http://numbersapi.com/"  // Need to add a number at the end
 #define JOKE_URL "https://icanhazdadjoke.com/"
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
+#define ADVICE_URL "https://api.adviceslip.com/advice"
 
 struct BotRequest {
   std::string clientNickname;
@@ -104,7 +106,7 @@ class Bot {
   std::string readMessageFromServer(void);
   bool sendMessageToServer(const std::string &message);
   BotRequest parseRequest(const std::string &requestBuffer);
-  void sendUnknownCommand(const BotRequest& newRequest);
+  void sendUnknownCommand(const BotRequest &newRequest);
 
   /* Commands handling */
   void menu(BotRequest *request);
@@ -117,7 +119,11 @@ class Bot {
   /* Responses handling */
   void handleApiResponse(int fd);
   void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
-  std::string parseResponse(std::deque<BotRequest>::iterator itRequest);
+  std::string parseResponse(const std::string &response);
+  std::string parseNumbersResponse(const std::string &response);
+  std::string parseJokeResponse(const std::string &response);
+  std::string parseResponseByKey(const std::string &response,
+                                 const std::string &key);
   void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Log */
@@ -126,8 +132,8 @@ class Bot {
   void logApiResponse(int fd);
 #ifdef DEBUG
   void debugLogServerMessageSplit(const std::string &clientNickname,
-                                     const std::string &commandStr,
-                                     const std::string &arg);
+                                  const std::string &commandStr,
+                                  const std::string &arg);
   void debugLogParsedMessage(BotRequest request);
   void debugLogWaitingRequests(void);
 #endif
@@ -135,13 +141,17 @@ class Bot {
 
 #define BOT_MENU1 "  /\\_/\\"
 #define BOT_MENU2 " ( o.o )"
-#define BOT_MENU3 "─ U───U────────────────────────────────────────────────────────"
+#define BOT_MENU3 \
+  "─ U───U────────────────────────────────────────────────────────"
 #define BOT_MENU4 "         Hello! I'm IRCbot, what can I do for you?"
-#define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
-#define BOT_MENU6 "🔢 Ask me about a number, get a fun fact. 👉 NUMBERS <number>"
+#define BOT_MENU5 \
+  "────────────────────────────────────────────────────────── ♥ ──"
+#define BOT_MENU6 \
+  "🔢 Ask me about a number, get a fun fact. 👉 NUMBERS <number>"
 #define BOT_MENU7 "🤣 Feeling down? I'll lift you up with a dad joke. 👉 JOKE"
 #define BOT_MENU8 "😈 Craving some sass? I can roast you. 👉 INSULTME"
-#define BOT_MENU9 "👼 Need guidance? Let me share some wisdom with you. 👉 ADVICE"
+#define BOT_MENU9 \
+  "👼 Need guidance? Let me share some wisdom with you. 👉 ADVICE"
 #define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉 RANDOM"
 
 #endif  // INCLUDES_BOT_HPP_

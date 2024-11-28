@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   handleServerMessage.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 11:21:06 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 14:40:23 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,6 @@ void Bot::handleServerMessage(void) {
     case MENU:
       menu(&newRequest);
       break;
-    case NUMBERS:
-      numbers(&newRequest);
-      break;
     case JOKE:
       joke(&newRequest);
       break;
@@ -63,7 +60,12 @@ void Bot::handleServerMessage(void) {
 /*       Parse requests                                                       */
 /*============================================================================*/
 
+#include <cstdlib>
+#include <ctime>
+
 static eBotCommand selectCommand(const std::string& command) {
+  std::srand(std::time(NULL));
+  
   if (command == "MENU") {
     return (MENU);
   } else if (command == "NUMBERS") {
@@ -75,7 +77,16 @@ static eBotCommand selectCommand(const std::string& command) {
   } else if (command == "ADVICE") {
     return (ADVICE);
   } else if (command == "RANDOM") {
-    return (RANDOM_BOT_COMMAND);
+    // Randomly select JOKE, ADVICE, or INSULTME
+    int randomIndex = std::rand() % 3;
+    switch (randomIndex) {
+      case 0:
+        return (JOKE);
+      case 1:
+        return (ADVICE);
+      case 2:
+        return (INSULTME);
+    }
   }
   return (UNKNOWN_BOT_COMMAND);
 }
@@ -84,7 +95,7 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   Log::printLog(INFO_LOG, BOT_L, "Handling a new message from Server...");
   std::stringstream ss(requestBuffer);
   std::string clientNickname;  // :clientnick
-  std::string commandStr;      // !numbers
+  std::string commandStr;      // !joke
   std::string arg;             // 42
   ss >> clientNickname >> commandStr >> commandStr >> commandStr;
   std::getline(ss >> std::ws, arg);

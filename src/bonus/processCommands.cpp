@@ -31,8 +31,6 @@ void Bot::menu(BotRequest *request) {
   }
 }
 
-void Bot::numbers(BotRequest *request) { (void)request; }
-
 void Bot::joke(BotRequest *request) {
   std::string curlCommand = "curl -s ";  // -s for silent mode
   curlCommand += JOKE_URL;
