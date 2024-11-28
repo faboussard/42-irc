@@ -80,4 +80,3 @@ void Bot::advice(BotRequest *request) {
   // send API request to omdbapi.com
 }
 
-void Bot::randomCommand(BotRequest *request) { (void)request; }

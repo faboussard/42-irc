@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 14:41:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 15:54:54 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,20 +110,15 @@ class Bot {
 
   /* Commands handling */
   void menu(BotRequest *request);
-  void numbers(BotRequest *request);
   void joke(BotRequest *request);
   void insultMe(BotRequest *request);
   void advice(BotRequest *request);
-  void randomCommand(BotRequest *request);
 
   /* Responses handling */
   void handleApiResponse(int fd);
   void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
   std::string parseResponse(const std::string &response);
-  std::string parseNumbersResponse(const std::string &response);
-  std::string parseJokeResponse(const std::string &response);
-  std::string parseResponseByKey(const std::string &response,
-                                 const std::string &key);
+  std::string handleInsultMeResponse(const std::string &response);
   void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Log */
