@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 16:09:30 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 16:51:43 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void Bot::handleServerMessage(void) {
 #endif
   switch (newRequest.command) {
     case MENU:
-      menu(&newRequest);
+      displayAsciiByCommand(&newRequest, MENU);
       break;
     case JOKE:
       joke(&newRequest);
@@ -46,7 +46,7 @@ void Bot::handleServerMessage(void) {
       advice(&newRequest);
       break;
     case UNKNOWN_BOT_COMMAND:
-      sendUnknownCommand(newRequest);
+      sendUnknownCommand(&newRequest);
       break;
     default:
       break;
@@ -110,9 +110,10 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
 /*       Unknown command                                                      */
 /*============================================================================*/
 
-void Bot::sendUnknownCommand(const BotRequest& newRequest) {
+void Bot::sendUnknownCommand(BotRequest *newRequest) {
   std::ostringstream oss;
-  oss << "PRIVMSG " << newRequest.clientNickname
+  oss << "PRIVMSG " << newRequest->clientNickname
       << " :Hmm, I'm not sure what you'd like me to do" << "\r\n";
   sendMessageToServer(oss.str());
+  displayAsciiByCommand(newRequest, UNKNOWN_BOT_COMMAND);
 }

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 15:54:54 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 16:51:35 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,10 +106,10 @@ class Bot {
   std::string readMessageFromServer(void);
   bool sendMessageToServer(const std::string &message);
   BotRequest parseRequest(const std::string &requestBuffer);
-  void sendUnknownCommand(const BotRequest &newRequest);
+  void sendUnknownCommand(BotRequest *newRequest);
 
   /* Commands handling */
-  void menu(BotRequest *request);
+  void displayAsciiByCommand(BotRequest *request, eBotCommand command);
   void joke(BotRequest *request);
   void insultMe(BotRequest *request);
   void advice(BotRequest *request);
@@ -118,7 +118,6 @@ class Bot {
   void handleApiResponse(int fd);
   void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
   std::string parseResponse(const std::string &response);
-  std::string handleInsultMeResponse(const std::string &response);
   void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Log */
@@ -134,6 +133,7 @@ class Bot {
 #endif
 };
 
+//MENU
 #define BOT_MENU1 "  /\\_/\\"
 #define BOT_MENU2 " ( o.o )"
 #define BOT_MENU3 \
@@ -148,5 +148,27 @@ class Bot {
 #define BOT_MENU9 \
   "👼 Need guidance? Let me share some wisdom with you. 👉 ADVICE"
 #define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉 RANDOM"
+
+// JOKE
+#define JOKE_CAT_1 "     /\\_/\\"
+#define JOKE_CAT_2 "    ( • o • )    Haha! What a joke!"
+#define JOKE_CAT_3 "     > ^ < 🐾"
+
+// ADVICE
+#define ADVICE_CAT_1 "     /\\_/\\"
+#define ADVICE_CAT_2 "    ( o.o )   Here's some wisdom:"
+#define ADVICE_CAT_3 "     > ^ <"
+#define ADVICE_CAT_4 "     || ||       *meow*"
+
+// INSULTME
+#define INSULTME_CAT_1 "     /\\_/\\"
+#define INSULTME_CAT_2 "    (>_< )   That was uncalled for!"
+#define INSULTME_CAT_3 "     > ^ <"
+#define INSULTME_CAT_4 "    (    )/   🐾"
+
+// DEFAULT / UNKNOWN
+#define DEFAULT_CAT_1 "     /\\_/\\"
+#define DEFAULT_CAT_2 "    ( o.o )   I'm confused!"
+#define DEFAULT_CAT_3 "     > ^ < 🐾"
 
 #endif  // INCLUDES_BOT_HPP_

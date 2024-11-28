@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 15:43:57 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 16:26:35 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,6 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
   }
   if (message->empty()) {
     send412NoTextToSend(client);
-    sendNotice(client, "no text to send");
     return (false);
   }
   if ((*message)[0] != ':') {

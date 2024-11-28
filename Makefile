@@ -6,7 +6,7 @@
 #    By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/24 21:33:43 by mbernard          #+#    #+#              #
-#    Updated: 2024/11/28 12:20:38 by faboussa         ###   ########.fr        #
+#    Updated: 2024/11/28 16:12:18 by faboussa         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ SRCS = main Server Client Channel Parser Log Config \
        pass nick user \
 	   invite join kick list mode part ping privmsg quit topic who
 
-# ---------------------------------- Répertoires ----------------------------- #
+# ---------------------------------- Directories ----------------------------- #
 HEADERS_DIR = includes/
 OBJS_DIR = .objs/
 OBJS = ${addprefix ${OBJS_DIR}, ${addsuffix .o, ${SRCS}}}
@@ -52,7 +52,7 @@ create_dirs:
 
 -include ${DEPS}
 
-# ---------------------------------- Create Repertory ------------------------ #
+# ---------------------------------- Create Directory ------------------------ #
 ${OBJS_DIR}:
 			${MKDIR} ${OBJS_DIR}
 
