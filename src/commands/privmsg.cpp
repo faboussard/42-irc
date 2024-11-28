@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 13:19:19 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:54:14 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ bool Server::validPrivmsgTargets(const Client &client, stringVector *targets) {
     }
     if (channelsCount != TargetsSize && clientsCount != TargetsSize &&
         chanOpPrefixCount != TargetsSize) {
-      send407TooManyTargets(client);
+      sendNotice(client, "targets must be of same type (all clients, all channels or all operators)");
       return (false);
     }
   }
@@ -156,7 +156,8 @@ void Server::privmsg(int fd, const std::string &arg) {
 #ifdef DEBUG
         {
           std::ostringstream oss;
-          oss << "broadcast to operators only: " << target;
+          oss << "broadcast to operators only: " << target << " message: "
+              << messageWithoutColon;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
@@ -166,11 +167,12 @@ void Server::privmsg(int fd, const std::string &arg) {
 #ifdef DEBUG
         {
           std::ostringstream oss;
-          oss << "broadcast in channel: " << target;
+          oss << "broadcast in channel: " << target << " message: "
+              << messageWithoutColon;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
-        broadcastInChannel(sender, channel, "PRIVMSG", messageWithoutColon);
+        broadcastInChannelWithSender(sender, channel, "PRIVMSG", messageWithoutColon);
       }
     } else {
       Client *client = findClientByNickname(target);
@@ -178,7 +180,8 @@ void Server::privmsg(int fd, const std::string &arg) {
 #ifdef DEBUG
         {
           std::ostringstream oss;
-          oss << "send privmsg to client: " << target;
+          oss << "send privmsg to client: " << target << " message: "
+              << messageWithoutColon;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif

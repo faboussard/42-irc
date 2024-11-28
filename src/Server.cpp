@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 13:21:46 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:41:41 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,6 +287,19 @@ void Server::broadcastInChannel(const Client &sender, const Channel &channel,
   }
 }
 
+void Server::broadcastInChannelWithSender(const Client &sender, const Channel &channel,
+                                const std::string &command,
+                                const std::string &content) {
+  std::string message = ":" + sender.getNickname() + " " + command + " " +
+                        channel.getNameWithPrefix() + " :" + content + "\r\n";
+  const clientPMap &allClients = channel.getChannelClients();
+  clientPMap::const_iterator itEnd = allClients.end();
+  for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
+   Client *client = it->second;
+      client->receiveMessage(message);
+  }
+}
+
 void Server::broadcastToOperatorsOnly(const Client &sender,
                                       const Channel &channel,
                                       const std::string &command,
@@ -296,7 +309,8 @@ void Server::broadcastToOperatorsOnly(const Client &sender,
   const clientPMap &operators = channel.getChannelOperators();
   clientPMap::const_iterator itEnd = operators.end();
   for (clientPMap::const_iterator it = operators.begin(); it != itEnd; ++it) {
-    if (it->first != sender.getFd()) it->second->receiveMessage(message);
+   Client *client = it->second;
+      client->receiveMessage(message);
   }
 }
 

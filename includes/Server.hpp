@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 12:15:40 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:37:27 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,9 @@ class Server {
   void broadcastInChannel(const Client &client, const Channel &channel,
                           const std::string &command,
                           const std::string &content);
+  void broadcastInChannelWithSender(const Client &client, const Channel &channel,
+                                const std::string &command,
+                                const std::string &content);
   void sendNotice(const Client &client, const std::string &message);
 
   /*  Command  */
