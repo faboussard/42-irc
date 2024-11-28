@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 16:51:35 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:07:22 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,16 +38,20 @@
 #define PING_MSG "PING ft_irc\r\n"
 #define PONG_MSG "PONG ft_irc\r\n"
 
-#define CURL "curl -s "  // -s for silent mode
-
 #define JOKEAPI_HOST "icanhazdadjoke.com"
 #define INSULTMEAPI_HOST "evilinsult.com"
 #define ADVICEAPI_HOST "api.adviceslip.com"
+#define WEATHERAPI_HOST "weatherapi.com"
 
+#define CURL "curl -s "  // -s for silent mode
 #define JOKE_URL "https://icanhazdadjoke.com/"
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 #define ADVICE_URL "https://api.adviceslip.com/advice"
+// #define WEATHER_URL "wttr.in/Paris\?n"
+#define WEATHER_URL1 "\"https://api.weatherapi.com/v1/forecast.json?key="
+#define WEATHER_URL2 "&q="
+#define WEATHER_URL3 "&days=1&aqi=no&alerts=no\""
 
 struct BotRequest {
   std::string clientNickname;
@@ -106,10 +110,13 @@ class Bot {
   std::string readMessageFromServer(void);
   bool sendMessageToServer(const std::string &message);
   BotRequest parseRequest(const std::string &requestBuffer);
-  void sendUnknownCommand(BotRequest *newRequest);
 
   /* Commands handling */
   void displayAsciiByCommand(BotRequest *request, eBotCommand command);
+  void unknownCommand(BotRequest *request);
+
+  /* Commands handling */
+  FILE *openCurl(BotRequest *request, std::string url);
   void joke(BotRequest *request);
   void insultMe(BotRequest *request);
   void advice(BotRequest *request);
@@ -117,7 +124,6 @@ class Bot {
   /* Responses handling */
   void handleApiResponse(int fd);
   void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
-  std::string parseResponse(const std::string &response);
   void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Log */
@@ -139,19 +145,16 @@ class Bot {
 #define BOT_MENU3 \
   "─ U───U────────────────────────────────────────────────────────"
 #define BOT_MENU4 "         Hello! I'm IRCbot, what can I do for you?"
-#define BOT_MENU5 \
-  "────────────────────────────────────────────────────────── ♥ ──"
-#define BOT_MENU6 \
-  "🔢 Ask me about a number, get a fun fact. 👉 NUMBERS <number>"
-#define BOT_MENU7 "🤣 Feeling down? I'll lift you up with a dad joke. 👉 JOKE"
-#define BOT_MENU8 "😈 Craving some sass? I can roast you. 👉 INSULTME"
-#define BOT_MENU9 \
-  "👼 Need guidance? Let me share some wisdom with you. 👉 ADVICE"
-#define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉 RANDOM"
+#define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
+#define BOT_MENU6 "🤣 Feeling down? I'll lift you up with a dad joke. 👉!JOKE"
+#define BOT_MENU7 "😈 Craving some sass? I can roast you. 👉!INSULTME"
+#define BOT_MENU8 "👼 Need guidance? Let me share some wisdom with you. 👉!ADVICE"
+#define BOT_MENU9 "🌤️ Wondering about the weather? Ask away. 👉!WEATHER <city name>"
+#define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉!RANDOM"
 
 // JOKE
 #define JOKE_CAT_1 "     /\\_/\\"
-#define JOKE_CAT_2 "    ( • o • )    Haha! What a joke!"
+#define JOKE_CAT_2 "    (• o •)    Haha! What a joke!"
 #define JOKE_CAT_3 "     > ^ < 🐾"
 
 // ADVICE
@@ -170,5 +173,5 @@ class Bot {
 #define DEFAULT_CAT_1 "     /\\_/\\"
 #define DEFAULT_CAT_2 "    ( o.o )   I'm confused!"
 #define DEFAULT_CAT_3 "     > ^ < 🐾"
-
+#define DEFAULT_CAT_4 " Try !MENU for a list of commands!
 #endif  // INCLUDES_BOT_HPP_

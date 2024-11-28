@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 13:59:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 15:39:09 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 16:57:56 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@ enum Command {
 
 enum eBotCommand {
   MENU,
-  NUMBERS,
   JOKE,
   INSULTME,
   ADVICE,
+  WEATHER,
   RANDOM_BOT_COMMAND,
   UNKNOWN_BOT_COMMAND
 };

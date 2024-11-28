@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 16:48:14 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:04:10 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,7 @@ void Bot::handleApiResponse(int fd) {
   std::deque<BotRequest>::iterator it = _requestDatas.begin();
   std::deque<BotRequest>::iterator itEnd = _requestDatas.end();
   for (; it != itEnd; ++it) {
-    std::cout << "command " << it->command << std::endl;
     if (it->fdForApi == fd) {
-      std::cout << "FOUND" << std::endl;
       break;
     }
   }
@@ -46,9 +44,9 @@ void Bot::handleApiResponse(int fd) {
     }
   }
   _requestDatas.erase(it);
-  Log::printLog(INFO_LOG, BOT_L,
+  Log::printLog(INFO_LOG, BOT_L, 
                 "Request removed from queue. Remaining requests count: " +
-                    toString(_requestDatas.size()));
+                toString(_requestDatas.size()));
 }
 
 void Bot::receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest) {
