@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 15:38:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 16:09:30 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,6 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
 void Bot::sendUnknownCommand(const BotRequest& newRequest) {
   std::ostringstream oss;
   oss << "PRIVMSG " << newRequest.clientNickname
-      << " :I don't know what you'd like to do with me" << "\r\n";
+      << " :Hmm, I'm not sure what you'd like me to do" << "\r\n";
   sendMessageToServer(oss.str());
 }
