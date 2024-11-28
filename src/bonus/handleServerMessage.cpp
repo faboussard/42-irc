@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 16:56:54 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:12:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void Bot::handleServerMessage(void) {
       menu(&newRequest);
       break;
     case WEATHER:
-      // weather(&newRequest);
+      weather(&newRequest);
       break;
     case JOKE:
       joke(&newRequest);

@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:31:27 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 16:56:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:34:52 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void Bot::menu(BotRequest *request) {
 }
 
 FILE *Bot::openCurl(BotRequest *request, std::string url) {
+  std::cout << "openCurl---> " << url << std::endl;
   std::string curlCommand = CURL;
   curlCommand += url;
 #ifdef DEBUG
@@ -84,28 +85,32 @@ void Bot::advice(BotRequest *request) {
   logApiRequest(request->fdForApi, ADVICEAPI_HOST);
 }
 
-// void Bot::weather(BotRequest *request) {
-//   // std::string apiKey = getenv("WEATHER_API_KEY");
-
+void Bot::weather(BotRequest *request) {
+  // std::string apiKey = getenv("WEATHER_API_KEY");
   
-//   std::string url = "\"https://api.weatherapi.com/v1/forecast.json?key=";
-//   std::cout << url << std::endl;
-//   url += apiKey;
-//  std::cout << url << std::endl;
-//   url += "&q=";
-//   std::cout << url << std::endl;
-//   url += request->arg;
-//   std::cout << url << std::endl;
-//   url += "&days=1&aqi=no&alerts=no\"";
-//   std::ostringstream oss;
-//   oss << WEATHER_URL1 << apiKey << WEATHER_URL2 << request->arg << WEATHER_URL3;
+  // std::string url = "https://api.weatherapi.com/v1/forecast.json?key=";
+  // std::cout << url << std::endl;
 
-//   // std::string url = "\"" + oss.str() + "\"";  // Add quotes around the entire URL
+  // std::string url2 = url + apiKey;
+  // std::cout << url2 << std::endl;
 
-//   openCurl(request, url);
-//   // Set timeout for API response ?
-//   logApiRequest(request->fdForApi, WEATHERAPI_HOST);
-// }
+  // std::string url3 = url2 + "&q=";
+  // std::cout << url3 << std::endl;
+
+  // std::string url4 = url3 + request->arg;
+  // std::cout << url4 << std::endl;
+
+  // std::string finalUrl = url4 + "&days=1&aqi=no&alerts=no";
+  // std::cout << finalUrl << std::endl;
+
+
+  // std::ostringstream oss;
+  // oss << WEATHER_URL1 << apiKey << WEATHER_URL2 << request->arg << WEATHER_URL3;
+
+  // openCurl(request, "\"" + finalUrl + "\"");
+  // Set timeout for API response ?
+  logApiRequest(request->fdForApi, WEATHERAPI_HOST);
+}
 
 // #define WEATHER_URL1 "\"https://api.weatherapi.com/v1/forecast.json?key="
 // #define WEATHER_URL2 "&q="
