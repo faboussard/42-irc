@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/19 13:52:01 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 18:32:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void Server::quitChannel(int fd, Channel *channel, Client *client) {
       channel->getChannelOperators().end()) {
     channel->removeOperator(client);
   }
-  broadcastInChannel(*client, *channel, "PART", "say goodbye!");
+  broadcastInChannelAndToSender(*client, *channel, "PART", "say goodbye!");
 }
 
 void Server::quitAllChannels(int fd) {
