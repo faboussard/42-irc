@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 11:31:57 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:21:46 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,10 +279,11 @@ void Server::broadcastInChannel(const Client &sender, const Channel &channel,
   const clientPMap &allClients = channel.getChannelClients();
   clientPMap::const_iterator itEnd = allClients.end();
   for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
-    if (it->first == sender.getFd() &&
+   Client *client = it->second;
+    if (client->getNickname() == sender.getNickname() &&
         (command == "PRIVMSG" || command == "JOIN"))
       continue;
-    it->second->receiveMessage(message);
+    client->receiveMessage(message);
   }
 }
 
