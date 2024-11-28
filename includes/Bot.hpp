@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 11:19:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:12:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,16 +133,15 @@ class Bot {
 #endif
 };
 
-#define BOT1 "  /\\_/\\"
-#define BOT2 " ( o.o )"
-#define BOT3 "─ U───U────────────────────────────────────────────────────────"
-#define BOT4 "         Hello! I'm IRCbot, what can I do for you?"
-#define BOT5 "────────────────────────────────────────────────────────── ♥ ──"
-#define BOT6 " NUMBERS <number>: Ask me about a number, get a fun fact (∞ᴗ∞)"
-#define BOT7 " JOKE: Feeling down? I'll lift you up with a dad joke (๑˃̵ᴗ˂̵)"
-#define BOT8 " INSULTME: Craving some sass? I can roast you (•̀ᴗ•́)و ̑̑"
-#define BOT9 " MOVIE <title>: Looking for a movie? Let me help you (｡•̀ᴗ-)✧"
-#define BOT10 ""
-#define BOT11 " RANDOM >> Bored? Let's spice it up with something fun (⊙_☉)"
+#define BOT_MENU1 "  /\\_/\\"
+#define BOT_MENU2 " ( o.o )"
+#define BOT_MENU3 "─ U───U────────────────────────────────────────────────────────"
+#define BOT_MENU4 "         Hello! I'm IRCbot, what can I do for you?"
+#define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
+#define BOT_MENU6 "🔢 Ask me about a number, get a fun fact. 👉 NUMBERS <number>"
+#define BOT_MENU7 "🤣 Feeling down? I'll lift you up with a dad joke. 👉 JOKE"
+#define BOT_MENU8 "😈 Craving some sass? I can roast you. 👉 INSULTME"
+#define BOT_MENU9 "👼 Need guidance? Let me share some wisdom with you. 👉 ADVICE"
+#define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉 RANDOM"
 
 #endif  // INCLUDES_BOT_HPP_

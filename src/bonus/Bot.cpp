@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 21:30:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:01:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,16 @@ Bot::Bot(int serverPort, const std::string &serverPass, int botPort)
       _serverPass(serverPass),
       _botPort(botPort),
       _botSocketFd(-1) {
-  _instructions.push_back(BOT1);
-  _instructions.push_back(BOT2);
-  _instructions.push_back(BOT3);
-  _instructions.push_back(BOT4);
-  _instructions.push_back(BOT5);
-  _instructions.push_back(BOT6);
-  _instructions.push_back(BOT7);
-  _instructions.push_back(BOT8);
-  _instructions.push_back(BOT9);
+  _instructions.push_back(BOT_MENU1);
+  _instructions.push_back(BOT_MENU2);
+  _instructions.push_back(BOT_MENU3);
+  _instructions.push_back(BOT_MENU4);
+  _instructions.push_back(BOT_MENU5);
+  _instructions.push_back(BOT_MENU6);
+  _instructions.push_back(BOT_MENU7);
+  _instructions.push_back(BOT_MENU8);
+  _instructions.push_back(BOT_MENU9);
+  _instructions.push_back(BOT_MENU10);
 }
 
 Bot::~Bot(void) { close(_botSocketFd); }
