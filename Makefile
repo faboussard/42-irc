@@ -26,8 +26,8 @@ HEADERS_LIST =  Server Config Client Channel Parser Log \
 SRCS = main Server Client Channel Parser Log Config \
        numericReplies messageManagement utils \
        pass nick user \
-	   invite join kick list mode part ping privmsg quit topic who \
-	   botCommands
+	   invite join kick list mode part ping privmsg quit topic who
+
 # ---------------------------------- Répertoires ----------------------------- #
 HEADERS_DIR = includes/
 OBJS_DIR = .objs/

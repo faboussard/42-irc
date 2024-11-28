@@ -6,16 +6,14 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 10:38:54 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 11:21:06 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <cerrno>
 #include <string>
 
 #include "../../includes/Bot.hpp"
 #include "../../includes/Log.hpp"
-#include "../../includes/Parser.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/utils.hpp"
 
@@ -57,6 +55,7 @@ void Bot::handleServerMessage(void) {
       sendUnknownCommand(newRequest);
       break;
     default:
+      break;
   }
 }
 
@@ -92,7 +91,7 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
 #ifdef DEBUG
   debugLogServerMessageSplit(clientNickname, commandStr, arg);
 #endif
-  commandStr.substr(1);
+  commandStr = commandStr.substr(1);
   strToUpper(&commandStr);
   BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr),
                         arg);

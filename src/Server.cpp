@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 09:14:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 11:31:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include <iostream>
 #include <string>
 
-#include "../includes/Bot.hpp"
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
@@ -76,7 +75,6 @@ void Server::runServer(void) {
   std::ostringstream oss;
   oss << "Server started on port " << _port;
   printLog(NOTIFY_LOG, SYSTEM, oss.str());
-  // _bot->runBot();
   acceptAndChat();
 }
 
@@ -179,7 +177,6 @@ void Server::closeServer(void) {
   shrink_to_fit(&_pollFds);
   _channels.clear();
   delete gConfig;
-  // delete _bot;
 }
 
 /*============================================================================*/
@@ -231,11 +228,6 @@ void Server::closeClient(int fd) {
     std::ostringstream oss;
     oss << "fd" << fd << ": Client disconnected";
     printLog(NOTIFY_LOG, SYSTEM, oss.str());
-  }
-  if (_clients.find(fd) != _clients.end()) {
-    // if (_clients[fd].getNickname() == BOT_NAME) {
-    //   _bot = NULL;
-    // }
   }
 }
 

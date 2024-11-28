@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 09:11:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 11:30:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,6 @@
 #include <utility>
 #include <vector>
 
-// class Bot;
-// struct BotRequest;
-
 #include "../includes/Channel.hpp"
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
@@ -58,8 +55,6 @@ typedef std::pair<std::vector<std::string>, std::vector<std::string> >
     StringVectorPair;
 
 extern Config *gConfig;
-
-#define BOT_NAME "ircbot"
 
 class Server {
  private:
@@ -223,35 +218,7 @@ class Server {
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
 
-  /* Bot */
-//  private:
-  // Client *_bot;
-  // void botCommands(Client *client, Command command, const std::string &arg);
-  // void sendRequestToBot(const Client &client, Command command,
-  //                       const std::string &arg);
 
-//   void addBot(void);
-
-//  public:
-
-
-// /*---------- OLD VERSION -----------------------------------------------*/
-//  private:
-//   Bot *_bot;
-//   std::vector<int> _botToApiSocketFds;  // --> will create Class BotRequest
-//   std::queue<std::string> _responsesFromBot;
-
-//  public:
-//   // void set_botToApiSocketFds(std::vector<int> *botToApiSocketFds);
-//   void addBotResponseToQueue(const std::string &response);
-//   void addBotSocketFdToPoll(int newFd);
-//   void removeApiSocketFdFromPoll(int soketFd);
-//   const std::vector<int> &getBotToApiSocketFds(void) const;
-
-//  private:
-//   void addBotToPoll(int pipeFdServerToBot, int pipeFdBotToServer);
-//   void sendBotInstruction(const Client &client);
-//   void handleBotResponse(int serverFdListenBot);
 
   /* Tests */
   // void addClient(int fd, const Client &client);

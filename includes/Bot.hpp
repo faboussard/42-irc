@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 10:39:17 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 11:19:56 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cstdio>
 #include <deque>
 #include <string>
 #include <vector>
@@ -90,17 +91,6 @@ class Bot {
   void runBot(void);
   static void signalHandler(int signal);
 
-  /* Getters */
-  // int getServerToBotPipe0(void) const;
-  // int getBotToServerPipe0(void) const;
-  // const stringVector &getInstructions(void) const;
-
-  /* Bot - IRC Server communication */
-  // void receiveRequestInQueue(BotRequest newRequest);
-
-  /* Bot - API Servers communication */
-  void handleApiResponse(int fd);  // receive, parse, send
-
  private:
   /* Bot launch */
   void createSocket(void);
@@ -109,18 +99,12 @@ class Bot {
   bool authenticate(void);
   bool checkServerConneciion(void);
 
-  std::string readMessageFromServer(void);
-  void handleServerMessage(void);  // receive, parse, send
-  bool sendMessageToServer(const std::string &message);
-
   /* Requests handling */
+  void handleServerMessage(void);
+  std::string readMessageFromServer(void);
+  bool sendMessageToServer(const std::string &message);
   BotRequest parseRequest(const std::string &requestBuffer);
   void sendUnknownCommand(const BotRequest& newRequest);
-
-  /* Responses handling */
-  void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
-  std::string parseResponse(std::deque<BotRequest>::iterator itRequest);
-  void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Commands handling */
   void menu(BotRequest *request);
@@ -129,6 +113,12 @@ class Bot {
   void insultMe(BotRequest *request);
   void advice(BotRequest *request);
   void randomCommand(BotRequest *request);
+
+  /* Responses handling */
+  void handleApiResponse(int fd);
+  void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
+  std::string parseResponse(std::deque<BotRequest>::iterator itRequest);
+  void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Log */
   void logcreatSocketForApi(void);
