@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 22:12:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 08:27:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,16 @@
 #define JOKE_URL "https://icanhazdadjoke.com/"
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
+
+enum eBotCommand {
+  MENU,
+  NUMBERS,
+  JOKE,
+  INSULTME,
+  ADVICE,
+  RAMDOM,
+  UNKNOWN
+};
 
 struct BotRequest {
   std::string clientNickname;

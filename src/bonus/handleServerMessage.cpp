@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 21:03:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 08:16:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include "../../includes/Bot.hpp"
 #include "../../includes/Log.hpp"
 #include "../../includes/Parser.hpp"
+
+// :yusengok PRIVMSG ircbot !insultme
 
 void Bot::handleServerMessage(void) {
     std::string requestBuffer = readMessageFromServer();
