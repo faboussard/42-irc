@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/25 16:16:21 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:07:44 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,7 +261,7 @@ class Server {
                              std::vector<std::string> *targets,
                              std::string *message);
 
-  bool validPrivmsgTargets(const std::string &arg, const Client &client,
+  bool validPrivmsgTargets(const Client &client,
                            stringVector *targets);
 
   /*-------- PING --------*/

@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/24 13:14:04 by fanny            ###   ########.fr       */
+/*   Updated: 2024/11/28 12:11:47 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ void Server::sendPrivmsgToClient(const Client &sender, const Client &receiver,
   receiver.receiveMessage(message);
 }
 
-bool Server::validPrivmsgTargets(const std::string &arg, const Client &client,
+bool Server::validPrivmsgTargets(const Client &client,
                                  stringVector *targets) {
-  size_t commaCount = std::count(arg.begin(), arg.end(), ',');
+  size_t TargetsSize = targets->size();
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "commaCount: " << commaCount;
+    oss << "targetSize: " << TargetsSize;
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
   {
@@ -40,11 +40,11 @@ bool Server::validPrivmsgTargets(const std::string &arg, const Client &client,
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
-  if (commaCount + 1 > gConfig->getLimit(MAXTARGETS)) {
+  if (TargetsSize > gConfig->getLimit(MAXTARGETS)) {
     send407TooManyTargets(client);
     return (false);
   }
-  if (commaCount != 0) {
+  if (TargetsSize > 1) {
     size_t chanOpPrefixCount = 0;
     size_t channelsCount = 0;
     size_t clientsCount = 0;
@@ -66,8 +66,8 @@ bool Server::validPrivmsgTargets(const std::string &arg, const Client &client,
       else
         clientsCount++;
     }
-    if (commaCount != 0 && channelsCount != commaCount + 1 &&
-        clientsCount != commaCount + 1 && chanOpPrefixCount != commaCount + 1) {
+    if (channelsCount != TargetsSize &&
+        clientsCount != TargetsSize && chanOpPrefixCount != TargetsSize) {
       send407TooManyTargets(client);
       return (false);
     }
@@ -111,7 +111,7 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
-  if (!validPrivmsgTargets(arg, client, targetsVector)) {
+  if (!validPrivmsgTargets(client, targetsVector)) {
     return (false);
   }
   return (true);
