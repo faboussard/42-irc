@@ -5,6 +5,10 @@
 {"location":{"name":"Lyon","region":"Rhone-Alpes","country":"France","lat":45.75,"lon":4.85,"tz_id":"Europe/Paris","localtime_epoch":1732802564,"localtime":"2024-11-28 15:02"},"current":{"last_updated_epoch":1732802400,"last_updated":"2024-11-28 15:00","temp_c":11.3,"temp_f":52.3,"is_day":1,"condition":{"text":"Light rain","icon":"//cdn.weatherapi.com/weather/64x64/day/296.png","code":1183},"wind_mph":2.2,"wind_kph":3.6,"wind_degree":31,"wind_dir":"NNE","pressure_mb":1026.0,"pressure_in":30.3,"precip_mm":0.01,"precip_in":0.0,"humidity":87,"cloud":75,"feelslike_c":11.7,"feelslike_f":53.0,"windchill_c":11.4,"windchill_f":52.5,"heatindex_c":10.9,"heatindex_f":51.6,"dewpoint_c":6.8,"dewpoint_f":44.3,"vis_km":10.0,"vis_miles":6.0,"uv":0.1,"gust_mph":2.8,"gust_kph":4.6}}
 
 
+curl 'https://api.weatherapi.com/v1/forecast.json?key=<key>&q=London&days=3&aqi=no&alerts=no'
+
+{"location":{"name":"London","region":"City of London, Greater London","country":"United Kingdom","lat":51.5171,"lon":-0.1062,"tz_id":"Europe/London","localtime_epoch":1732830701,"localtime":"2024-11-28 21:51"},"current":{},"forecast":{"forecastday":[{"date":"2024-11-28","day":{"condition":{"text":"Overcast ","code":1009}}},{"date":"2024-11-29","day":{"condition":{"text":"Sunny","code":1000}}},{"date":"2024-11-30","day":{"condition":{"text":"Overcast ","code":1009}}}]}}
+
 {
 	"location":{
 		"name":"Tokyo",
