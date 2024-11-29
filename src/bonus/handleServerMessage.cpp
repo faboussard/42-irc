@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 17:12:45 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:03:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void Bot::handleServerMessage(void) {
     return;
   BotRequest newRequest = parseRequest(requestBuffer);
 #ifdef DEBUG
-    debugLogParsedMessage(newRequest);
+  debugLogParsedMessage(newRequest);
 #endif
   switch (newRequest.command) {
     case MENU:
@@ -72,7 +72,7 @@ static eBotCommand selectCommand(const std::string& command) {
   } else if (command == "WEATHER") {
     return (WEATHER);
   } else if (command == "RANDOM") {
-    return (RANDOM_BOT_COMMAND);
+    // return (RANDOM_BOT_COMMAND);
   }
   return (UNKNOWN_BOT_COMMAND);
 }
@@ -82,15 +82,14 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   std::stringstream ss(requestBuffer);
   std::string clientNickname;
   std::string commandStr;
-  std::string arg;
+  // std::string arg;
   ss >> clientNickname >> commandStr >> commandStr >> commandStr;
-  std::getline(ss >> std::ws, arg);
+  // std::getline(ss >> std::ws, arg);
 #ifdef DEBUG
   debugLogServerMessageSplit(clientNickname, commandStr, arg);
 #endif
   commandStr = commandStr.substr(1);
   strToUpper(&commandStr);
-  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr),
-                        arg);
+  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr));
   return (newRequest);
 }

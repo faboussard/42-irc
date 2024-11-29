@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 13:59:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 14:49:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:01:11 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ enum eBotCommand {
   INSULTME,
   ADVICE,
   WEATHER,
-  RANDOM_BOT_COMMAND,
   UNKNOWN_BOT_COMMAND
 };
 

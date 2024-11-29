@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 11:15:40 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 10:41:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:03:44 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,18 +36,17 @@ void Bot::logApiResponse(int fd) {
 void Bot::debugLogServerMessageSplit(const std::string &clientNickname,
                                      const std::string &commandStr,
                                      const std::string &arg) {
-    std::ostringstream oss;
-    oss << "< SPLIT >: clientNickname: " CYAN << clientNickname
-        << RESET " | Bot command: " CYAN << commandStr << RESET " | Arg: " CYAN
-        << arg << RESET;
-    Log::printLog(DEBUG_LOG, PARSER, oss.str());
+  std::ostringstream oss;
+  oss << "< SPLIT >: clientNickname: " CYAN << clientNickname
+      << RESET " | Bot command: " CYAN << commandStr << RESET;
+  Log::printLog(DEBUG_LOG, PARSER, oss.str());
 }
 
 void Bot::debugLogParsedMessage(BotRequest request) {
   std::ostringstream oss;
   oss << "New request from " << request.clientNickname
-      << " | Command: " << request.command << " " << commandToString(request.command)
-      << " | Arg: " << request.arg;
+      << " | Command: " << request.command << " "
+      << commandToString(request.command);
   Log::printLog(DEBUG_LOG, PARSER, oss.str());
 }
 

@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 22:43:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:01:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,24 +51,21 @@
 // #define WEATHER_URL "wttr.in/Paris\?n"
 // curl 'wttr.in/Tokyo?format="%l:+%C'
 // curl 'wttr.in/Lyon?format=j1'
-#define WEATHER_URL1 "https://api.weatherapi.com/v1/forecast.json?key="
-#define WEATHER_URL2 "&q="
-#define WEATHER_URL3 "&days=1&aqi=no&alerts=no"
+#define WEATHER_URL1 "api.weatherapi.com/v1/forecast.json?key="
+#define WEATHER_URL2 "&q=lyon&days=3"
 
 struct BotRequest {
   std::string clientNickname;
   eBotCommand command;
-  std::string arg;
+  // std::string arg;
 
   int fdForApi;
   FILE *fpForApi;
   std::string apiResponse;
 
-  BotRequest(const std::string &nick, eBotCommand command,
-             const std::string &argument)
+  BotRequest(const std::string &nick, eBotCommand command)
       : clientNickname(nick),
         command(command),
-        arg(argument),
         fdForApi(-1),
         fpForApi(NULL),
         apiResponse("") {}
@@ -115,7 +112,7 @@ class Bot {
   void unknownCommand(const BotRequest& request);
 
   /* Commands handling */
-  FILE *openCurl(BotRequest *request, std::string url);
+  FILE *openCurl(BotRequest *request, const std::string &url);
   void menu(BotRequest *request);
   void joke(BotRequest *request);
   void insultMe(BotRequest *request);
