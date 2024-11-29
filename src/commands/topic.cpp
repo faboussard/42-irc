@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/21 13:08:32 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 18:33:45 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,5 +112,5 @@ void Server::updateTopic(const Client &client, Channel *channel,
   if (oldTopic.empty() && newTopic.empty())
     send331Notopic(client, *channel);
   else
-    broadcastInChannel(client, *channel, "TOPIC", newTopic);
+    broadcastInChannelExceptToSender(client, *channel, "TOPIC", newTopic);
 }

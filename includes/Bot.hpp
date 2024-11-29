@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Bot.cpp                                            :+:      :+:    :+:   */
+/*   Bot.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 09:01:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:26:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@
 #include "../includes/utils.hpp"
 
 #define LOCALHOST "127.0.0.1"
-#define BOT_NICK "ircbot"
-#define BOT_USER "ircbot 0 * :ircbot"
+#define BOT_NICK "kawaiBot"
+#define BOT_USER "kawaiBot 0 * :kawaiBot"
 #define PING_MSG "PING ft_irc\r\n"
 #define PONG_MSG "PONG ft_irc\r\n"
 
@@ -109,11 +109,15 @@ class Bot {
   std::string readMessageFromServer(void);
   bool sendMessageToServer(const std::string &message);
   BotRequest parseRequest(const std::string &requestBuffer);
-  void unknownCommand(const BotRequest& request);
+  std::string parseResponseByKey(const std::string &response,
+                                 const std::string &key);
+
+  /* Commands handling */
+  void sendAsciiCatByCommand(BotRequest *request, eBotCommand command);
+  void unknownCommand(BotRequest *request);
 
   /* Commands handling */
   FILE *openCurl(BotRequest *request, const std::string &url);
-  void menu(BotRequest *request);
   void joke(BotRequest *request);
   void insultMe(BotRequest *request);
   void advice(BotRequest *request);
@@ -122,7 +126,6 @@ class Bot {
   /* Responses handling */
   void handleApiResponse(int fd);
   void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
-  std::string parseResponse(std::deque<BotRequest>::iterator itRequest);
   void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Log */
@@ -131,16 +134,17 @@ class Bot {
   void logApiResponse(int fd);
 #ifdef DEBUG
   void debugLogServerMessageSplit(const std::string &clientNickname,
-                                     const std::string &commandStr,
-                                     const std::string &arg);
+                                  const std::string &commandStr);
   void debugLogParsedMessage(BotRequest request);
   void debugLogWaitingRequests(void);
 #endif
 };
 
+//MENU
 #define BOT_MENU1 "  /\\_/\\"
 #define BOT_MENU2 " ( o.o )"
-#define BOT_MENU3 "─ U───U────────────────────────────────────────────────────────"
+#define BOT_MENU3 \
+  "─ U───U────────────────────────────────────────────────────────"
 #define BOT_MENU4 "         Hello! I'm KawaiiBot, what can I do for you?"
 #define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
 #define BOT_MENU6 "🤣 Feeling down? I'll lift you up with a dad joke. 👉!JOKE"
@@ -149,4 +153,26 @@ class Bot {
 #define BOT_MENU9 "🌤️ Wondering about the weather? Ask away. 👉!WEATHER <city name>"
 #define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉!RANDOM"
 
+// JOKE
+#define JOKE_CAT_1 "     /\\_/\\"
+#define JOKE_CAT_2 "    (• o •)    Haha! What a joke!"
+#define JOKE_CAT_3 "     > ^ < 🐾"
+
+// ADVICE
+#define ADVICE_CAT_1 "     /\\_/\\"
+#define ADVICE_CAT_2 "    ( o.o )   Here's some wisdom:"
+#define ADVICE_CAT_3 "     > ^ <"
+#define ADVICE_CAT_4 "     || ||       *meow*"
+
+// INSULTME
+#define INSULTME_CAT_1 "     /\\_/\\"
+#define INSULTME_CAT_2 "    (>_< )   That was uncalled for!"
+#define INSULTME_CAT_3 "     > ^ <"
+#define INSULTME_CAT_4 "    (    )/   🐾"
+
+// DEFAULT / UNKNOWN
+#define DEFAULT_CAT_1 "     /\\_/\\"
+#define DEFAULT_CAT_2 "    ( o.o )   I'm confused!"
+#define DEFAULT_CAT_3 "     > ^ < 🐾"
+#define DEFAULT_CAT_4 " Try !MENU for a list of commands!"
 #endif  // INCLUDES_BOT_HPP_

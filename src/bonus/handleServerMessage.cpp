@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   handleServerMessage.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 09:03:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:27:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void Bot::handleServerMessage(void) {
 #endif
   switch (newRequest.command) {
     case MENU:
-      menu(&newRequest);
+      sendAsciiCatByCommand(&newRequest, MENU);
       break;
     case WEATHER:
       weather(&newRequest);
@@ -49,7 +49,7 @@ void Bot::handleServerMessage(void) {
       advice(&newRequest);
       break;
     case UNKNOWN_BOT_COMMAND:
-      unknownCommand(newRequest);
+      unknownCommand(&newRequest);
       break;
     default:
       break;
@@ -60,7 +60,12 @@ void Bot::handleServerMessage(void) {
 /*       Parse requests                                                       */
 /*============================================================================*/
 
+#include <cstdlib>
+#include <ctime>
+
 static eBotCommand selectCommand(const std::string& command) {
+  std::srand(std::time(NULL));
+
   if (command == "MENU") {
     return (MENU);
   } else if (command == "JOKE") {
@@ -72,7 +77,16 @@ static eBotCommand selectCommand(const std::string& command) {
   } else if (command == "WEATHER") {
     return (WEATHER);
   } else if (command == "RANDOM") {
-    // return (RANDOM_BOT_COMMAND);
+    // Randomly select JOKE, ADVICE, or INSULTME
+    int randomIndex = std::rand() % 3;
+    switch (randomIndex) {
+      case 0:
+        return (JOKE);
+      case 1:
+        return (ADVICE);
+      case 2:
+        return (INSULTME);
+    }
   }
   return (UNKNOWN_BOT_COMMAND);
 }
@@ -86,7 +100,7 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   ss >> clientNickname >> commandStr >> commandStr >> commandStr;
   // std::getline(ss >> std::ws, arg);
 #ifdef DEBUG
-  debugLogServerMessageSplit(clientNickname, commandStr, arg);
+  debugLogServerMessageSplit(clientNickname, commandStr);
 #endif
   commandStr = commandStr.substr(1);
   strToUpper(&commandStr);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/28 14:49:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:01:02 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,8 +128,6 @@ std::string commandToString(eBotCommand command) {
       return ("ADVICE");
     case WEATHER:
       return ("WEATHER");
-    case RANDOM_BOT_COMMAND:
-      return ("RANDOM");
     default:
       return ("UNKNOWN_BOT_COMMAND");
   }

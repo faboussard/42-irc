@@ -1,21 +1,21 @@
-/* Copyright 2024 <yusengok> ************************************************ */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   handleApiResponse.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 14:53:52 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:20:34 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cerrno>
 #include <deque>
 #include <string>
 
@@ -63,14 +63,40 @@ void Bot::receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest) {
 }
 
 void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
-  // std::string content = parseResponse(itRequest);
-  // if (content.empty()) return;
-
-  /* test */
-  std::string content = "Yeah, but you're ugly and confused.";
-
+    std::string content;
+  if (itRequest->command == ADVICE)
+    content = parseResponseByKey(itRequest->apiResponse, "advice");
+  else
+     content = itRequest->apiResponse;
+  #ifdef DEBUG
+    std::ostringstream oss;
+    oss << "Response to send: " << content;
+    Log::printLog(DEBUG_LOG, BOT_L, oss.str());
+  #endif
+  if (content.empty()) {
+    Log::printLog(ERROR_LOG, BOT_L, "Response is empty");
+    return;
+  }
   std::string response =
       "PRIVMSG " + itRequest->clientNickname + " :" + content + "\r\n";
   sendMessageToServer(response);
+  sendAsciiCatByCommand(&(*itRequest), itRequest->command);
   Log::printLog(INFO_LOG, BOT_L, "Response has to be sent to Server");
+}
+
+std::string Bot::parseResponseByKey(const std::string &response, const std::string &key)
+{
+    std::string keyPattern = "\"" + key + "\": \"";
+    std::size_t start = response.find(keyPattern);
+    if (start == std::string::npos)
+    {
+        return "I cannot find any advice for you !";
+    }
+    start += keyPattern.length();
+    std::size_t end = response.find("\"", start);
+    if (end == std::string::npos)
+    {
+        return "I cannot find any advice for you !";
+    }
+    return response.substr(start, end - start);
 }

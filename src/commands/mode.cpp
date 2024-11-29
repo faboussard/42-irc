@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/26 08:58:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/28 13:52:43 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,6 @@ void Server::mode(int fd, const std::string &arg) {
   }
   stringVector modestringVector = modestringAndArguments.first;
   stringVector modeArgumentsVector = modestringAndArguments.second;
-
   std::string errorModeString = checkModeString(modestringVector);
 
   if (!errorModeString.empty()) {
