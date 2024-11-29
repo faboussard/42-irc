@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 16:37:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/11/29 12:56:20 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ bool Bot::_signal = false;
 Bot::Bot(int serverPort, const std::string &serverPass, int botPort)
     : _nick(BOT_NICK),
       _user(BOT_USER),
-      _connectedToServer(false),
+      _passFailed(false),
+      _nickUnvailable(false),
       _serverPort(serverPort),
       _serverPass(serverPass),
       _botPort(botPort),
@@ -132,20 +133,43 @@ void Bot::connectToIrcServer(void) {
 }
 
 bool Bot::authenticate(void) {
-  if (!sendMessageToServer("PASS " + _serverPass + "\r\n") ||
-      !sendMessageToServer("NICK " + _nick + "\r\n") ||
-      !sendMessageToServer("USER " + _user + "\r\n")) {
-    Log::printLog(ERROR_LOG, BOT_L,
-                  "Failed to send authentication message to Server");
+  // if (!sendMessageToServer("PASS " + _serverPass + "\r\n") ||
+  //     !sendMessageToServer("NICK " + _nick + "\r\n") ||
+  //     !sendMessageToServer("USER " + _user + "\r\n")) {
+  //   Log::printLog(ERROR_LOG, BOT_L,
+  //                 "Failed to send authentication message to Server");
+  //   return (false);
+  // }
+  if (!sendMessageToServer("PASS " + _serverPass + "\r\n")) {
+    Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
     return (false);
   }
-  // check if authentication is successful ?
+  sleep(1);
+  readMessageFromServer();
+  if (_passFailed) {
+    Log::printLog(ERROR_LOG, BOT_L,
+                  "It seems I don't have a good key to IRC server");
+    return (false);
+  }
+  if (!sendMessageToServer("NICK " + _nick + "\r\n") ||
+      !sendMessageToServer("USER " + _user + "\r\n")) {
+    Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
+    return (false);
+  }
+  sleep(1);
+  readMessageFromServer();
+  if (_nickUnvailable) {
+    Log::printLog(
+        ERROR_LOG, BOT_L,
+        "Someone has stolen my nickname. I can't play with you. Bye.");
+    return (false);
+  }
 #ifdef DEBUG
   sendMessageToServer("PING :ft_irc\r\n");
+  // check 451 reply
 #endif
   return (true);
 }
-
 void Bot::listenToIrcServer(void) {
   struct pollfd newPoll;
   newPoll.fd = _botSocketFd;
@@ -166,19 +190,19 @@ void Bot::listenToIrcServer(void) {
       }
     }
     // if (!checkServerConneciion() && _signal == false) {
-    //     Log::printLog(ERROR_LOG, BOT_L, "Connection to IRC server interrupted");
-    //     return;
+    //     Log::printLog(ERROR_LOG, BOT_L, "Connection to IRC server
+    //     interrupted"); return;
     // }
     // Chec timeout of api response
   }
 }
 
-bool Bot::checkServerConneciion(void) {
-  _connectedToServer = false;
-  sendMessageToServer("PING :ft_irc\r\n");
-  sleep(1);
-  return (_connectedToServer);
-}
+// bool Bot::checkServerConneciion(void) {
+//   _connectedToServer = false;
+//   sendMessageToServer("PING :ft_irc\r\n");
+//   sleep(1);
+//   return (_connectedToServer);
+// }
 
 /*============================================================================*/
 /*       Communicate with Server                                              */
@@ -189,12 +213,17 @@ std::string Bot::readMessageFromServer(void) {
   char buffer[1024] = {0};
   std::memset(buffer, 0, sizeof(buffer));
   int valread = recv(_botSocketFd, buffer, sizeof(buffer), 0);
-  if (valread == -1)
-    throw std::runtime_error("Failed to receive message from IRC server");
-  // if (valread == 0)
-  //   return;
+  if (valread == -1) {
+    Log::printLog(DEBUG_LOG, BOT_L, "No message received from IRC server.");
+    return ("");
+  }
+  // throw std::runtime_error("Failed to receive message from IRC server");
+  if (valread == 0) return ("");
   buffer[valread] = '\0';
   newMessage += std::string(buffer, valread);
+  // handle numeric replies 464 433 451
+  if (newMessage.find("464") != std::string::npos) _passFailed = true;
+  if (newMessage.find("433") != std::string::npos) _nickUnvailable = true;
   return (newMessage);
 }
 

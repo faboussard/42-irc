@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 09:27:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 12:41:52 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,10 @@ void Bot::handleServerMessage(void) {
   std::string requestBuffer = readMessageFromServer();
   Log::printLog(DEBUG_LOG, BOT_L, "Received from Server: " + requestBuffer);
   if (requestBuffer.empty()) return;
-  if (requestBuffer == PONG_MSG) {
-    _connectedToServer = true;
-    return;
-  }
+  // if (requestBuffer == PONG_MSG) {
+  //   _connectedToServer = true;
+  //   return;
+  // }
   if (requestBuffer[0] != ':' ||
       requestBuffer.find("PRIVMSG") == std::string::npos)
     return;

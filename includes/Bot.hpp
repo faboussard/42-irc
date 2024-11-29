@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 09:33:18 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 12:38:46 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,9 @@ class Bot {
   static bool _signal;
   const std::string _nick;
   const std::string _user;
-  bool _connectedToServer;
+  bool _passFailed;
+  bool _nickUnvailable;
+  // bool _connectedToServer;
 
   stringVector _instructions;
 
