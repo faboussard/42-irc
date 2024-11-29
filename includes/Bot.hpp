@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 12:38:46 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 19:16:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,6 @@ class Bot {
   static bool _signal;
   const std::string _nick;
   const std::string _user;
-  bool _passFailed;
-  bool _nickUnvailable;
-  // bool _connectedToServer;
 
   stringVector _instructions;
 
@@ -104,7 +101,9 @@ class Bot {
   void connectToIrcServer(void);
   void listenToIrcServer(void);
   bool authenticate(void);
-  bool checkServerConneciion(void);
+  bool waitForPassAuthentication(int timeLimitInMs);
+  bool waitForNickValidation(int timeLimitInMs);
+  bool waitForConnectionMessage(int timeLimitInMs);
 
   /* Requests handling */
   void handleServerMessage(void);

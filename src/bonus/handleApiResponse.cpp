@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 09:20:34 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 19:18:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void Bot::handleApiResponse(int fd) {
   receiveResponseFromApi(it);
   sendResponseToServer(it);
 
-  // remove from pollfds
   std::vector<struct pollfd>::iterator itPollEnd = _botPollFds.end();
   for (std::vector<struct pollfd>::iterator itPoll = _botPollFds.begin();
        itPoll != itPollEnd; ++itPoll) {

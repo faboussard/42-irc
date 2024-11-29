@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 12:56:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/29 19:16:20 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ bool Bot::_signal = false;
 Bot::Bot(int serverPort, const std::string &serverPass, int botPort)
     : _nick(BOT_NICK),
       _user(BOT_USER),
-      _passFailed(false),
-      _nickUnvailable(false),
       _serverPort(serverPort),
       _serverPass(serverPass),
       _botPort(botPort),
@@ -90,6 +88,10 @@ void Bot::createSocket(void) {
   logcreatSocketForApi();
 }
 
+/*============================================================================*/
+/*       Connection to Server                                                 */
+/*============================================================================*/
+
 void Bot::connectToIrcServer(void) {
   struct addrinfo hints, *res;
   memset(&hints, 0, sizeof(hints));
@@ -129,47 +131,113 @@ void Bot::connectToIrcServer(void) {
                 "Connected to IRC server at fd " + toString(_botSocketFd));
   freeaddrinfo(res);
   if (!authenticate())
-    throw std::runtime_error("Failed to authenticate to IRC server");
+    throw std::runtime_error("");
 }
 
 bool Bot::authenticate(void) {
-  // if (!sendMessageToServer("PASS " + _serverPass + "\r\n") ||
-  //     !sendMessageToServer("NICK " + _nick + "\r\n") ||
-  //     !sendMessageToServer("USER " + _user + "\r\n")) {
-  //   Log::printLog(ERROR_LOG, BOT_L,
-  //                 "Failed to send authentication message to Server");
-  //   return (false);
-  // }
   if (!sendMessageToServer("PASS " + _serverPass + "\r\n")) {
     Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
     return (false);
   }
-  sleep(1);
-  readMessageFromServer();
-  if (_passFailed) {
-    Log::printLog(ERROR_LOG, BOT_L,
-                  "It seems I don't have a good key to IRC server");
+  if (!waitForPassAuthentication(2000))
     return (false);
-  }
-  if (!sendMessageToServer("NICK " + _nick + "\r\n") ||
-      !sendMessageToServer("USER " + _user + "\r\n")) {
+  if (!sendMessageToServer("NICK " + _nick + "\r\n")) {
     Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
     return (false);
   }
-  sleep(1);
-  readMessageFromServer();
-  if (_nickUnvailable) {
-    Log::printLog(
-        ERROR_LOG, BOT_L,
-        "Someone has stolen my nickname. I can't play with you. Bye.");
+  if (!waitForNickValidation(2000))
+    return (false);
+  if (!sendMessageToServer("USER " + _user + "\r\n")) {
+    Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
     return (false);
   }
-#ifdef DEBUG
-  sendMessageToServer("PING :ft_irc\r\n");
-  // check 451 reply
-#endif
+  if (!waitForConnectionMessage(5000))
+    return (false);
   return (true);
 }
+
+bool Bot::waitForPassAuthentication(int timeLimitInMs) {
+  Log::printLog(INFO_LOG, BOT_L, "Waiting for password authentication");
+  struct pollfd fd;
+  fd.fd = _botSocketFd;
+  fd.events = POLLIN;
+  int pollRet = poll(&fd, 1, timeLimitInMs);
+  if (pollRet == -1) {
+    Log::printLog(ERROR_LOG, BOT_L,
+                  "Failed to poll for server response: " +
+                      std::string(strerror(errno)));
+    return (false);
+  } if (pollRet == 0) {
+    Log::printLog(INFO_LOG, BOT_L, "Password authentication successful");
+    return (true);
+  } else {
+    std::string message = readMessageFromServer();
+    if (message.find("464") != std::string::npos) {
+      Log::printLog(ERROR_LOG, BOT_L,
+                  "It seems I don't have a good key to IRC server");
+      return (false);
+    }
+  }
+  Log::printLog(INFO_LOG, BOT_L, "Password authentication successful");
+  return (true);
+}
+
+bool Bot::waitForNickValidation(int timeLimitInMs) {
+  Log::printLog(INFO_LOG, BOT_L, "Waiting for nickname and username validation");
+  struct pollfd fd;
+  fd.fd = _botSocketFd;
+  fd.events = POLLIN;
+  int pollRet = poll(&fd, 1, timeLimitInMs);
+  if (pollRet == -1) {
+    Log::printLog(ERROR_LOG, BOT_L,
+                  "Failed to poll for server response: " +
+                      std::string(strerror(errno)));
+    return (false);    
+  }
+  if (pollRet && fd.revents & POLLIN) {
+    std::string message = readMessageFromServer();
+    if (message.find("433") != std::string::npos) {
+      Log::printLog(ERROR_LOG, BOT_L,
+                  "Someone has stolen my nickname. I can't connect to IRC server. Bye.");
+      return (false);
+    }
+  }
+  Log::printLog(INFO_LOG, BOT_L, "Nickname validation successful");
+  return (true);
+}
+
+bool Bot::waitForConnectionMessage(int timeLimitInMs) {
+  struct pollfd fd;
+  fd.fd = _botSocketFd;
+  fd.events = POLLIN;
+  int totalWaitTime = 0;
+  const int pollInterval = 100;
+
+  while (totalWaitTime < timeLimitInMs) {
+    int pollRet = poll(&fd, 1, pollInterval);
+    if (pollRet == -1) {
+      Log::printLog(ERROR_LOG, BOT_L,
+                    "Failed to poll for server response: " +
+                    std::string(strerror(errno)));
+      return (false);  
+    }
+    if (pollRet > 0 && (fd.revents & POLLIN)) {
+      std::string message = readMessageFromServer();
+      if (message.find("005") != std::string::npos) {
+        Log::printLog(INFO_LOG, BOT_L, "Registration to IRC server successful");
+        return true;
+      }
+    }
+    totalWaitTime += pollInterval;
+  }
+  Log::printLog(ERROR_LOG, BOT_L, "Registration attempt timeout");
+  return (false);
+}
+
+/*============================================================================*/
+/*       Listen to Server                                                     */
+/*============================================================================*/
+
 void Bot::listenToIrcServer(void) {
   struct pollfd newPoll;
   newPoll.fd = _botSocketFd;
@@ -189,20 +257,8 @@ void Bot::listenToIrcServer(void) {
           handleApiResponse(_botPollFds[i].fd);
       }
     }
-    // if (!checkServerConneciion() && _signal == false) {
-    //     Log::printLog(ERROR_LOG, BOT_L, "Connection to IRC server
-    //     interrupted"); return;
-    // }
-    // Chec timeout of api response
   }
 }
-
-// bool Bot::checkServerConneciion(void) {
-//   _connectedToServer = false;
-//   sendMessageToServer("PING :ft_irc\r\n");
-//   sleep(1);
-//   return (_connectedToServer);
-// }
 
 /*============================================================================*/
 /*       Communicate with Server                                              */
@@ -210,20 +266,16 @@ void Bot::listenToIrcServer(void) {
 
 std::string Bot::readMessageFromServer(void) {
   std::string newMessage = "";
-  char buffer[1024] = {0};
+  char buffer[512] = {0};
   std::memset(buffer, 0, sizeof(buffer));
   int valread = recv(_botSocketFd, buffer, sizeof(buffer), 0);
   if (valread == -1) {
-    Log::printLog(DEBUG_LOG, BOT_L, "No message received from IRC server.");
+    Log::printLog(DEBUG_LOG, BOT_L, "There is no message received from IRC server.");
     return ("");
   }
-  // throw std::runtime_error("Failed to receive message from IRC server");
   if (valread == 0) return ("");
   buffer[valread] = '\0';
   newMessage += std::string(buffer, valread);
-  // handle numeric replies 464 433 451
-  if (newMessage.find("464") != std::string::npos) _passFailed = true;
-  if (newMessage.find("433") != std::string::npos) _nickUnvailable = true;
   return (newMessage);
 }
 
