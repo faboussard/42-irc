@@ -103,7 +103,7 @@ debug_bot: clean create_dirs_bot ${NAME_BOT}
 
 valgrind_bot: debug_bot
 				valgrind --track-fds=yes --leak-check=full \
-				--show-leak-kinds=all -s ./${NAME_BOT} 6667 pass 6668
+				--show-leak-kinds=all -s ./${NAME_BOT} 6667 pass
 
 # ---------------------------------- Tests ----------------------------------- #
 testnumericr: CFLAGS += -DTESTNUMERICR

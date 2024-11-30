@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 15:23:50 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 20:39:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 #define WEATHERAPI_HOST "weatherapi.com"
 
 #define CURL "curl -s "  // -s for silent mode
-// #define JOKE_URL "https://icanhazdadjoke.com/"
+#define JOKE_URL "https://icanhazdadjoke.com/"
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 #define ADVICE_URL "https://api.adviceslip.com/advice"
@@ -53,7 +53,7 @@
 // curl 'wttr.in/Lyon?format=j1'
 #define WEATHER_URL1 "api.weatherapi.com/v1/forecast.json?key="
 #define WEATHER_URL2 "&q=lyon&days=3"
-#define JOKE_URL "https://httpbin.org/delay/50"  // Timeout check 
+// #define JOKE_URL "https://httpbin.org/delay/50"  // Timeout check 
 
 struct BotRequest {
   std::string clientNickname;
@@ -91,13 +91,12 @@ class Bot {
   const std::string _serverPass;
 
   /* Bot-IRC Server communication */
-  int _botPort;
   int _botSocketFd;
   std::vector<struct pollfd> _botPollFds;
   std::deque<BotRequest> _requestDatas;
 
  public:
-  explicit Bot(int serverPort, const std::string &serverPass, int botPort);
+  explicit Bot(int serverPort, const std::string &serverPass);
   ~Bot(void);
 
   void runBot(void);
