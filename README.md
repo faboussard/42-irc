@@ -15,8 +15,7 @@ You have to call it with the following syntax:
 
 in a terminal:
 ```
-Make bot
-./ircbot 6667 pass 6668
+make run_bot SRV_PORT=6667 SRV_PASS=pass BOT_PORT=6668
 ```
 
 in HexChat:
