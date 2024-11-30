@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 15:23:50 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 20:11:42 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@
 #define WEATHERAPI_HOST "weatherapi.com"
 
 #define CURL "curl -s "  // -s for silent mode
-// #define JOKE_URL "https://icanhazdadjoke.com/"
+#define JOKE_URL "https://icanhazdadjoke.com/"
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 #define ADVICE_URL "https://api.adviceslip.com/advice"
@@ -52,8 +52,9 @@
 // curl 'wttr.in/Tokyo?format="%l:+%C'
 // curl 'wttr.in/Lyon?format=j1'
 #define WEATHER_URL1 "api.weatherapi.com/v1/forecast.json?key="
-#define WEATHER_URL2 "&q=lyon&days=3"
-#define JOKE_URL "https://httpbin.org/delay/50"  // Timeout check 
+#define WEATHER_URL2 "&q=lyon&days=2"
+#define DEFAULT_CITY "lyon"
+// #define JOKE_URL "https://httpbin.org/delay/50"  // Timeout check 
 
 struct BotRequest {
   std::string clientNickname;
@@ -80,13 +81,6 @@ class Bot {
   const std::string _nick;
   const std::string _user;
 
-  stringVector _instructions;
-  stringVector _jokeCat;
-  stringVector _adviceCat;
-  stringVector _insultMeCat;
-  stringVector _unknownCat;
-  stringVector _timeoutCat;
-
   int _serverPort;
   const std::string _serverPass;
 
@@ -95,6 +89,21 @@ class Bot {
   int _botSocketFd;
   std::vector<struct pollfd> _botPollFds;
   std::deque<BotRequest> _requestDatas;
+
+  /* Ascii cats */
+  stringVector _instructions;
+  stringVector _jokeCat;
+  stringVector _adviceCat;
+  stringVector _insultMeCat;
+  stringVector _sunnyCat;
+  stringVector _cloudyCat;
+  stringVector _foggyCat;
+  stringVector _rainyCat;
+  stringVector _snowyCat;
+  stringVector _thunderCat;
+  stringVector _frostyCat;
+  stringVector _unknownCat;
+  stringVector _timeoutCat;
 
  public:
   explicit Bot(int serverPort, const std::string &serverPass, int botPort);
@@ -129,7 +138,7 @@ class Bot {
   FILE *openCurl(BotRequest *request, const std::string &url);
   void sendAsciiCatByCommand(BotRequest *request, eBotCommand command);
   void unknownCommand(BotRequest *request);
-  void sendAsciiCatTimeout(BotRequest *request);
+  void sendAsciiCatServiceUnavailable(BotRequest *request);
 
   void joke(BotRequest *request);
   void insultMe(BotRequest *request);
@@ -153,52 +162,5 @@ class Bot {
   void debugLogWaitingRequests(void);
 #endif
 };
-
-//MENU
-#define BOT_MENU1 "  /\\_/\\"
-#define BOT_MENU2 " ( o.o )"
-#define BOT_MENU3 \
-  "─ U───U────────────────────────────────────────────────────────"
-#define BOT_MENU4 "         Hello! I'm KawaiiBot, what can I do for you?"
-#define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
-#define BOT_MENU6 "🤣 Feeling down? I'll lift you up with a dad joke. 👉!JOKE"
-#define BOT_MENU7 "😈 Craving some sass? I can roast you. 👉!INSULTME"
-#define BOT_MENU8 "👼 Need guidance? Let me share some wisdom with you. 👉!ADVICE"
-#define BOT_MENU9 "🌤️ Wondering about the weather? Ask away. 👉!WEATHER <city name>"
-#define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉!RANDOM"
-#define BOT_MENU {BOT_MENU1, BOT_MENU2, BOT_MENU3, BOT_MENU4, BOT_MENU5, BOT_MENU6, BOT_MENU7, BOT_MENU8, BOT_MENU9, BOT_MENU10}
-
-// JOKE
-#define JOKE_CAT_1 "     /\\_/\\"
-#define JOKE_CAT_2 "    (• o •)    Haha! What a joke!"
-#define JOKE_CAT_3 "     > ^ < 🐾"
-#define JOKE_CAT {JOKE_CAT_1, JOKE_CAT_2, JOKE_CAT_3}
-
-// ADVICE
-#define ADVICE_CAT_1 "     /\\_/\\"
-#define ADVICE_CAT_2 "    ( o.o )   Here's some wisdom:"
-#define ADVICE_CAT_3 "     > ^ <"
-#define ADVICE_CAT_4 "     || ||       *meow*"
-#define ADVICE_CAT {ADVICE_CAT_1, ADVICE_CAT_2, ADVICE_CAT_3, ADVICE_CAT_4}
-
-// INSULTME
-#define INSULTME_CAT_1 "     /\\_/\\"
-#define INSULTME_CAT_2 "    (>_< )   That was uncalled for!"
-#define INSULTME_CAT_3 "     > ^ <"
-#define INSULTME_CAT_4 "    (    )/   🐾"
-#define INSULTME_CAT {INSULTME_CAT_1, INSULTME_CAT_2, INSULTME_CAT_3, INSULTME_CAT_4}
-
-// DEFAULT / UNKNOWN
-#define DEFAULT_CAT_1 "     /\\_/\\"
-#define DEFAULT_CAT_2 "    ( o.o )   I'm confused!"
-#define DEFAULT_CAT_3 "     > ^ < 🐾"
-#define DEFAULT_CAT_4 " Try !MENU for a list of commands!"
-#define DEFAULT_CAT {DEFAULT_CAT_1, DEFAULT_CAT_2, DEFAULT_CAT_3, DEFAULT_CAT_4}
-
-// TIMEOUT
-#define TIMEOUT_CAT_1 "    /\\_/\\"
-#define TIMEOUT_CAT_2 "   ( -_- )   Zzz... Sorry, temporarily unavailable."
-#define TIMEOUT_CAT_3 "    > ^ <"
-#define TIMEOUT_CAT {TIMEOUT_CAT_1, TIMEOUT_CAT_2, TIMEOUT_CAT_3}
 
 #endif  // INCLUDES_BOT_HPP_

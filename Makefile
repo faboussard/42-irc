@@ -75,7 +75,7 @@ valgrind: debug
 
 # ---------------------------------- Bot ------------------------------------- #
 NAME_BOT = ircbot
-HEADERS_LIST_BOT = Bot Parser Log utils colors enums
+HEADERS_LIST_BOT = Bot Parser Log asciiCats utils colors enums
 SRCS_BOT = mainBot Bot botLog handleServerMessage handleApiResponse processCommands \
 		   Parser Log utils
 
@@ -87,6 +87,10 @@ HEADERS_BOT = ${addprefix ${HEADERS_DIR}, ${addsuffix .hpp, ${HEADERS_LIST_BOT}}
 create_dirs_bot:
 	@${MKDIR} ${OBJS_DIR_BOT}
 
+run_bot: bot
+	source ./set_env.sh && ./${NAME_BOT} ${SRV_PORT} ${SRV_PASS} ${BOT_PORT}
+
+bot: ${MAKE} set_env
 bot: CFLAGS += -DBOT
 bot: create_dirs_bot ${NAME_BOT}
 
@@ -102,8 +106,8 @@ debug_bot: CFLAGS += -DDEBUG -g3
 debug_bot: clean create_dirs_bot ${NAME_BOT}
 
 valgrind_bot: debug_bot
-				valgrind --track-fds=yes --leak-check=full \
-				--show-leak-kinds=all -s ./${NAME_BOT} 6667 pass 6668
+				source ./set_env.sh && valgrind --track-fds=yes --leak-check=full \
+				--show-leak-kinds=all -s ./${NAME_BOT} SRV_PORT=6667 SRV_PASS=pass BOT_PORT=6668
 
 # ---------------------------------- Tests ----------------------------------- #
 testnumericr: CFLAGS += -DTESTNUMERICR
@@ -115,10 +119,17 @@ testlist: fclean ${OBJS_DIR} ${NAME}
 # ---------------------------------- Clean ----------------------------------- #
 clean:
 	${RMDIR} ${OBJS_DIR}
+	@${MAKE} clean_bot
+
+clean_bot:
+	${RM} set_env
 	${RMDIR} ${OBJS_DIR_BOT}
 
 fclean: clean
 	${RM} ${NAME}
+	@${MAKE} fclean_bot
+
+fclean_bot: clean_bot
 	${RM} ${NAME_BOT}
 
 re: fclean all

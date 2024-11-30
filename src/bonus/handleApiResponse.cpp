@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 19:18:00 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 17:20:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,13 +89,13 @@ std::string Bot::parseResponseByKey(const std::string &response, const std::stri
     std::size_t start = response.find(keyPattern);
     if (start == std::string::npos)
     {
-        return "I cannot find any advice for you !";
+        return ("I cannot find any advice for you !");
     }
     start += keyPattern.length();
     std::size_t end = response.find("\"", start);
     if (end == std::string::npos)
     {
-        return "I cannot find any advice for you !";
+        return ("I cannot find any advice for you !");
     }
     return response.substr(start, end - start);
 }

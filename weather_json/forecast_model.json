@@ -1,0 +1,29 @@
+{
+	"location":{
+		"name":"Lyon","region":"Rhone-Alpes","country":"France","lat":45.75,"lon":4.85,"tz_id":"Europe/Paris","localtime_epoch":1732982831,"localtime":"2024-11-30 17:07"},
+	"current":{},
+	"forecast":{
+		"forecastday":[
+			{
+			"date":"2024-11-30","day":
+				{
+				"condition":
+					{
+					"text":"Sunny",
+					"code":1000
+					}
+				}
+			},
+			{
+			"date":"2024-12-01","day":
+				{
+				"condition":
+					{
+					"text":"Sunny",
+					"code":1000
+					}
+				}
+			}
+		]
+	}
+}

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 15:25:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 19:22:42 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include "../../includes/asciiCats.hpp"
 #include "../../includes/Log.hpp"
 
 /*============================================================================*/
@@ -53,6 +54,21 @@ void Bot::constructAsciiCats(void) {
 
   const char* insultMeCat[] = INSULTME_CAT;
   _insultMeCat.assign(insultMeCat, insultMeCat + sizeof(insultMeCat) / sizeof(insultMeCat[0]));
+
+  const char* sunnyCat[] = SUNNY_CAT;
+  _sunnyCat.assign(sunnyCat, sunnyCat + sizeof(sunnyCat) / sizeof(sunnyCat[0]));
+  const char* cloudyCat[] = CLOUDY_CAT;
+  _cloudyCat.assign(cloudyCat, cloudyCat + sizeof(cloudyCat) / sizeof(cloudyCat[0]));
+  const char* foggyCat[] = FOGGY_CAT;
+  _foggyCat.assign(foggyCat, foggyCat + sizeof(foggyCat) / sizeof(foggyCat[0]));
+  const char* rainyCat[] = RAINY_CAT;
+  _rainyCat.assign(rainyCat, rainyCat + sizeof(rainyCat) / sizeof(rainyCat[0]));
+  const char* snowyCat[] = SNOWY_CAT;
+  _snowyCat.assign(snowyCat, snowyCat + sizeof(snowyCat) / sizeof(snowyCat[0]));
+  const char* thunderCat[] = THUNDER_CAT;
+  _thunderCat.assign(thunderCat, thunderCat + sizeof(thunderCat) / sizeof(thunderCat[0]));
+  const char* frostyCat[] = FROSTY_CAT;
+  _frostyCat.assign(frostyCat, frostyCat + sizeof(frostyCat) / sizeof(frostyCat[0]));
 
   const char* unknownCat[] = DEFAULT_CAT;
   _unknownCat.assign(unknownCat, unknownCat + sizeof(unknownCat) / sizeof(unknownCat[0]));
@@ -290,7 +306,7 @@ void Bot::listenToIrcServer(void) {
             break;
           }
         }
-        sendAsciiCatTimeout(&(*it));
+        sendAsciiCatServiceUnavailable(&(*it));
         logApiTimeout(it->fdForApi, it->command);
         it = _requestDatas.erase(it);
       }
