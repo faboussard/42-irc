@@ -87,10 +87,6 @@ HEADERS_BOT = ${addprefix ${HEADERS_DIR}, ${addsuffix .hpp, ${HEADERS_LIST_BOT}}
 create_dirs_bot:
 	@${MKDIR} ${OBJS_DIR_BOT}
 
-run_bot: bot
-	source ./set_env.sh && ./${NAME_BOT} ${SRV_PORT} ${SRV_PASS}
-
-bot: ${MAKE} set_env
 bot: CFLAGS += -DBOT
 bot: create_dirs_bot ${NAME_BOT}
 
@@ -100,6 +96,9 @@ ${NAME_BOT}: ${OBJS_BOT} Makefile
 ${OBJS_DIR_BOT}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR_BOT}
 	${C} ${CFLAGS} ${INCLUDES_BOT} -c $< -o $@
 
+run_bot: bot
+	source ./set_env.sh && ./${NAME_BOT} ${PORT} ${PASS}
+
 debug_bot: CFLAGS := ${filter-out -Werror, ${CFLAGS}}
 debug_bot: C = g++
 debug_bot: CFLAGS += -DDEBUG -g3
@@ -107,14 +106,7 @@ debug_bot: clean create_dirs_bot ${NAME_BOT}
 
 valgrind_bot: debug_bot
 				source ./set_env.sh && valgrind --track-fds=yes --leak-check=full \
-				--show-leak-kinds=all -s ./${NAME_BOT} SRV_PORT=6667 SRV_PASS=pass
-
-# ---------------------------------- Tests ----------------------------------- #
-testnumericr: CFLAGS += -DTESTNUMERICR
-testnumericr: fclean ${OBJS_DIR} ${NAME}
-
-testlist: CFLAGS += -g3 -DTESTLIST
-testlist: fclean ${OBJS_DIR} ${NAME}
+				--show-leak-kinds=all -s ./${NAME_BOT} PORT=6667 PASS=pass
 
 # ---------------------------------- Clean ----------------------------------- #
 clean:
@@ -134,5 +126,12 @@ fclean_bot: clean_bot
 
 re: fclean all
 
+# ---------------------------------- Tests ----------------------------------- #
+testnumericr: CFLAGS += -DTESTNUMERICR
+testnumericr: fclean ${OBJS_DIR} ${NAME}
+
+testlist: CFLAGS += -g3 -DTESTLIST
+testlist: fclean ${OBJS_DIR} ${NAME}
+
 # ---------------------------------- Phony ----------------------------------- #
-.PHONY: all clean fclean re debug fsanitize valgrind fsan
+.PHONY: all clean fclean re debug valgrind fsan bot run_bot debug_bot valgrind_bot clean_bot fclean_bot

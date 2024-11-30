@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 18:20:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 18:38:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 23:16:10 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,12 @@
 #define FROSTY_CAT_2 "    ( >_< )   Frosty morning tomorrow!"
 #define FROSTY_CAT_3 "     > ^ < ❄️"
 #define FROSTY_CAT {FROSTY_CAT_1, FROSTY_CAT_2, FROSTY_CAT_3}
+
+#define UNKNOWN_WEATHER_CAT_1 "     /\\_/\\"
+#define UNKNOWN_WEATHER_CAT_2 "    ( o_O )   Hmm... I’m not sure what’s coming"
+#define UNKNOWN_WEATHER_CAT_3 "     > ^ < ❓"
+#define UNKNOWN_WEATHER_CAT {UNKNOWN_WEATHER_CAT_1, UNKNOWN_WEATHER_CAT_2, UNKNOWN_WEATHER_CAT_3}
+
 
 // DEFAULT / UNKNOWN
 #define DEFAULT_CAT_1 "     /\\_/\\"

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 20:48:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 23:17:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,9 @@ void Bot::constructAsciiCats(void) {
   _thunderCat.assign(thunderCat, thunderCat + sizeof(thunderCat) / sizeof(thunderCat[0]));
   const char* frostyCat[] = FROSTY_CAT;
   _frostyCat.assign(frostyCat, frostyCat + sizeof(frostyCat) / sizeof(frostyCat[0]));
+  const char* unknownWeatherCat[] = UNKNOWN_WEATHER_CAT;
+  _unknownWeatherCat.assign(unknownWeatherCat, unknownWeatherCat + sizeof(unknownWeatherCat) / sizeof(unknownWeatherCat[0]));
+
 
   const char* unknownCat[] = DEFAULT_CAT;
   _unknownCat.assign(unknownCat, unknownCat + sizeof(unknownCat) / sizeof(unknownCat[0]));

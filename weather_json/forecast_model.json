@@ -1,26 +1,39 @@
 {
-	"location":{
-		"name":"Lyon","region":"Rhone-Alpes","country":"France","lat":45.75,"lon":4.85,"tz_id":"Europe/Paris","localtime_epoch":1732982831,"localtime":"2024-11-30 17:07"},
+	"location":
+	{
+		"name":"Lyon",
+		"region":"Rhone-Alpes",
+		"country":"France",
+		"lat":45.75,
+		"lon":4.85,
+		"tz_id":"Europe/Paris",
+		"localtime_epoch":1732996799,
+		"localtime":"2024-11-30 20:59"
+	},
 	"current":{},
-	"forecast":{
-		"forecastday":[
+	"forecast":
+	{
+		"forecastday":
+		[
 			{
-			"date":"2024-11-30","day":
+				"date":"2024-11-30",
+				"day":
 				{
-				"condition":
+					"condition":
 					{
-					"text":"Sunny",
-					"code":1000
+						"text":"Sunny",
+						"code":1000
 					}
 				}
 			},
 			{
-			"date":"2024-12-01","day":
+				"date":"2024-12-01",
+				"day":
 				{
-				"condition":
+					"condition":
 					{
-					"text":"Sunny",
-					"code":1000
+						"text":"Sunny",
+						"code":1000
 					}
 				}
 			}

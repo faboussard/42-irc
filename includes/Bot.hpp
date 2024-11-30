@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 20:47:44 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 23:16:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@
 #define WEATHER_URL1 "api.weatherapi.com/v1/forecast.json?key="
 #define WEATHER_URL2 "&q=lyon&days=2"
 #define DEFAULT_CITY "lyon"
+#define SNOWY_CODES {"1114", "1117", "1216", "1219", "1222", "1225", "1279", "1282"}
+
 // #define JOKE_URL "https://httpbin.org/delay/50"  // Timeout check 
 
 struct BotRequest {
@@ -101,6 +103,7 @@ class Bot {
   stringVector _snowyCat;
   stringVector _thunderCat;
   stringVector _frostyCat;
+  stringVector _unknownWeatherCat;
   stringVector _unknownCat;
   stringVector _timeoutCat;
 
@@ -132,12 +135,15 @@ class Bot {
   BotRequest parseRequest(const std::string &requestBuffer);
   std::string parseResponseByKey(const std::string &response,
                                  const std::string &key);
+  eForecast parseJsonWeatherResponse(const std::string &apiResponse);
 
   /* Commands handling */
   FILE *openCurl(BotRequest *request, const std::string &url);
   void sendAsciiCatByCommand(BotRequest *request, eBotCommand command);
   void unknownCommand(BotRequest *request);
   void sendAsciiCatServiceUnavailable(BotRequest *request);
+  void sendAsciiCatForecast(const std::string &nick, eForecast forecast);
+  void sendAsciiCat(const std::string &nick, const stringVector &cat);
 
   void joke(BotRequest *request);
   void insultMe(BotRequest *request);
