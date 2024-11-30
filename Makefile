@@ -88,7 +88,7 @@ create_dirs_bot:
 	@${MKDIR} ${OBJS_DIR_BOT}
 
 run_bot: bot
-	source ./set_env.sh && ./${NAME_BOT} ${SRV_PORT} ${SRV_PASS} ${BOT_PORT}
+	source ./set_env.sh && ./${NAME_BOT} ${SRV_PORT} ${SRV_PASS}
 
 bot: ${MAKE} set_env
 bot: CFLAGS += -DBOT
@@ -107,7 +107,7 @@ debug_bot: clean create_dirs_bot ${NAME_BOT}
 
 valgrind_bot: debug_bot
 				source ./set_env.sh && valgrind --track-fds=yes --leak-check=full \
-				--show-leak-kinds=all -s ./${NAME_BOT} SRV_PORT=6667 SRV_PASS=pass BOT_PORT=6668
+				--show-leak-kinds=all -s ./${NAME_BOT} SRV_PORT=6667 SRV_PASS=pass
 
 # ---------------------------------- Tests ----------------------------------- #
 testnumericr: CFLAGS += -DTESTNUMERICR

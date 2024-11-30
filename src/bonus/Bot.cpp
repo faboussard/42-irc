@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 19:22:42 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 20:48:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,11 @@
 
 bool Bot::_signal = false;
 
-Bot::Bot(int serverPort, const std::string &serverPass, int botPort)
+Bot::Bot(int serverPort, const std::string &serverPass)
     : _nick(BOT_NICK),
       _user(BOT_USER),
       _serverPort(serverPort),
       _serverPass(serverPass),
-      _botPort(botPort),
       _botSocketFd(-1) {
   constructInstruction();
   constructAsciiCats();

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 20:11:42 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 20:47:44 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,6 @@ class Bot {
   const std::string _serverPass;
 
   /* Bot-IRC Server communication */
-  int _botPort;
   int _botSocketFd;
   std::vector<struct pollfd> _botPollFds;
   std::deque<BotRequest> _requestDatas;
@@ -106,7 +105,7 @@ class Bot {
   stringVector _timeoutCat;
 
  public:
-  explicit Bot(int serverPort, const std::string &serverPass, int botPort);
+  explicit Bot(int serverPort, const std::string &serverPass);
   ~Bot(void);
 
   void runBot(void);

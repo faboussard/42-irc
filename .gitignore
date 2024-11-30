@@ -53,3 +53,4 @@ ft_irc-tester
 
 # Confidentiel
 .env
+set_env
