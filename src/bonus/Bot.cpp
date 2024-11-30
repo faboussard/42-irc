@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 19:16:20 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 15:25:55 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,19 +33,33 @@ Bot::Bot(int serverPort, const std::string &serverPass, int botPort)
       _serverPass(serverPass),
       _botPort(botPort),
       _botSocketFd(-1) {
-  _instructions.push_back(BOT_MENU1);
-  _instructions.push_back(BOT_MENU2);
-  _instructions.push_back(BOT_MENU3);
-  _instructions.push_back(BOT_MENU4);
-  _instructions.push_back(BOT_MENU5);
-  _instructions.push_back(BOT_MENU6);
-  _instructions.push_back(BOT_MENU7);
-  _instructions.push_back(BOT_MENU8);
-  _instructions.push_back(BOT_MENU9);
-  _instructions.push_back(BOT_MENU10);
+  constructInstruction();
+  constructAsciiCats();
 }
 
 Bot::~Bot(void) { close(_botSocketFd); }
+
+void Bot::constructInstruction(void) {
+  const char* menus[] = BOT_MENU;
+  _instructions.assign(menus, menus + sizeof(menus) / sizeof(menus[0]));
+}
+
+void Bot::constructAsciiCats(void) {
+  const char* jokeCat[] = JOKE_CAT;
+  _jokeCat.assign(jokeCat, jokeCat + sizeof(jokeCat) / sizeof(jokeCat[0])); 
+
+  const char* adviceCat[] = ADVICE_CAT;
+  _adviceCat.assign(adviceCat, adviceCat + sizeof(adviceCat) / sizeof(adviceCat[0]));
+
+  const char* insultMeCat[] = INSULTME_CAT;
+  _insultMeCat.assign(insultMeCat, insultMeCat + sizeof(insultMeCat) / sizeof(insultMeCat[0]));
+
+  const char* unknownCat[] = DEFAULT_CAT;
+  _unknownCat.assign(unknownCat, unknownCat + sizeof(unknownCat) / sizeof(unknownCat[0]));
+
+  const char* timeoutCat[] = TIMEOUT_CAT;
+  _timeoutCat.assign(timeoutCat, timeoutCat + sizeof(timeoutCat) / sizeof(timeoutCat[0]));
+}
 
 /*============================================================================*/
 /*       Bot launch                                                           */
@@ -246,15 +260,39 @@ void Bot::listenToIrcServer(void) {
   _botPollFds.push_back(newPoll);
 
   while (_signal == false) {
-    int pollRet = poll(&_botPollFds[0], _botPollFds.size(), -1);
-    if (pollRet == -1 && _signal == false)
+    int pollRet = poll(&_botPollFds[0], _botPollFds.size(), 100);
+    if (pollRet == -1 && _signal == false) {
       throw std::runtime_error("Poll error: " + std::string(strerror(errno)));
-    for (size_t i = 0; i < _botPollFds.size(); ++i) {
+    }
+    size_t botPollFdsSize = _botPollFds.size();
+    for (size_t i = 0; i < botPollFdsSize; ++i) {
       if (_botPollFds[i].revents & POLLIN && _signal == false) {
-        if (_botPollFds[i].fd == _botSocketFd)
+        if (_botPollFds[i].fd == _botSocketFd) {
           handleServerMessage();
-        else
+        } else {
           handleApiResponse(_botPollFds[i].fd);
+        }
+      }
+    }
+
+    // Check for API requests timeout
+    for (std::deque<BotRequest>::iterator it = _requestDatas.begin(); it != _requestDatas.end(); ) {
+      if (it->timeoutInMs > 0) {
+        it->timeoutInMs -= 100;
+        ++it;
+      } else {
+        close(it->fdForApi);
+        pclose(it->fpForApi);
+        std::vector<struct pollfd>::iterator pollItEnd = _botPollFds.end();
+        for (std::vector<struct pollfd>::iterator pollIt = _botPollFds.begin(); pollIt != pollItEnd; ++pollIt) {
+          if (pollIt->fd == it->fdForApi) {
+            _botPollFds.erase(pollIt);
+            break;
+          }
+        }
+        sendAsciiCatTimeout(&(*it));
+        logApiTimeout(it->fdForApi, it->command);
+        it = _requestDatas.erase(it);
       }
     }
   }

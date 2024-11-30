@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 11:15:40 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 09:26:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/11/30 15:30:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,29 @@ void Bot::logApiResponse(int fd) {
   Log::printLog(INFO_LOG, BOT_L, oss.str());
 }
 
+void Bot::logApiTimeout(int fd, eBotCommand command) {
+  std::string apiHost;
+  switch (command) {
+    case JOKE:
+      apiHost = JOKEAPI_HOST;
+      break;
+    case INSULTME:
+      apiHost = INSULTMEAPI_HOST;
+      break;
+    case ADVICE:
+      apiHost = ADVICEAPI_HOST;
+      break;
+    case WEATHER:
+      apiHost = WEATHERAPI_HOST;
+      break;
+    default:
+      break;
+  }
+  std::ostringstream oss;
+  oss << "fd" << fd << ": No response from " << apiHost << " (timeout)";
+  Log::printLog(ERROR_LOG, BOT_L, oss.str());
+}
+
 #ifdef DEBUG
 void Bot::debugLogServerMessageSplit(const std::string &clientNickname,
                                      const std::string &commandStr) {
@@ -51,7 +74,7 @@ void Bot::debugLogParsedMessage(BotRequest request) {
 
 void Bot::debugLogWaitingRequests(void) {
   std::ostringstream oss;
-  oss << _requestDatas.size() << " requests are waiting";
+  oss << _requestDatas.size() << " request(s) is/are waiting";
   Log::printLog(DEBUG_LOG, BOT_L, oss.str());
 }
 #endif
