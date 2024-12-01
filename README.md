@@ -15,7 +15,8 @@ You have to call it with the following syntax:
 
 in a terminal:
 ```
-make run_bot SRV_PORT=6667 SRV_PASS=pass BOT_PORT=6668
+make bot
+./ircbot 6667 pass
 ```
 
 in HexChat:
@@ -24,8 +25,12 @@ in HexChat:
 ```
 
 The commands are the following:
-- !menu // to be eventually changed to hello
+- !hello
 - !joke
 - !advice
 - !insultMe
 - !random
+- !weather
+
+To use `!weather` command, an API key for [Weather API](https://www.weatherapi.com/) is required.
+The key should be set in `.env` file as `WEATHER_API_KEY=key` at the root of the project.
