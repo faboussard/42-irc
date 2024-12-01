@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/28 17:01:02 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/01 17:53:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,8 @@ std::string commandToString(Command command) {
 
 std::string commandToString(eBotCommand command) {
   switch (command) {
-    case MENU:
-      return ("MENU");
+    case HELLO:
+      return ("HELLO");
     case JOKE:
       return ("JOKE");
     case INSULTME:

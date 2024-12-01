@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 23:17:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 18:12:47 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,13 @@ Bot::Bot(int serverPort, const std::string &serverPass)
 Bot::~Bot(void) { close(_botSocketFd); }
 
 void Bot::constructInstruction(void) {
-  const char* menus[] = BOT_MENU;
-  _instructions.assign(menus, menus + sizeof(menus) / sizeof(menus[0]));
+  const char* hello[] = BOT_HELLO;
+  _hello.assign(hello, hello + sizeof(hello) / sizeof(hello[0]));
 }
 
 void Bot::constructAsciiCats(void) {
   const char* jokeCat[] = JOKE_CAT;
-  _jokeCat.assign(jokeCat, jokeCat + sizeof(jokeCat) / sizeof(jokeCat[0])); 
+  _jokeCat.assign(jokeCat, jokeCat + sizeof(jokeCat) / sizeof(jokeCat[0]));
 
   const char* adviceCat[] = ADVICE_CAT;
   _adviceCat.assign(adviceCat, adviceCat + sizeof(adviceCat) / sizeof(adviceCat[0]));
@@ -199,7 +199,8 @@ bool Bot::waitForPassAuthentication(int timeLimitInMs) {
                   "Failed to poll for server response: " +
                       std::string(strerror(errno)));
     return (false);
-  } if (pollRet == 0) {
+  }
+  if (pollRet == 0) {
     Log::printLog(INFO_LOG, BOT_L, "Password authentication successful");
     return (true);
   } else {
@@ -224,7 +225,7 @@ bool Bot::waitForNickValidation(int timeLimitInMs) {
     Log::printLog(ERROR_LOG, BOT_L,
                   "Failed to poll for server response: " +
                       std::string(strerror(errno)));
-    return (false);    
+    return (false);
   }
   if (pollRet && fd.revents & POLLIN) {
     std::string message = readMessageFromServer();
@@ -251,7 +252,7 @@ bool Bot::waitForConnectionMessage(int timeLimitInMs) {
       Log::printLog(ERROR_LOG, BOT_L,
                     "Failed to poll for server response: " +
                     std::string(strerror(errno)));
-      return (false);  
+      return (false);
     }
     if (pollRet > 0 && (fd.revents & POLLIN)) {
       std::string message = readMessageFromServer();
@@ -294,7 +295,8 @@ void Bot::listenToIrcServer(void) {
     }
 
     // Check for API requests timeout
-    for (std::deque<BotRequest>::iterator it = _requestDatas.begin(); it != _requestDatas.end(); ) {
+    for (std::deque<BotRequest>::iterator it = _requestDatas.begin();
+        it != _requestDatas.end(); ) {
       if (it->timeoutInMs > 0) {
         it->timeoutInMs -= 100;
         ++it;
@@ -302,7 +304,8 @@ void Bot::listenToIrcServer(void) {
         close(it->fdForApi);
         pclose(it->fpForApi);
         std::vector<struct pollfd>::iterator pollItEnd = _botPollFds.end();
-        for (std::vector<struct pollfd>::iterator pollIt = _botPollFds.begin(); pollIt != pollItEnd; ++pollIt) {
+        for (std::vector<struct pollfd>::iterator pollIt = _botPollFds.begin();
+            pollIt != pollItEnd; ++pollIt) {
           if (pollIt->fd == it->fdForApi) {
             _botPollFds.erase(pollIt);
             break;

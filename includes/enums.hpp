@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 13:59:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 19:24:38 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 17:53:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ enum Command {
 };
 
 enum eBotCommand {
-  MENU,
+  HELLO,
   JOKE,
   INSULTME,
   ADVICE,

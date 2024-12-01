@@ -6,9 +6,11 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 11:15:40 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 20:31:41 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 18:13:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <string>
 
 #include "../../includes/Bot.hpp"
 #include "../../includes/Log.hpp"

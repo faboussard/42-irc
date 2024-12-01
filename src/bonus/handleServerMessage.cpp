@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 17:12:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 17:54:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ void Bot::handleServerMessage(void) {
   debugLogParsedMessage(newRequest);
 #endif
   switch (newRequest.command) {
-    case MENU:
-      sendAsciiCatByCommand(&newRequest, MENU);
+    case HELLO:
+      sendAsciiCatByCommand(&newRequest, HELLO);
       break;
     case WEATHER:
       weather(&newRequest);
@@ -61,8 +61,8 @@ void Bot::handleServerMessage(void) {
 static eBotCommand selectCommand(const std::string& command) {
   std::srand(std::time(NULL));
 
-  if (command == "MENU") {
-    return (MENU);
+  if (command == "HELLO") {
+    return (HELLO);
   } else if (command == "JOKE") {
     return (JOKE);
   } else if (command == "INSULTME") {
@@ -93,12 +93,11 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   std::string commandStr;
   std::string arg;
   ss >> clientNickname >> commandStr >> commandStr >> commandStr;
-  std::getline(ss >> std::ws, arg);
 #ifdef DEBUG
   debugLogServerMessageSplit(clientNickname, commandStr);
 #endif
   commandStr = commandStr.substr(1);
   strToUpper(&commandStr);
-  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr), arg);
+  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr));
   return (newRequest);
 }

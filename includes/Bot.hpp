@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 17:24:18 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 18:04:07 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,12 @@
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 #define ADVICE_URL "https://api.adviceslip.com/advice"
-// #define WEATHER_URL "wttr.in/Paris\?n"
-#define WEATHER_URL1 "api.weatherapi.com/v1/forecast.json\?days=2&key="
-#define WEATHER_URL2 "&q="
-#define URL_QUOTE "\'"
-#define DEFAULT_CITY "Lyon"
-#define SNOWY_CODES {"1114", "1117", "1216", "1219", "1222", "1225", "1279", "1282"}
-
-// #define JOKE_URL "https://httpbin.org/delay/50"  // Timeout check 
+#define BOT_LOCATION "Lyon"
+#define WEATHER_URL1 "\'api.weatherapi.com/v1/forecast.json\?days=2&key="
+#define WEATHER_URL2 (std::string("&q=") + BOT_LOCATION + "\'")
+#define SNOWY_CODES \
+  {"1114", "1117", "1216", "1219", "1222", "1225", "1279", "1282"}
+// #define JOKE_URL "https://httpbin.org/delay/50"  // For timeout case test
 
 struct BotRequest {
   std::string clientNickname;
@@ -65,20 +63,16 @@ struct BotRequest {
 
   int fdForApi;
   FILE *fpForApi;
-  int timeoutInMs; 
+  int timeoutInMs;
   std::string apiResponse;
 
-  BotRequest(const std::string &nick, eBotCommand command, const std::string &arg)
+  BotRequest(const std::string &nick, eBotCommand command)
       : clientNickname(nick),
         command(command),
-        commandArg(arg),
         fdForApi(-1),
         fpForApi(NULL),
         timeoutInMs(10000),
-        apiResponse("") {
-  //  if (command == WEATHER)
-  //    commandArg += std::string(URL_QUOTE);
-  }
+        apiResponse("") {}
 };
 
 class Bot {
@@ -96,7 +90,7 @@ class Bot {
   std::deque<BotRequest> _requestDatas;
 
   /* Ascii cats */
-  stringVector _instructions;
+  stringVector _hello;
   stringVector _jokeCat;
   stringVector _adviceCat;
   stringVector _insultMeCat;
@@ -120,8 +114,8 @@ class Bot {
 
  private:
   /* Constructor helpers */
-   void constructInstruction(void);
-   void constructAsciiCats(void);
+  void constructInstruction(void);
+  void constructAsciiCats(void);
 
   /* Bot launch */
   void createSocket(void);

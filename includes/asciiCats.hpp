@@ -6,26 +6,29 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 18:20:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 14:06:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 18:07:27 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INCLUDES_ASCIICATS_HPP_
 #define INCLUDES_ASCIICATS_HPP_
 
-//MENU
-#define BOT_MENU1 "  /\\_/\\"
-#define BOT_MENU2 " ( o.o )"
-#define BOT_MENU3 \
+// HELLO
+#define BOT_HELLO1 "  /\\_/\\"
+#define BOT_HELLO2 " ( o.o )"
+#define BOT_HELLO3 \
   "─ U───U────────────────────────────────────────────────────────"
-#define BOT_MENU4 "         Hello! I'm KawaiiBot, what can I do for you?"
-#define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
-#define BOT_MENU6 "Feeling down? I'll lift you up with a dad joke. 🤣 !JOKE"
-#define BOT_MENU7 "Craving some sass? I can roast you. 😈 !INSULTME"
-#define BOT_MENU8 "Need guidance? Let me share some wisdom with you. 👼 !ADVICE"
-#define BOT_MENU9 "Wondering about the weather? Ask away. 🌤️ !WEATHER <a city name>"
-#define BOT_MENU10 "Bored? Let's spice it up with something fun. 🎲 !RANDOM"
-#define BOT_MENU {BOT_MENU1, BOT_MENU2, BOT_MENU3, BOT_MENU4, BOT_MENU5, BOT_MENU6, BOT_MENU7, BOT_MENU8, BOT_MENU9, BOT_MENU10}
+#define BOT_HELLO4 "         Hello! I'm KawaiiBot, what can I do for you?"
+#define BOT_HELLO5 \
+  "────────────────────────────────────────────────────────── ♥ ──"
+#define BOT_HELLO6 "!JOKE 🤣 Feeling down? I'll lift you up with a dad joke."
+#define BOT_HELLO7 "!INSULTME 😈 Craving some sass? I can roast you."
+#define BOT_HELLO8 "!ADVICE 👼 Need guidance? Let me share some wisdom with you."
+#define BOT_HELLO9 "!WEATHER 🌤️  Wondering about the weather where I am?"
+#define BOT_HELLO10 "!RANDOM 🎲 Bored? Let's spice it up with something fun."
+#define BOT_HELLO \
+  {BOT_HELLO1, BOT_HELLO2, BOT_HELLO3, BOT_HELLO4, BOT_HELLO5, BOT_HELLO6, \
+  BOT_HELLO7, BOT_HELLO8, BOT_HELLO9, BOT_HELLO10}
 
 // JOKE
 #define JOKE_CAT_1 "     /\\_/\\"
@@ -45,7 +48,8 @@
 #define INSULTME_CAT_2 "    (>_< )   That was uncalled for!"
 #define INSULTME_CAT_3 "     > ^ <"
 #define INSULTME_CAT_4 "    (    )/   🐾"
-#define INSULTME_CAT {INSULTME_CAT_1, INSULTME_CAT_2, INSULTME_CAT_3, INSULTME_CAT_4}
+#define INSULTME_CAT \
+  {INSULTME_CAT_1, INSULTME_CAT_2, INSULTME_CAT_3, INSULTME_CAT_4}
 
 // WEATHER
 #define SUNNY_CAT_1 "     /\\_/\\"
@@ -86,14 +90,14 @@
 #define UNKNOWN_WEATHER_CAT_1 "     /\\_/\\"
 #define UNKNOWN_WEATHER_CAT_2 "    ( o_O )   Hmm... I’m not sure what’s coming"
 #define UNKNOWN_WEATHER_CAT_3 "     > ^ < ❓"
-#define UNKNOWN_WEATHER_CAT {UNKNOWN_WEATHER_CAT_1, UNKNOWN_WEATHER_CAT_2, UNKNOWN_WEATHER_CAT_3}
-
+#define UNKNOWN_WEATHER_CAT \
+  {UNKNOWN_WEATHER_CAT_1, UNKNOWN_WEATHER_CAT_2, UNKNOWN_WEATHER_CAT_3}
 
 // DEFAULT / UNKNOWN
 #define DEFAULT_CAT_1 "     /\\_/\\"
 #define DEFAULT_CAT_2 "    ( o.o )   I'm confused!"
 #define DEFAULT_CAT_3 "     > ^ < 🐾"
-#define DEFAULT_CAT_4 " Try !MENU for a list of commands!"
+#define DEFAULT_CAT_4 " Try !HELLO for a list of commands!"
 #define DEFAULT_CAT {DEFAULT_CAT_1, DEFAULT_CAT_2, DEFAULT_CAT_3, DEFAULT_CAT_4}
 
 // TIMEOUT
