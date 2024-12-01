@@ -111,7 +111,6 @@ clean:
 	@${MAKE} clean_bot
 
 clean_bot:
-	${RM} set_env
 	${RMDIR} ${OBJS_DIR_BOT}
 
 fclean: clean
@@ -131,4 +130,4 @@ testlist: CFLAGS += -g3 -DTESTLIST
 testlist: fclean ${OBJS_DIR} ${NAME}
 
 # ---------------------------------- Phony ----------------------------------- #
-.PHONY: all clean fclean re debug valgrind fsan bot run_bot debug_bot valgrind_bot clean_bot fclean_bot
+.PHONY: all clean fclean re debug valgrind fsan bot debug_bot valgrind_bot clean_bot fclean_bot

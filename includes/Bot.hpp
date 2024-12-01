@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 23:16:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 17:24:18 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 #include "../includes/enums.hpp"
 #include "../includes/utils.hpp"
 
+#define ENV_FILE ".env"
 #define LOCALHOST "127.0.0.1"
 #define BOT_NICK "KawaiiBot"
 #define BOT_USER "kawaiiBot 0 * :kawaiiBot"
@@ -49,11 +50,10 @@
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 #define ADVICE_URL "https://api.adviceslip.com/advice"
 // #define WEATHER_URL "wttr.in/Paris\?n"
-// curl 'wttr.in/Tokyo?format="%l:+%C'
-// curl 'wttr.in/Lyon?format=j1'
-#define WEATHER_URL1 "api.weatherapi.com/v1/forecast.json?key="
-#define WEATHER_URL2 "&q=lyon&days=2"
-#define DEFAULT_CITY "lyon"
+#define WEATHER_URL1 "api.weatherapi.com/v1/forecast.json\?days=2&key="
+#define WEATHER_URL2 "&q="
+#define URL_QUOTE "\'"
+#define DEFAULT_CITY "Lyon"
 #define SNOWY_CODES {"1114", "1117", "1216", "1219", "1222", "1225", "1279", "1282"}
 
 // #define JOKE_URL "https://httpbin.org/delay/50"  // Timeout check 
@@ -61,20 +61,24 @@
 struct BotRequest {
   std::string clientNickname;
   eBotCommand command;
-  // std::string arg;
+  std::string commandArg;
 
   int fdForApi;
   FILE *fpForApi;
   int timeoutInMs; 
   std::string apiResponse;
 
-  BotRequest(const std::string &nick, eBotCommand command)
+  BotRequest(const std::string &nick, eBotCommand command, const std::string &arg)
       : clientNickname(nick),
         command(command),
+        commandArg(arg),
         fdForApi(-1),
         fpForApi(NULL),
         timeoutInMs(10000),
-        apiResponse("") {}
+        apiResponse("") {
+  //  if (command == WEATHER)
+  //    commandArg += std::string(URL_QUOTE);
+  }
 };
 
 class Bot {

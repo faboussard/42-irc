@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:31:27 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 22:26:56 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 17:28:53 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ FILE *Bot::openCurl(BotRequest *request, const std::string &url) {
   std::cout << "openCurl---> " << url << std::endl;
   std::string curlCommand = CURL;
   curlCommand += url;
+  if (request->command == WEATHER) {
+    curlCommand += "\'";
+  }
 #ifdef DEBUG
   Log::printLog(DEBUG_LOG, BOT_L, "Curl command: " + curlCommand);
 #endif
@@ -70,6 +73,15 @@ void Bot::advice(BotRequest *request) {
   logApiRequest(request->fdForApi, ADVICEAPI_HOST);
 }
 
+// std::string join(const stringVector &elements) {
+//   std::ostringstream oss;
+//   stringVector::const_iterator itEnd = elements.end();
+//   for (stringVector::const_iterator it = elements.begin(); it != itEnd; ++it) {
+//     oss << *it;
+//   }
+//   return oss.str();
+// }
+
 void Bot::weather(BotRequest *request) {
   const char* key = getenv("WEATHER_API_KEY");
   if (key == NULL) {
@@ -77,10 +89,14 @@ void Bot::weather(BotRequest *request) {
     sendAsciiCatServiceUnavailable(request);
     return;
   }
-  std::ostringstream oss;
-  oss << WEATHER_URL1 << key << WEATHER_URL2;
-  std::cout << oss.str() << std::endl;
-  openCurl(request, "\"" + oss.str() + "\"");
+  std::string keyStr(key);
+  std::string city = request->commandArg.empty() ? DEFAULT_CITY : request->commandArg;
+  std::stringstream ss;
+  // ss << std::string(WEATHER_URL1) << keyStr << std::string(WEATHER_URL2) << city;
+  ss << std::string(WEATHER_URL1) << std::string(keyStr.c_str()) << std::string(WEATHER_URL2) << std::string(city.c_str());
+  // std::string url = ss.str();
+  Log::printLog(DEBUG_LOG, BOT_L, "Final URL:" + ss.str());
+  openCurl(request, "\"" + ss.str() + "\"");
   logApiRequest(request->fdForApi, WEATHERAPI_HOST);
 }
 
@@ -95,7 +111,6 @@ void Bot::weather(BotRequest *request) {
 // #  oss << std::string(WEATHER_URL1) << std::string(key.c_str()) << std::string(WEATHER_URL2) << std::string(city.c_str()) << std::string(WEATHER_URL3);
 // #  std::cout << oss.str() << std::endl;
 // #  openCurl(request, "\"" + oss.str() + "\"");
-// #  // Set timeout for API response ?
 // #  logApiRequest(request->fdForApi, WEATHERAPI_HOST);
 // #}
 

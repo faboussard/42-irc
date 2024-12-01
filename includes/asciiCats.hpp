@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 18:20:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/30 23:16:10 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/01 14:06:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@
   "─ U───U────────────────────────────────────────────────────────"
 #define BOT_MENU4 "         Hello! I'm KawaiiBot, what can I do for you?"
 #define BOT_MENU5 "────────────────────────────────────────────────────────── ♥ ──"
-#define BOT_MENU6 "🤣 Feeling down? I'll lift you up with a dad joke. 👉!JOKE"
-#define BOT_MENU7 "😈 Craving some sass? I can roast you. 👉!INSULTME"
-#define BOT_MENU8 "👼 Need guidance? Let me share some wisdom with you. 👉!ADVICE"
-#define BOT_MENU9 "🌤️ Wondering about the weather? Ask away. 👉!WEATHER <city name>"
-#define BOT_MENU10 "🎲 Bored? Let's spice it up with something fun. 👉!RANDOM"
+#define BOT_MENU6 "Feeling down? I'll lift you up with a dad joke. 🤣 !JOKE"
+#define BOT_MENU7 "Craving some sass? I can roast you. 😈 !INSULTME"
+#define BOT_MENU8 "Need guidance? Let me share some wisdom with you. 👼 !ADVICE"
+#define BOT_MENU9 "Wondering about the weather? Ask away. 🌤️ !WEATHER <a city name>"
+#define BOT_MENU10 "Bored? Let's spice it up with something fun. 🎲 !RANDOM"
 #define BOT_MENU {BOT_MENU1, BOT_MENU2, BOT_MENU3, BOT_MENU4, BOT_MENU5, BOT_MENU6, BOT_MENU7, BOT_MENU8, BOT_MENU9, BOT_MENU10}
 
 // JOKE
