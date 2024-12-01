@@ -96,17 +96,14 @@ ${NAME_BOT}: ${OBJS_BOT} Makefile
 ${OBJS_DIR_BOT}%.o: %.cpp ${HEADERS} Makefile | ${OBJS_DIR_BOT}
 	${C} ${CFLAGS} ${INCLUDES_BOT} -c $< -o $@
 
-run_bot: bot
-	source ./set_env.sh && ./${NAME_BOT} ${PORT} ${PASS}
-
 debug_bot: CFLAGS := ${filter-out -Werror, ${CFLAGS}}
 debug_bot: C = g++
 debug_bot: CFLAGS += -DDEBUG -g3
 debug_bot: clean create_dirs_bot ${NAME_BOT}
 
 valgrind_bot: debug_bot
-				source ./set_env.sh && valgrind --track-fds=yes --leak-check=full \
-				--show-leak-kinds=all -s ./${NAME_BOT} PORT=6667 PASS=pass
+				valgrind --track-fds=yes --leak-check=full \
+				--show-leak-kinds=all -s ./${NAME_BOT} 6667 pass
 
 # ---------------------------------- Clean ----------------------------------- #
 clean:
