@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 18:20:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 15:20:44 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 15:30:31 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@
 
 #define SNOWY_CAT_1 "     /\\_/\\"
 #define SNOWY_CAT_2 "    ( >_< )   Will be snowy, Brrr!"
-#define SNOWY_CAT_3 "     > ^ < 🌨"
+#define SNOWY_CAT_3 "     > ^ < ❄️"
 #define SNOWY_CAT {SNOWY_CAT_1, SNOWY_CAT_2, SNOWY_CAT_3}
 
 #define THUNDER_CAT_1 "     /\\_/\\"
