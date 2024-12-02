@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 18:22:49 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 21:48:43 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,15 @@
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
 
-std::pair<std::vector<std::string>, std::string> Server::parsePartParams(const std::string &param) {
+std::pair<std::vector<std::string>, std::string> Server::parsePartParams(
+    const std::string &param) {
   std::vector<std::string> channelsVector;
   std::string reason;
   std::istringstream iss(param);
   std::string channels;
   iss >> channels;
-  std::getline(iss >> std::ws, reason); // Read the rest of the line as the reason
+  std::getline(iss >> std::ws,
+               reason);  // Read the rest of the line as the reason
 
   splitByCommaAndTrim(channels, &channelsVector);
 
@@ -54,8 +56,8 @@ void Server::part(int fd, const std::string &param) {
     return;
   }
 
-  
-std::pair<std::vector<std::string>, std::string>  channelsAndReasons = parsePartParams(param);
+  std::pair<std::vector<std::string>, std::string> channelsAndReasons =
+      parsePartParams(param);
   stringVector channelsVector = channelsAndReasons.first;
   std::string reason = channelsAndReasons.second;
   if (reason == "") {
@@ -73,7 +75,8 @@ std::pair<std::vector<std::string>, std::string>  channelsAndReasons = parsePart
       continue;
     }
     Channel *channel = &it->second;
-    if (channel->getChannelClients().find(fd) == channel->getChannelClients().end()) {
+    if (channel->getChannelClients().find(fd) ==
+        channel->getChannelClients().end()) {
       send442NotOnChannel(*client, *channel);
       continue;
     }
@@ -88,7 +91,8 @@ void Server::quitChannel(int fd, Channel *channel, Client *client,
   client->decrementChannelsCount();
   channel->removeClientFromChannelMap(client);
 
-  if (channel->getChannelOperators().find(fd) != channel->getChannelOperators().end()) {
+  if (channel->getChannelOperators().find(fd) !=
+      channel->getChannelOperators().end()) {
     channel->removeOperator(client);
   }
 }

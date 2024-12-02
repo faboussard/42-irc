@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 19:12:12 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 21:47:54 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@
 #include "../includes/Client.hpp"
 #include "../includes/Config.hpp"
 #include "../includes/Log.hpp"
-#include "../includes/numericReplies.hpp"
 #include "../includes/enums.hpp"
+#include "../includes/numericReplies.hpp"
 
 #define SRV_NAME "ircserv"
 #define SRV_VERSION "1.0.0"
@@ -122,12 +122,14 @@ class Server {
 
   /* Commands handling */
   void handleCommand(Command command, const std::string &argument, int fd);
-  void broadcastInChannelExceptToSender(const Client &client, const Channel &channel,
-                          const std::string &command,
-                          const std::string &content);
-  void broadcastInChannelAndToSender(const Client &client, const Channel &channel,
-                                const std::string &command,
-                                const std::string &content);
+  void broadcastInChannelExceptToSender(const Client &client,
+                                        const Channel &channel,
+                                        const std::string &command,
+                                        const std::string &content);
+  void broadcastInChannelAndToSender(const Client &client,
+                                     const Channel &channel,
+                                     const std::string &command,
+                                     const std::string &content);
   void sendNotice(const Client &client, const std::string &message);
 
   /*  Command  */
@@ -149,9 +151,11 @@ class Server {
 
   /*-------- PART --------*/
   void part(int fd, const std::string &param);
-  std::pair<std::vector<std::string>, std::string> parsePartParams(const std::string &param);
+  std::pair<std::vector<std::string>, std::string> parsePartParams(
+      const std::string &param);
   void quitAllChannels(int fd);
-  void quitChannel(int fd, Channel *channel, Client *client, const std::string &reason);
+  void quitChannel(int fd, Channel *channel, Client *client,
+                   const std::string &reason);
 
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
@@ -176,7 +180,7 @@ class Server {
   /*-------- MODE --------*/
   void mode(int fd, const std::string &arg);
   char checkModeArguments(const stringVector &modeStrings,
-                             const stringVector &arguments);
+                          const stringVector &arguments);
   std::string checkModeString(const stringVector &argumentToCheck);
 
   bool isChannelValid(int fd, const std::string &channel);
@@ -211,8 +215,7 @@ class Server {
                              std::vector<std::string> *targets,
                              std::string *message);
 
-  bool validPrivmsgTargets(const Client &client,
-                           stringVector *targets);
+  bool validPrivmsgTargets(const Client &client, stringVector *targets);
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);

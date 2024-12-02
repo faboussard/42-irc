@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 19:55:04 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 21:49:26 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,8 @@ bool Server::isKeyValid(const Channel &channel, const std::string &key,
 
 bool Server::isChannelNotFull(const Channel &channel, const Client &client) {
   if (channel.getMode().limitSet &&
-      channel.getLimit() <= static_cast<int>(channel.getChannelClients().size())){
+      channel.getLimit() <=
+          static_cast<int>(channel.getChannelClients().size())) {
     send471ChannelIsFull(client, channel);
     return false;
   }

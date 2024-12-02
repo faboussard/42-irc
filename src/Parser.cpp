@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 16:48:33 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 21:48:16 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@
 #include <utility>
 #include <vector>
 
+#include "../includes/Log.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/enums.hpp"
-#include "../includes/Log.hpp"
 #include "../includes/utils.hpp"
 
 Command Parser::choseCommand(const std::string& command) {

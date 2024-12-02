@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 19:35:15 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 21:49:10 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,6 @@
 #include "../../includes/utils.hpp"
 
 // Parameters: <channel> {[+|-]|o|s|i|t|k|l} [<limit>] [<user>] [<ban mask>]
-
-#include <iostream>
-#include <sstream>
-#include <string>
 
 void Server::switchMode(Client *client, const std::string &channelName,
                         const stringVector &modeStrings,
@@ -102,14 +98,14 @@ void Server::switchMode(Client *client, const std::string &channelName,
             sendNotice(*client, "MODE +l argument must be below 999.");
             return;
           }
-          #ifdef DEBUG
+#ifdef DEBUG
           {
             std::ostringstream oss;
             oss << "limit: " << limit;
             printLog(DEBUG_LOG, COMMAND, oss.str());
           }
-          #endif
-          channel->activateLimitMode(limit, *client);
+#endif
+          channel->activateLimitMode(limit);
         } else {
           channel->deactivateLimitMode();
         }
