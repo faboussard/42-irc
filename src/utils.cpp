@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 16:17:14 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 16:48:50 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ std::string commandToString(Command command) {
   switch (command) {
     case JOIN:
       return ("JOIN");
+    case PART:
+      return ("PART");
     case KICK:
       return ("KICK");
     case INVITE:
