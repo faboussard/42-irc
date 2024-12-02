@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 17:31:51 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 18:14:32 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,8 @@ stringVectorPair Server::parseJoinParams(const std::string &param) {
     std::ostringstream before, after;
     before << "JOIN: channels: Before split and trim key: " << param;
     after << "JOIN: channelsVector: After split and trim channelsVector: ";
-    for (size_t i = 0; i < channelsVector.size(); ++i) after << channelsVector[i] << "|";
+    for (size_t i = 0; i < channelsVector.size(); ++i)
+      after << channelsVector[i] << "|";
     Server::printLog(DEBUG_LOG, COMMAND, before.str());
     Server::printLog(DEBUG_LOG, COMMAND, after.str());
   }
@@ -174,10 +175,10 @@ bool Server::isChannelNameValid(const std::string &channelNameToCheck,
   if (channelNameToCheck.empty() || channelNameToCheck.length() < 2) {
     send461NeedMoreParams(client, "JOIN");
     return (false);
-    if (channelNameToCheck[0] != REG_CHAN) {
-      send476BadChanMask(client, channelNameToCheck);
-      return (false);
-    }
+  }
+  if (channelNameToCheck[0] != REG_CHAN) {
+    send476BadChanMask(client, channelNameToCheck);
+    return (false);
   }
   if (channelNameToCheck.length() > gConfig->getLimit(CHANNELLEN)) {
     send476BadChanMask(client, channelNameToCheck);
@@ -197,7 +198,7 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
 #ifdef DEBUG
   {
     std::ostringstream oss;
-    oss << "JOIN: Join request for channel: " << REG_CHAN << channel->getName();
+    oss << "JOIN: Join request for channel: " << channel->getName();
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
