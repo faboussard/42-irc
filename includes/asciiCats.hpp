@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 18:20:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 18:07:27 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 10:21:30 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,19 @@
 #define BOT_HELLO2 " ( o.o )"
 #define BOT_HELLO3 \
   "─ U───U────────────────────────────────────────────────────────"
-#define BOT_HELLO4 "         Hello! I'm KawaiiBot, what can I do for you?"
+#define BOT_HELLO4 "    Hi there! I'm KawaiiBot, How can I brighten your day?"
 #define BOT_HELLO5 \
   "────────────────────────────────────────────────────────── ♥ ──"
-#define BOT_HELLO6 "!JOKE 🤣 Feeling down? I'll lift you up with a dad joke."
-#define BOT_HELLO7 "!INSULTME 😈 Craving some sass? I can roast you."
-#define BOT_HELLO8 "!ADVICE 👼 Need guidance? Let me share some wisdom with you."
-#define BOT_HELLO9 "!WEATHER 🌤️  Wondering about the weather where I am?"
-#define BOT_HELLO10 "!RANDOM 🎲 Bored? Let's spice it up with something fun."
-#define BOT_HELLO \
-  {BOT_HELLO1, BOT_HELLO2, BOT_HELLO3, BOT_HELLO4, BOT_HELLO5, BOT_HELLO6, \
-  BOT_HELLO7, BOT_HELLO8, BOT_HELLO9, BOT_HELLO10}
+#define BOT_HELLO6 "!JOKE 🤣Feeling down? I've got a dad joke just for you."
+#define BOT_HELLO7 "!INSULTME 😈In the mood for sass? Let me roast you (with love)"
+#define BOT_HELLO8 \
+  "!ADVICE 👼Looking for wisdom? I'll share a thoughtful advice"
+#define BOT_HELLO9 \
+  "!WEATHER <city name> 🌤️Want tomorrow's forecast? Just ask!"
+#define BOT_HELLO10 "!RANDOM 🎲Feeling bored? Let's spice it up with something fun."
+#define BOT_HELLO                                              \
+  {BOT_HELLO1, BOT_HELLO2, BOT_HELLO3, BOT_HELLO4, BOT_HELLO5, \
+  BOT_HELLO6, BOT_HELLO7, BOT_HELLO8, BOT_HELLO9, BOT_HELLO10}
 
 // JOKE
 #define JOKE_CAT_1 "     /\\_/\\"

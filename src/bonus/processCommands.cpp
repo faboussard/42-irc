@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:31:27 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 18:18:50 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 10:08:35 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,18 +69,22 @@ void Bot::advice(BotRequest *request) {
 }
 
 void Bot::weather(BotRequest *request) {
-  const char* key = getenv("WEATHER_API_KEY");
+  const char *key = getenv("WEATHER_API_KEY");
   if (key == NULL) {
     Log::printLog(ERROR_LOG, BOT_L, "Weather API key not found");
     sendAsciiCatServiceUnavailable(request);
     return;
   }
   std::string keyStr(key);
-  std::ostringstream oss;
-  oss << std::string(WEATHER_URL1) << std::string(keyStr.c_str())
-      << std::string(WEATHER_URL2);
-  std::string url = oss.str();
-  Log::printLog(DEBUG_LOG, BOT_L, "Final URL:" + url);
+  std::string city =
+      request->commandArg.empty() ? DEFAULT_CITY : request->commandArg;
+  std::string url = WEATHER_URL1;
+  url += keyStr;
+  url += WEATHER_URL2;
+  url += city;
+  url += URL_QUOTE;
+
+  Log::printLog(DEBUG_LOG, BOT_L, "URL: " + url);
   openCurl(request, url);
   logApiRequest(request->fdForApi, WEATHERAPI_HOST);
 }
@@ -99,7 +103,7 @@ void Bot::unknownCommand(BotRequest *request) {
 
 void Bot::sendAsciiCatServiceUnavailable(BotRequest *request) {
   stringVector::iterator itEnd = _timeoutCat.end();
-  for (stringVector::iterator it = _timeoutCat.begin(); it != itEnd ; ++it) {
+  for (stringVector::iterator it = _timeoutCat.begin(); it != itEnd; ++it) {
     std::ostringstream oss;
     oss << "PRIVMSG " << request->clientNickname << " :" << *it << "\r\n";
     sendMessageToServer(oss.str());

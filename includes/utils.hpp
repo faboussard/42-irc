@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/28 10:09:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 10:02:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef std::pair<std::vector<std::string>, std::vector<std::string> >
 
 void shrink_to_fit(std::vector<struct pollfd> *vec);
 void strToUpper(std::string *str);
-
+void capitalize(std::string *str);
 bool isNumeric(const std::string &str);
 
 std::string trimWhiteSpaces(const std::string &str);

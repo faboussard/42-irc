@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 18:04:07 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 10:05:24 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,13 @@
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 #define ADVICE_URL "https://api.adviceslip.com/advice"
-#define BOT_LOCATION "Lyon"
-#define WEATHER_URL1 "\'api.weatherapi.com/v1/forecast.json\?days=2&key="
-#define WEATHER_URL2 (std::string("&q=") + BOT_LOCATION + "\'")
+#define WEATHER_URL1 "\'api.weatherapi.com/v1/forecast.json?days=2&key="
+#define WEATHER_URL2 "&q="
+#define URL_QUOTE "\'"
+#define DEFAULT_CITY "Lyon"
 #define SNOWY_CODES \
   {"1114", "1117", "1216", "1219", "1222", "1225", "1279", "1282"}
+
 // #define JOKE_URL "https://httpbin.org/delay/50"  // For timeout case test
 
 struct BotRequest {
@@ -66,9 +68,11 @@ struct BotRequest {
   int timeoutInMs;
   std::string apiResponse;
 
-  BotRequest(const std::string &nick, eBotCommand command)
+  BotRequest(const std::string &nick, eBotCommand command,
+             const std::string &arg)
       : clientNickname(nick),
         command(command),
+        commandArg(arg),
         fdForApi(-1),
         fpForApi(NULL),
         timeoutInMs(10000),
@@ -160,7 +164,8 @@ class Bot {
   void logApiTimeout(int fd, eBotCommand command);
 #ifdef DEBUG
   void debugLogServerMessageSplit(const std::string &clientNickname,
-                                  const std::string &commandStr);
+                                  const std::string &commandStr,
+                                  const std::string &arg);
   void debugLogParsedMessage(BotRequest request);
   void debugLogWaitingRequests(void);
 #endif

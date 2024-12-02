@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 11:15:40 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 18:13:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 10:07:33 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,12 @@ void Bot::logApiTimeout(int fd, eBotCommand command) {
 
 #ifdef DEBUG
 void Bot::debugLogServerMessageSplit(const std::string &clientNickname,
-                                     const std::string &commandStr) {
+                                     const std::string &commandStr,
+                                     const std::string &arg) {
   std::ostringstream oss;
   oss << "< SPLIT >: clientNickname: " CYAN << clientNickname
-      << RESET " | Bot command: " CYAN << commandStr << RESET;
+      << RESET " | Bot command: " CYAN << commandStr << " | Arg: " << arg
+      << RESET;
   Log::printLog(DEBUG_LOG, PARSER, oss.str());
 }
 

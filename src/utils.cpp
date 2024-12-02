@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/01 17:53:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 10:01:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,19 @@ void strToUpper(std::string *str) {
   size_t len = str->length();
   while (i < len) {
     (*str)[i] = std::toupper((*str)[i]);
+    ++i;
+  }
+}
+
+void capitalize(std::string *str) {
+  size_t i = 0;
+  size_t len = str->length();
+  while (i < len) {
+    if (i == 0 || (*str)[i - 1] == ' ') {
+      (*str)[i] = std::toupper((*str)[i]);
+    } else {
+      (*str)[i] = std::tolower((*str)[i]);
+    }
     ++i;
   }
 }

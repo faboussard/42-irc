@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 17:54:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 09:59:47 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,12 +92,14 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   std::string clientNickname;
   std::string commandStr;
   std::string arg;
-  ss >> clientNickname >> commandStr >> commandStr >> commandStr;
+  ss >> clientNickname >> commandStr >> commandStr >> commandStr >> arg;
+
 #ifdef DEBUG
-  debugLogServerMessageSplit(clientNickname, commandStr);
+  debugLogServerMessageSplit(clientNickname, commandStr, arg);
 #endif
   commandStr = commandStr.substr(1);
   strToUpper(&commandStr);
-  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr));
+  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr),
+                        arg);
   return (newRequest);
 }

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 18:12:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 10:08:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 #include <string>
 #include <vector>
 
-#include "../../includes/asciiCats.hpp"
 #include "../../includes/Log.hpp"
+#include "../../includes/asciiCats.hpp"
 
 /*============================================================================*/
 /*       Initialization / Constructor / Destructor                            */
@@ -27,7 +27,7 @@
 
 bool Bot::_signal = false;
 
-Bot::Bot(int serverPort, const std::string &serverPass)
+Bot::Bot(int serverPort, const std::string& serverPass)
     : _nick(BOT_NICK),
       _user(BOT_USER),
       _serverPort(serverPort),
@@ -49,15 +49,18 @@ void Bot::constructAsciiCats(void) {
   _jokeCat.assign(jokeCat, jokeCat + sizeof(jokeCat) / sizeof(jokeCat[0]));
 
   const char* adviceCat[] = ADVICE_CAT;
-  _adviceCat.assign(adviceCat, adviceCat + sizeof(adviceCat) / sizeof(adviceCat[0]));
+  _adviceCat.assign(adviceCat,
+                    adviceCat + sizeof(adviceCat) / sizeof(adviceCat[0]));
 
   const char* insultMeCat[] = INSULTME_CAT;
-  _insultMeCat.assign(insultMeCat, insultMeCat + sizeof(insultMeCat) / sizeof(insultMeCat[0]));
+  _insultMeCat.assign(
+      insultMeCat, insultMeCat + sizeof(insultMeCat) / sizeof(insultMeCat[0]));
 
   const char* sunnyCat[] = SUNNY_CAT;
   _sunnyCat.assign(sunnyCat, sunnyCat + sizeof(sunnyCat) / sizeof(sunnyCat[0]));
   const char* cloudyCat[] = CLOUDY_CAT;
-  _cloudyCat.assign(cloudyCat, cloudyCat + sizeof(cloudyCat) / sizeof(cloudyCat[0]));
+  _cloudyCat.assign(cloudyCat,
+                    cloudyCat + sizeof(cloudyCat) / sizeof(cloudyCat[0]));
   const char* foggyCat[] = FOGGY_CAT;
   _foggyCat.assign(foggyCat, foggyCat + sizeof(foggyCat) / sizeof(foggyCat[0]));
   const char* rainyCat[] = RAINY_CAT;
@@ -65,18 +68,23 @@ void Bot::constructAsciiCats(void) {
   const char* snowyCat[] = SNOWY_CAT;
   _snowyCat.assign(snowyCat, snowyCat + sizeof(snowyCat) / sizeof(snowyCat[0]));
   const char* thunderCat[] = THUNDER_CAT;
-  _thunderCat.assign(thunderCat, thunderCat + sizeof(thunderCat) / sizeof(thunderCat[0]));
+  _thunderCat.assign(thunderCat,
+                     thunderCat + sizeof(thunderCat) / sizeof(thunderCat[0]));
   const char* frostyCat[] = FROSTY_CAT;
-  _frostyCat.assign(frostyCat, frostyCat + sizeof(frostyCat) / sizeof(frostyCat[0]));
+  _frostyCat.assign(frostyCat,
+                    frostyCat + sizeof(frostyCat) / sizeof(frostyCat[0]));
   const char* unknownWeatherCat[] = UNKNOWN_WEATHER_CAT;
-  _unknownWeatherCat.assign(unknownWeatherCat, unknownWeatherCat + sizeof(unknownWeatherCat) / sizeof(unknownWeatherCat[0]));
-
+  _unknownWeatherCat.assign(
+      unknownWeatherCat, unknownWeatherCat + sizeof(unknownWeatherCat) /
+                                                 sizeof(unknownWeatherCat[0]));
 
   const char* unknownCat[] = DEFAULT_CAT;
-  _unknownCat.assign(unknownCat, unknownCat + sizeof(unknownCat) / sizeof(unknownCat[0]));
+  _unknownCat.assign(unknownCat,
+                     unknownCat + sizeof(unknownCat) / sizeof(unknownCat[0]));
 
   const char* timeoutCat[] = TIMEOUT_CAT;
-  _timeoutCat.assign(timeoutCat, timeoutCat + sizeof(timeoutCat) / sizeof(timeoutCat[0]));
+  _timeoutCat.assign(timeoutCat,
+                     timeoutCat + sizeof(timeoutCat) / sizeof(timeoutCat[0]));
 }
 
 /*============================================================================*/
@@ -162,8 +170,7 @@ void Bot::connectToIrcServer(void) {
   Log::printLog(INFO_LOG, BOT_L,
                 "Connected to IRC server at fd " + toString(_botSocketFd));
   freeaddrinfo(res);
-  if (!authenticate())
-    throw std::runtime_error("");
+  if (!authenticate()) throw std::runtime_error("");
 }
 
 bool Bot::authenticate(void) {
@@ -171,20 +178,17 @@ bool Bot::authenticate(void) {
     Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
     return (false);
   }
-  if (!waitForPassAuthentication(2000))
-    return (false);
+  if (!waitForPassAuthentication(2000)) return (false);
   if (!sendMessageToServer("NICK " + _nick + "\r\n")) {
     Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
     return (false);
   }
-  if (!waitForNickValidation(2000))
-    return (false);
+  if (!waitForNickValidation(2000)) return (false);
   if (!sendMessageToServer("USER " + _user + "\r\n")) {
     Log::printLog(ERROR_LOG, BOT_L, "Failed to authenticate to IRC server");
     return (false);
   }
-  if (!waitForConnectionMessage(5000))
-    return (false);
+  if (!waitForConnectionMessage(5000)) return (false);
   return (true);
 }
 
@@ -195,9 +199,9 @@ bool Bot::waitForPassAuthentication(int timeLimitInMs) {
   fd.events = POLLIN;
   int pollRet = poll(&fd, 1, timeLimitInMs);
   if (pollRet == -1) {
-    Log::printLog(ERROR_LOG, BOT_L,
-                  "Failed to poll for server response: " +
-                      std::string(strerror(errno)));
+    Log::printLog(
+        ERROR_LOG, BOT_L,
+        "Failed to poll for server response: " + std::string(strerror(errno)));
     return (false);
   }
   if (pollRet == 0) {
@@ -207,7 +211,7 @@ bool Bot::waitForPassAuthentication(int timeLimitInMs) {
     std::string message = readMessageFromServer();
     if (message.find("464") != std::string::npos) {
       Log::printLog(ERROR_LOG, BOT_L,
-                  "It seems I don't have a good key to IRC server");
+                    "It seems I don't have a good key to IRC server");
       return (false);
     }
   }
@@ -216,22 +220,24 @@ bool Bot::waitForPassAuthentication(int timeLimitInMs) {
 }
 
 bool Bot::waitForNickValidation(int timeLimitInMs) {
-  Log::printLog(INFO_LOG, BOT_L, "Waiting for nickname and username validation");
+  Log::printLog(INFO_LOG, BOT_L,
+                "Waiting for nickname and username validation");
   struct pollfd fd;
   fd.fd = _botSocketFd;
   fd.events = POLLIN;
   int pollRet = poll(&fd, 1, timeLimitInMs);
   if (pollRet == -1) {
-    Log::printLog(ERROR_LOG, BOT_L,
-                  "Failed to poll for server response: " +
-                      std::string(strerror(errno)));
+    Log::printLog(
+        ERROR_LOG, BOT_L,
+        "Failed to poll for server response: " + std::string(strerror(errno)));
     return (false);
   }
   if (pollRet && fd.revents & POLLIN) {
     std::string message = readMessageFromServer();
     if (message.find("433") != std::string::npos) {
       Log::printLog(ERROR_LOG, BOT_L,
-                  "Someone has stolen my nickname. I can't connect to IRC server. Bye.");
+                    "Someone has stolen my nickname. I can't connect to IRC "
+                    "server. Bye.");
       return (false);
     }
   }
@@ -251,7 +257,7 @@ bool Bot::waitForConnectionMessage(int timeLimitInMs) {
     if (pollRet == -1) {
       Log::printLog(ERROR_LOG, BOT_L,
                     "Failed to poll for server response: " +
-                    std::string(strerror(errno)));
+                        std::string(strerror(errno)));
       return (false);
     }
     if (pollRet > 0 && (fd.revents & POLLIN)) {
@@ -296,7 +302,7 @@ void Bot::listenToIrcServer(void) {
 
     // Check for API requests timeout
     for (std::deque<BotRequest>::iterator it = _requestDatas.begin();
-        it != _requestDatas.end(); ) {
+         it != _requestDatas.end();) {
       if (it->timeoutInMs > 0) {
         it->timeoutInMs -= 100;
         ++it;
@@ -305,7 +311,7 @@ void Bot::listenToIrcServer(void) {
         pclose(it->fpForApi);
         std::vector<struct pollfd>::iterator pollItEnd = _botPollFds.end();
         for (std::vector<struct pollfd>::iterator pollIt = _botPollFds.begin();
-            pollIt != pollItEnd; ++pollIt) {
+             pollIt != pollItEnd; ++pollIt) {
           if (pollIt->fd == it->fdForApi) {
             _botPollFds.erase(pollIt);
             break;
@@ -329,7 +335,8 @@ std::string Bot::readMessageFromServer(void) {
   std::memset(buffer, 0, sizeof(buffer));
   int valread = recv(_botSocketFd, buffer, sizeof(buffer), 0);
   if (valread == -1) {
-    Log::printLog(DEBUG_LOG, BOT_L, "There is no message received from IRC server.");
+    Log::printLog(DEBUG_LOG, BOT_L,
+                  "There is no message received from IRC server.");
     return ("");
   }
   if (valread == 0) return ("");
@@ -338,7 +345,7 @@ std::string Bot::readMessageFromServer(void) {
   return (newMessage);
 }
 
-bool Bot::sendMessageToServer(const std::string &message) {
+bool Bot::sendMessageToServer(const std::string& message) {
   ssize_t bytesSent = send(_botSocketFd, message.c_str(), message.length(), 0);
   if (bytesSent == -1) {
     Log::printLog(ERROR_LOG, BOT_L,
