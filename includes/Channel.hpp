@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 18:25:54 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 19:51:57 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ class Channel {
   Topic _topic;
   Mode _mode;
   std::string _key;
-  uint8_t _limit;
+  int _limit;
 
   clientPMap _channelClients;
   clientPMap _channelOperators;
@@ -74,7 +74,7 @@ class Channel {
   const Mode &getMode(void) const;
   const std::string getChannelModeFlag(void) const;
   const std::string &getKey(void) const;
-  uint8_t getLimit(void) const;
+  int getLimit(void) const;
 
   /*  Setters */
   void setTopic(const std::string &topic, const std::string &author);
@@ -109,7 +109,7 @@ class Channel {
   bool isOperator(int fd) const;
 
   // limit-mode (l)
-  void activateLimitMode(uint8_t limit, const Client &client);
+  void activateLimitMode(int limit, const Client &client);
   void deactivateLimitMode(void);
 };
 

@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 18:27:49 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 19:35:15 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@
 #include "../../includes/utils.hpp"
 
 // Parameters: <channel> {[+|-]|o|s|i|t|k|l} [<limit>] [<user>] [<ban mask>]
+
+#include <iostream>
+#include <sstream>
+#include <string>
 
 void Server::switchMode(Client *client, const std::string &channelName,
                         const stringVector &modeStrings,
@@ -91,19 +95,31 @@ void Server::switchMode(Client *client, const std::string &channelName,
             sendNotice(*client, "MODE +l argument must be a numeric value.");
             return;
           }
-          uint8_t limit = std::atoi(limitStr.c_str());
+          std::stringstream ss(limitStr);
+          int limit;
+          ss >> limit;
+          if (ss.fail() || limit > 999) {
+            sendNotice(*client, "MODE +l argument must be below 999.");
+            return;
+          }
+          #ifdef DEBUG
+          {
+            std::ostringstream oss;
+            oss << "limit: " << limit;
+            printLog(DEBUG_LOG, COMMAND, oss.str());
+          }
+          #endif
           channel->activateLimitMode(limit, *client);
         } else {
           channel->deactivateLimitMode();
         }
       }
     }
-    sendNotice(*client, "MODE " + channelName + " " + modeString);
   }
 }
 
-char Server::checkModeArguments(
-    const stringVector &modeStrings, const stringVector &arguments) {
+char Server::checkModeArguments(const stringVector &modeStrings,
+                                const stringVector &arguments) {
   std::map<char, bool> modesRequiringArgument;
   modesRequiringArgument['k'] = true;   // Mode +k nécessite un argument si +
   modesRequiringArgument['o'] = true;   // Mode +o nécessite un argument
@@ -225,14 +241,13 @@ void Server::mode(int fd, const std::string &arg) {
 
   if (!errorModeString.empty()) {
     send472UnknownMode(client, errorModeString);
-    sendNotice(client, "usage: MODE <channel> {[+|-]|o|i|t|k|l} [<arguments>]");
     return;
   }
   char errorModeArguments =
       checkModeArguments(modestringVector, modeArgumentsVector);
   if (errorModeArguments != 0) {
-    send696InvalidModeParam(client, channelName, "Mode:",
-                            std::string(1, errorModeArguments));
+    send696InvalidModeParam(client, channelName,
+                            "Mode:", std::string(1, errorModeArguments));
     return;
   }
 #ifdef DEBUG

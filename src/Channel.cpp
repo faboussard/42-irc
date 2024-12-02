@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 18:25:44 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 19:51:21 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ const std::string Channel::getChannelModeFlag(void) const {
 
 const std::string &Channel::getKey(void) const { return (_key); }
 
-uint8_t Channel::getLimit(void) const { return (_limit); }
+int Channel::getLimit(void) const { return (_limit); }
 
 /*============================================================================*/
 /*       Setters                                                              */
@@ -278,7 +278,7 @@ bool Channel::isOperator(int fd) const {
 }
 
 /* limit-mode (l) */
-void Channel::activateLimitMode(uint8_t limit, const Client &client) {
+void Channel::activateLimitMode(int limit, const Client &client) {
   if (limit == 0) {
     send461NeedMoreParams(client, "MODE");
   } else {
@@ -286,7 +286,7 @@ void Channel::activateLimitMode(uint8_t limit, const Client &client) {
     _limit = limit;
 
     std::ostringstream oss;
-    oss << _nameWithPrefix << ": Limit mode activated. Limit set to " << limit;
+    oss << _nameWithPrefix << ": Limit mode activated. Limit set to " << _limit;
     Server::printLog(INFO_LOG, CHANNEL, oss.str());
   }
 }
