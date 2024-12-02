@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 14:59:29 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 15:07:32 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,7 @@ void Server::joinChannel(int fd, const std::string &param) {
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
-  if (client.getChannelsCount() >= gConfig->getLimit(CHANLIMIT)) {
-    send405TooManyChannels(client);
-    return;
-  }
+
   std::string channels, keys;
   std::istringstream iss(param);
   iss >> channels >> keys;
@@ -198,6 +195,10 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   }
 #endif
   const clientPMap &clientsInChannel = channel->getChannelClients();
+  if (client->getChannelsCount() >= gConfig->getLimit(CHANLIMIT) && clientsInChannel.find(fd) == clientsInChannel.end()) {
+    send405TooManyChannels(*client);
+    return;
+  }
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     channel->addClientToChannelMap(client);
     client->incrementChannelsCount();
