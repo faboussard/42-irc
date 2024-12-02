@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 18:32:27 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/02 14:59:29 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,11 +205,11 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
     send353Namreply(*client, *channel);
     send366Endofnames(*client, *channel);
     broadcastInChannelAndToSender(*client, *channel, "JOIN", "say hello!");
-  }
-  if (channel->getTopic().topic.empty())
+      if (channel->getTopic().topic.empty())
     send331Notopic(*client, *channel);
   else
     send332Topic(*client, *channel);
+  }
 }
 bool Server::isLeaveAllChannelsRequest(const std::string &param) {
   return (param == "0");
