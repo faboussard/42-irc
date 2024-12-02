@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 16:04:11 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 16:44:11 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,16 +83,13 @@ void Server::part(int fd, const std::string &param) {
 
 void Server::quitChannel(int fd, Channel *channel, Client *client,
                          const std::string &reason) {
-  sendPartMessageToClient(fd, client->getNickname(), channel->getName());
   client->decrementChannelsCount();
   channel->removeClientFromChannelMap(client);
   if (channel->getChannelOperators().find(fd) !=
       channel->getChannelOperators().end()) {
     channel->removeOperator(client);
   }
-  if (!reason.empty()) {
-    broadcastInChannelAndToSender(*client, *channel, "PART", reason);
-  }
+  broadcastInChannelAndToSender(*client, *channel, "PART", reason);
 }
 
 void Server::quitAllChannels(int fd) {
@@ -104,13 +101,5 @@ void Server::quitAllChannels(int fd) {
         channel->getChannelClients().end()) {
       quitChannel(fd, channel, client, "");
     }
-  }
-}
-
-void Server::sendPartMessageToClient(int fd, const std::string &nick,
-                                     const std::string &channelName) {
-  std::string partMessage = ":" + nick + " PART :#" + channelName + "\r\n";
-  if (send(fd, partMessage.c_str(), partMessage.length(), 0) == -1) {
-    throw std::runtime_error("Runtime error: send failed");
   }
 }

@@ -6,9 +6,11 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 16:03:18 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 16:38:23 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <sys/socket.h>
 
 #include <iostream>
 #include <sstream>
@@ -75,5 +77,5 @@ void Server::kick(int fd, const std::string &param) {
   }
   std::string message = targetNick + " " + reason + "\r\n";
   broadcastInChannelAndToSender(client, channel, "KICK", message);
-  quitChannel(fdTarget, &channel, targetClient, reason);
+  quitChannel(fdTarget, &channel, targetClient, "");
 }

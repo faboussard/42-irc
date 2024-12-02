@@ -6,9 +6,11 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 16:18:00 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 16:44:06 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <sys/socket.h>
 
 #include <iostream>
 #include <map>
@@ -171,26 +173,26 @@ bool Server::isChannelNameValid(const std::string &channelNameToCheck,
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
-  if (channelNameToCheck.empty() ||
-      (channelNameToCheck.length() == 1 && channelNameToCheck[0] == REG_CHAN)) {
+  if (channelNameToCheck.empty() || channelNameToCheck.length() < 2) {
     send461NeedMoreParams(client, "JOIN");
     return (false);
     if (channelNameToCheck[0] != REG_CHAN) {
       send476BadChanMask(client, channelNameToCheck);
       return (false);
     }
-    if (std::find_if(channelNameToCheck.begin(), channelNameToCheck.end(),
-                     isSpecialChar) != channelNameToCheck.end()) {
-      send476BadChanMask(client, channelNameToCheck);
-      return (false);
-    } else if (channelNameToCheck.length() > gConfig->getLimit(CHANNELLEN) ||
-               channelNameToCheck.length() < 2 ||
-               channelNameToCheck[0] != REG_CHAN) {
-      send476BadChanMask(client, channelNameToCheck);
-      return (false);
-    }
-    return (true);
   }
+  if (channelNameToCheck.length() > gConfig->getLimit(CHANNELLEN)) {
+    send476BadChanMask(client, channelNameToCheck);
+    return (false);
+  }
+  std::string channelNameWithoutPrefix = channelNameToCheck.substr(1);
+  if (std::find_if(channelNameWithoutPrefix.begin(),
+                   channelNameWithoutPrefix.end(),
+                   isSpecialChar) != channelNameWithoutPrefix.end()) {
+    send476BadChanMask(client, channelNameToCheck);
+    return (false);
+  }
+  return (true);
 }
 
 void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
@@ -210,10 +212,9 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     channel->addClientToChannelMap(client);
     client->incrementChannelsCount();
-    sendJoinMessageToClient(client->getNickname(), channel->getName(), *client);
     send353Namreply(*client, *channel);
     send366Endofnames(*client, *channel);
-    broadcastInChannelAndToSender(*client, *channel, "JOIN", "say hello!");
+    broadcastInChannelAndToSender(*client, *channel, "JOIN", "");
     if (channel->getTopic().topic.empty())
       send331Notopic(*client, *channel);
     else
@@ -229,11 +230,4 @@ void Server::addChanneltoServer(const std::string &channelName) {
   std::ostringstream oss;
   oss << newChannel.getNameWithPrefix() << ": New channel created";
   printLog(INFO_LOG, CHANNEL, oss.str());
-}
-
-void Server::sendJoinMessageToClient(const std::string &nick,
-                                     const std::string &channelName,
-                                     const Client &client) {
-  std::string joinMessage = ":" + nick + " JOIN :#" + channelName + "\r\n";
-  client.receiveMessage(joinMessage);
 }
