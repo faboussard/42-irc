@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 18:20:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 11:48:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 15:20:44 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@
 // WEATHER
 #define SUNNY_CAT_1 "     /\\_/\\"
 #define SUNNY_CAT_2 "    ( ^_^ )   Gonna be a sunny day, full of smiles!"
-#define SUNNY_CAT_3 "     > ^ < 🐾"
+#define SUNNY_CAT_3 "     > ^ < ☀️"
 #define SUNNY_CAT {SUNNY_CAT_1, SUNNY_CAT_2, SUNNY_CAT_3}
 
 #define CLOUDY_CAT_1 "     /\\_/\\"
@@ -66,22 +66,22 @@
 
 #define FOGGY_CAT_1 "     /\\_/\\"
 #define FOGGY_CAT_2 "    ( o.o )   Will be foggy... Who turned off the lights?"
-#define FOGGY_CAT_3 "     > ^ <"
+#define FOGGY_CAT_3 "     > ^ < 🫥"
 #define FOGGY_CAT {FOGGY_CAT_1, FOGGY_CAT_2, FOGGY_CAT_3}
 
 #define RAINY_CAT_1 "     /\\_/\\"
 #define RAINY_CAT_2 "    ( T_T )   Gonna rain tomorrow...!"
-#define RAINY_CAT_3 "     > ^ < 🐾"
+#define RAINY_CAT_3 "     > ^ < ☔️"
 #define RAINY_CAT {RAINY_CAT_1, RAINY_CAT_2, RAINY_CAT_3}
 
 #define SNOWY_CAT_1 "     /\\_/\\"
 #define SNOWY_CAT_2 "    ( >_< )   Will be snowy, Brrr!"
-#define SNOWY_CAT_3 "     > ^ < ❄️"
+#define SNOWY_CAT_3 "     > ^ < 🌨"
 #define SNOWY_CAT {SNOWY_CAT_1, SNOWY_CAT_2, SNOWY_CAT_3}
 
 #define THUNDER_CAT_1 "     /\\_/\\"
 #define THUNDER_CAT_2 "    ( o_o )   Watch out! Thunderstorms are coming."
-#define THUNDER_CAT_3 "     > ^ < ⚡"
+#define THUNDER_CAT_3 "     > ^ < ⚡️"
 #define THUNDER_CAT {THUNDER_CAT_1, THUNDER_CAT_2, THUNDER_CAT_3}
 
 #define FROSTY_CAT_1 "     /\\_/\\"

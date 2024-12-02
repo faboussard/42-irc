@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 12:04:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 14:40:04 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,15 +298,6 @@ void Bot::listenToIrcServer(void) {
           handleApiResponse(_botPollFds[i].fd);
         }
       }
-      // Check for hang-up or error events
-      if (_botPollFds[i].revents & (POLLHUP | POLLERR)) {
-        if (_botPollFds[i].fd == _botSocketFd) {
-          Log::printLog(ERROR_LOG, BOT_L, "Server connection closed");
-          close(_botSocketFd);
-          _signal = true;
-          break;
-        }
-      }
     }
     // Check for API requests timeout
     for (std::deque<BotRequest>::iterator it = _requestDatas.begin();
@@ -354,7 +345,8 @@ std::string Bot::readMessageFromServer(void) {
 }
 
 bool Bot::sendMessageToServer(const std::string& message) {
-  ssize_t bytesSent = send(_botSocketFd, message.c_str(), message.length(), 0);
+  ssize_t bytesSent =
+      send(_botSocketFd, message.c_str(), message.length(), MSG_NOSIGNAL);
   if (bytesSent == -1) {
     Log::printLog(ERROR_LOG, BOT_L,
                   "Failed to send message to IRC server: " +

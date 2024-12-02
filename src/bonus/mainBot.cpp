@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 09:09:16 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/01 16:36:37 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 14:42:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,6 @@ int main(int ac, char** argv) {
     std::cerr << e.what() << std::endl;
     return (EXIT_FAILURE);
   }
-  Log::printLog(INFO_LOG, BOT_L, "Bot shut down");
+  Log::printLog(NOTIFY_LOG, BOT_L, "Bot shut down");
   return (EXIT_SUCCESS);
 }

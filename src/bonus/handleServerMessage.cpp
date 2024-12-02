@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 12:06:23 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 14:38:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,12 @@
 
 void Bot::handleServerMessage(void) {
   std::string requestBuffer = readMessageFromServer();
-  if (requestBuffer.empty()) return;
+  if (requestBuffer.empty()) {
+    Log::printLog(ERROR_LOG, BOT_L, "Server connection closed");
+    close(_botSocketFd);
+    _signal = true;
+    return;
+  }
   Log::printLog(DEBUG_LOG, BOT_L, "Received from Server: " + requestBuffer);
   if (requestBuffer[0] != ':' ||
       requestBuffer.find("PRIVMSG") == std::string::npos)

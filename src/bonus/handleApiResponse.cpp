@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 10:08:25 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 15:09:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,11 +157,11 @@ eForecast decodeWeatherCode(const std::string &code) {
     return (FOGGY);
   else if (code == "1087" || code == "1273" || code == "1276")
     return (THUNDER);
-  else if (code == "1063" || code == "1066" || code == "1069" || code == "1072")
+  else if (code == "1066" || code == "1069" || code == "1072")
     return (FROSTY);
   else if (isCodeSnowy(code))
     return (SNOWY);
-  else if (code[1] == '1' || code[1] == '2')
+  else if (code[1] == '0' || code[1] == '1' || code[1] == '2')
     return (RAINY);
   else
     return (UNKNOWN_FORECAST);
