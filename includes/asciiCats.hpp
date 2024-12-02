@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 18:20:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 10:21:30 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 11:48:30 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@
 #define SUNNY_CAT {SUNNY_CAT_1, SUNNY_CAT_2, SUNNY_CAT_3}
 
 #define CLOUDY_CAT_1 "     /\\_/\\"
-#define CLOUDY_CAT_2 "    ( -_-)   It'll be a bit gloomy tomorrow..."
+#define CLOUDY_CAT_2 "    ( -_- )   It'll be a bit gloomy tomorrow..."
 #define CLOUDY_CAT_3 "     > ^ < ☁️"
 #define CLOUDY_CAT {CLOUDY_CAT_1, CLOUDY_CAT_2, CLOUDY_CAT_3}
 

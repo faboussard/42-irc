@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 10:08:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 12:04:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,8 +298,16 @@ void Bot::listenToIrcServer(void) {
           handleApiResponse(_botPollFds[i].fd);
         }
       }
+      // Check for hang-up or error events
+      if (_botPollFds[i].revents & (POLLHUP | POLLERR)) {
+        if (_botPollFds[i].fd == _botSocketFd) {
+          Log::printLog(ERROR_LOG, BOT_L, "Server connection closed");
+          close(_botSocketFd);
+          _signal = true;
+          break;
+        }
+      }
     }
-
     // Check for API requests timeout
     for (std::deque<BotRequest>::iterator it = _requestDatas.begin();
          it != _requestDatas.end();) {

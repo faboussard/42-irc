@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 10:05:24 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 12:00:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,9 @@
 #define INSULTME_URL \
   "https://evilinsult.com/generate_insult.php?lang=en&type=json"
 #define ADVICE_URL "https://api.adviceslip.com/advice"
-#define WEATHER_URL1 "\'api.weatherapi.com/v1/forecast.json?days=2&key="
+#define WEATHER_URL1 "\"api.weatherapi.com/v1/forecast.json?days=2&key="
 #define WEATHER_URL2 "&q="
-#define URL_QUOTE "\'"
+#define URL_QUOTE "\""
 #define DEFAULT_CITY "Lyon"
 #define SNOWY_CODES \
   {"1114", "1117", "1216", "1219", "1222", "1225", "1279", "1282"}
