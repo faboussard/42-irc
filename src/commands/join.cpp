@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 16:44:06 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 17:31:51 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,7 @@ void Server::joinChannel(int fd, const std::string &param) {
     printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
-
-  std::string channels, keys;
-  std::istringstream iss(param);
-  iss >> channels >> keys;
-  stringVectorPair channelsAndKeys = parseJoinParams(channels, keys);
-  if (channelsAndKeys.first.empty()) {
-    send400UnknownError(
-        client, channels,
-        "channel name cannot contain spaces or speicial characters");
-    return;
-  }
+  stringVectorPair channelsAndKeys = parseJoinParams(param);
   for (size_t i = 0; i < channelsAndKeys.first.size(); ++i) {
 #ifdef DEBUG
     {
@@ -92,6 +82,12 @@ void Server::joinChannel(int fd, const std::string &param) {
       }
       Channel &channel = it->second;
       const Channel &constChannel = channel;
+      std::map<int, Client *> clientsInChannel = channel.getChannelClients();
+      if (client.getChannelsCount() >= gConfig->getLimit(CHANLIMIT) &&
+          clientsInChannel.find(fd) == clientsInChannel.end()) {
+        send405TooManyChannels(client);
+        return;
+      }
       if (isChannelNotFull(constChannel, client) &&
           isClientAllowedInInviteOnlyChannel(constChannel, client) &&
           isKeyValid(constChannel, key, client)) {
@@ -101,37 +97,39 @@ void Server::joinChannel(int fd, const std::string &param) {
   }
 }
 
-stringVectorPair Server::parseJoinParams(const std::string &key,
-                                         const std::string &value) {
-  stringVector keyVector;
-  stringVector valueVector;
+stringVectorPair Server::parseJoinParams(const std::string &param) {
+  std::string channels, keys;
+  std::istringstream iss(param);
+  iss >> channels >> keys;
+  stringVector channelsVector;
+  stringVector keysVector;
   stringVectorPair list;
-  splitByCommaAndTrim(key, &keyVector);
+  splitByCommaAndTrim(channels, &channelsVector);
 
 #ifdef DEBUG
   {
     std::ostringstream before, after;
-    before << "JOIN: key: Before split and trim key: " << key;
-    after << "JOIN: keyVector: After split and trim keyVector: ";
-    for (size_t i = 0; i < keyVector.size(); ++i) after << keyVector[i] << "|";
+    before << "JOIN: channels: Before split and trim key: " << param;
+    after << "JOIN: channelsVector: After split and trim channelsVector: ";
+    for (size_t i = 0; i < channelsVector.size(); ++i) after << channelsVector[i] << "|";
     Server::printLog(DEBUG_LOG, COMMAND, before.str());
     Server::printLog(DEBUG_LOG, COMMAND, after.str());
   }
 #endif
-  splitByCommaAndTrim(value, &valueVector);
+  splitByCommaAndTrim(keys, &keysVector);
 #ifdef DEBUG
   {
     std::ostringstream before, after;
-    before << "JOIN: value: Before split and trim value: " << value;
-    after << "JOIN: valueVector: After split and trim valueVector: ";
-    for (size_t i = 0; i < valueVector.size(); ++i)
-      after << valueVector[i] << "|";
+    before << "JOIN: keys: Before split and trim value: " << param;
+    after << "JOIN: keysVector: After split and trim keysVector: ";
+    for (size_t i = 0; i < keysVector.size(); ++i)
+      after << keysVector[i] << "|";
     Server::printLog(DEBUG_LOG, COMMAND, before.str());
     Server::printLog(DEBUG_LOG, COMMAND, after.str());
   }
 #endif
-  list.first = keyVector;
-  list.second = valueVector;
+  list.first = channelsVector;
+  list.second = keysVector;
   return (list);
 }
 
@@ -204,11 +202,6 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   }
 #endif
   const clientPMap &clientsInChannel = channel->getChannelClients();
-  if (client->getChannelsCount() >= gConfig->getLimit(CHANLIMIT) &&
-      clientsInChannel.find(fd) == clientsInChannel.end()) {
-    send405TooManyChannels(*client);
-    return;
-  }
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     channel->addClientToChannelMap(client);
     client->incrementChannelsCount();

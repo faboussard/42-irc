@@ -6,10 +6,8 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 16:04:09 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 17:59:35 by fanny            ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
-
 /* ************************************************************************** */
 
 #ifndef INCLUDES_SERVER_HPP_
@@ -139,25 +137,19 @@ class Server {
   void joinChannel(int fd, const std::string &param);
 
   void addChanneltoServer(const std::string &channelName);
-  void sendJoinMessageToClient(const std::string &nick,
-                               const std::string &channelName,
-                               const Client &client);
   void processJoinRequest(int fd, Client *client, Channel *channel);
   bool isKeyValid(const Channel &channel, const std::string &keyToCheck,
                   const Client &client);
   bool isChannelNotFull(const Channel &channel, const Client &client);
   bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
                                           const Client &client);
-  stringVectorPair parseJoinParams(const std::string &channels,
-                                                   const std::string &keys);
+  stringVectorPair parseJoinParams(const std::string &param);
 
   /*-------- PART --------*/
   void part(int fd, const std::string &param);
-  stringVectorPair parsePartParams(const std::string &param);
+  std::pair<std::vector<std::string>, std::string> parsePartParams(const std::string &param);
   void quitAllChannels(int fd);
   void quitChannel(int fd, Channel *channel, Client *client, const std::string &reason);
-  void sendPartMessageToClient(int fd, const std::string &nick,
-                               const std::string &channelName);
 
   /*-------- QUIT --------*/
   void quit(const std::string &argument, Client *client, clientsMap *cltMap);
@@ -222,11 +214,6 @@ class Server {
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
-
-
-
-  /* Tests */
-  // void addClient(int fd, const Client &client);
 };
 
 #endif  // INCLUDES_SERVER_HPP_

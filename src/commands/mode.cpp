@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 15:40:39 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 18:01:01 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,9 +273,7 @@ stringVectorPair Server::parseModeParams(const std::string &arg) {
     Server::printLog(DEBUG_LOG, COMMAND, afterValue.str());
   }
 #endif
-  list.first = keyVector;
-  list.second = valueVector;
-  return list;
+  return std::make_pair(keyVector, valueVector);
 }
 
 // ======== MODE <prefix><channel>

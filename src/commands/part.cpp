@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 16:54:14 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 18:00:20 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,16 @@
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
 
-stringVectorPair Server::parsePartParams(const std::string &param) {
-  stringVector channelsVector;
-  stringVector reasonsVector;
-  stringVectorPair list;
-  stringVector tokens = basicSplit(param);
-  for (size_t i = 0; i < tokens.size(); ++i) {
-    if (!tokens[i].empty() && tokens[i][0] == '#') {
-      channelsVector.push_back(tokens[i]);
-    } else {
-      reasonsVector.push_back(tokens[i]);
-    }
-  }
+std::pair<std::vector<std::string>, std::string> Server::parsePartParams(const std::string &param) {
+  std::vector<std::string> channelsVector;
+  std::string reason;
+  std::istringstream iss(param);
+  std::string channels;
+  iss >> channels;
+  std::getline(iss >> std::ws, reason); // Read the rest of the line as the reason
+
+  splitByCommaAndTrim(channels, &channelsVector);
+
 #ifdef DEBUG
   {
     std::ostringstream before, afterKey, afterValue;
@@ -39,17 +37,14 @@ stringVectorPair Server::parsePartParams(const std::string &param) {
     afterKey << "channelsVector: ";
     for (size_t i = 0; i < channelsVector.size(); ++i)
       afterKey << channelsVector[i] << "|";
-    afterValue << "reasonsVector: ";
-    for (size_t i = 0; i < reasonsVector.size(); ++i)
-      afterValue << reasonsVector[i] << "|";
+    afterValue << "reason: " << reason;
     Server::printLog(DEBUG_LOG, COMMAND, before.str());
     Server::printLog(DEBUG_LOG, COMMAND, afterKey.str());
     Server::printLog(DEBUG_LOG, COMMAND, afterValue.str());
   }
 #endif
-  list.first = channelsVector;
-  list.second = reasonsVector;
-  return list;
+
+  return std::make_pair(channelsVector, reason);
 }
 
 void Server::part(int fd, const std::string &param) {
@@ -58,45 +53,48 @@ void Server::part(int fd, const std::string &param) {
     send461NeedMoreParams(*client, "PART");
     return;
   }
-  stringVectorPair channelsAndReasons = parsePartParams(param);
+
+  
+std::pair<std::vector<std::string>, std::string>  channelsAndReasons = parsePartParams(param);
   stringVector channelsVector = channelsAndReasons.first;
-  stringVector reasonsVector = channelsAndReasons.second;
+  std::string reason = channelsAndReasons.second;
+
   if (channelsVector.empty()) {
     send403NoSuchChannel(*client, param);
     return;
   }
+
   for (size_t i = 0; i < channelsVector.size(); ++i) {
-    Channel *channel = &_channels[channelsVector[i].substr(1)];
-    if (!channel) {
+    channelsMap::iterator it = _channels.find(channelsVector[i].substr(1));
+    if (it == _channels.end()) {
       send403NoSuchChannel(*client, channelsVector[i]);
-      return;
+      continue;
     }
-    if (channel->getChannelClients().find(fd) ==
-        channel->getChannelClients().end()) {
+    Channel *channel = &it->second;
+    if (channel->getChannelClients().find(fd) == channel->getChannelClients().end()) {
       send442NotOnChannel(*client, *channel);
-      return;
+      continue;
     }
-    std::string reason = reasonsVector.size() > i ? reasonsVector[i] : "";
     quitChannel(fd, channel, client, reason);
   }
 }
 
 void Server::quitChannel(int fd, Channel *channel, Client *client,
                          const std::string &reason) {
+  broadcastInChannelAndToSender(*client, *channel, "PART", reason);
+
   client->decrementChannelsCount();
   channel->removeClientFromChannelMap(client);
-  if (channel->getChannelOperators().find(fd) !=
-      channel->getChannelOperators().end()) {
+
+  if (channel->getChannelOperators().find(fd) != channel->getChannelOperators().end()) {
     channel->removeOperator(client);
-    broadcastInChannelAndToSender(*client, *channel, "PART", reason);
-  }
-  if (channel->getChannelClients().empty()) {
-    _channels.erase(channel->getName());
   }
 }
 
 void Server::quitAllChannels(int fd) {
   Client *client = &_clients.at(fd);
+  std::vector<std::string> channelsToDelete;
+
   channelsMap::iterator itEnd = _channels.end();
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
     Channel *channel = &it->second;
