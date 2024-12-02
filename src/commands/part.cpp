@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 16:46:13 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 16:54:14 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,9 @@ void Server::quitChannel(int fd, Channel *channel, Client *client,
       channel->getChannelOperators().end()) {
     channel->removeOperator(client);
     broadcastInChannelAndToSender(*client, *channel, "PART", reason);
+  }
+  if (channel->getChannelClients().empty()) {
+    _channels.erase(channel->getName());
   }
 }
 
