@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 13:52:43 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/02 15:40:39 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ bool Server::isChannelValid(int fd, const std::string &channel) {
 void Server::mode(int fd, const std::string &arg) {
   const Client &client = _clients.at(fd);
   std::istringstream iss(arg);
-  std::string channelName, modeString;
+  std::string channelName;
   iss >> channelName;
   if (isChannelValid(fd, channelName) == false) return;
   const Channel &channelObj = _channels[channelName.substr(1)];
@@ -214,7 +214,7 @@ void Server::mode(int fd, const std::string &arg) {
   }
   std::string remainingArgs;
   std::getline(iss, remainingArgs);
-  StringVectorPair modestringAndArguments = parseMode(remainingArgs);
+  stringVectorPair modestringAndArguments = parseModeParams(remainingArgs);
   if (modestringAndArguments.first.empty()) {
     send324Channelmodeis(client, channelObj);
     return;
@@ -245,21 +245,11 @@ void Server::mode(int fd, const std::string &arg) {
   switchMode(&_clients[fd], channelName, modestringVector, modeArgumentsVector);
 }
 
-stringVector split(const std::string &str) {
-  stringVector tokens;
-  std::istringstream iss(str);
-  std::string token;
-  while (iss >> token) {
-    tokens.push_back(token);
-  }
-  return tokens;
-}
-
-StringVectorPair Server::parseMode(const std::string &arg) {
+stringVectorPair Server::parseModeParams(const std::string &arg) {
   stringVector keyVector;
   stringVector valueVector;
-  StringVectorPair list;
-  stringVector tokens = split(arg);
+  stringVectorPair list;
+  stringVector tokens = basicSplit(arg);
   for (size_t i = 0; i < tokens.size(); ++i) {
     if (!tokens[i].empty() && (tokens[i][0] == '+' || tokens[i][0] == '-')) {
       keyVector.push_back(tokens[i]);

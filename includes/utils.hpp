@@ -24,7 +24,7 @@
 
 typedef std::vector<std::string> stringVector;
 typedef std::pair<std::vector<std::string>, std::vector<std::string> >
-    StringVectorPair;
+    stringVectorPair;
 
 void shrink_to_fit(std::vector<struct pollfd> *vec);
 void strToUpper(std::string *str);
@@ -37,6 +37,8 @@ std::vector<std::string> split(const std::string& str,
                                const std::string& delim);
 
 void splitByCommaAndTrim(const std::string &argument, stringVector *args);
+
+stringVector basicSplit(const std::string &str);
 
 std::string commandToString(Command command);
 std::string commandToString(eBotCommand command);

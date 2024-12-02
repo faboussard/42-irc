@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 15:07:32 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 15:29:27 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void Server::joinChannel(int fd, const std::string &param) {
   std::string channels, keys;
   std::istringstream iss(param);
   iss >> channels >> keys;
-  StringVectorPair channelsAndKeys = parsejoin(channels, keys);
+  stringVectorPair channelsAndKeys = parseJoinParams(channels, keys);
   if (channelsAndKeys.first.empty()) {
     send400UnknownError(client, channels, "channel name is empty");
     return;
@@ -97,11 +97,11 @@ void Server::joinChannel(int fd, const std::string &param) {
   }
 }
 
-StringVectorPair Server::parsejoin(const std::string &key,
+stringVectorPair Server::parseJoinParams(const std::string &key,
                                    const std::string &value) {
   stringVector keyVector;
   stringVector valueVector;
-  StringVectorPair list;
+  stringVectorPair list;
   splitByCommaAndTrim(key, &keyVector);
 
 #ifdef DEBUG
@@ -116,7 +116,7 @@ StringVectorPair Server::parsejoin(const std::string &key,
 #endif
   if (keyVector.size() != static_cast<std::vector<std::string>::size_type>(
                               std::count(key.begin(), key.end(), ',') + 1)) {
-    return StringVectorPair();
+    return stringVectorPair();
   }
   splitByCommaAndTrim(value, &valueVector);
 #ifdef DEBUG
