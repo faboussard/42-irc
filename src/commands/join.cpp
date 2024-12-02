@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 15:29:27 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 16:18:00 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,9 @@ void Server::joinChannel(int fd, const std::string &param) {
   iss >> channels >> keys;
   stringVectorPair channelsAndKeys = parseJoinParams(channels, keys);
   if (channelsAndKeys.first.empty()) {
-    send400UnknownError(client, channels, "channel name is empty");
+    send400UnknownError(
+        client, channels,
+        "channel name cannot contain spaces or speicial characters");
     return;
   }
   for (size_t i = 0; i < channelsAndKeys.first.size(); ++i) {
@@ -98,7 +100,7 @@ void Server::joinChannel(int fd, const std::string &param) {
 }
 
 stringVectorPair Server::parseJoinParams(const std::string &key,
-                                   const std::string &value) {
+                                         const std::string &value) {
   stringVector keyVector;
   stringVector valueVector;
   stringVectorPair list;
@@ -114,10 +116,6 @@ stringVectorPair Server::parseJoinParams(const std::string &key,
     Server::printLog(DEBUG_LOG, COMMAND, after.str());
   }
 #endif
-  if (keyVector.size() != static_cast<std::vector<std::string>::size_type>(
-                              std::count(key.begin(), key.end(), ',') + 1)) {
-    return stringVectorPair();
-  }
   splitByCommaAndTrim(value, &valueVector);
 #ifdef DEBUG
   {
@@ -177,13 +175,22 @@ bool Server::isChannelNameValid(const std::string &channelNameToCheck,
       (channelNameToCheck.length() == 1 && channelNameToCheck[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
     return (false);
-  } else if (channelNameToCheck.length() > gConfig->getLimit(CHANNELLEN) ||
-             channelNameToCheck.length() < 2 ||
-             channelNameToCheck[0] != REG_CHAN) {
-    send476BadChanMask(client, channelNameToCheck.substr(1));
-    return (false);
+    if (channelNameToCheck[0] != REG_CHAN) {
+      send476BadChanMask(client, channelNameToCheck);
+      return (false);
+    }
+    if (std::find_if(channelNameToCheck.begin(), channelNameToCheck.end(),
+                     isSpecialChar) != channelNameToCheck.end()) {
+      send476BadChanMask(client, channelNameToCheck);
+      return (false);
+    } else if (channelNameToCheck.length() > gConfig->getLimit(CHANNELLEN) ||
+               channelNameToCheck.length() < 2 ||
+               channelNameToCheck[0] != REG_CHAN) {
+      send476BadChanMask(client, channelNameToCheck);
+      return (false);
+    }
+    return (true);
   }
-  return (true);
 }
 
 void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
@@ -195,7 +202,8 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   }
 #endif
   const clientPMap &clientsInChannel = channel->getChannelClients();
-  if (client->getChannelsCount() >= gConfig->getLimit(CHANLIMIT) && clientsInChannel.find(fd) == clientsInChannel.end()) {
+  if (client->getChannelsCount() >= gConfig->getLimit(CHANLIMIT) &&
+      clientsInChannel.find(fd) == clientsInChannel.end()) {
     send405TooManyChannels(*client);
     return;
   }
@@ -206,10 +214,10 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
     send353Namreply(*client, *channel);
     send366Endofnames(*client, *channel);
     broadcastInChannelAndToSender(*client, *channel, "JOIN", "say hello!");
-      if (channel->getTopic().topic.empty())
-    send331Notopic(*client, *channel);
-  else
-    send332Topic(*client, *channel);
+    if (channel->getTopic().topic.empty())
+      send331Notopic(*client, *channel);
+    else
+      send332Topic(*client, *channel);
   }
 }
 bool Server::isLeaveAllChannelsRequest(const std::string &param) {

@@ -30,6 +30,7 @@ void shrink_to_fit(std::vector<struct pollfd> *vec);
 void strToUpper(std::string *str);
 
 bool isNumeric(const std::string &str);
+bool isSpecialChar(char c);
 
 std::string trimWhiteSpaces(const std::string &str);
 

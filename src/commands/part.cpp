@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 15:53:24 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 16:04:11 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
 
-stringVectorPair Server::parsePartParams(const std::string &param,
-                                         Client *client) {
+stringVectorPair Server::parsePartParams(const std::string &param) {
   stringVector channelsVector;
   stringVector reasonsVector;
   stringVectorPair list;
@@ -59,7 +58,7 @@ void Server::part(int fd, const std::string &param) {
     send461NeedMoreParams(*client, "PART");
     return;
   }
-  stringVectorPair channelsAndReasons = parsePartParams(param, client);
+  stringVectorPair channelsAndReasons = parsePartParams(param);
   stringVector channelsVector = channelsAndReasons.first;
   stringVector reasonsVector = channelsAndReasons.second;
   if (channelsVector.empty()) {
@@ -103,7 +102,7 @@ void Server::quitAllChannels(int fd) {
     Channel *channel = &it->second;
     if (channel->getChannelClients().find(fd) !=
         channel->getChannelClients().end()) {
-      quitChannel(fd, channel, client);
+      quitChannel(fd, channel, client, "");
     }
   }
 }

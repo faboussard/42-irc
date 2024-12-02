@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 15:48:06 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 16:04:09 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ class Server {
 
   /*-------- PART --------*/
   void part(int fd, const std::string &param);
-  stringVectorPair parsePartParams(const std::string &param, Client *client);
+  stringVectorPair parsePartParams(const std::string &param);
   void quitAllChannels(int fd);
   void quitChannel(int fd, Channel *channel, Client *client, const std::string &reason);
   void sendPartMessageToClient(int fd, const std::string &nick,

@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/28 18:32:43 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/02 16:03:18 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,5 +75,5 @@ void Server::kick(int fd, const std::string &param) {
   }
   std::string message = targetNick + " " + reason + "\r\n";
   broadcastInChannelAndToSender(client, channel, "KICK", message);
-  quitChannel(fdTarget, &channel, targetClient);
+  quitChannel(fdTarget, &channel, targetClient, reason);
 }
