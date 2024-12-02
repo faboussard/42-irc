@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 15:16:57 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 19:12:35 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,23 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 /*       Clients management                                                   */
 /*============================================================================*/
 
+bool Server::isMessageTooLong(const std::string &message, int fd) {
+  if (message.length() > MAX_MESSAGE_LENGTH) {
+    std::ostringstream oss;
+    oss << "fd" << fd << ": Message exceeds maximum length of "
+        << MAX_MESSAGE_LENGTH << " characters.";
+    Server::printLog(ERROR_LOG, CLIENT, oss.str());
+    return true;
+  }
+  return false;
+}
+
+bool Server::isMessageEmpty(std::string *message) {
+  message->erase(0, message->find_first_not_of("\n\r"));
+  message->erase(message->find_last_not_of("\n\r") + 1);
+  return message->empty();
+}
+
 void Server::handleClientMessage(int fd) {
   static std::map<int, std::string> messageBuffer;
   char buffer[1024] = {0};
@@ -161,21 +178,20 @@ void Server::handleClientMessage(int fd) {
     return;
   }
   messageBuffer[fd] += std::string(buffer, valread);
+
   size_t pos;
   std::string message = "";
   while ((pos = messageBuffer[fd].find("\r\n")) != std::string::npos) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
-  if (message.empty()) return;
-  std::string msgBuf = message;
-  msgBuf.erase(0, msgBuf.find_first_not_of("\n"));
-  msgBuf.erase(msgBuf.find_last_not_of("\n") + 1);
+  if (isMessageTooLong(message, fd) || isMessageEmpty(message)) {
+    return;
+  }
   std::ostringstream oss;
   oss << _clients[fd].getNickname() << " (fd" << fd
-      << ") sent a message: " << msgBuf;
+      << ") sent a message: " << message;
   printLog(INFO_LOG, CLIENT, oss.str());
-
   Client &client = _clients[fd];
   if (client.isAccepted() == false) {
     handleInitialMessage(&client, message);

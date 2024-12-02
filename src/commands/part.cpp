@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 18:00:20 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 18:22:49 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,9 @@ void Server::part(int fd, const std::string &param) {
 std::pair<std::vector<std::string>, std::string>  channelsAndReasons = parsePartParams(param);
   stringVector channelsVector = channelsAndReasons.first;
   std::string reason = channelsAndReasons.second;
-
+  if (reason == "") {
+    reason = "Leaving";
+  }
   if (channelsVector.empty()) {
     send403NoSuchChannel(*client, param);
     return;

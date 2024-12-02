@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 18:01:01 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 18:27:49 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void Server::switchMode(Client *client, const std::string &channelName,
             sendNotice(*client, "MODE +l argument must be a numeric value.");
             return;
           }
-          int limit = std::atoi(limitStr.c_str());
+          uint8_t limit = std::atoi(limitStr.c_str());
           channel->activateLimitMode(limit, *client);
         } else {
           channel->deactivateLimitMode();
@@ -246,6 +246,7 @@ void Server::mode(int fd, const std::string &arg) {
 }
 
 stringVectorPair Server::parseModeParams(const std::string &arg) {
+  if (arg.size() < 2) return std::make_pair(stringVector(), stringVector());
   stringVector keyVector;
   stringVector valueVector;
   stringVectorPair list;

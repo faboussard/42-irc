@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 13:03:16 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/02 18:25:44 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,7 +278,7 @@ bool Channel::isOperator(int fd) const {
 }
 
 /* limit-mode (l) */
-void Channel::activateLimitMode(int limit, const Client &client) {
+void Channel::activateLimitMode(uint8_t limit, const Client &client) {
   if (limit == 0) {
     send461NeedMoreParams(client, "MODE");
   } else {
