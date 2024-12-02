@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 19:13:09 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 20:07:51 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,10 @@ void Server::handleClientMessage(int fd) {
     message += messageBuffer[fd].substr(0, pos + 2);
     messageBuffer[fd].erase(0, pos + 1);
   }
-  if (isMessageTooLong(message, fd) || isMessageEmpty(&message)) {
+  if (isMessageTooLong(message, fd)) {
+    message = message.substr(0, MAX_MESSAGE_LENGTH);
+  }
+  if (isMessageEmpty(&message)) {
     return;
   }
   std::ostringstream oss;

@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 20:01:49 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/02 20:06:57 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,9 +278,9 @@ bool Channel::isOperator(int fd) const {
 }
 
 /* limit-mode (l) */
-void Channel::activateLimitMode(int limit, const Client &client) {
+void Channel::activateLimitMode(int limit) {
   if (limit == 0) {
-    deactivateLimitMode;
+    deactivateLimitMode();
   } else {
     _mode.limitSet = true;
     _limit = limit;
