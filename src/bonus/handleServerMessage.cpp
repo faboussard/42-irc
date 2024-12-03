@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 14:38:32 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 20:02:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
 #ifdef DEBUG
   debugLogServerMessageSplit(clientNickname, commandStr, arg);
 #endif
+  if (commandStr[0] != '!')
+    return (BotRequest(clientNickname.substr(1), UNKNOWN_BOT_COMMAND, ""));
   commandStr = commandStr.substr(1);
   strToUpper(&commandStr);
   BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr),

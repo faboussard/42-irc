@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/03 11:09:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 20:02:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,6 +234,7 @@ void Bot::sendAsciiCatByCommand(BotRequest *request, eBotCommand command) {
       sendAsciiCat(request->clientNickname, _adviceCat);
       break;
     default:
+      sendAsciiCat(request->clientNickname, _unknownCat);
       break;
   }
 }
