@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 21:49:10 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/03 11:14:30 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void Server::switchMode(Client *client, const std::string &channelName,
             return;
           }
           std::stringstream ss(limitStr);
-          int limit;
+          unsigned int limit;
           ss >> limit;
           if (ss.fail() || limit > 999) {
             sendNotice(*client, "MODE +l argument must be below 999.");

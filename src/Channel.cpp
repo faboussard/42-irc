@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 20:06:57 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/03 11:15:14 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ const std::string Channel::getChannelModeFlag(void) const {
 
 const std::string &Channel::getKey(void) const { return (_key); }
 
-int Channel::getLimit(void) const { return (_limit); }
+unsigned int Channel::getLimit(void) const { return (_limit); }
 
 /*============================================================================*/
 /*       Setters                                                              */
@@ -278,7 +278,7 @@ bool Channel::isOperator(int fd) const {
 }
 
 /* limit-mode (l) */
-void Channel::activateLimitMode(int limit) {
+void Channel::activateLimitMode(unsigned int limit) {
   if (limit == 0) {
     deactivateLimitMode();
   } else {
