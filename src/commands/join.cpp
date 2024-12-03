@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/03 11:17:07 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/03 16:36:38 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,13 +181,6 @@ bool Server::isChannelNameValid(const std::string &channelNameToCheck,
     return (false);
   }
   if (channelNameToCheck.length() > gConfig->getLimit(CHANNELLEN)) {
-    send476BadChanMask(client, channelNameToCheck);
-    return (false);
-  }
-  std::string channelNameWithoutPrefix = channelNameToCheck.substr(1);
-  if (std::find_if(channelNameWithoutPrefix.begin(),
-                   channelNameWithoutPrefix.end(),
-                   isSpecialChar) != channelNameWithoutPrefix.end()) {
     send476BadChanMask(client, channelNameToCheck);
     return (false);
   }

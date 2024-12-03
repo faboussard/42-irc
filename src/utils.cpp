@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 16:48:50 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/03 16:35:57 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,6 @@ bool isNumeric(const std::string &str) {
     if (!std::isdigit(str[i])) return (false);
   }
   return (true);
-}
-
-bool isSpecialChar(char c) {
-    return !std::isalnum(c) && c != '_' && c != '-';
 }
 
 void strToUpper(std::string *str) {
