@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 12:57:53 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/27 12:37:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 20:08:22 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ class Log {
                        const std::string &message);
 
  private:
+  Log(void);
   static std::string logContext(eLogContext context);
 };
 

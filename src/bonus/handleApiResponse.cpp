@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/03 20:02:43 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 20:06:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
     content = parseResponseByKey(itRequest->apiResponse, "advice");
   } else if (itRequest->command != WEATHER) {
     content = decodeHtmlEscapes(itRequest->apiResponse);
-    // content = itRequest->apiResponse;
   } else {
     eForecast forecast = parseJsonWeatherResponse(itRequest->apiResponse);
     if (forecast != UNKNOWN_FORECAST) {
@@ -238,70 +237,6 @@ void Bot::sendAsciiCatByCommand(BotRequest *request, eBotCommand command) {
       break;
   }
 }
-
-// void Bot::sendAsciiCatByCommand(BotRequest *request, eBotCommand command) {
-//   if (command == HELLO) {
-//     stringVector::const_iterator itEnd = _hello.end();
-//     for (std::vector<std::string>::const_iterator it = _hello.begin();
-//          it != itEnd; ++it) {
-//       std::ostringstream oss;
-//       oss << "PRIVMSG " << request->clientNickname << " :" << *it << "\r\n";
-//       sendMessageToServer(oss.str());
-//     }
-//   }
-//   else if (command == INSULTME) {
-//     stringVector insults;
-//     insults.push_back(INSULTME_CAT_1);
-//     insults.push_back(INSULTME_CAT_2);
-//     insults.push_back(INSULTME_CAT_3);
-//     insults.push_back(INSULTME_CAT_4);
-
-//     for (std::vector<std::string>::const_iterator it = insults.begin();
-//          it != insults.end(); ++it) {
-//       std::ostringstream oss;
-//       oss << "PRIVMSG " << request->clientNickname << " :" << *it << "\r\n";
-//       sendMessageToServer(oss.str());
-//     }
-//   } else if (command == JOKE) {
-//     stringVector joke;
-//     joke.push_back(JOKE_CAT_1);
-//     joke.push_back(JOKE_CAT_2);
-//     joke.push_back(JOKE_CAT_3);
-
-//     for (std::vector<std::string>::const_iterator it = joke.begin();
-//          it != joke.end(); ++it) {
-//       std::ostringstream oss;
-//       oss << "PRIVMSG " << request->clientNickname << " :" << *it << "\r\n";
-//       sendMessageToServer(oss.str());
-//     }
-//   } else if (command == ADVICE) {
-//     stringVector advice;
-//     advice.push_back(ADVICE_CAT_1);
-//     advice.push_back(ADVICE_CAT_2);
-//     advice.push_back(ADVICE_CAT_3);
-//     advice.push_back(ADVICE_CAT_4);
-
-//     for (std::vector<std::string>::const_iterator it = advice.begin();
-//          it != advice.end(); ++it) {
-//       std::ostringstream oss;
-//       oss << "PRIVMSG " << request->clientNickname << " :" << *it << "\r\n";
-//       sendMessageToServer(oss.str());
-//     }
-//   } else {  // UNKNOWN / DEFAULT
-//     stringVector unknown;
-//     unknown.push_back(DEFAULT_CAT_1);
-//     unknown.push_back(DEFAULT_CAT_2);
-//     unknown.push_back(DEFAULT_CAT_3);
-//     unknown.push_back(DEFAULT_CAT_4);
-
-//     for (std::vector<std::string>::const_iterator it = unknown.begin();
-//          it != unknown.end(); ++it) {
-//       std::ostringstream oss;
-//       oss << "PRIVMSG " << request->clientNickname << " :" << *it << "\r\n";
-//       sendMessageToServer(oss.str());
-//     }
-//   }
-// }
 
 void Bot::sendAsciiCatForecast(const std::string &nick, eForecast forecast) {
   switch (forecast) {
