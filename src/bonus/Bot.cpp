@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 14:40:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 10:15:46 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ Bot::Bot(int serverPort, const std::string& serverPass)
       _botSocketFd(-1) {
   constructInstruction();
   constructAsciiCats();
+  constructHtmlEscapes();
 }
 
 Bot::~Bot(void) { close(_botSocketFd); }
@@ -85,6 +86,14 @@ void Bot::constructAsciiCats(void) {
   const char* timeoutCat[] = TIMEOUT_CAT;
   _timeoutCat.assign(timeoutCat,
                      timeoutCat + sizeof(timeoutCat) / sizeof(timeoutCat[0]));
+}
+
+void Bot::constructHtmlEscapes(void) {
+  _htmlEscapes[ESCAPE_QUOT] = '"';
+  _htmlEscapes[ESCAPE_AMP] = '\'';
+  _htmlEscapes[ESCAPE_AMP] = '&';
+  _htmlEscapes[ESCAPE_LT] = '<';
+  _htmlEscapes[ESCAPE_GT] = '>';
 }
 
 /*============================================================================*/

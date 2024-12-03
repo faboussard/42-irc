@@ -6,7 +6,7 @@
 /*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 10:31:27 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 10:08:35 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 09:57:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void Bot::weather(BotRequest *request) {
   url += keyStr;
   url += WEATHER_URL2;
   url += city;
-  url += URL_QUOTE;
+  url += QUOTE;
 
   Log::printLog(DEBUG_LOG, BOT_L, "URL: " + url);
   openCurl(request, url);

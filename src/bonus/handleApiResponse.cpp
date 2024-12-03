@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 15:09:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 10:57:08 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,8 @@ void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
   if (itRequest->command == ADVICE) {
     content = parseResponseByKey(itRequest->apiResponse, "advice");
   } else if (itRequest->command != WEATHER) {
-    content = itRequest->apiResponse;
+    content = decodeHtmlEscapes(itRequest->apiResponse);
+    // content = itRequest->apiResponse; 
   } else {
     eForecast forecast = parseJsonWeatherResponse(itRequest->apiResponse);
     if (forecast != UNKNOWN_FORECAST) {
@@ -124,6 +125,35 @@ std::string Bot::parseResponseByKey(const std::string &response,
     return ("I cannot find any advice for you !");
   }
   return response.substr(start, end - start);
+}
+
+std::string Bot::decodeHtmlEscapes(const std::string &str) {
+  std::ostringstream result;
+  std::string::const_iterator it = str.begin();
+  std::string::const_iterator itEnd = str.end();
+  while (it != itEnd) {
+    if (*it == '&') {
+      std::string::const_iterator itPatternEnd = std::find(it, itEnd, ';');
+      if (itPatternEnd != itEnd) {
+        std::string pattern(it, std::find(it, itEnd, ';') + 1);
+        if (pattern == ESCAPE_QUOT || pattern == ESCAPE_AMP ||
+            pattern == ESCAPE_LT || pattern == ESCAPE_GT) {
+          result << _htmlEscapes[pattern];
+          it = itPatternEnd + 1;
+        } else {
+          result << *it;
+          ++it;
+        }
+      } else {
+        result << *it;
+        ++it;
+      }
+    } else {
+      result << *it;
+      ++it;
+    }
+  }
+  return (result.str());
 }
 
 eForecast Bot::parseJsonWeatherResponse(const std::string &apiResponse) {

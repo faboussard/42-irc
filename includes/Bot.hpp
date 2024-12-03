@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 14:58:35 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 10:16:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,18 @@
 #define ADVICE_URL "https://api.adviceslip.com/advice"
 #define WEATHER_URL1 "\"api.weatherapi.com/v1/forecast.json?days=2&key="
 #define WEATHER_URL2 "&q="
-#define URL_QUOTE "\""
+#define QUOTE "\""
 #define DEFAULT_CITY "Lyon"
 #define SNOWY_CODES                                \
   {"1114", "1117", "1210", "1213", "1216", "1219", \
    "1222", "1225", "1255", "1258", "1279", "1282"}
-
 // #define JOKE_URL "https://httpbin.org/delay/50"  // For timeout case test
+
+#define ESCAPE_QUOT "&quot;"
+#define ESCAPE_APOS "&apos;"
+#define ESCAPE_AMP "&amp;"
+#define ESCAPE_LT "&lt;"
+#define ESCAPE_GT "&gt;"
 
 struct BotRequest {
   std::string clientNickname;
@@ -110,6 +115,8 @@ class Bot {
   stringVector _unknownCat;
   stringVector _timeoutCat;
 
+  std::map<std::string, char> _htmlEscapes;
+
  public:
   explicit Bot(int serverPort, const std::string &serverPass);
   ~Bot(void);
@@ -121,6 +128,7 @@ class Bot {
   /* Constructor helpers */
   void constructInstruction(void);
   void constructAsciiCats(void);
+  void constructHtmlEscapes(void);
 
   /* Bot launch */
   void createSocket(void);
@@ -153,9 +161,10 @@ class Bot {
   void advice(BotRequest *request);
   void weather(BotRequest *request);
 
-  /* Responses handling */
+  /* API Responses handling */
   void handleApiResponse(int fd);
   void receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest);
+  std::string decodeHtmlEscapes(const std::string &str);
   void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Log */
