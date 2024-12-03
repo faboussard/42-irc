@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 18:32:35 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/01 18:22:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,12 +122,13 @@ class Server {
 
   /* Commands handling */
   void handleCommand(Command command, const std::string &argument, int fd);
-  void broadcastInChannelExceptToSender(const Client &client, const Channel &channel,
-                          const std::string &command,
+  void broadcastInChannelExceptToSender(const Client &client,
+                          const Channel &channel, const std::string &command,
                           const std::string &content);
-  void broadcastInChannelAndToSender(const Client &client, const Channel &channel,
-                                const std::string &command,
-                                const std::string &content);
+  void broadcastInChannelAndToSender(const Client &client,
+                                     const Channel &channel,
+                                     const std::string &command,
+                                     const std::string &content);
   void sendNotice(const Client &client, const std::string &message);
 
   /*  Command  */
@@ -220,8 +221,6 @@ class Server {
 
   /*-------- PING --------*/
   void ping(const Client &client, const std::string &token);
-
-
 
   /* Tests */
   // void addClient(int fd, const Client &client);
