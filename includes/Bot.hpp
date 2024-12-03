@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/03 10:16:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 11:09:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <deque>
+#include <map>
 #include <string>
 #include <vector>
 

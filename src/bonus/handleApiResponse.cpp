@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/03 10:57:08 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 11:09:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
     content = parseResponseByKey(itRequest->apiResponse, "advice");
   } else if (itRequest->command != WEATHER) {
     content = decodeHtmlEscapes(itRequest->apiResponse);
-    // content = itRequest->apiResponse; 
+    // content = itRequest->apiResponse;
   } else {
     eForecast forecast = parseJsonWeatherResponse(itRequest->apiResponse);
     if (forecast != UNKNOWN_FORECAST) {
