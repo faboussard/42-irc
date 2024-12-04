@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 20:10:39 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 09:48:17 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,11 +167,11 @@ void Server::privmsg(int fd, const std::string &arg) {
         broadcastToOperatorsOnly(sender, channel, "PRIVMSG",
                                  messageWithoutColon);
       } else if (isChannel && targetsVector.size() == 1) {
-        broadcastInChannelExceptToSender(
-            sender, _channels.at(targetsVector[0].substr(1)), "PRIVMSG",
-            message.substr(1));
-        return;
-      } else if (isChannel) {
+    broadcastInChannelExceptToSender(sender,
+                                     _channels.at(targetsVector[0].substr(1)),
+                                     "PRIVMSG", message.substr(1));
+    return;
+  } else if (isChannel) {
 #ifdef DEBUG
         {
           std::ostringstream oss;

@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/21 13:59:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/02 15:17:03 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 09:48:58 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,23 @@ enum Command {
 };
 
 enum eBotCommand {
-  MENU,
+  HELLO,
   JOKE,
   INSULTME,
   ADVICE,
   WEATHER,
   UNKNOWN_BOT_COMMAND
+};
+
+enum eForecast {
+  SUNNY,
+  CLOUDY,
+  FOGGY,
+  RAINY,
+  SNOWY,
+  THUNDER,
+  FROSTY,
+  UNKNOWN_FORECAST
 };
 
 #endif  // INCLUDES_ENUMS_HPP_

@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 21:47:54 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 09:49:27 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,9 +123,8 @@ class Server {
   /* Commands handling */
   void handleCommand(Command command, const std::string &argument, int fd);
   void broadcastInChannelExceptToSender(const Client &client,
-                                        const Channel &channel,
-                                        const std::string &command,
-                                        const std::string &content);
+                          const Channel &channel, const std::string &command,
+                          const std::string &content);
   void broadcastInChannelAndToSender(const Client &client,
                                      const Channel &channel,
                                      const std::string &command,

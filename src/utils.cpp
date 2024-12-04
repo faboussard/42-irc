@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/03 16:35:57 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 09:48:49 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,19 @@ void strToUpper(std::string *str) {
   size_t len = str->length();
   while (i < len) {
     (*str)[i] = std::toupper((*str)[i]);
+    ++i;
+  }
+}
+
+void capitalize(std::string *str) {
+  size_t i = 0;
+  size_t len = str->length();
+  while (i < len) {
+    if (i == 0 || (*str)[i - 1] == ' ') {
+      (*str)[i] = std::toupper((*str)[i]);
+    } else {
+      (*str)[i] = std::tolower((*str)[i]);
+    }
     ++i;
   }
 }
@@ -131,8 +144,8 @@ std::string commandToString(Command command) {
 
 std::string commandToString(eBotCommand command) {
   switch (command) {
-    case MENU:
-      return ("MENU");
+    case HELLO:
+      return ("HELLO");
     case JOKE:
       return ("JOKE");
     case INSULTME:

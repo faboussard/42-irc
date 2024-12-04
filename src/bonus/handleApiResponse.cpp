@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:45 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 09:20:34 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 20:06:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,15 @@
 #include <cstring>
 #include <deque>
 #include <string>
+#include <vector>
 
 #include "../../includes/Bot.hpp"
 #include "../../includes/Log.hpp"
+#include "../../includes/enums.hpp"
+
+/*============================================================================*/
+/*       API responses handling                                               */
+/*============================================================================*/
 
 void Bot::handleApiResponse(int fd) {
   logApiResponse(fd);
@@ -34,7 +40,6 @@ void Bot::handleApiResponse(int fd) {
   receiveResponseFromApi(it);
   sendResponseToServer(it);
 
-  // remove from pollfds
   std::vector<struct pollfd>::iterator itPollEnd = _botPollFds.end();
   for (std::vector<struct pollfd>::iterator itPoll = _botPollFds.begin();
        itPoll != itPollEnd; ++itPoll) {
@@ -44,9 +49,9 @@ void Bot::handleApiResponse(int fd) {
     }
   }
   _requestDatas.erase(it);
-  Log::printLog(INFO_LOG, BOT_L, 
+  Log::printLog(INFO_LOG, BOT_L,
                 "Request removed from queue. Remaining requests count: " +
-                toString(_requestDatas.size()));
+                    toString(_requestDatas.size()));
 }
 
 void Bot::receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest) {
@@ -63,16 +68,30 @@ void Bot::receiveResponseFromApi(std::deque<BotRequest>::iterator itRequest) {
 }
 
 void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
-    std::string content;
-  if (itRequest->command == ADVICE)
+  std::string content;
+  if (itRequest->command == ADVICE) {
     content = parseResponseByKey(itRequest->apiResponse, "advice");
-  else
-     content = itRequest->apiResponse;
-  #ifdef DEBUG
-    std::ostringstream oss;
-    oss << "Response to send: " << content;
-    Log::printLog(DEBUG_LOG, BOT_L, oss.str());
-  #endif
+  } else if (itRequest->command != WEATHER) {
+    content = decodeHtmlEscapes(itRequest->apiResponse);
+  } else {
+    eForecast forecast = parseJsonWeatherResponse(itRequest->apiResponse);
+    if (forecast != UNKNOWN_FORECAST) {
+      std::string city =
+          itRequest->commandArg.empty() ? DEFAULT_CITY : itRequest->commandArg;
+      capitalize(&city);
+      std::ostringstream oss;
+      oss << "PRIVMSG " << itRequest->clientNickname << " :Tomorrow in " << city
+          << "... " << "\r\n";
+      sendMessageToServer(oss.str());
+    }
+    sendAsciiCatForecast(itRequest->clientNickname, forecast);
+    return;
+  }
+#ifdef DEBUG
+  std::ostringstream oss;
+  oss << "Response to send: " << content;
+  Log::printLog(DEBUG_LOG, BOT_L, oss.str());
+#endif
   if (content.empty()) {
     Log::printLog(ERROR_LOG, BOT_L, "Response is empty");
     return;
@@ -84,19 +103,167 @@ void Bot::sendResponseToServer(std::deque<BotRequest>::iterator itRequest) {
   Log::printLog(INFO_LOG, BOT_L, "Response has to be sent to Server");
 }
 
-std::string Bot::parseResponseByKey(const std::string &response, const std::string &key)
-{
-    std::string keyPattern = "\"" + key + "\": \"";
-    std::size_t start = response.find(keyPattern);
-    if (start == std::string::npos)
-    {
-        return "I cannot find any advice for you !";
+/*============================================================================*/
+/*       Responses parsing                                                    */
+/*============================================================================*/
+
+static std::string extractTomorrowForecastCode(const std::string &apiResponse);
+static eForecast decodeWeatherCode(const std::string &code);
+static bool isCodeSnowy(const std::string &code);
+
+std::string Bot::parseResponseByKey(const std::string &response,
+                                    const std::string &key) {
+  std::string keyPattern = "\"" + key + "\": \"";
+  std::size_t start = response.find(keyPattern);
+  if (start == std::string::npos) {
+    return ("I cannot find any advice for you !");
+  }
+  start += keyPattern.length();
+  std::size_t end = response.find("\"", start);
+  if (end == std::string::npos) {
+    return ("I cannot find any advice for you !");
+  }
+  return response.substr(start, end - start);
+}
+
+std::string Bot::decodeHtmlEscapes(const std::string &str) {
+  std::ostringstream result;
+  std::string::const_iterator it = str.begin();
+  std::string::const_iterator itEnd = str.end();
+  while (it != itEnd) {
+    if (*it == '&') {
+      std::string::const_iterator itPatternEnd = std::find(it, itEnd, ';');
+      if (itPatternEnd != itEnd) {
+        std::string pattern(it, std::find(it, itEnd, ';') + 1);
+        if (pattern == ESCAPE_QUOT || pattern == ESCAPE_AMP ||
+            pattern == ESCAPE_LT || pattern == ESCAPE_GT) {
+          result << _htmlEscapes[pattern];
+          it = itPatternEnd + 1;
+        } else {
+          result << *it;
+          ++it;
+        }
+      } else {
+        result << *it;
+        ++it;
+      }
+    } else {
+      result << *it;
+      ++it;
     }
-    start += keyPattern.length();
-    std::size_t end = response.find("\"", start);
-    if (end == std::string::npos)
-    {
-        return "I cannot find any advice for you !";
-    }
-    return response.substr(start, end - start);
+  }
+  return (result.str());
+}
+
+eForecast Bot::parseJsonWeatherResponse(const std::string &apiResponse) {
+  // "error":{"code":1006 (No matching location found.)
+  if (apiResponse.empty()) return (UNKNOWN_FORECAST);
+  std::string weatherCode = extractTomorrowForecastCode(apiResponse);
+  if (weatherCode.empty() || weatherCode.length() != 4 || weatherCode[0] != '1')
+    return (UNKNOWN_FORECAST);
+  return (decodeWeatherCode(weatherCode));
+}
+
+std::string extractTomorrowForecastCode(const std::string &apiResponse) {
+  std::string codeStr = apiResponse;
+  std::string searchString = "\"code\":";
+  size_t pos = codeStr.find(searchString);
+  if (pos == std::string::npos) return "";
+  codeStr = codeStr.substr(pos + searchString.length());
+  pos = codeStr.find(searchString);
+  if (pos == std::string::npos) return "";
+  codeStr = codeStr.substr(pos + searchString.length(), 4);
+  Log::printLog(DEBUG_LOG, BOT_L, "Weather code: " + codeStr);
+  return (codeStr);
+}
+
+eForecast decodeWeatherCode(const std::string &code) {
+  if (code == "1000")
+    return (SUNNY);
+  else if (code == "1003" || code == "1006" || code == "1009")
+    return (CLOUDY);
+  else if (code == "1030" || code == "1135" || code == "1147")
+    return (FOGGY);
+  else if (code == "1087" || code == "1273" || code == "1276")
+    return (THUNDER);
+  else if (code == "1066" || code == "1069" || code == "1072")
+    return (FROSTY);
+  else if (isCodeSnowy(code))
+    return (SNOWY);
+  else if (code[1] == '0' || code[1] == '1' || code[1] == '2')
+    return (RAINY);
+  else
+    return (UNKNOWN_FORECAST);
+}
+
+bool isCodeSnowy(const std::string &code) {
+  const char *snowyCodesArray[] = SNOWY_CODES;
+  stringVector snowyCodes(
+      snowyCodesArray,
+      snowyCodesArray + sizeof(snowyCodesArray) / sizeof(snowyCodesArray[0]));
+  return (std::find(snowyCodes.begin(), snowyCodes.end(), code) !=
+          snowyCodes.end());
+}
+
+/*============================================================================*/
+/*       ASCII cat                                                            */
+/*============================================================================*/
+void Bot::sendAsciiCat(const std::string &nick, const stringVector &cat) {
+  stringVector::const_iterator itEnd = cat.end();
+  for (std::vector<std::string>::const_iterator it = cat.begin(); it != itEnd;
+       ++it) {
+    std::ostringstream oss;
+    oss << "PRIVMSG " << nick << " :" << *it << "\r\n";
+    sendMessageToServer(oss.str());
+  }
+}
+
+void Bot::sendAsciiCatByCommand(BotRequest *request, eBotCommand command) {
+  switch (command) {
+    case HELLO:
+      sendAsciiCat(request->clientNickname, _hello);
+      break;
+    case INSULTME:
+      sendAsciiCat(request->clientNickname, _insultMeCat);
+      break;
+    case JOKE:
+      sendAsciiCat(request->clientNickname, _jokeCat);
+      break;
+    case ADVICE:
+      sendAsciiCat(request->clientNickname, _adviceCat);
+      break;
+    default:
+      sendAsciiCat(request->clientNickname, _unknownCat);
+      break;
+  }
+}
+
+void Bot::sendAsciiCatForecast(const std::string &nick, eForecast forecast) {
+  switch (forecast) {
+    case SUNNY:
+      sendAsciiCat(nick, _sunnyCat);
+      break;
+    case CLOUDY:
+      sendAsciiCat(nick, _cloudyCat);
+      break;
+    case FOGGY:
+      sendAsciiCat(nick, _foggyCat);
+      break;
+    case RAINY:
+      sendAsciiCat(nick, _rainyCat);
+      break;
+    case SNOWY:
+      sendAsciiCat(nick, _snowyCat);
+      break;
+    case THUNDER:
+      sendAsciiCat(nick, _thunderCat);
+      break;
+    case FROSTY:
+      sendAsciiCat(nick, _frostyCat);
+      break;
+    case UNKNOWN_FORECAST:
+    default:
+      sendAsciiCat(nick, _unknownWeatherCat);
+      break;
+  }
 }

@@ -6,10 +6,12 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 14:59:38 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/29 12:41:52 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/03 20:02:01 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cstdlib>
+#include <ctime>
 #include <string>
 
 #include "../../includes/Bot.hpp"
@@ -19,12 +21,13 @@
 
 void Bot::handleServerMessage(void) {
   std::string requestBuffer = readMessageFromServer();
+  if (requestBuffer.empty()) {
+    Log::printLog(ERROR_LOG, BOT_L, "Server connection closed");
+    close(_botSocketFd);
+    _signal = true;
+    return;
+  }
   Log::printLog(DEBUG_LOG, BOT_L, "Received from Server: " + requestBuffer);
-  if (requestBuffer.empty()) return;
-  // if (requestBuffer == PONG_MSG) {
-  //   _connectedToServer = true;
-  //   return;
-  // }
   if (requestBuffer[0] != ':' ||
       requestBuffer.find("PRIVMSG") == std::string::npos)
     return;
@@ -33,8 +36,8 @@ void Bot::handleServerMessage(void) {
   debugLogParsedMessage(newRequest);
 #endif
   switch (newRequest.command) {
-    case MENU:
-      sendAsciiCatByCommand(&newRequest, MENU);
+    case HELLO:
+      sendAsciiCatByCommand(&newRequest, HELLO);
       break;
     case WEATHER:
       weather(&newRequest);
@@ -60,14 +63,11 @@ void Bot::handleServerMessage(void) {
 /*       Parse requests                                                       */
 /*============================================================================*/
 
-#include <cstdlib>
-#include <ctime>
-
 static eBotCommand selectCommand(const std::string& command) {
   std::srand(std::time(NULL));
 
-  if (command == "MENU") {
-    return (MENU);
+  if (command == "HELLO") {
+    return (HELLO);
   } else if (command == "JOKE") {
     return (JOKE);
   } else if (command == "INSULTME") {
@@ -96,14 +96,17 @@ BotRequest Bot::parseRequest(const std::string& requestBuffer) {
   std::stringstream ss(requestBuffer);
   std::string clientNickname;
   std::string commandStr;
-  // std::string arg;
-  ss >> clientNickname >> commandStr >> commandStr >> commandStr;
-  // std::getline(ss >> std::ws, arg);
+  std::string arg;
+  ss >> clientNickname >> commandStr >> commandStr >> commandStr >> arg;
+
 #ifdef DEBUG
-  debugLogServerMessageSplit(clientNickname, commandStr);
+  debugLogServerMessageSplit(clientNickname, commandStr, arg);
 #endif
+  if (commandStr[0] != '!')
+    return (BotRequest(clientNickname.substr(1), UNKNOWN_BOT_COMMAND, ""));
   commandStr = commandStr.substr(1);
   strToUpper(&commandStr);
-  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr));
+  BotRequest newRequest(clientNickname.substr(1), selectCommand(commandStr),
+                        arg);
   return (newRequest);
 }

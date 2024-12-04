@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 21:48:27 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 09:48:42 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,16 +272,17 @@ void Server::sendConnectionMessage(const Client &client) const {
 /*============================================================================*/
 
 void Server::broadcastInChannelExceptToSender(const Client &sender,
-                                              const Channel &channel,
-                                              const std::string &command,
-                                              const std::string &content) {
+                                const Channel &channel,
+                                const std::string &command,
+                                const std::string &content) {
   std::string message = ":" + sender.getNickname() + " " + command + " " +
                         channel.getNameWithPrefix() + " :" + content + "\r\n";
   const clientPMap &allClients = channel.getChannelClients();
   clientPMap::const_iterator itEnd = allClients.end();
   for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
     Client *client = it->second;
-    if (client->getNickname() == sender.getNickname()) continue;
+    if (client->getNickname() == sender.getNickname())
+      continue;
     client->receiveMessage(message);
   }
 }

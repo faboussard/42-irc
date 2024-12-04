@@ -75,7 +75,7 @@ valgrind: debug
 
 # ---------------------------------- Bot ------------------------------------- #
 NAME_BOT = ircbot
-HEADERS_LIST_BOT = Bot Parser Log utils colors enums
+HEADERS_LIST_BOT = Bot Parser Log asciiCats utils colors enums
 SRCS_BOT = mainBot Bot botLog handleServerMessage handleApiResponse processCommands \
 		   Parser Log utils
 
@@ -103,7 +103,24 @@ debug_bot: clean create_dirs_bot ${NAME_BOT}
 
 valgrind_bot: debug_bot
 				valgrind --track-fds=yes --leak-check=full \
-				--show-leak-kinds=all -s ./${NAME_BOT} 6667 pass 6668
+				--show-leak-kinds=all -s ./${NAME_BOT} 6667 pass
+
+# ---------------------------------- Clean ----------------------------------- #
+clean:
+	${RMDIR} ${OBJS_DIR}
+	@${MAKE} clean_bot
+
+clean_bot:
+	${RMDIR} ${OBJS_DIR_BOT}
+
+fclean: clean
+	${RM} ${NAME}
+	@${MAKE} fclean_bot
+
+fclean_bot: clean_bot
+	${RM} ${NAME_BOT}
+
+re: fclean all
 
 # ---------------------------------- Tests ----------------------------------- #
 testnumericr: CFLAGS += -DTESTNUMERICR
@@ -112,16 +129,5 @@ testnumericr: fclean ${OBJS_DIR} ${NAME}
 testlist: CFLAGS += -g3 -DTESTLIST
 testlist: fclean ${OBJS_DIR} ${NAME}
 
-# ---------------------------------- Clean ----------------------------------- #
-clean:
-	${RMDIR} ${OBJS_DIR}
-	${RMDIR} ${OBJS_DIR_BOT}
-
-fclean: clean
-	${RM} ${NAME}
-	${RM} ${NAME_BOT}
-
-re: fclean all
-
 # ---------------------------------- Phony ----------------------------------- #
-.PHONY: all clean fclean re debug fsanitize valgrind fsan
+.PHONY: all clean fclean re debug valgrind fsan bot debug_bot valgrind_bot clean_bot fclean_bot
