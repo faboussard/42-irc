@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/03 11:14:30 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 09:56:59 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
-
-// Parameters: <channel> {[+|-]|o|s|i|t|k|l} [<limit>] [<user>] [<ban mask>]
 
 void Server::switchMode(Client *client, const std::string &channelName,
                         const stringVector &modeStrings,
@@ -117,11 +115,11 @@ void Server::switchMode(Client *client, const std::string &channelName,
 char Server::checkModeArguments(const stringVector &modeStrings,
                                 const stringVector &arguments) {
   std::map<char, bool> modesRequiringArgument;
-  modesRequiringArgument['k'] = true;   // Mode +k nécessite un argument si +
-  modesRequiringArgument['o'] = true;   // Mode +o nécessite un argument
-  modesRequiringArgument['l'] = true;   // Mode +l nécessite un argument si +
-  modesRequiringArgument['t'] = false;  // Mode +t ne nécessite pas un argument
-  modesRequiringArgument['i'] = false;  // Mode +i ne nécessite pas un argument
+  modesRequiringArgument['k'] = true;
+  modesRequiringArgument['o'] = true;
+  modesRequiringArgument['l'] = true;
+  modesRequiringArgument['t'] = false;
+  modesRequiringArgument['i'] = false;
 
   size_t argumentIndex = 0;
   bool plusMode = true;
@@ -287,63 +285,3 @@ stringVectorPair Server::parseModeParams(const std::string &arg) {
 #endif
   return std::make_pair(keyVector, valueVector);
 }
-
-// ======== MODE <prefix><channel>
-// ============================================= Replies:
-// -- 324 RPL_CHANNELMODEIS:
-// :<server> 324 <client> <channel> <modestring> <mode arguments>...
-// e.g. :irc.example.com 324 Alice #chatroom +itkl secretpass 25
-
-// ======== MODE <prefix><channel> <modestring> <target nick>
-// ================== e.g. MODE #channel +o <target nick> Replies:
-// -- 441 ERR_USERNOTINCHANNEL:
-// :<server> 441 <client> <target nick> <channel> :They aren't on that channel
-// The target isn’t joined to the channel
-
-/*
-  MODE - Changer le mode du channel :
-  — i : Définir/supprimer le canal sur invitation uniquement
-  — t : Définir/supprimer les restrictions de la commande TOPIC pour les
-opérateurs de canaux — k : Définir/supprimer la clé du canal (mot de passe) —
-o : Donner/retirer le privilège de l’opérateur de canal (pas plus de 3 à la
-fois) — l : Définir/supprimer la limite d’utilisateurs pour le canal 4.2.3
-Mode message
-
-      Command: MODE
-
-   The MODE command is a dual-purpose command in IRC.  It allows both
-   usernames and channels to have their mode changed.  The rationale for
-   this choice is that one day nicknames will be obsolete and the
-   equivalent property will be the channel.
-
-   When parsing MODE messages, it is recommended that the entire message
-   be parsed first and then the changes which resulted then passed on.
-
-4.2.3.1 Channel modes
-
-   Parameters: <channel> {[+|-]|o|p|s|i|t|n|b|v} [<limit>] [<user>]
-               [<ban mask>]
-
-   The MODE command is provided so that channel operators may change the
-   characteristics of `their' channel.  It is also required that servers
-   be able to change channel modes so that channel operators may be
-   created.
-
-   The various modes available for channels are as follows:
-
-           i - invite-only channel flag;
-           t - topic settable by channel operator only flag;
-           o - give/take channel operator privileges;
-           k - set a channel key (password).
-           l - set the user limit to channel;
-
-TESTS:
-
- stringVector args1 = {"+i", "-t", "+k", "+o"};        // Valide
-    stringVector args2 = {"+ik", "-tl"};                 // Valide
-    stringVector args3 = {"i", "+x", "-y"};              // Invalide (manque +
-ou caractères invalides)
-stringVector args4 = {"+i+t", "-l-k"};               //Invalide (plusieurs
-signes) stringVector args5 = {"+", "-"}; // Invalide (trop court) stringVector
-args6 = {"-ikt"};   // Valide (tousmodes valides)
-*/

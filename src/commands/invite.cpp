@@ -1,24 +1,18 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   invite.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/27 14:48:41 by yusengok          #+#    #+#             */
-/*   Updated: 2024/11/19 14:01:04 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/04 09:56:18 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 
 #include "../../includes/Server.hpp"
-
-// Commands
-// INVITE clientNick #42Channel
-// ------> Invite clientNick to #42Channel
-// INVITE
-// ------> Indicate a channel the client was invited to (impossible on Hexchat)
 
 void Server::invite(int fd, const std::string &arg) {
   if (arg.empty()) {

@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/04 09:48:42 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 09:57:47 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,8 +240,6 @@ void Server::clearClient(int fd) {
     if (it->second.getChannelOperators().find(fd) !=
         it->second.getChannelOperators().end())
       it->second.removeOperator(&_clients.at(fd));
-    // if (it->second.getChannelClients().find(fd) !=
-    //     it->second.getChannelClients().end())
     it->second.checkAndremoveClientFromTheChannel(fd);
   }
   closeClient(fd);
