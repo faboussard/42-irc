@@ -6,7 +6,7 @@
 /*   By: mbernard <mbernard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/19 09:01:51 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/02 10:02:01 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/04 14:11:11 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void shrink_to_fit(std::vector<struct pollfd> *vec);
 void strToUpper(std::string *str);
 void capitalize(std::string *str);
 bool isNumeric(const std::string &str);
-bool isSpecialChar(char c);
+// bool isSpecialChar(char c);
 
 std::string trimWhiteSpaces(const std::string &str);
 

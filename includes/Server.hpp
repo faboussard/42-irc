@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/04 09:49:27 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 14:08:55 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ class Server {
   void handleInitialMessage(Client *client, const std::string &msg);
   void handleOtherMessage(const Client &client, const std::string &msg);
   void handleClientMessage(int fd);
-  bool isMessageTooLong(const std::string &message, int fd);
+//   bool isMessageTooLong(const std::string &message, int fd);
   bool isMessageEmpty(std::string *message);
 
   /* Other methods */

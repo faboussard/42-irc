@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/* Copyright 2024 <mbernard>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   messageManagement.cpp                              :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/03 12:54:48 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/04 14:12:59 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ bool Server::isMessageEmpty(std::string *message) {
   message->erase(message->find_last_not_of("\n\r") + 1);
   #ifdef DEBUG
   std::ostringstream oss;
-  oss << "Message: " << message;
+  oss << "Message: " << *message;
   printLog(DEBUG_LOG, PARSER, oss.str());
   #endif
   return message->empty();
