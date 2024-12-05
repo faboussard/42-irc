@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 18:03:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 20:34:14 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,6 +281,20 @@ void Server::broadcastInChannelAndToSender(const Client &sender,
     client->receiveMessage(message);
   }
 }
+
+void Server::broadcastInChannelAndToSenderNoContent(const Client &sender,
+                                           const Channel &channel,
+                                           const std::string &command) {
+  std::string message = ":" + sender.getNickname() + " " + command + " " +
+                        channel.getNameWithPrefix() + "\r\n";
+  const clientPMap &allClients = channel.getChannelClients();
+  clientPMap::const_iterator itEnd = allClients.end();
+  for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
+    Client *client = it->second;
+    client->receiveMessage(message);
+  }
+}
+
 
 void Server::broadcastToOperatorsOnly(const Client &sender,
                                       const Channel &channel,

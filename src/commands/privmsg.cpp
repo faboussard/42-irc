@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 16:43:21 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:15:17 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ void Server::privmsg(int fd, const std::string &arg) {
         {
           std::ostringstream oss;
           oss << "broadcast to operators only: " << target
-              << " message: " << messageWithoutColon;
+              << " message: " << message;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
@@ -166,7 +166,7 @@ void Server::privmsg(int fd, const std::string &arg) {
         {
           std::ostringstream oss;
           oss << "broadcast in channel: " << target
-              << " message: " << messageWithoutColon;
+              << " message: " << message;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
@@ -179,7 +179,7 @@ void Server::privmsg(int fd, const std::string &arg) {
         {
           std::ostringstream oss;
           oss << "send privmsg to client: " << target
-              << " message: " << messageWithoutColon;
+              << " message: " << message;
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif

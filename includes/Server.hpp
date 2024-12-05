@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/04 14:08:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 20:36:30 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,9 @@ class Server {
                                      const Channel &channel,
                                      const std::string &command,
                                      const std::string &content);
+  void broadcastInChannelAndToSenderNoContent(const Client &client,
+                                              const Channel &channel,
+                                              const std::string &command);
   void sendNotice(const Client &client, const std::string &message);
 
   /*  Command  */
