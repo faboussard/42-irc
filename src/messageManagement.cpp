@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 09:45:42 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:37:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static bool isLastNick(const stringPairsVector &splittedPair, size_t it,
 }
 
 void Server::handleInitialMessage(Client *client, const std::string &msg) {
-  stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg);
+  stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg, *client);
   size_t vecSize = splittedPair.size();
 
   for (size_t it = 0; it < vecSize; ++it) {
@@ -111,7 +111,7 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
       << " | Message size: " << msg.size();
   printLog(DEBUG_LOG, PARSER, oss.str());
 #endif
-  stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg);
+  stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg, client);
   size_t vecSize = splittedPair.size();
   int fd = client.getFd();
   for (size_t it = 0; it < vecSize; ++it) {

@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 10:28:45 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:44:48 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,8 @@ std::vector<std::string> Parser::splitCommand(const std::string& command) {
   return (message);
 }
 
-stringPairsVector Parser::parseCommandIntoPairs(const std::string& command) {
+stringPairsVector Parser::parseCommandIntoPairs(const std::string& command,
+                                                const Client& client) {
   std::vector<std::string> cmds = split(command, "\r\n");
   stringPairsVector result;
   std::string token;
@@ -82,14 +83,16 @@ stringPairsVector Parser::parseCommandIntoPairs(const std::string& command) {
 
   for (size_t i = 0; i < size; ++i) {
 #ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "Message (" << i << ") size: " << cmds[i].size();
-    Log::printLog(DEBUG_LOG, PARSER, oss.str());
-  }
+    {
+      std::ostringstream oss;
+      oss << "Message (" << i << ") size: " << cmds[i].size();
+      Log::printLog(DEBUG_LOG, PARSER, oss.str());
+    }
 #endif
     if (cmds[i].size() > MAX_MESSAGE_LENGTH) {
-      Log::printLog(WARNING_LOG, PARSER, "Message too long, skipping");
+      send417InputTooLong(client);
+      Log::printLog(WARNING_LOG, PARSER,
+                    "Message too long from " + client.getNickname());
       continue;
     }
     cmds[i].erase(cmds[i].find_last_not_of(" \n\r\t") + 1);
@@ -102,12 +105,12 @@ stringPairsVector Parser::parseCommandIntoPairs(const std::string& command) {
     strToUpper(&firstPart);
     pair = std::make_pair(firstPart, secondPart);
 #ifdef DEBUG
-  {
-    std::ostringstream oss;
-    oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN
-        << pair.second << RESET;
-    Log::printLog(DEBUG_LOG, PARSER, oss.str());
-  }
+    {
+      std::ostringstream oss;
+      oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN
+          << pair.second << RESET;
+      Log::printLog(DEBUG_LOG, PARSER, oss.str());
+    }
 #endif
     result.push_back(pair);
   }
