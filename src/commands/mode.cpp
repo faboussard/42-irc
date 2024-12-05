@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 15:47:13 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 18:01:03 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include "../../includes/Server.hpp"
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
+
+#define PLUS_CHAR '+'
+#define MINUS_CHAR '-'
 
 void Server::switchMode(Client *client, const std::string &channelName,
                         const stringVector &modeStrings,
@@ -123,7 +126,7 @@ char Server::checkModeArguments(const stringVector &modeStrings,
   modesRequiringArgument['i'] = false;
 
   size_t argumentIndex = 0;
-  bool plusMode = true;
+  bool plusMode = false;
 
   for (size_t i = 0; i < modeStrings.size(); ++i) {
     const std::string &modeString = modeStrings[i];
@@ -131,10 +134,8 @@ char Server::checkModeArguments(const stringVector &modeStrings,
     for (size_t j = 0; j < modeString.size(); ++j) {
       char c = modeString[j];
 
-      if (c == '+') {
+      if (c == PLUS_CHAR) {
         plusMode = true;
-      } else if (c == '-') {
-        plusMode = false;
       }
 #ifdef DEBUG
       {
@@ -172,7 +173,6 @@ std::string Server::checkModeString(const stringVector &modestringToCheck) {
     return "";
   }
   const std::string validModes = "itkol";
-  const std::string plusMinus = "+-";
   for (size_t i = 0; i < modestringToCheck.size(); ++i) {
     const std::string &mode = modestringToCheck[i];
 #ifdef DEBUG
@@ -182,7 +182,7 @@ std::string Server::checkModeString(const stringVector &modestringToCheck) {
       printLog(DEBUG_LOG, COMMAND, oss.str());
     }
 #endif
-    if (mode[0] != plusMinus[0] && mode[0] != plusMinus[1]) return mode;
+    if (mode[0] != PLUS_CHAR && mode[0] != MINUS_CHAR) return mode;
     for (size_t j = 1; j < mode.size(); ++j) {
       if (validModes.find(mode[j]) == std::string::npos) {
 #ifdef DEBUG
@@ -264,13 +264,13 @@ stringVectorPair Server::parseModeParams(const std::string &arg) {
   stringVectorPair list;
   stringVector tokens = basicSplit(arg);
   for (size_t i = 0; i < tokens.size(); ++i) {
-    if (!tokens[i].empty() && (tokens[i][0] == '+' || tokens[i][0] == '-')) {
+    if (!tokens[i].empty() &&
+        (tokens[i][0] == PLUS_CHAR || tokens[i][0] == MINUS_CHAR)) {
       keyVector.push_back(tokens[i]);
     } else {
       valueVector.push_back(tokens[i]);
     }
   }
-
 #ifdef DEBUG
   {
     std::ostringstream before, afterKey, afterValue;
