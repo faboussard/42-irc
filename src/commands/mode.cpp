@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/04 09:56:59 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/05 10:27:52 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,6 @@ void Server::mode(int fd, const std::string &arg) {
   iss >> channelName;
   if (isChannelValid(fd, channelName) == false) return;
   const Channel &channelObj = _channels[channelName.substr(1)];
-
   if (channelObj.isOperator(fd) == false) {
     send482ChanOPrivsNeeded(client, channelObj);
     return;

@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/04 09:48:17 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/05 10:26:02 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,12 +166,7 @@ void Server::privmsg(int fd, const std::string &arg) {
 #endif
         broadcastToOperatorsOnly(sender, channel, "PRIVMSG",
                                  messageWithoutColon);
-      } else if (isChannel && targetsVector.size() == 1) {
-    broadcastInChannelExceptToSender(sender,
-                                     _channels.at(targetsVector[0].substr(1)),
-                                     "PRIVMSG", message.substr(1));
-    return;
-  } else if (isChannel) {
+      } else if (isChannel) {
 #ifdef DEBUG
         {
           std::ostringstream oss;
