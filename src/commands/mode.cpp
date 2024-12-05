@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 10:27:52 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:29:38 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,15 +217,15 @@ void Server::mode(int fd, const std::string &arg) {
   iss >> channelName;
   if (isChannelValid(fd, channelName) == false) return;
   const Channel &channelObj = _channels[channelName.substr(1)];
-  if (channelObj.isOperator(fd) == false) {
-    send482ChanOPrivsNeeded(client, channelObj);
-    return;
-  }
   std::string remainingArgs;
   std::getline(iss, remainingArgs);
   stringVectorPair modestringAndArguments = parseModeParams(remainingArgs);
   if (modestringAndArguments.first.empty()) {
     send324Channelmodeis(client, channelObj);
+    return;
+  }
+  if (channelObj.isOperator(fd) == false) {
+    send482ChanOPrivsNeeded(client, channelObj);
     return;
   }
   stringVector modestringVector = modestringAndArguments.first;
