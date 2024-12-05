@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/04 14:12:59 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 09:45:42 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,8 +106,9 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 #ifdef DEBUG
   std::ostringstream oss;
-  oss << "Nick:" BLUE << client.getNickname() << RESET << " | UName:" BLUE
-      << client.getUserName() << RESET << " | Message:" MAGENTA << msg << RESET;
+  oss << "Nick: " BLUE << client.getNickname() << RESET << " | UName: " BLUE
+      << client.getUserName() << RESET << " | Message: " MAGENTA << msg << RESET
+      << " | Message size: " << msg.size();
   printLog(DEBUG_LOG, PARSER, oss.str());
 #endif
   stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg);
