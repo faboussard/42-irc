@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 10:29:38 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:43:56 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,13 +198,17 @@ std::string Server::checkModeString(const stringVector &modestringToCheck) {
   return "";
 }
 
-bool Server::isChannelValid(int fd, const std::string &channel) {
-  if (channel.empty() || channel[0] != REG_CHAN) {
+bool Server::isChannelValid(int fd, const std::string &channelName) {
+  if (channelName.empty()) {
     send461NeedMoreParams(_clients[fd], "MODE");
     return (false);
   }
-  if (_channels.find(channel.substr(1)) == _channels.end()) {
-    send403NoSuchChannel(_clients[fd], channel);
+  if (channelName[0] != REG_CHAN) {
+    send502UserDontMatch(_clients[fd]);
+    return (false);
+  }
+  if (_channels.find(channelName.substr(1)) == _channels.end()) {
+    send403NoSuchChannel(_clients[fd], channelName);
     return (false);
   }
   return (true);
@@ -231,7 +235,6 @@ void Server::mode(int fd, const std::string &arg) {
   stringVector modestringVector = modestringAndArguments.first;
   stringVector modeArgumentsVector = modestringAndArguments.second;
   std::string errorModeString = checkModeString(modestringVector);
-
   if (!errorModeString.empty()) {
     send472UnknownMode(client, errorModeString);
     return;

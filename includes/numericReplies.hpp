@@ -1,4 +1,4 @@
-/* Copyright 2024 <yusengok>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.hpp                                 :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/04 14:10:37 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:40:32 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,6 +244,9 @@ extern Config *gConfig;
 #define _501_ERR_UMODEUNKNOWNFLAG(nick) \
   (FROM_SERVER + "501 " + nick + " :Unknown MODE flag\r\n")
 
+#define _502_ERR_USERDONTMATCH(nick) \
+  (FROM_SERVER + "502 " + nick + " :Cannot change mode for other users\r\n")
+
 #define _525_ERR_INVALIDKEY(nick, chanName)       \
   (FROM_SERVER + "525 " + nick + " " + chanName + \
   " :Key is not well-formed\r\n")
@@ -327,6 +330,7 @@ void send476BadChanMask(const Client &client,
 void send481NoPrivileges(const Client &client);
 void send482ChanOPrivsNeeded(const Client &client, const Channel &channel);
 void send501UmodeUnknownFlag(const Client &client);
+void send502UserDontMatch(const Client &client);
 void send525InvalidKey(const Client &client, const Channel &channel);
 void send696InvalidModeParam(const Client &client,
                              const std::string &chanNameWithPrefix,

@@ -1,12 +1,12 @@
-/* Copyright 2024 <yusengok>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/04 14:13:11 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:39:48 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -359,6 +359,11 @@ void send482ChanOPrivsNeeded(const Client &client, const Channel &channel) {
 
 void send501UmodeUnknownFlag(const Client &client) {
   std::string message = _501_ERR_UMODEUNKNOWNFLAG(client.getNickname());
+  sendNumericReply(client.getFd(), &message);
+}
+
+void send502UserDontMatch(const Client &client) {
+  std::string message = _502_ERR_USERDONTMATCH(client.getNickname());
   sendNumericReply(client.getFd(), &message);
 }
 
