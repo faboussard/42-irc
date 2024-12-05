@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/04 14:10:15 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:22:57 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include "../includes/Config.hpp"
 #include "../includes/Server.hpp"
 
-// const size_t MAX_MESSAGE_LENGTH = 512;
+const size_t MAX_MESSAGE_LENGTH = 512;
 
 extern Config *gConfig;
 

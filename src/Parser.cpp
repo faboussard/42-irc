@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/04 14:07:50 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:28:45 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,17 @@ stringPairsVector Parser::parseCommandIntoPairs(const std::string& command) {
   size_t size = cmds.size();
 
   for (size_t i = 0; i < size; ++i) {
+#ifdef DEBUG
+  {
+    std::ostringstream oss;
+    oss << "Message (" << i << ") size: " << cmds[i].size();
+    Log::printLog(DEBUG_LOG, PARSER, oss.str());
+  }
+#endif
+    if (cmds[i].size() > MAX_MESSAGE_LENGTH) {
+      Log::printLog(WARNING_LOG, PARSER, "Message too long, skipping");
+      continue;
+    }
     cmds[i].erase(cmds[i].find_last_not_of(" \n\r\t") + 1);
     std::string firstPart = cmds[i].substr(0, cmds[i].find_first_of(" "));
     std::string secondPart;
@@ -90,10 +101,14 @@ stringPairsVector Parser::parseCommandIntoPairs(const std::string& command) {
       secondPart = "";
     strToUpper(&firstPart);
     pair = std::make_pair(firstPart, secondPart);
+#ifdef DEBUG
+  {
     std::ostringstream oss;
     oss << "pair.first: " CYAN << pair.first << RESET " | pair.second: " CYAN
         << pair.second << RESET;
     Log::printLog(DEBUG_LOG, PARSER, oss.str());
+  }
+#endif
     result.push_back(pair);
   }
   return (result);
