@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 10:26:02 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 16:43:21 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,10 +93,6 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
     send412NoTextToSend(client);
     return (false);
   }
-  if ((*message)[0] != ':') {
-    sendNotice(client, "message must start with a colon");
-    return (false);
-  }
   std::string targetsPart = arg.substr(0, spacePos);
   splitByCommaAndTrim(targetsPart, targetsVector);
 #ifdef DEBUG
@@ -143,7 +139,7 @@ void Server::privmsg(int fd, const std::string &arg) {
       send401NoSuchNick(sender, target);
       return;
     }
-    std::string messageWithoutColon = message.substr(1);
+    if (message[0] == ':') message = message.substr(1);
     if (channelExists(target)) {
       if (_channels.find(target.substr(1)) == _channels.end()) {
         return;
@@ -164,8 +160,7 @@ void Server::privmsg(int fd, const std::string &arg) {
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
-        broadcastToOperatorsOnly(sender, channel, "PRIVMSG",
-                                 messageWithoutColon);
+        broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
       } else if (isChannel) {
 #ifdef DEBUG
         {
@@ -175,8 +170,7 @@ void Server::privmsg(int fd, const std::string &arg) {
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
-        broadcastInChannelAndToSender(sender, channel, "PRIVMSG",
-                                      messageWithoutColon);
+        broadcastInChannelAndToSender(sender, channel, "PRIVMSG", message);
       }
     } else {
       Client *client = findClientByNickname(target);
@@ -189,7 +183,7 @@ void Server::privmsg(int fd, const std::string &arg) {
           printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
-        sendPrivmsgToClient(sender, *client, messageWithoutColon);
+        sendPrivmsgToClient(sender, *client, message);
       }
     }
   }

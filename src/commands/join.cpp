@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 15:46:54 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 16:32:22 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 
 void Server::joinChannel(int fd, const std::string &param) {
   Client &client = _clients.at(fd);
-
   if (param.empty() || (param.length() == 1 && param[0] == REG_CHAN)) {
     send461NeedMoreParams(client, "JOIN");
     return;
@@ -105,7 +104,6 @@ stringVectorPair Server::parseJoinParams(const std::string &param) {
   stringVector keysVector;
   stringVectorPair list;
   splitByCommaAndTrim(channels, &channelsVector);
-
 #ifdef DEBUG
   {
     std::ostringstream before, after;
@@ -129,9 +127,7 @@ stringVectorPair Server::parseJoinParams(const std::string &param) {
     Server::printLog(DEBUG_LOG, COMMAND, after.str());
   }
 #endif
-  list.first = channelsVector;
-  list.second = keysVector;
-  return (list);
+  return (make_pair(channelsVector, keysVector));
 }
 
 bool Server::isKeyValid(const Channel &channel, const std::string &key,
@@ -208,9 +204,11 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
       send332Topic(*client, *channel);
   }
 }
+
 bool Server::isLeaveAllChannelsRequest(const std::string &param) {
   return (param == "0");
 }
+
 void Server::addChanneltoServer(const std::string &channelName) {
   Channel newChannel(channelName);
   _channels[channelName] = newChannel;
