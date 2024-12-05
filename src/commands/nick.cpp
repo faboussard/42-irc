@@ -6,13 +6,15 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 12:15:53 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 20:57:32 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 
 #include "../../includes/Parser.hpp"
+
+#include "../../includes/Log.hpp"
 #include "../../includes/colors.hpp"
 
 bool Parser::verifyNick(const std::string &nick, Client *client,
@@ -36,7 +38,17 @@ bool Parser::verifyNick(const std::string &nick, Client *client,
   }
   clientsMap::iterator itEnd = cltMap->end();
   for (clientsMap::iterator it = cltMap->begin(); it != itEnd; ++it) {
-    if (it->second.getNickname() == nick) {
+    std::string nickToCompare = it->second.getNickname();
+    std::string requestedNick = nick;
+    strToUpper(&nickToCompare);
+    strToUpper(&requestedNick);
+#ifdef DEBUG
+    std::ostringstream oss;
+    oss << "Comparing " << nickToCompare << " with " << requestedNick;
+    Log::printLog(DEBUG_LOG, CLIENT, oss.str());
+#endif
+    // if (it->second.getNickname() == nick) {
+    if (nickToCompare == requestedNick) {
       if (it->second.getFd() != client->getFd())
         send433NickAlreadyInUse(*client, nick);
       return (false);
@@ -46,6 +58,6 @@ bool Parser::verifyNick(const std::string &nick, Client *client,
   std::ostringstream oss;
   oss << client->getNickname() << " (fd" << client->getFd()
       << "): Nickname validated";
-  Server::printLog(INFO_LOG, CLIENT, oss.str());
+  Log::printLog(INFO_LOG, CLIENT, oss.str());
   return (true);
 }
