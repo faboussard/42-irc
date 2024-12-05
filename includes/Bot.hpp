@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/03 11:09:25 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:43:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,6 @@
 
 #define ENV_FILE ".env"
 #define LOCALHOST "127.0.0.1"
-#define BOT_NICK "KawaiiBot"
-#define BOT_USER "kawaiiBot 0 * :kawaiiBot"
-#define PING_MSG "PING ft_irc\r\n"
-#define PONG_MSG "PONG ft_irc\r\n"
 
 #define JOKEAPI_HOST "icanhazdadjoke.com"
 #define INSULTMEAPI_HOST "evilinsult.com"
@@ -56,7 +52,7 @@
 #define DEFAULT_CITY "Lyon"
 #define SNOWY_CODES                                \
   {"1114", "1117", "1210", "1213", "1216", "1219", \
-   "1222", "1225", "1255", "1258", "1279", "1282"}
+  "1222", "1225", "1255", "1258", "1279", "1282"}
 // #define JOKE_URL "https://httpbin.org/delay/50"  // For timeout case test
 
 #define ESCAPE_QUOT "&quot;"
