@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 07:45:39 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 08:38:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:33:07 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void Server::topic(int fd, const std::string &arg) {
   {
     std::ostringstream oss;
     oss << "TOPIC: Command received from " << client.getNickname();
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   if (arg.empty()) {
@@ -71,7 +71,7 @@ bool Server::parseTopicParams(const std::string &arg, stringVector *params,
   {
     std::ostringstream oss;
     oss << "TOPIC: Channel: " << channel << " / Topic before trim: " << topic;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   topic.erase(0, topic.find_first_not_of(":"));
@@ -79,7 +79,7 @@ bool Server::parseTopicParams(const std::string &arg, stringVector *params,
   {
     std::ostringstream oss;
     oss << "TOPIC: Topic after trim: " << topic;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   if (topic.empty()) topic = "";
