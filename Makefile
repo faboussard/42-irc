@@ -77,7 +77,7 @@ valgrind: debug
 NAME_BOT = ircbot
 HEADERS_LIST_BOT = Bot Parser Log asciiCats utils colors enums
 SRCS_BOT = mainBot Bot botLog handleServerMessage handleApiResponse processCommands \
-		   Parser Log utils
+		   Log utils
 
 OBJS_DIR_BOT = .objs_bot/
 OBJS_BOT = ${addprefix ${OBJS_DIR_BOT}, ${addsuffix .o, ${SRCS_BOT}}}

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 10:43:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 11:27:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@
 
 #define ENV_FILE ".env"
 #define LOCALHOST "127.0.0.1"
+
+#define BOT_NICK "KawaiiBot"
+#define BOT_USER "Kawaiibot 0 * :KawaiiBot"
 
 #define JOKEAPI_HOST "icanhazdadjoke.com"
 #define INSULTMEAPI_HOST "evilinsult.com"
