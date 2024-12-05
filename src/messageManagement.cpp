@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 22:03:04 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 22:42:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,8 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       send451NotRegistered(*client);
     } else if (command == NICK) {
       if (isLastNick(splittedPair, it + 1, vecSize)) {
-        if (Parser::verifyNick(argument, client, &_clients) == true &&
-            client->isAccepted() == false && client->isUsernameSet()) {
+        if (Parser::verifyNick(argument, client, &_clients, _channels, false) ==
+            true && client->isAccepted() == false && client->isUsernameSet()) {
           client->declareAccepted();
           sendConnectionMessage(*client);
         }
@@ -146,11 +146,11 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 bool Server::isMessageEmpty(std::string *message) {
   message->erase(0, message->find_first_not_of("\n\r"));
   message->erase(message->find_last_not_of("\n\r") + 1);
-  #ifdef DEBUG
+#ifdef DEBUG
   std::ostringstream oss;
   oss << "Message: " << *message;
   Log::printLog(DEBUG_LOG, PARSER, oss.str());
-  #endif
+#endif
   return message->empty();
 }
 
@@ -221,7 +221,7 @@ void Server::handleCommand(Command command, const std::string &argument,
       list(_clients.at(fd), argument);
       break;
     case NICK:
-      Parser::verifyNick(argument, &_clients[fd], &_clients);
+      Parser::verifyNick(argument, &_clients[fd], &_clients, _channels, true);
       break;
     case USER:
       Parser::verifyUser(argument, &_clients[fd], &_clients);
