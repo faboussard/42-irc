@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 17:39:11 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 20:18:03 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,9 +196,9 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     channel->addClientToChannelMap(client);
     client->incrementChannelsCount();
+    broadcastInChannelAndToSender(*client, *channel, "JOIN", "");
     send353Namreply(*client, *channel);
     send366Endofnames(*client, *channel);
-    broadcastInChannelAndToSender(*client, *channel, "JOIN", "");
     if (channel->getTopic().topic.empty())
       send331Notopic(*client, *channel);
     else

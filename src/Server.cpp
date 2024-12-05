@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/04 14:08:12 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 18:03:15 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,26 +34,11 @@ Server::Server(int port, const std::string &password)
 /*       Getters                                                              */
 /*============================================================================*/
 
-// const clientsMap &Server::getClients() const { return _clients; }
-
-// const channelsMap &Server::getChannels() const { return _channels; }
-
-// const std::string &Server::getPassword(void) const { return _password; }
-
 int Server::getPort(void) const { return _port; }
-
-// int Server::getSocketFd(void) const { return _socketFd; }
 
 /*============================================================================*/
 /*       Finders                                                              */
 /*============================================================================*/
-
-// Channel *Server::findChannelByName(const std::string &name) {
-//   channelsMap::iterator it = _channels.find(name);
-//   if (it == _channels.end())
-//     return (NULL);
-//   return (&it->second);
-// }
 
 Client *Server::findClientByNickname(const std::string &nickname) {
   clientsMap::iterator itEnd = _clients.end();
@@ -82,12 +67,10 @@ void Server::createSocket(void) {
   _address.sin_family = AF_INET;
   _address.sin_addr.s_addr = INADDR_ANY;
   _address.sin_port = htons(_port);
-
   _socketFd = socket(AF_INET, SOCK_STREAM, 0);
   if (_socketFd == -1) {
     throw std::runtime_error("Failed to create socket");
   }
-
   int en = 1;
   if (setsockopt(_socketFd, SOL_SOCKET, SO_REUSEADDR, &en, sizeof(en)) == -1) {
     throw std::runtime_error("Failed to set option SO_REUSEADDR on socket");

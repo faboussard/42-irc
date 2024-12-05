@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 10:39:48 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 20:12:54 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ void send353Namreply(const Client &client, const Channel &channel) {
     if (chanOps.find(it->first) == chanOps.end())
       nicknames << it->second->getNickname() << " ";
   }
-  chanNameWithSymbol << PUBLIC_CHAN << channel.getName();
+  chanNameWithSymbol << PUBLIC_CHAN << " " << REG_CHAN << channel.getName();
   std::string message = _353_RPL_NAMREPLY(
       client.getNickname(), chanNameWithSymbol.str(), nicknames.str());
   sendNumericReply(client.getFd(), &message);
