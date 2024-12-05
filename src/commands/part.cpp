@@ -1,18 +1,21 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/02 21:48:43 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/05 15:46:52 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <vector>
+#include <iostream>
+#include <utility>
 
 #include "../../includes/Client.hpp"
 #include "../../includes/Server.hpp"
@@ -27,11 +30,8 @@ std::pair<std::vector<std::string>, std::string> Server::parsePartParams(
   std::istringstream iss(param);
   std::string channels;
   iss >> channels;
-  std::getline(iss >> std::ws,
-               reason);  // Read the rest of the line as the reason
-
+  std::getline(iss >> std::ws, reason);
   splitByCommaAndTrim(channels, &channelsVector);
-
 #ifdef DEBUG
   {
     std::ostringstream before, afterKey, afterValue;
@@ -45,7 +45,6 @@ std::pair<std::vector<std::string>, std::string> Server::parsePartParams(
     Server::printLog(DEBUG_LOG, COMMAND, afterValue.str());
   }
 #endif
-
   return std::make_pair(channelsVector, reason);
 }
 
@@ -55,7 +54,6 @@ void Server::part(int fd, const std::string &param) {
     send461NeedMoreParams(*client, "PART");
     return;
   }
-
   std::pair<std::vector<std::string>, std::string> channelsAndReasons =
       parsePartParams(param);
   stringVector channelsVector = channelsAndReasons.first;
@@ -67,8 +65,7 @@ void Server::part(int fd, const std::string &param) {
     send403NoSuchChannel(*client, param);
     return;
   }
-
-  for (size_t i = 0; i < channelsVector.size(); ++i) {
+  for (size_t i = 0; i < channelsVector.size(); i++) {
     channelsMap::iterator it = _channels.find(channelsVector[i].substr(1));
     if (it == _channels.end()) {
       send403NoSuchChannel(*client, channelsVector[i]);
@@ -82,15 +79,22 @@ void Server::part(int fd, const std::string &param) {
     }
     quitChannel(fd, channel, client, reason);
   }
+  channelsMap::iterator it = _channels.begin();
+  while (it != _channels.end()) {
+    if (it->second.getChannelClients().empty()) {
+      std::cout << "Erasing channel: " << it->first << std::endl;
+      _channels.erase(it++);
+    } else {
+      ++it;
+    }
+  }
 }
 
 void Server::quitChannel(int fd, Channel *channel, Client *client,
                          const std::string &reason) {
   broadcastInChannelAndToSender(*client, *channel, "PART", reason);
-
   client->decrementChannelsCount();
   channel->removeClientFromChannelMap(client);
-
   if (channel->getChannelOperators().find(fd) !=
       channel->getChannelOperators().end()) {
     channel->removeOperator(client);
@@ -98,15 +102,11 @@ void Server::quitChannel(int fd, Channel *channel, Client *client,
 }
 
 void Server::quitAllChannels(int fd) {
-  Client *client = &_clients.at(fd);
-  std::vector<std::string> channelsToDelete;
-
+  std::string channelsToLeave;
   channelsMap::iterator itEnd = _channels.end();
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
     Channel *channel = &it->second;
-    if (channel->getChannelClients().find(fd) !=
-        channel->getChannelClients().end()) {
-      quitChannel(fd, channel, client, "");
-    }
+    channelsToLeave += std::string(1, REG_CHAN) + channel->getName() + ",";
   }
+  part(fd, channelsToLeave);
 }
