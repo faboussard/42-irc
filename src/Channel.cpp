@@ -121,12 +121,6 @@ void Channel::checkAndremoveClientFromTheChannel(int fd) {
   if (_channelClients.find(fd) != _channelClients.end()) {
     {
       std::ostringstream oss;
-      _channelClients[fd]->receiveMessage(
-          FROM_SERVER + "NOTICE" + " " +
-          "You have been removed from the channel\r\n");
-    }
-    {
-      std::ostringstream oss;
       oss << "Client " << fd << " removed from channel " << _name;
       Server::printLog(INFO_LOG, CHANNEL, oss.str());
     }
