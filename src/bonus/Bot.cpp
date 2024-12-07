@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:01:10 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/03 10:15:46 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:32:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ void Bot::createSocket(void) {
     throw std::runtime_error("Failed to set option O_NONBLOCK on socket: " +
                              std::string(strerror(errno)));
   }
-  logcreatSocketForApi();
+  logcreatSocket();
 }
 
 /*============================================================================*/

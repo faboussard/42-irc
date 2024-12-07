@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 22:39:49 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:30:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Parser {
   Parser(void);
 
  public:
-  static Command choseCommand(const std::string &command);
+  static Command chooseCommand(const std::string &command);
   static stringVector splitCommand(const std::string &command);
   static stringPairsVector parseCommandIntoPairs(const std::string &command,
                                                  const Client &client);
