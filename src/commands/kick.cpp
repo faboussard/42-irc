@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 15:47:22 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:49:55 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <string>
 
 #include "../../includes/Server.hpp"
+
+#include "../../includes/Log.hpp"
 
 void Server::parseKickParams(const std::string &param, const Client &client,
                              std::string *channelName, std::string *targetNick,
@@ -53,7 +55,7 @@ void Server::kick(int fd, const std::string &param) {
     std::ostringstream oss;
     oss << "Channel: " << channelName << " / Target: " << targetNick
         << " / Reason: " << reason;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   if (!channelExists(channelName)) {

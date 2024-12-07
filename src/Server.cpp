@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 18:03:15 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 22:20:02 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 
+#include "../includes/Log.hpp"
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
@@ -29,12 +30,6 @@ Server::Server(int port, const std::string &password)
     : _socketFd(-1), _port(port), _password(password) {
   _signal = false;
 }
-
-/*============================================================================*/
-/*       Getters                                                              */
-/*============================================================================*/
-
-int Server::getPort(void) const { return _port; }
 
 /*============================================================================*/
 /*       Finders                                                              */
@@ -59,7 +54,7 @@ void Server::runServer(void) {
   fetchStartTime();
   std::ostringstream oss;
   oss << "Server started on port " << _port;
-  printLog(NOTIFY_LOG, SYSTEM, oss.str());
+  Log::printLog(NOTIFY_LOG, SYSTEM, oss.str());
   acceptAndChat();
 }
 
@@ -110,7 +105,7 @@ void Server::acceptAndChat(void) {
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
-      printLog(ERROR_LOG, SYSTEM, "Error while polling");
+      Log::printLog(ERROR_LOG, SYSTEM, "Error while polling");
       break;
     }
     for (size_t i = 0; i < _pollFds.size(); ++i) {
@@ -133,7 +128,7 @@ void Server::signalHandler(int signal) {
       message = "SIGINT Received";
     else
       message = "SIGQUIT Received";
-    printLog(NOTIFY_LOG, SIGNAL, message);
+    Log::printLog(NOTIFY_LOG, SIGNAL, message);
   }
 }
 
@@ -152,7 +147,7 @@ void Server::closeServer(void) {
   if (_socketFd != -1) {
     std::ostringstream oss;
     oss << "fd" << _socketFd << ": Server disconnected";
-    printLog(NOTIFY_LOG, SYSTEM, oss.str());
+    Log::printLog(NOTIFY_LOG, SYSTEM, oss.str());
     close(_socketFd);
     _socketFd = -1;
   }
@@ -174,11 +169,11 @@ void Server::acceptNewClient(void) {
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
-    printLog(ERROR_LOG, SYSTEM, "Failed to accept new client");
+    Log::printLog(ERROR_LOG, SYSTEM, "Failed to accept new client");
     return;
   }
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
-    printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
+    Log::printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
     return;
   }
 
@@ -202,7 +197,7 @@ void Server::acceptNewClient(void) {
   std::ostringstream oss;
   oss << "fd" << newClientFd << ": Listening a new client from " << clientIp
       << ". Waiting for authentification.";
-  printLog(NOTIFY_LOG, SYSTEM, oss.str());
+  Log::printLog(NOTIFY_LOG, SYSTEM, oss.str());
 }
 
 void Server::closeClient(int fd) {
@@ -210,7 +205,7 @@ void Server::closeClient(int fd) {
     close(fd);
     std::ostringstream oss;
     oss << "fd" << fd << ": Client disconnected";
-    printLog(NOTIFY_LOG, SYSTEM, oss.str());
+    Log::printLog(NOTIFY_LOG, SYSTEM, oss.str());
   }
 }
 

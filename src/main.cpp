@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/26 09:12:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:56:40 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <string>
 
 #include "../includes/Config.hpp"
+#include "../includes/Log.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
 
@@ -51,6 +52,6 @@ int main(int ac, char** argv) {
     return (EXIT_FAILURE);
   }
   ser.closeServer();
-  Server::printLog(INFO_LOG, SYSTEM, "Server shut down");
+  Log::printLog(INFO_LOG, SYSTEM, "Server shut down");
   return (EXIT_SUCCESS);
 }

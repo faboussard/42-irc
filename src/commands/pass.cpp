@@ -6,14 +6,16 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/20 22:24:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:51:00 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 
-#include "../../includes/Client.hpp"
 #include "../../includes/Parser.hpp"
+
+#include "../../includes/Client.hpp"
+#include "../../includes/Log.hpp"
 #include "../../includes/colors.hpp"
 
 static void logPassAuthFailed(const Client &client);
@@ -47,14 +49,14 @@ void logPassAuthFailed(const Client &client) {
       << "): Password authentication failed. " << remainingAttempts
       << " attempt(s) remaining.";
   if (remainingAttempts == 0)
-    Server::printLog(WARNING_LOG, AUTH, oss.str());
+    Log::printLog(WARNING_LOG, AUTH, oss.str());
   else
-    Server::printLog(NOTIFY_LOG, AUTH, oss.str());
+    Log::printLog(NOTIFY_LOG, AUTH, oss.str());
 }
 
 void logPassAuthSuccess(const Client &client) {
   std::ostringstream oss;
   oss << client.getNickname() << " (fd" << client.getFd()
       << "): Password authentication successful";
-  Server::printLog(INFO_LOG, AUTH, oss.str());
+  Log::printLog(INFO_LOG, AUTH, oss.str());
 }

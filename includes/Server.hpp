@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/04 14:08:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 22:19:47 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,15 +56,15 @@ extern Config *gConfig;
 
 class Server {
  private:
-  static bool _signal;
-  int _socketFd;
-  int _port;
-  std::string _startTime;
-  std::string _password;
-  clientsMap _clients;
-  struct sockaddr_in _address;
+  static bool                _signal;
+  int                        _socketFd;
+  int                        _port;
+  struct sockaddr_in         _address;
   std::vector<struct pollfd> _pollFds;
-  channelsMap _channels;
+  std::string                _startTime;
+  std::string                _password;
+  clientsMap                 _clients;
+  channelsMap                _channels;
 
  public:
   explicit Server(int port, const std::string &password);
@@ -72,21 +72,11 @@ class Server {
   /* Server Mounting */
   void runServer(void);
   void createSocket(void);
-  // void createPoll(void);
   static void signalHandler(int signal);
   void acceptAndChat(void);
   void closeServer(void);
 
-  /*  Getters */
-  // int getSocketFd() const;
-  int getPort() const;
-  // const std::string &getPassword() const;
-  //  Client &findClientByFd(int fd);
-  // const channelsMap &getChannels() const;
-  // const clientsMap &getClients() const;
-
   /*  Finders */
-  // Channel *findChannelByName(const std::string &name);
   Client *findClientByNickname(const std::string &nickname);
 
   /*  Log */
@@ -106,11 +96,7 @@ class Server {
   void handleInitialMessage(Client *client, const std::string &msg);
   void handleOtherMessage(const Client &client, const std::string &msg);
   void handleClientMessage(int fd);
-//   bool isMessageTooLong(const std::string &message, int fd);
   bool isMessageEmpty(std::string *message);
-
-  /* Other methods */
-  // void sendToAllClients(const std::string &message);
 
   /* Clear and Close */
   void clearClient(int fd);

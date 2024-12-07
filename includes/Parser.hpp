@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 08:40:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 10:43:13 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 22:39:49 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ class Parser {
                                                  const Client &client);
   static bool verifyPassword(std::string arg, std::string psd, Client *client);
   static bool verifyNick(const std::string &nick, Client *client,
-                         clientsMap *cltMap);
+                         clientsMap *cltMap, const channelsMap &chanMap,
+                         bool alreadyRegisterd);
   static bool verifyUser(const std::string &user, Client *client,
                          clientsMap *cltMap);
 };

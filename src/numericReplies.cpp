@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 20:12:54 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/06 09:11:51 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,19 @@
 #include <string>
 
 #include "../includes/Config.hpp"
+#include "../includes/Log.hpp"
 
 void sendNumericReply(int fd, std::string *message) {
   if (message == NULL) return;
   if (send(fd, message->c_str(), message->size(), MSG_NOSIGNAL) == -1) {
     std::ostringstream oss;
     oss << RUNTIME_ERROR << " to " << "fd " << fd;
-    Server::printLog(ERROR_LOG, REPLY, oss.str());
+    Log::printLog(ERROR_LOG, REPLY, oss.str());
     return;
   }
 
   message->erase(0, message->find(' ') + 1);
-  Server::printLog(INFO_LOG, REPLY,
+  Log::printLog(INFO_LOG, REPLY,
                    message->erase(message->find_last_not_of("\r\n") + 1));
 }
 
@@ -66,7 +67,7 @@ void sendWelcome(int fd, const std::string &nick) {
   if (send(fd, message.c_str(), message.size(), 0) == -1) {
     std::ostringstream oss;
     oss << RUNTIME_ERROR << " to " << "fd " << fd;
-    Server::printLog(ERROR_LOG, REPLY, oss.str());
+    Log::printLog(ERROR_LOG, REPLY, oss.str());
   }
 }
 
@@ -180,7 +181,7 @@ void send353Namreply(const Client &client, const Channel &channel) {
     if (chanOps.find(it->first) == chanOps.end())
       nicknames << it->second->getNickname() << " ";
   }
-  chanNameWithSymbol << PUBLIC_CHAN << " " << REG_CHAN << channel.getName();
+  chanNameWithSymbol << PUBLIC_CHAN << " " << channel.getNameWithPrefix();
   std::string message = _353_RPL_NAMREPLY(
       client.getNickname(), chanNameWithSymbol.str(), nicknames.str());
   sendNumericReply(client.getFd(), &message);

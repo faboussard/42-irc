@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 20:18:03 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:35:44 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,11 @@
 #include <utility>
 #include <vector>
 
-#include "../../includes/Client.hpp"
-#include "../../includes/Parser.hpp"
 #include "../../includes/Server.hpp"
+
+#include "../../includes/Client.hpp"
+#include "../../includes/Log.hpp"
+#include "../../includes/Parser.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
@@ -40,12 +42,12 @@ void Server::joinChannel(int fd, const std::string &param) {
   {
     std::ostringstream oss;
     oss << "JOIN: client.getChannelsCount(): " << client.getChannelsCount();
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
   {
     std::ostringstream oss;
     oss << "JOIN: gConfig->getLimitchanlimit: " << gConfig->getLimit(CHANLIMIT);
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   stringVectorPair channelsAndKeys = parseJoinParams(param);
@@ -54,18 +56,18 @@ void Server::joinChannel(int fd, const std::string &param) {
     {
       std::ostringstream oss;
       oss << "JOIN: after parseJoinArguments: \n";
-      printLog(DEBUG_LOG, COMMAND, oss.str());
+      Log::printLog(DEBUG_LOG, COMMAND, oss.str());
       if (i < channelsAndKeys.first.size()) {
         std::ostringstream oss;
         oss << "JOIN: channel: " << channelsAndKeys.first[i];
-        printLog(DEBUG_LOG, COMMAND, oss.str());
+        Log::printLog(DEBUG_LOG, COMMAND, oss.str());
       }
     }
     {
       if (i < channelsAndKeys.second.size()) {
         std::ostringstream oss;
         oss << "JOIN: key: " << channelsAndKeys.second[i];
-        printLog(DEBUG_LOG, COMMAND, oss.str());
+        Log::printLog(DEBUG_LOG, COMMAND, oss.str());
       }
     }
 #endif
@@ -74,7 +76,16 @@ void Server::joinChannel(int fd, const std::string &param) {
         (i < channelsAndKeys.second.size()) ? channelsAndKeys.second[i] : "";
     if (isChannelNameValid(channelName, client)) {
       std::string channelNameWithoutPrefix = channelName.substr(1);
-      channelsMap::iterator it = _channels.find(channelNameWithoutPrefix);
+      // channelsMap::iterator it = _channels.find(channelNameWithoutPrefix);
+      channelsMap::iterator it = _channels.begin();
+      channelsMap::iterator itEnd = _channels.end();
+      for (; it != itEnd; ++it) {
+        std::string currentChannelName = it->first;
+        std::string requestedChannelName = channelNameWithoutPrefix;
+        strToUpper(&currentChannelName);
+        strToUpper(&requestedChannelName);
+        if (currentChannelName == requestedChannelName) break;
+      }
       if (it == _channels.end()) {
         addChanneltoServer(channelNameWithoutPrefix);
         it = _channels.find(channelNameWithoutPrefix);
@@ -112,8 +123,8 @@ stringVectorPair Server::parseJoinParams(const std::string &param) {
     after << "JOIN: channelsVector: After split and trim channelsVector: ";
     for (size_t i = 0; i < channelsVector.size(); ++i)
       after << channelsVector[i] << "|";
-    Server::printLog(DEBUG_LOG, COMMAND, before.str());
-    Server::printLog(DEBUG_LOG, COMMAND, after.str());
+    Log::printLog(DEBUG_LOG, COMMAND, before.str());
+    Log::printLog(DEBUG_LOG, COMMAND, after.str());
   }
 #endif
   splitByCommaAndTrim(keys, &keysVector);
@@ -124,8 +135,8 @@ stringVectorPair Server::parseJoinParams(const std::string &param) {
     after << "JOIN: keysVector: After split and trim keysVector: ";
     for (size_t i = 0; i < keysVector.size(); ++i)
       after << keysVector[i] << "|";
-    Server::printLog(DEBUG_LOG, COMMAND, before.str());
-    Server::printLog(DEBUG_LOG, COMMAND, after.str());
+    Log::printLog(DEBUG_LOG, COMMAND, before.str());
+    Log::printLog(DEBUG_LOG, COMMAND, after.str());
   }
 #endif
   return (make_pair(channelsVector, keysVector));
@@ -166,7 +177,7 @@ bool Server::isChannelNameValid(const std::string &channelNameToCheck,
   {
     std::ostringstream oss;
     oss << "JOIN: Channel Name to check: " << channelNameToCheck;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   if (channelNameToCheck.empty() || channelNameToCheck.length() < 2) {
@@ -189,7 +200,7 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   {
     std::ostringstream oss;
     oss << "JOIN: Join request for channel: " << channel->getName();
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   const clientPMap &clientsInChannel = channel->getChannelClients();
