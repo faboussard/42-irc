@@ -1,66 +1,51 @@
 
-# Step to create a bot with API (C++98 without third-party library)
+# Our bot implementation using API requests
+To address the following constraints, communication with the IRC server is handled via sockets, while communication with the API server is performed by executing curl with popen and reading the output using the fgets function. All incoming messages are monitored using poll.
 
-## 1. Create a socket
+- C++98 (Third-party libraries are prohibited).
+- Most API servers require HTTPS communication; HTTP communication does not yield the expected response.
 
-Create a socket to **communicate with the API Server** using `socket()`
-The socket is created using the IP address and port of the API server for communication.
+![schma_bot](./bot.png)
+
+## 1. Create a socket and connect to IRC Server
+
+Create a socket to **communicate with the IRC Server** using `socket()`
 
 ## 2. Connect to IRC Server
 
-Create a socket to **communicate with the IRC Server** using `socket()`
-Connect to the IRC server using a socket (`connect()`) and listen for incoming requests.  
+Connect to the IRC server using a socket (connect()), then wait for the connection to be established using a temporary poll with a timeout of 10,000 milliseconds.
 
-## 3. Wait for requests from the IRC Server
+## 3. Listen to requests from IRC Server
 
-The bot continuously listens for new requests from the IRC server.
+Using another `poll`, the bot continuously listens for new requests from the IRC server sent as `PRIVMSG`.
 
-## 4. Process the requests
+## 4. Process requests
 
 ### a. Validate the request
 
-Determinate if the request received from the Serve is valid to trigger an HTTP request to the API server.
+Determinate if the request received from the Serve is valid to trigger an API request.
 
-### b. Build the HTTP request
+### b. Send an API request 
 
-Build the HTTP request in string format.
+Construct a curl command to send a request.
+Execute the command using popen and stores the file pointer and file descriptor in the  BotRequest structure object.   
+Also add the corresponding file descriptor to a `poll` to monitor the response.
 
-HTTP request consists of the following components:
-- HTTP method (e.g. `GET`)
-- Request path (e.g. `/api/v1/query`)
-- Host Name
-- Necessary Header Information (e.g., `Content-Type`, `Authorization`, etc.)
-- If it is a `POST` request, Request body
+### c. Wait for response from API server
 
-Example:
-```HTTP
-GET /articles?include=author HTTP/1.1
-Host: example.com
-Authorization: Bearer <api_key>
-```
-Use `sprintf()` or `snprintf()` to build a string.
-
-#### GET method
-The `GET` method requests a representation of the specified resource. Requests using `GET` should only retrieve data and should not contain a request [content](https://developer.mozilla.org/en-US/docs/Glossary/HTTP_Content).
-source: [HTTP request methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET)
-
-### c. Send the request to API server
-
-Send the request to API server with `send()`
+The response for each request is monitored using poll.   
+In case the set timeout is reached, an error message is sent to the client via IRC Server, and the request is removed.
 
 
-### d. Receive the response from API server
+### d. Read the response from API server
 
-Receive the response from API server with `recv()`
-
-> [!CAUTION]
-> The bot should wait for some time after sending a request before sending the next one.
-> Use event-driven design or have the bot wait for new messages from the IRC server like `select()`  `sleep()`
+When poll detects a response, the content is read using `fgets()`and parsed.
   
-### e. Parse the response
+#### Parse the response
+Some APIs may return a response in JSON format.
 
-Parse the response from API server in JSON format using string manipulation functions.
-The response consists of `headers` and `a body`. The headers and body are usually separated by a blank line.
+Response in JSON format might be parsed using string manipulation.
+JSON format responses may consist of `headers` and `a body`. The headers and body are usually separated by a blank line.
 
 Example of response (source: https://jsonapi.org/examples/):
 ```JSON
@@ -104,6 +89,9 @@ Content-Type: application/vnd.api+json
 
 ### f. Send back the response to IRC server
 
+The bot sends the response to the client via the IRC server as a PRIVMSG.   
+After sending the response, the process created by `popen()` should be closed using `fclose()`.
+
 ## 5. Close the socket
 
 Before exiting from the program, close the sockets
@@ -111,6 +99,4 @@ Before exiting from the program, close the sockets
 
 ## Important notes
 
-- **Synchronous communication**: In C++98, asynchronous communication is difficult to implement. The bot will likely perform synchronous communication, meaning it will send a request and wait for the response before continuing with other tasks.
-
-- **Buffer management**: Since responses from API server may be large, proper buffer management is required. If the response is too large to receive in one go, the bot needs to receive in multiple times.
+**Buffer management**: Since responses from API server may be large, proper buffer management is required. If the response is too large to receive in one go, the bot needs to receive in multiple times.
