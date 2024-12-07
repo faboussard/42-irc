@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/07 15:31:18 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/07 16:17:01 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <ctime>
 #include <map>
 #include <string>
+#include <set>
 
 #include "../includes/Config.hpp"
 
@@ -54,6 +55,7 @@ class Channel {
   Mode _mode;
   std::string _key;
   unsigned int _limit;
+  std::set<std::string> _bannedUsers;
 
   clientPMap _channelClients;
   clientPMap _channelOperators;
@@ -70,6 +72,7 @@ class Channel {
   const clientPMap &getChannelClients(void) const;
   const clientPMap &getChannelOperators(void) const;
   const clientPMap &getInvitedClients(void) const;
+  const std::set<std::string> &getBannedUsers(void) const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
   const std::string getChannelModeFlag(void) const;
@@ -88,6 +91,9 @@ class Channel {
   void removeClientFromInvitedMap(Client *client);
   bool isClientInChannel(int fd) const;
   bool isClientInvited(int fd) const;
+  bool isClientInBannedList(const std::string &nickname) const;
+  void addBan(const std::string &nickname);
+  void removeClientFromBannedList(const std::string &nickname);
 
   /* Modes handling */
   // invite-only (i)

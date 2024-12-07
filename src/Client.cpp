@@ -1,4 +1,4 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/11/28 11:30:14 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 15:54:59 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <string>
 
 #include "../includes/Config.hpp"
+#include "../includes/Log.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
 
@@ -72,8 +73,6 @@ bool Client::isAccepted(void) const { return (_accepted); }
 
 uint8_t Client::getNbPassAttempts(void) const { return (_nbPassAttempts); }
 
-// bool Client::botLaunched(void) const { return (_botLaunched); }
-
 /*============================================================================*/
 /*       Setters                                                              */
 /*============================================================================*/
@@ -105,8 +104,6 @@ void Client::declarePasswordGiven(void) { _passwordGiven = true; }
 
 void Client::incrementNbPassAttempts(void) { ++_nbPassAttempts; }
 
-// void Client::setBotLaunched(bool launched) { _botLaunched = launched; }
-
 /*============================================================================*/
 /*       Messages handling                                                    */
 /*============================================================================*/
@@ -117,15 +114,15 @@ void Client::receiveMessage(const std::string& message) const {
     if (send(_fd, message.c_str(), message.length(), MSG_NOSIGNAL) == -1) {
       oss << "Error while sending message to fd " << _fd << ": "
           << strerror(errno);
-      Server::printLog(ERROR_LOG, CLIENT, oss.str());
+      Log::printLog(ERROR_LOG, CLIENT, oss.str());
     } else {
       std::string trimed = message;
       trimed.erase(trimed.find_last_not_of("\r\n") + 1);
       oss << "Sent to " << _nickname << ": " << trimed;
-      Server::printLog(INFO_LOG, REPLY, oss.str());
+      Log::printLog(INFO_LOG, REPLY, oss.str());
     }
   } else {
-    Server::printLog(ERROR_LOG, SYSTEM, "Invalid file descriptor");
+    Log::printLog(ERROR_LOG, SYSTEM, "Invalid file descriptor");
   }
 }
 
@@ -135,12 +132,12 @@ std::string Client::shareMessage(void) {
   if (bytesRead == -1) {
     std::ostringstream oss;
     oss << _nickname << _fd << ": Error while receiving message";
-    Server::printLog(ERROR_LOG, CLIENT, oss.str());
+    Log::printLog(ERROR_LOG, CLIENT, oss.str());
     return ("");
   } else if (bytesRead == 0) {
     std::ostringstream oss;
     oss << _nickname << _fd << ": Connection closed by peer";
-    Server::printLog(ERROR_LOG, CLIENT, oss.str());
+    Log::printLog(ERROR_LOG, CLIENT, oss.str());
     return ("");
   }
   buffer[bytesRead] = '\0';
@@ -157,7 +154,7 @@ void Client::incrementChannelsCount(void) {
 #ifdef DEBUG
     std::ostringstream oss;
     oss << _nickname << ": currently in " << _channelsCount << " channel(s)";
-    Server::printLog(DEBUG_LOG, CLIENT, oss.str());
+    Log::printLog(DEBUG_LOG, CLIENT, oss.str());
 #endif
   }
 }
@@ -168,7 +165,7 @@ void Client::decrementChannelsCount(void) {
 #ifdef DEBUG
     std::ostringstream oss;
     oss << _nickname << ": currently in " << _channelsCount << " channel(s)";
-    Server::printLog(DEBUG_LOG, CLIENT, oss.str());
+    Log::printLog(DEBUG_LOG, CLIENT, oss.str());
 #endif
   }
 }

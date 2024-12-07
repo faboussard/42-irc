@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/07 15:32:32 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/07 16:15:00 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void Server::privmsg(int fd, const std::string &arg) {
       Channel &channel = _channels.at(target.substr(1));
       if (channel.getMode().inviteOnly &&
           !channel.isClientInvited(sender.getFd()) &&
-          !channel.isClientInChannel(sender.getFd())) {
+          !channel.isClientInChannel(sender.getFd()) && channel.isClientInBannedList(sender.getNickname())) {
         send404CannotSendToChan(sender, channel);
         return;
       }

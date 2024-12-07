@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 20:34:14 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:05:30 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 
+#include "../includes/Log.hpp"
 #include "../includes/Parser.hpp"
 #include "../includes/colors.hpp"
 #include "../includes/utils.hpp"
@@ -29,12 +30,6 @@ Server::Server(int port, const std::string &password)
     : _socketFd(-1), _port(port), _password(password) {
   _signal = false;
 }
-
-/*============================================================================*/
-/*       Getters                                                              */
-/*============================================================================*/
-
-int Server::getPort(void) const { return _port; }
 
 /*============================================================================*/
 /*       Finders                                                              */
@@ -59,7 +54,7 @@ void Server::runServer(void) {
   fetchStartTime();
   std::ostringstream oss;
   oss << "Server started on port " << _port;
-  printLog(NOTIFY_LOG, SYSTEM, oss.str());
+  Log::printLog(NOTIFY_LOG, SYSTEM, oss.str());
   acceptAndChat();
 }
 
@@ -110,7 +105,7 @@ void Server::acceptAndChat(void) {
   while (_signal == false) {
     int pollResult = poll(&_pollFds[0], _pollFds.size(), -1);
     if (pollResult == -1 && _signal == false) {
-      printLog(ERROR_LOG, SYSTEM, "Error while polling");
+      Log::printLog(ERROR_LOG, SYSTEM, "Error while polling");
       break;
     }
     for (size_t i = 0; i < _pollFds.size(); ++i) {
@@ -133,7 +128,7 @@ void Server::signalHandler(int signal) {
       message = "SIGINT Received";
     else
       message = "SIGQUIT Received";
-    printLog(NOTIFY_LOG, SIGNAL, message);
+    Log::printLog(NOTIFY_LOG, SIGNAL, message);
   }
 }
 
@@ -152,7 +147,7 @@ void Server::closeServer(void) {
   if (_socketFd != -1) {
     std::ostringstream oss;
     oss << "fd" << _socketFd << ": Server disconnected";
-    printLog(NOTIFY_LOG, SYSTEM, oss.str());
+    Log::printLog(NOTIFY_LOG, SYSTEM, oss.str());
     close(_socketFd);
     _socketFd = -1;
   }
@@ -174,11 +169,11 @@ void Server::acceptNewClient(void) {
   int newClientFd =
       accept(_socketFd, reinterpret_cast<sockaddr *>(&cliadd), &len);
   if (newClientFd == -1) {
-    printLog(ERROR_LOG, SYSTEM, "Failed to accept new client");
+    Log::printLog(ERROR_LOG, SYSTEM, "Failed to accept new client");
     return;
   }
   if (fcntl(newClientFd, F_SETFL, O_NONBLOCK) == -1) {
-    printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
+    Log::printLog(ERROR_LOG, SYSTEM, "fcntl() failed");
     return;
   }
 
@@ -202,7 +197,7 @@ void Server::acceptNewClient(void) {
   std::ostringstream oss;
   oss << "fd" << newClientFd << ": Listening a new client from " << clientIp
       << ". Waiting for authentification.";
-  printLog(NOTIFY_LOG, SYSTEM, oss.str());
+  Log::printLog(NOTIFY_LOG, SYSTEM, oss.str());
 }
 
 void Server::closeClient(int fd) {
@@ -210,13 +205,15 @@ void Server::closeClient(int fd) {
     close(fd);
     std::ostringstream oss;
     oss << "fd" << fd << ": Client disconnected";
-    printLog(NOTIFY_LOG, SYSTEM, oss.str());
+    Log::printLog(NOTIFY_LOG, SYSTEM, oss.str());
   }
 }
 
 void Server::clearClient(int fd) {
   channelsMap::iterator itEnd = _channels.end();
+  bool wasInaChannel = false;
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
+    wasInaChannel = true;
     if (it->second.getInvitedClients().find(fd) !=
         it->second.getInvitedClients().end())
       it->second.removeClientFromInvitedMap(&_clients.at(fd));
@@ -224,7 +221,13 @@ void Server::clearClient(int fd) {
         it->second.getChannelOperators().end())
       it->second.removeOperator(&_clients.at(fd));
     it->second.checkAndremoveClientFromTheChannel(fd);
+    if (it->second.getBannedUsers().find(_clients.at(fd).getNickname()) !=
+        it->second.getBannedUsers().end())
+      it->second.removeClientFromBannedList(_clients.at(fd).getNickname());
   }
+  if (wasInaChannel)
+    _clients[fd].receiveMessage(FROM_SERVER + "NOTICE" + " " +
+                                "You have been removed from the channel\r\n");
   closeClient(fd);
   for (size_t i = 0; i < _pollFds.size(); i++) {
     if (_pollFds[i].fd == fd) {
@@ -253,17 +256,16 @@ void Server::sendConnectionMessage(const Client &client) const {
 /*============================================================================*/
 
 void Server::broadcastInChannelExceptToSender(const Client &sender,
-                                const Channel &channel,
-                                const std::string &command,
-                                const std::string &content) {
+                                              const Channel &channel,
+                                              const std::string &command,
+                                              const std::string &content) {
   std::string message = ":" + sender.getNickname() + " " + command + " " +
                         channel.getNameWithPrefix() + " :" + content + "\r\n";
   const clientPMap &allClients = channel.getChannelClients();
   clientPMap::const_iterator itEnd = allClients.end();
   for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
     Client *client = it->second;
-    if (client->getNickname() == sender.getNickname())
-      continue;
+    if (client->getNickname() == sender.getNickname()) continue;
     client->receiveMessage(message);
   }
 }
@@ -282,9 +284,8 @@ void Server::broadcastInChannelAndToSender(const Client &sender,
   }
 }
 
-void Server::broadcastInChannelAndToSenderNoContent(const Client &sender,
-                                           const Channel &channel,
-                                           const std::string &command) {
+void Server::broadcastInChannelAndToSenderNoContent(
+    const Client &sender, const Channel &channel, const std::string &command) {
   std::string message = ":" + sender.getNickname() + " " + command + " " +
                         channel.getNameWithPrefix() + "\r\n";
   const clientPMap &allClients = channel.getChannelClients();
@@ -294,7 +295,6 @@ void Server::broadcastInChannelAndToSenderNoContent(const Client &sender,
     client->receiveMessage(message);
   }
 }
-
 
 void Server::broadcastToOperatorsOnly(const Client &sender,
                                       const Channel &channel,

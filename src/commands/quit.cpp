@@ -39,6 +39,7 @@ void Server::quit(const std::string &argument, Client *client,
   }
   message += " ; User " + client->getRealName() + " has quit IRC.";
   message += "\r\n";
+  
   clearClient(client->getFd());
   clientsMap::iterator itEnd = cltMap->end();
   for (clientsMap::iterator it = cltMap->begin(); it != itEnd; ++it) {

@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 10:37:09 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/05 22:42:29 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 
+#include "../includes/Log.hpp"
 #include "../includes/Parser.hpp"
 #include "../includes/Server.hpp"
 #include "../includes/colors.hpp"
@@ -51,7 +52,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
     std::ostringstream oss;
     oss << "Command: " MAGENTA << commandToString(command)
         << RESET " | Message: " MAGENTA << argument << RESET;
-    printLog(DEBUG_LOG, PARSER, oss.str());
+    Log::printLog(DEBUG_LOG, PARSER, oss.str());
 
     if (command == QUIT) {
       quit(argument, client, &_clients);
@@ -61,7 +62,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
 #ifdef DEBUG
       std::ostringstream oss;
       oss << "Nick:" << client->getNickname() << " has been accepted";
-      printLog(DEBUG_LOG, PARSER, oss.str());
+      Log::printLog(DEBUG_LOG, PARSER, oss.str());
 #endif
       if (command == UNKNOWN)
         send421UnknownCommand(*client, splittedPair[it].first);
@@ -82,8 +83,8 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
       send451NotRegistered(*client);
     } else if (command == NICK) {
       if (isLastNick(splittedPair, it + 1, vecSize)) {
-        if (Parser::verifyNick(argument, client, &_clients) == true &&
-            client->isAccepted() == false && client->isUsernameSet()) {
+        if (Parser::verifyNick(argument, client, &_clients, _channels, false) ==
+            true && client->isAccepted() == false && client->isUsernameSet()) {
           client->declareAccepted();
           sendConnectionMessage(*client);
         }
@@ -109,7 +110,7 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
   oss << "Nick: " BLUE << client.getNickname() << RESET << " | UName: " BLUE
       << client.getUserName() << RESET << " | Message: " MAGENTA << msg << RESET
       << " | Message size: " << msg.size();
-  printLog(DEBUG_LOG, PARSER, oss.str());
+  Log::printLog(DEBUG_LOG, PARSER, oss.str());
 #endif
   stringPairsVector splittedPair = Parser::parseCommandIntoPairs(msg, client);
   size_t vecSize = splittedPair.size();
@@ -126,7 +127,7 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
       oss << "Nick:" BLUE << client.getNickname() << RESET << " | UName:" BLUE
           << client.getUserName() << RESET << " | Command:" BRIGHT_YELLOW
           << command << RESET << " | Message:" MAGENTA << argument << RESET;
-      printLog(DEBUG_LOG, PARSER, oss.str());
+      Log::printLog(DEBUG_LOG, PARSER, oss.str());
     }
 #endif
     if (cmd == UNKNOWN) {
@@ -145,11 +146,11 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
 bool Server::isMessageEmpty(std::string *message) {
   message->erase(0, message->find_first_not_of("\n\r"));
   message->erase(message->find_last_not_of("\n\r") + 1);
-  #ifdef DEBUG
+#ifdef DEBUG
   std::ostringstream oss;
   oss << "Message: " << *message;
-  printLog(DEBUG_LOG, PARSER, oss.str());
-  #endif
+  Log::printLog(DEBUG_LOG, PARSER, oss.str());
+#endif
   return message->empty();
 }
 
@@ -162,12 +163,12 @@ void Server::handleClientMessage(int fd) {
   if (valread == -1) {
     std::ostringstream oss;
     oss << "fd" << fd << ": Error occurred while receiving a message.";
-    Server::printLog(ERROR_LOG, CLIENT, oss.str());
+    Log::printLog(ERROR_LOG, CLIENT, oss.str());
     return;
   } else if (valread == 0) {
     std::ostringstream oss;
     oss << "fd" << fd << ": Connection closed by peer";
-    Server::printLog(NOTIFY_LOG, CLIENT, oss.str());
+    Log::printLog(NOTIFY_LOG, CLIENT, oss.str());
     messageBuffer[fd].erase();
     clearClient(fd);
     return;
@@ -220,7 +221,7 @@ void Server::handleCommand(Command command, const std::string &argument,
       list(_clients.at(fd), argument);
       break;
     case NICK:
-      Parser::verifyNick(argument, &_clients[fd], &_clients);
+      Parser::verifyNick(argument, &_clients[fd], &_clients, _channels, true);
       break;
     case USER:
       Parser::verifyUser(argument, &_clients[fd], &_clients);

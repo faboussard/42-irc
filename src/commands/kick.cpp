@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/07 15:47:38 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/07 16:21:55 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <string>
 
 #include "../../includes/Server.hpp"
+
+#include "../../includes/Log.hpp"
 
 void Server::parseKickParams(const std::string &param, const Client &client,
                              std::string *channelName, std::string *targetNick,
@@ -53,7 +55,7 @@ void Server::kick(int fd, const std::string &param) {
     std::ostringstream oss;
     oss << "Channel: " << channelName << " / Target: " << targetNick
         << " / Reason: " << reason;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   if (!channelExists(channelName)) {
@@ -79,16 +81,16 @@ void Server::kick(int fd, const std::string &param) {
     send400UnknownError(client, "KICK", "cannot kick yourself");
     return;
   }
-    banUser(client, &channel, targetClient, reason);
+    kickUser(client, &channel, targetClient, reason);
 }
 
-void Server::banUser(const Client &client, Channel *channel, Client *targetClient, const std::string &reason) {
+void Server::kickUser(const Client &client, Channel *channel, Client *targetClient, const std::string &reason) {
+  std::string message = targetClient->getNickname() + " " + reason + "\r\n";
+  broadcastInChannelAndToSender(client, *channel, "KICK", message);
   channel->addBan(targetClient->getNickname());
   targetClient->decrementChannelsCount();
   channel->removeClientFromChannelMap(targetClient);
   if (channel->getChannelOperators().find(targetClient->getFd()) != channel->getChannelOperators().end()) {
     channel->removeOperator(targetClient);
   }
-  std::string message = targetClient->getNickname() + " " + reason + "\r\n";
-  broadcastInChannelAndToSender(*client, channel, "KICK", message);
 }

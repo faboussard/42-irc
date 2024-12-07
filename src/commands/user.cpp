@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 14:07:04 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/05 21:34:09 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <vector>
 
 #include "../../includes/Parser.hpp"
+
+#include "../../includes/Log.hpp"
 #include "../../includes/colors.hpp"
 
 static std::vector<std::string> fillUserVectorString(const std::string &str) {
@@ -91,6 +93,6 @@ bool Parser::verifyUser(const std::string &user, Client *client,
   std::ostringstream oss;
   oss << client->getNickname() << " (fd" << client->getFd()
       << "): User name validated";
-  Server::printLog(INFO_LOG, CLIENT, oss.str());
+  Log::printLog(INFO_LOG, CLIENT, oss.str());
   return (true);
 }

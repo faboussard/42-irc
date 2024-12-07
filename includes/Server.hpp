@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/07 15:46:45 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/07 16:22:03 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,15 +56,15 @@ extern Config *gConfig;
 
 class Server {
  private:
-  static bool _signal;
-  int _socketFd;
-  int _port;
-  std::string _startTime;
-  std::string _password;
-  clientsMap _clients;
-  struct sockaddr_in _address;
+  static bool                _signal;
+  int                        _socketFd;
+  int                        _port;
+  struct sockaddr_in         _address;
   std::vector<struct pollfd> _pollFds;
-  channelsMap _channels;
+  std::string                _startTime;
+  std::string                _password;
+  clientsMap                 _clients;
+  channelsMap                _channels;
 
  public:
   explicit Server(int port, const std::string &password);
@@ -72,13 +72,9 @@ class Server {
   /* Server Mounting */
   void runServer(void);
   void createSocket(void);
-  // void createPoll(void);
   static void signalHandler(int signal);
   void acceptAndChat(void);
   void closeServer(void);
-
-  /*  Getters */
-  int getPort() const;
 
   /*  Finders */
   Client *findClientByNickname(const std::string &nickname);
@@ -86,7 +82,6 @@ class Server {
   /*  Log */
   static void printLog(eLogLevel level, eLogContext context,
                        const std::string &message);
-
  private:
   /* Server Management */
   void fetchStartTime(void);
@@ -100,11 +95,7 @@ class Server {
   void handleInitialMessage(Client *client, const std::string &msg);
   void handleOtherMessage(const Client &client, const std::string &msg);
   void handleClientMessage(int fd);
-//   bool isMessageTooLong(const std::string &message, int fd);
   bool isMessageEmpty(std::string *message);
-
-  /* Other methods */
-  // void sendToAllClients(const std::string &message);
 
   /* Clear and Close */
   void clearClient(int fd);
@@ -113,6 +104,7 @@ class Server {
   /* Checkers */
   bool nickExists(const std::string &nick) const;
   bool channelExists(const std::string &channel);
+  bool isClientInBannedList(const Channel &channel, const Client &client);
 
   /* Commands handling */
   void handleCommand(Command command, const std::string &argument, int fd);
@@ -199,7 +191,7 @@ class Server {
   void parseKickParams(const std::string &param, const Client &client,
                        std::string *channelName, std::string *targetNick,
                        std::string *reason);
-  void banUser(const Client &client, Channel *channel, Client *targetClient,
+  void kickUser(const Client &client, Channel *channel, Client *targetClient,
                const std::string &reason);
 
   /*-------- PRIVMSG --------*/
