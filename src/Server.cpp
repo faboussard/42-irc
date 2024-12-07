@@ -216,7 +216,9 @@ void Server::closeClient(int fd) {
 
 void Server::clearClient(int fd) {
   channelsMap::iterator itEnd = _channels.end();
+  bool wasInaChannel = false;
   for (channelsMap::iterator it = _channels.begin(); it != itEnd; ++it) {
+    wasInaChannel = true;
     if (it->second.getInvitedClients().find(fd) !=
         it->second.getInvitedClients().end())
       it->second.removeClientFromInvitedMap(&_clients.at(fd));
@@ -225,6 +227,10 @@ void Server::clearClient(int fd) {
       it->second.removeOperator(&_clients.at(fd));
     it->second.checkAndremoveClientFromTheChannel(fd);
   }
+  if (wasInaChannel)
+    _clients[fd].receiveMessage(
+      FROM_SERVER + "NOTICE" + " " +
+        "You have been removed from the channel\r\n");
   closeClient(fd);
   for (size_t i = 0; i < _pollFds.size(); i++) {
     if (_pollFds[i].fd == fd) {
