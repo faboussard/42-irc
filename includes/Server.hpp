@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 20:36:30 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/07 15:46:45 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,15 +78,9 @@ class Server {
   void closeServer(void);
 
   /*  Getters */
-  // int getSocketFd() const;
   int getPort() const;
-  // const std::string &getPassword() const;
-  //  Client &findClientByFd(int fd);
-  // const channelsMap &getChannels() const;
-  // const clientsMap &getClients() const;
 
   /*  Finders */
-  // Channel *findChannelByName(const std::string &name);
   Client *findClientByNickname(const std::string &nickname);
 
   /*  Log */
@@ -205,6 +199,8 @@ class Server {
   void parseKickParams(const std::string &param, const Client &client,
                        std::string *channelName, std::string *targetNick,
                        std::string *reason);
+  void banUser(const Client &client, Channel *channel, Client *targetClient,
+               const std::string &reason);
 
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);
