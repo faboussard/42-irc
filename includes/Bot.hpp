@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/19 15:00:57 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 11:27:40 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:32:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ class Bot {
   void sendResponseToServer(std::deque<BotRequest>::iterator itRequest);
 
   /* Log */
-  void logcreatSocketForApi(void);
+  void logcreatSocket(void);
   void logApiRequest(int fd, const std::string &apiHost);
   void logApiResponse(int fd);
   void logApiTimeout(int fd, eBotCommand command);

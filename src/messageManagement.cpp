@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 09:15:40 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 22:42:29 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:30:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void Server::handleInitialMessage(Client *client, const std::string &msg) {
   size_t vecSize = splittedPair.size();
 
   for (size_t it = 0; it < vecSize; ++it) {
-    Command command = Parser::choseCommand(splittedPair[it].first);
+    Command command = Parser::chooseCommand(splittedPair[it].first);
     std::string argument = splittedPair[it].second;
     std::ostringstream oss;
     oss << "Command: " MAGENTA << commandToString(command)
@@ -118,7 +118,7 @@ void Server::handleOtherMessage(const Client &client, const std::string &msg) {
   for (size_t it = 0; it < vecSize; ++it) {
     std::string command = splittedPair[it].first;
     std::string argument = splittedPair[it].second;
-    Command cmd = Parser::choseCommand(command);
+    Command cmd = Parser::chooseCommand(command);
     clientsMap::iterator itCli = _clients.find(fd);
     if (itCli == _clients.end()) return;
 #ifdef DEBUG

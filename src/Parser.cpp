@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:46:04 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 10:44:48 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:30:25 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 #include "../includes/enums.hpp"
 #include "../includes/utils.hpp"
 
-Command Parser::choseCommand(const std::string& command) {
+Command Parser::chooseCommand(const std::string& command) {
   if (command == "JOIN") {
     return (JOIN);
   } else if (command == "PART") {
