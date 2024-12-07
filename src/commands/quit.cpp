@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/30 10:10:53 by mbernard          #+#    #+#             */
-/*   Updated: 2024/11/19 13:53:14 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:00:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,10 @@ void Server::quit(const std::string &argument, Client *client,
   }
   message += " ; User " + client->getRealName() + " has quit IRC.";
   message += "\r\n";
-  
+
   clearClient(client->getFd());
   clientsMap::iterator itEnd = cltMap->end();
   for (clientsMap::iterator it = cltMap->begin(); it != itEnd; ++it) {
     it->second.receiveMessage(message);
   }
 }
-

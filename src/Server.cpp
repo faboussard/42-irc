@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 22:20:02 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 15:59:19 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,7 +225,7 @@ void Server::clearClient(int fd) {
   if (wasInaChannel)
     _clients[fd].receiveMessage(
       FROM_SERVER + "NOTICE" + " " +
-        "You have been removed from the channel\r\n");
+        "You have been removed from channel(s)\r\n");
   closeClient(fd);
   for (size_t i = 0; i < _pollFds.size(); i++) {
     if (_pollFds[i].fd == fd) {
