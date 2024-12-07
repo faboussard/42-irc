@@ -1,4 +1,4 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 21:59:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:16:22 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,10 @@ const clientPMap &Channel::getChannelOperators(void) const {
 
 const clientPMap &Channel::getInvitedClients(void) const {
   return (_invitedClients);
+}
+
+const std::set<std::string> &Channel::getBannedUsers(void) const {
+  return (_bannedUsers);
 }
 
 const Topic &Channel::getTopic(void) const { return _topic; }
@@ -161,6 +165,13 @@ void Channel::removeClientFromInvitedMap(Client *client) {
   _invitedClients.erase(client->getFd());
 }
 
+void Channel::removeClientFromBannedList(const std::string &nickname) {
+  _bannedUsers.erase(nickname);
+  std::ostringstream oss;
+  oss << _nameWithPrefix << ": User " << nickname << " has been unbanned.";
+  Log::printLog(INFO_LOG, CHANNEL, oss.str());
+}
+
 bool Channel::isClientInChannel(int fd) const {
   if (_channelClients.find(fd) != _channelClients.end()) {
     return (true);
@@ -174,6 +185,21 @@ bool Channel::isClientInvited(int fd) const {
   }
   return (false);
 }
+
+bool Channel::isClientInBannedList(const std::string &nickname) const {
+  if (_bannedUsers.find(nickname) != _bannedUsers.end()) {
+    return (true);
+  }
+  return (false);
+}
+
+void Channel::addBan(const std::string &nickname) {
+  _bannedUsers.insert(nickname);
+  std::ostringstream oss;
+  oss << _nameWithPrefix << ": User " << nickname << " has been banned.";
+  Log::printLog(INFO_LOG, CHANNEL, oss.str());
+}
+
 
 /*============================================================================*/
 /*       Modes handling                                                       */

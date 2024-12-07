@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 21:35:44 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:45:52 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,9 +99,9 @@ void Server::joinChannel(int fd, const std::string &param) {
         send405TooManyChannels(client);
         return;
       }
-      if (isChannelNotFull(constChannel, client) &&
+      if (!isChannelFull(constChannel, client) &&
           isClientAllowedInInviteOnlyChannel(constChannel, client) &&
-          isKeyValid(constChannel, key, client)) {
+          isKeyValid(constChannel, key, client) && !isClientInBannedList(constChannel, client)) {
         processJoinRequest(fd, &client, &channel);
       }
     }
@@ -152,13 +152,13 @@ bool Server::isKeyValid(const Channel &channel, const std::string &key,
   return (true);
 }
 
-bool Server::isChannelNotFull(const Channel &channel, const Client &client) {
+bool Server::isChannelFull(const Channel &channel, const Client &client) {
   if (channel.getMode().limitSet &&
-      channel.getLimit() <= channel.getChannelClients().size()) {
+      channel.getLimit() <= channel.getChannelClients().size() && !channel.isClientInChannel(client.getFd())) {
     send471ChannelIsFull(client, channel);
-    return false;
+    return true;
   }
-  return true;
+  return false;
 }
 
 bool Server::isClientAllowedInInviteOnlyChannel(const Channel &channel,
@@ -169,6 +169,15 @@ bool Server::isClientAllowedInInviteOnlyChannel(const Channel &channel,
     return false;
   }
   return true;
+}
+
+bool Server::isClientInBannedList(const Channel &channel, const Client &client) {
+  if (channel.getBannedUsers().find(client.getNickname()) !=
+      channel.getBannedUsers().end()) {
+    send474BannedFromChan(client, channel);
+    return (true);
+  }
+  return (false);
 }
 
 bool Server::isChannelNameValid(const std::string &channelNameToCheck,
@@ -207,13 +216,10 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     channel->addClientToChannelMap(client);
     client->incrementChannelsCount();
-    broadcastInChannelAndToSender(*client, *channel, "JOIN", "");
+    broadcastInChannelAndToSenderNoContent(*client, *channel, "JOIN");
     send353Namreply(*client, *channel);
     send366Endofnames(*client, *channel);
-    if (channel->getTopic().topic.empty())
-      send331Notopic(*client, *channel);
-    else
-      send332Topic(*client, *channel);
+    if (!channel->getTopic().topic.empty()) send332Topic(*client, *channel);
   }
 }
 

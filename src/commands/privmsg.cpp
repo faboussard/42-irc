@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 21:00:58 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:34:52 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,6 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
 
 void Server::privmsg(int fd, const std::string &arg) {
   const Client &sender = _clients.at(fd);
-
   stringVector targetsVector;
   std::string message;
   if (parsePrivmsgArguments(arg, sender, &targetsVector, &message) == false) {
@@ -145,9 +144,8 @@ void Server::privmsg(int fd, const std::string &arg) {
         return;
       }
       Channel &channel = _channels.at(target.substr(1));
-      if (channel.getMode().inviteOnly &&
-          !channel.isClientInvited(sender.getFd()) &&
-          !channel.isClientInChannel(sender.getFd())) {
+      if ((channel.getMode().inviteOnly &&
+          !channel.isClientInvited(sender.getFd())) || channel.isClientInBannedList(sender.getNickname())) {
         send404CannotSendToChan(sender, channel);
         return;
       }

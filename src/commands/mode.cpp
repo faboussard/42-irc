@@ -1,18 +1,7 @@
-/* Copyright 2024 <faboussa>************************************************* */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   mode.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 18:01:03 by faboussa         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <map>
 #include <string>
 #include <utility>
+#include <sstream>
 
 #include "../../includes/Channel.hpp"
 #include "../../includes/Parser.hpp"
@@ -28,6 +17,9 @@ void Server::switchMode(Client *client, const std::string &channelName,
                         const stringVector &argumentVector) {
   Channel *channel = &_channels[channelName.substr(1)];
   size_t argumentIndex = 0;
+  std::string mode;
+  std::string modeChanges;
+  char currentSign = 0;
 
   for (size_t i = 0; i < modeStrings.size(); ++i) {
     const std::string &modeString = modeStrings[i];
@@ -36,83 +28,89 @@ void Server::switchMode(Client *client, const std::string &channelName,
     for (size_t j = 1; j < modeString.size(); ++j) {
       const char &c = modeString[j];
 
+      // Handle modes without arguments
       if (c == 'i' || c == 't') {
         if (plusMode) {
-          if (c == 'i') {
-            channel->activateInviteOnlyMode();
-          } else {
-            channel->activateTopicOpsOnlyMode();
-          }
+          (c == 'i') ? channel->activateInviteOnlyMode()
+                     : channel->activateTopicOpsOnlyMode();
         } else {
-          if (c == 'i') {
-            channel->deactivateInviteOnlyMode();
-          } else {
-            channel->deactivateTopicOpsOnlyMode();
-          }
+          (c == 'i') ? channel->deactivateInviteOnlyMode()
+                     : channel->deactivateTopicOpsOnlyMode();
         }
-      } else if (c == 'k') {
+        if (currentSign != (plusMode ? '+' : '-')) {
+          currentSign = (plusMode ? '+' : '-');
+          mode += currentSign;
+        }
+        mode += c;
+      }
+      // Handle modes with one argument (e.g., key, limit)
+      else if (c == 'k' || c == 'l') {
         if (plusMode) {
           if (argumentIndex >= argumentVector.size()) {
-            send461NeedMoreParams(*client, "MODE +k");
+            send461NeedMoreParams(*client, "MODE +" + std::string(1, c));
             return;
           }
-          const std::string &key = argumentVector[argumentIndex++];
-          channel->activateKeyMode(key, *client);
-          channel->updateKey(key);
+          const std::string &argument = argumentVector[argumentIndex++];
+          if (c == 'k') {
+            channel->activateKeyMode(argument, *client);
+            channel->updateKey(argument);
+          } else if (c == 'l') {
+            if (!isNumeric(argument) || std::atoi(argument.c_str()) > 999) {
+              sendNotice(*client,
+                         "MODE +l argument must be a numeric value below 999.");
+              return;
+            }
+            channel->activateLimitMode(std::atoi(argument.c_str()));
+          }
+          if (currentSign != (plusMode ? '+' : '-')) {
+            currentSign = (plusMode ? '+' : '-');
+            mode += currentSign;
+          }
+          mode += c;
+          modeChanges += " " + argument;
         } else {
-          channel->deactivateKeyMode();
+          (c == 'k') ? channel->deactivateKeyMode()
+                     : channel->deactivateLimitMode();
+          if (currentSign != (plusMode ? '+' : '-')) {
+            currentSign = (plusMode ? '+' : '-');
+            mode += currentSign;
+          }
+          mode += c;
         }
       } else if (c == 'o') {
         if (argumentIndex >= argumentVector.size()) {
           send461NeedMoreParams(*client, "MODE +o/-o");
           return;
         }
-        Client *clientToOp =
+        Client *targetClient =
             findClientByNickname(argumentVector[argumentIndex]);
-        if (clientToOp == NULL) {
+        if (!targetClient) {
           send401NoSuchNick(*client, argumentVector[argumentIndex]);
           return;
         }
-        if (plusMode) {
-          if (!client->getNickname().empty() &&
-              client->getNickname() == argumentVector[argumentIndex++]) {
-            break;
-          }
-          channel->addOperator(clientToOp);
-        } else {
-          channel->removeOperator(clientToOp);
+        (plusMode) ? channel->addOperator(targetClient)
+                   : channel->removeOperator(targetClient);
+        if (currentSign != (plusMode ? '+' : '-')) {
+          currentSign = (plusMode ? '+' : '-');
+          mode += currentSign;
         }
-      } else if (c == 'l') {
-        if (plusMode) {
-          if (argumentIndex >= argumentVector.size()) {
-            send461NeedMoreParams(*client, "MODE +l");
-            return;
-          }
-          const std::string &limitStr = argumentVector[argumentIndex++];
-          if (!isNumeric(limitStr)) {
-            sendNotice(*client, "MODE +l argument must be a numeric value.");
-            return;
-          }
-          std::stringstream ss(limitStr);
-          unsigned int limit;
-          ss >> limit;
-          if (ss.fail() || limit > 999) {
-            sendNotice(*client, "MODE +l argument must be below 999.");
-            return;
-          }
-#ifdef DEBUG
-          {
-            std::ostringstream oss;
-            oss << "limit: " << limit;
-            printLog(DEBUG_LOG, COMMAND, oss.str());
-          }
-#endif
-          channel->activateLimitMode(limit);
-        } else {
-          channel->deactivateLimitMode();
-        }
+        mode += c;
+        modeChanges += " " + argumentVector[argumentIndex];
+        ++argumentIndex;
+      } else {
+        sendNotice(*client, "Unknown mode: " + std::string(1, c));
+        continue;
       }
     }
+  }
+  std::string tosend = mode + modeChanges;
+  if (!tosend.empty()) {
+    broadcastInChannelAndToSender(*client, *channel, "MODE", tosend);
+#ifdef DEBUG
+    std::ostringstream oss;
+    oss << "Mode changes: " << modeChanges;
+    printLog(DEBUG_LOG, COMMAND, oss.str());
+#endif
   }
 }
 
@@ -136,6 +134,8 @@ char Server::checkModeArguments(const stringVector &modeStrings,
 
       if (c == PLUS_CHAR) {
         plusMode = true;
+      } else if (c == MINUS_CHAR) {
+        plusMode = false;
       }
 #ifdef DEBUG
       {

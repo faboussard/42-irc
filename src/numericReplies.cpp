@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/06 09:11:51 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:12:36 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,6 +330,12 @@ void send472UnknownMode(const Client &client, const std::string &modeChar) {
 
 void send473InviteOnlyChan(const Client &client, const Channel &channel) {
   std::string message = _473_ERR_INVITEONLYCHAN(client.getNickname(),
+                                                channel.getNameWithPrefix());
+  sendNumericReply(client.getFd(), &message);
+}
+
+void send474BannedFromChan(const Client &client, const Channel &channel) {
+  std::string message = _474_ERR_BANNEDFROMCHAN(client.getNickname(),
                                                 channel.getNameWithPrefix());
   sendNumericReply(client.getFd(), &message);
 }

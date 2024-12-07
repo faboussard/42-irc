@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   numericReplies.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 09:37:02 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 10:40:32 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:13:07 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,10 @@ extern Config *gConfig;
   " :Cannot join channel (+i)\r\n")
 // The channel is invite-only bur the client was not invited.
 
+#define _474_ERR_BANNEDFROMCHAN(nick, chanName)   \
+  (FROM_SERVER + "474 " + nick + " " + chanName + \
+  " :Cannot join channel (+b)\r\n")
+
 #define _475_ERR_BADCHANNELKEY(nick, chanName)    \
   (FROM_SERVER + "475 " + nick + " " + chanName + \
   " :Cannot join channel (+k)\r\n")
@@ -324,6 +328,7 @@ void send464PasswdMismatch(const Client &client);
 void send471ChannelIsFull(const Client &client, const Channel &channel);
 void send472UnknownMode(const Client &client, const std::string &modeChar);
 void send473InviteOnlyChan(const Client &client, const Channel &channel);
+void send474BannedFromChan(const Client &client, const Channel &channel);
 void send475BadChannelKey(const Client &client, const Channel &channel);
 void send476BadChanMask(const Client &client,
                         const std::string &chanNameWithBadMask);

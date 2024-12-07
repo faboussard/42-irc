@@ -1,12 +1,12 @@
-/* Copyright 2024 <faboussa>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 21:49:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 16:21:55 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,20 @@ void Server::kick(int fd, const std::string &param) {
     send441UserNotInChannel(client, targetNick, channel);
     return;
   }
-  std::string message = targetNick + " " + reason + "\r\n";
-  broadcastInChannelAndToSender(client, channel, "KICK", message);
-  quitChannel(fdTarget, &channel, targetClient,
-              "kicked by " + client.getNickname());
+  if (&client == targetClient) {
+    send400UnknownError(client, "KICK", "cannot kick yourself");
+    return;
+  }
+    kickUser(client, &channel, targetClient, reason);
+}
+
+void Server::kickUser(const Client &client, Channel *channel, Client *targetClient, const std::string &reason) {
+  std::string message = targetClient->getNickname() + " " + reason + "\r\n";
+  broadcastInChannelAndToSender(client, *channel, "KICK", message);
+  channel->addBan(targetClient->getNickname());
+  targetClient->decrementChannelsCount();
+  channel->removeClientFromChannelMap(targetClient);
+  if (channel->getChannelOperators().find(targetClient->getFd()) != channel->getChannelOperators().end()) {
+    channel->removeOperator(targetClient);
+  }
 }
