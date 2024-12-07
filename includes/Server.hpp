@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/07 16:22:03 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/07 16:43:04 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ class Server {
   void processJoinRequest(int fd, Client *client, Channel *channel);
   bool isKeyValid(const Channel &channel, const std::string &keyToCheck,
                   const Client &client);
-  bool isChannelNotFull(const Channel &channel, const Client &client);
+  bool isChannelFull(const Channel &channel, const Client &client);
   bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
                                           const Client &client);
   stringVectorPair parseJoinParams(const std::string &param);

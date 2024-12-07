@@ -186,13 +186,16 @@ raccourci cpplint : ctrl shift i
 
 NExT PR 
 **Summary:**
-    if (it->second.getInvitedClients().find(fd) !=
-        it->second.getInvitedClients().end())
-      it->second.removeClientFromInvitedMap(&_clients.at(fd));
 
-      => remove client from invited list
+kick is different from part.
+if kicked, user is added to the ban list can cannot send any private message or rejoin the channel.
+if he disconnects, it is not clear, he is still banned.
+==> hope this creates no leaks, in my tests it did not. 
+==> however, this does not work properly because when the server shut down, or the user quits, everythin is cleaned and he has to rejoin, and he CAN, the ban is over. 
 
-      ban added
+===> in that context, do you want to add the cleaning of the ban list when the server is shut down ?
+
+
 _**Implemented Features:**_
 
 

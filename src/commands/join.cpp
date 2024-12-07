@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/07 16:13:55 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/07 16:45:52 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void Server::joinChannel(int fd, const std::string &param) {
         send405TooManyChannels(client);
         return;
       }
-      if (isChannelNotFull(constChannel, client) &&
+      if (!isChannelFull(constChannel, client) &&
           isClientAllowedInInviteOnlyChannel(constChannel, client) &&
           isKeyValid(constChannel, key, client) && !isClientInBannedList(constChannel, client)) {
         processJoinRequest(fd, &client, &channel);
@@ -152,13 +152,13 @@ bool Server::isKeyValid(const Channel &channel, const std::string &key,
   return (true);
 }
 
-bool Server::isChannelNotFull(const Channel &channel, const Client &client) {
+bool Server::isChannelFull(const Channel &channel, const Client &client) {
   if (channel.getMode().limitSet &&
-      channel.getLimit() <= channel.getChannelClients().size()) {
+      channel.getLimit() <= channel.getChannelClients().size() && !channel.isClientInChannel(client.getFd())) {
     send471ChannelIsFull(client, channel);
-    return false;
+    return true;
   }
-  return true;
+  return false;
 }
 
 bool Server::isClientAllowedInInviteOnlyChannel(const Channel &channel,

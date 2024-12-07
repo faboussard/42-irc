@@ -1,18 +1,7 @@
-/* Copyright 2024 <faboussa>************************************************* */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   mode.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/29 10:02:17 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 21:35:31 by faboussa         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <map>
 #include <string>
 #include <utility>
+#include <sstream>
 
 #include "../../includes/Channel.hpp"
 #include "../../includes/Parser.hpp"
@@ -29,6 +18,7 @@ void Server::switchMode(Client *client, const std::string &channelName,
   Channel *channel = &_channels[channelName.substr(1)];
   size_t argumentIndex = 0;
   std::string modeChanges;
+  char currentSign = 0;
 
   for (size_t i = 0; i < modeStrings.size(); ++i) {
     const std::string &modeString = modeStrings[i];
@@ -51,7 +41,11 @@ void Server::switchMode(Client *client, const std::string &channelName,
             channel->deactivateTopicOpsOnlyMode();
           }
         }
-        modeChanges += (plusMode ? "+" : "-") + std::string(1, c);
+        if (currentSign != (plusMode ? '+' : '-')) {
+          currentSign = (plusMode ? '+' : '-');
+          modeChanges += currentSign;
+        }
+        modeChanges += c;
       } else if (c == 'k') {
         if (plusMode) {
           if (argumentIndex >= argumentVector.size()) {
@@ -61,10 +55,18 @@ void Server::switchMode(Client *client, const std::string &channelName,
           const std::string &key = argumentVector[argumentIndex++];
           channel->activateKeyMode(key, *client);
           channel->updateKey(key);
-          modeChanges += (plusMode ? "+" : "-") + std::string(1, c) + " " + key;
+          if (currentSign != (plusMode ? '+' : '-')) {
+            currentSign = (plusMode ? '+' : '-');
+            modeChanges += currentSign;
+          }
+          modeChanges += c + " " + key + " ";
         } else {
           channel->deactivateKeyMode();
-          modeChanges += (plusMode ? "+" : "-") + std::string(1, c);
+          if (currentSign != (plusMode ? '+' : '-')) {
+            currentSign = (plusMode ? '+' : '-');
+            modeChanges += currentSign;
+          }
+          modeChanges += c;
         }
       } else if (c == 'o') {
         if (argumentIndex >= argumentVector.size()) {
@@ -82,8 +84,11 @@ void Server::switchMode(Client *client, const std::string &channelName,
         } else {
           channel->removeOperator(clientToOp);
         }
-        modeChanges += (plusMode ? "+" : "-") + std::string(1, c) + " " +
-                       argumentVector[argumentIndex];
+        if (currentSign != (plusMode ? '+' : '-')) {
+          currentSign = (plusMode ? '+' : '-');
+          modeChanges += currentSign;
+        }
+        modeChanges += c + " " + argumentVector[argumentIndex] + " ";
         argumentIndex++;
       } else if (c == 'l') {
         if (plusMode) {
@@ -111,11 +116,18 @@ void Server::switchMode(Client *client, const std::string &channelName,
           }
 #endif
           channel->activateLimitMode(limit);
-          modeChanges +=
-              (plusMode ? "+" : "-") + std::string(1, c) + " " + limitStr;
+          if (currentSign != (plusMode ? '+' : '-')) {
+            currentSign = (plusMode ? '+' : '-');
+            modeChanges += currentSign;
+          }
+          modeChanges += c + " " + limitStr + " ";
         } else {
           channel->deactivateLimitMode();
-          modeChanges += (plusMode ? "+" : "-") + std::string(1, c);
+          if (currentSign != (plusMode ? '+' : '-')) {
+            currentSign = (plusMode ? '+' : '-');
+            modeChanges += currentSign;
+          }
+          modeChanges += c;
         }
       } else {
         if (plusMode && argumentIndex >= argumentVector.size()) {
@@ -126,6 +138,13 @@ void Server::switchMode(Client *client, const std::string &channelName,
   }
   if (!modeChanges.empty()) {
     broadcastInChannelAndToSender(*client, *channel, "MODE", modeChanges);
+    #ifdef DEBUG
+    {
+      std::ostringstream oss;
+      oss << "Mode changes: " << modeChanges;
+      printLog(DEBUG_LOG, COMMAND, oss.str());
+    }
+    #endif
   }
 }
 

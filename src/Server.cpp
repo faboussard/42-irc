@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/07 16:25:36 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/07 16:28:12 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,9 +221,6 @@ void Server::clearClient(int fd) {
         it->second.getChannelOperators().end())
       it->second.removeOperator(&_clients.at(fd));
     it->second.checkAndremoveClientFromTheChannel(fd);
-    if (it->second.getBannedUsers().find(_clients.at(fd).getNickname()) !=
-        it->second.getBannedUsers().end())
-      it->second.removeClientFromBannedList(_clients.at(fd).getNickname());
   }
   if (wasInaChannel)
     _clients[fd].receiveMessage(
