@@ -186,82 +186,17 @@ raccourci cpplint : ctrl shift i
 
 NExT PR 
 **Summary:**
+
+kick is different from part.
+if kicked, user is added to the ban list can cannot send any private message or rejoin the channel.
+if he disconnects, it is not clear, he is still banned.
+==> hope this creates no leaks, in my tests it did not. 
+==> however, this does not work properly because when the server shut down, or the user quits, everythin is cleaned and he has to rejoin, and he CAN, the ban is over. 
+
+===> in that context, do you want to add the cleaning of the ban list when the server is shut down ?
+
+
 _**Implemented Features:**_
-
-
----
-PR pour feature mode : 
-
-**1 Création des vecteurs modes et paramètres** :
-Les arguments sont séparés en deux parties : un vecteur modes pour les caractères de mode (+ ou - suivis de i, t, k, o, l) et un vecteur parameters pour leurs valeurs associées. On utilise des boucles pour parcourir la chaîne de modes et associer chaque paramètre à son mode si nécessaire.
-
-**2 Vérification des chaînes de modes :**
-La fonction checkModeString valide la syntaxe des modes. Elle vérifie que chaque caractère correspond à un mode autorisé (i, t, k, o, l) et que les signes + ou - précèdent les modes correctement. Si une erreur est détectée (mode invalide ou mal formé), une réponse d’erreur est envoyée au client.
-
-**3 Validation des arguments des modes :**
-La fonction checkArguments s'assure que chaque mode nécessitant un argument (comme +k pour le mot de passe ou +l pour la limite d'utilisateurs) reçoit une valeur appropriée. Si un argument est absent ou invalide (par exemple, une valeur non numérique pour +l), une erreur ERR_NEEDMOREPARAMS ou un message explicite est renvoyé au client.
-
-**4 Application des modes :**
-La fonction switchMode applique les changements de modes au canal en fonction des arguments valides. Les fonctions spécifiques des objets Channel sont appelées pour activer/désactiver les modes (activateInviteOnlyMode, updateKey, etc.). Les erreurs comme ERR_NOSUCHNICK (utilisateur inexistant pour +o) ou des indices invalides sont également gérées ici.
-
-**5 Retour d'état et logs :**
-Les modifications effectuées sont confirmées par des messages MODE envoyés aux clients. Les logs internes (activés avec DEBUG) permettent de suivre chaque étape du traitement : analyse des arguments, validation des modes, et application des changements au canal.
-
-**Tests for Mode**
-
-**Commandes qui fonctionnent**
-MODE #channel +i -tk +o user1 
-Le canal est en mode "invite-only" (+i), sans sujet (-t), sans mdp (-k) et l'utilisateur user1 est opérateur (+o).
-
-`MODE #channel +ilkto 10 key user`
-canal est en mode "invite-only" (+i), avec un sujet restreint (+t), un mot de passe de 10 caractères (+k key), et une limite d'utilisateurs (+l), avec user comme utilisateur invité.
-`MODE #channel +k password `
-Le canal est protégé par un mot de passe (+k password).
-`MODE #channel +o user1 -o user1`
-er1 est ajouté comme opérateur (+o), puis enlevé (-o).
-`MODE #channel +o user1 +o user2 +o user3 -o user4 +i -t `
-er1, user2, et user3 deviennent opérateurs (+o), user4 est enlevé comme opérateur (-o), le canal devient "invite-only" (+i), et le sujet est supprimé (-t).
-`MODE #channel +o user1 +o user2 +o user3 -o user4 `
-er1, user2, et user3 deviennent opérateurs (+o), et user4 est enlevé comme opérateur (-o).
-
-MODE #channel +itk +o user1 
-Le canal est en mode "invite-only" (+i), avec un sujet restreint (+t), sans mot de passe (-k), et l'utilisateur user1 est opérateur (+o). cependant pour simplifier, dans notre irc, la commande prendra user1 comme mdp car il traite +k et pas -k (alors que dans le vrai irc, s'il n y a pas de key,+k devient -k). => ne fonctionne pas chez nous
-
-MODE #channel +i user1 -tk +o => user1 est utilisé pour correspondre à +o
-
-**Commandes en erreur (adapted numeric replies)**
-/mode
-MODE :Not enough parameter
-MODE #channel +i +tk +o user1 
-MODE #channel +o =>missing argument
-MODE #channel -o=>missing argument
-MODE #channel +k=>missing argument
-MODE #channel +l=>missing argument
-MODE #channel +m =>m : unknown mode
-MODE #channel ++ => + : unknown mode
-/mode https://github.com/faboussard/42-irc/issues/1 +i =>#1:You're not a channel operator (si pas op)
-MODE #channel +imst =>bloqué car ne connait pas m
-
-j'ai également fait une petit modif dans broadcast channel car si on changeait le topic on ne voyait pas son changement car je limitais le broadcast message : seul les receveurs voyaient la modif. 
-jai ajouté une condition que sur privmsg pour que les messages ne soit pas dupliquées, mais que les autres actions soient bien reçues par tous.
-
-
-```
-void Server::broadcastInChannel(const Client &sender, const Channel &channel,
-                                const std::string &command,
-                                const std::string &content) {
-  std::string message = ":" + sender.getNickname() + " " + command + " " +
-                        channel.getNameWithPrefix() + " :" + content + "\r\n";
-  const clientPMap &allClients = channel.getChannelClients();
-  clientPMap::const_iterator itEnd = allClients.end();
-  for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
-    if (it->first == sender.getFd() && command == "PRIVMSG")
-      continue;
-    it->second->receiveMessage(message);
-  }
-}
-```
-
 
 
 DEBUG GDB

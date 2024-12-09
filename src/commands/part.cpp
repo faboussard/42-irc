@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 11:53:20 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 15:46:52 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:09:22 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ std::pair<std::vector<std::string>, std::string> Server::parsePartParams(
     for (size_t i = 0; i < channelsVector.size(); ++i)
       afterKey << channelsVector[i] << "|";
     afterValue << "reason: " << reason;
-    Server::printLog(DEBUG_LOG, COMMAND, before.str());
-    Server::printLog(DEBUG_LOG, COMMAND, afterKey.str());
-    Server::printLog(DEBUG_LOG, COMMAND, afterValue.str());
+    Log::printLog(DEBUG_LOG, COMMAND, before.str());
+    Log::printLog(DEBUG_LOG, COMMAND, afterKey.str());
+    Log::printLog(DEBUG_LOG, COMMAND, afterValue.str());
   }
 #endif
   return std::make_pair(channelsVector, reason);

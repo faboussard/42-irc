@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/05 10:29:22 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:07:25 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <ctime>
 #include <map>
 #include <string>
+#include <set>
 
 #include "../includes/Config.hpp"
 
@@ -70,6 +71,7 @@ class Channel {
   const clientPMap &getChannelClients(void) const;
   const clientPMap &getChannelOperators(void) const;
   const clientPMap &getInvitedClients(void) const;
+  const std::set<std::string> &getBannedUsers(void) const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
   const std::string getChannelModeFlag(void) const;

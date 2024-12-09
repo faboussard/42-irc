@@ -1,12 +1,12 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 22:19:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:00:59 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ class Server {
   /*  Log */
   static void printLog(eLogLevel level, eLogContext context,
                        const std::string &message);
-
  private:
   /* Server Management */
   void fetchStartTime(void);
@@ -105,6 +104,7 @@ class Server {
   /* Checkers */
   bool nickExists(const std::string &nick) const;
   bool channelExists(const std::string &channel);
+//   bool isClientInBannedList(const Channel &channel, const Client &client);
 
   /* Commands handling */
   void handleCommand(Command command, const std::string &argument, int fd);
@@ -115,6 +115,9 @@ class Server {
                                      const Channel &channel,
                                      const std::string &command,
                                      const std::string &content);
+  void broadcastInChannelAndToSenderNoContent(const Client &client,
+                                              const Channel &channel,
+                                              const std::string &command);
   void sendNotice(const Client &client, const std::string &message);
 
   /*  Command  */
@@ -129,7 +132,7 @@ class Server {
   void processJoinRequest(int fd, Client *client, Channel *channel);
   bool isKeyValid(const Channel &channel, const std::string &keyToCheck,
                   const Client &client);
-  bool isChannelNotFull(const Channel &channel, const Client &client);
+  bool isChannelFull(const Channel &channel, const Client &client);
   bool isClientAllowedInInviteOnlyChannel(const Channel &channel,
                                           const Client &client);
   stringVectorPair parseJoinParams(const std::string &param);
@@ -188,6 +191,11 @@ class Server {
   void parseKickParams(const std::string &param, const Client &client,
                        std::string *channelName, std::string *targetNick,
                        std::string *reason);
+  void kickUser(const Client &client, Channel *channel, Client *targetClient,
+               const std::string &reason);
+
+    void kickBroadcast(const Client &sender, const Channel &channel,
+                      const std::string &command, const std::string &content);
 
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);

@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 21:35:44 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:08:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ void Server::joinChannel(int fd, const std::string &param) {
         (i < channelsAndKeys.second.size()) ? channelsAndKeys.second[i] : "";
     if (isChannelNameValid(channelName, client)) {
       std::string channelNameWithoutPrefix = channelName.substr(1);
-      // channelsMap::iterator it = _channels.find(channelNameWithoutPrefix);
       channelsMap::iterator it = _channels.begin();
       channelsMap::iterator itEnd = _channels.end();
       for (; it != itEnd; ++it) {
@@ -99,7 +98,7 @@ void Server::joinChannel(int fd, const std::string &param) {
         send405TooManyChannels(client);
         return;
       }
-      if (isChannelNotFull(constChannel, client) &&
+      if (!isChannelFull(constChannel, client) &&
           isClientAllowedInInviteOnlyChannel(constChannel, client) &&
           isKeyValid(constChannel, key, client)) {
         processJoinRequest(fd, &client, &channel);
@@ -152,13 +151,13 @@ bool Server::isKeyValid(const Channel &channel, const std::string &key,
   return (true);
 }
 
-bool Server::isChannelNotFull(const Channel &channel, const Client &client) {
+bool Server::isChannelFull(const Channel &channel, const Client &client) {
   if (channel.getMode().limitSet &&
-      channel.getLimit() <= channel.getChannelClients().size()) {
+      channel.getLimit() <= channel.getChannelClients().size() && !channel.isClientInChannel(client.getFd())) {
     send471ChannelIsFull(client, channel);
-    return false;
+    return true;
   }
-  return true;
+  return false;
 }
 
 bool Server::isClientAllowedInInviteOnlyChannel(const Channel &channel,
@@ -207,13 +206,10 @@ void Server::processJoinRequest(int fd, Client *client, Channel *channel) {
   if (clientsInChannel.find(fd) == clientsInChannel.end()) {
     channel->addClientToChannelMap(client);
     client->incrementChannelsCount();
-    broadcastInChannelAndToSender(*client, *channel, "JOIN", "");
+    broadcastInChannelAndToSenderNoContent(*client, *channel, "JOIN");
     send353Namreply(*client, *channel);
     send366Endofnames(*client, *channel);
-    if (channel->getTopic().topic.empty())
-      send331Notopic(*client, *channel);
-    else
-      send332Topic(*client, *channel);
+    if (!channel->getTopic().topic.empty()) send332Topic(*client, *channel);
   }
 }
 
@@ -226,5 +222,5 @@ void Server::addChanneltoServer(const std::string &channelName) {
   _channels[channelName] = newChannel;
   std::ostringstream oss;
   oss << newChannel.getNameWithPrefix() << ": New channel created";
-  printLog(INFO_LOG, CHANNEL, oss.str());
+  Log::printLog(INFO_LOG, CHANNEL, oss.str());
 }

@@ -1,4 +1,4 @@
-/* Copyright 2024 <mbernard>************************************************* */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/05 21:58:26 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/07 15:54:59 by fanny            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,6 @@ bool Client::isPasswordGiven(void) const { return (_passwordGiven); }
 bool Client::isAccepted(void) const { return (_accepted); }
 
 uint8_t Client::getNbPassAttempts(void) const { return (_nbPassAttempts); }
-
-// bool Client::botLaunched(void) const { return (_botLaunched); }
 
 /*============================================================================*/
 /*       Setters                                                              */

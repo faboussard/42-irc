@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/05 21:49:55 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:05:50 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,33 @@ void Server::kick(int fd, const std::string &param) {
     send441UserNotInChannel(client, targetNick, channel);
     return;
   }
-  std::string message = targetNick + " " + reason + "\r\n";
-  broadcastInChannelAndToSender(client, channel, "KICK", message);
-  quitChannel(fdTarget, &channel, targetClient,
-              "kicked by " + client.getNickname());
+  if (&client == targetClient) {
+    send400UnknownError(client, "KICK", "cannot kick yourself");
+    return;
+  }
+    kickUser(client, &channel, targetClient, reason);
+}
+
+void Server::kickUser(const Client &client, Channel *channel, Client *targetClient, const std::string &reason) {
+  std::string message = targetClient->getNickname() + " " + reason + "\r\n";
+  kickBroadcast(client, *channel, "KICK", message);
+  targetClient->decrementChannelsCount();
+  channel->removeClientFromChannelMap(targetClient);
+  if (channel->getChannelOperators().find(targetClient->getFd()) != channel->getChannelOperators().end()) {
+    channel->removeOperator(targetClient);
+  }
+}
+
+void Server::kickBroadcast(const Client &sender,
+                                           const Channel &channel,
+                                           const std::string &command,
+                                           const std::string &content) {
+  std::string message = ":" + sender.getNickname() + " " + command + " " +
+                        channel.getNameWithPrefix() + " " + content + "\r\n";
+  const clientPMap &allClients = channel.getChannelClients();
+  clientPMap::const_iterator itEnd = allClients.end();
+  for (clientPMap::const_iterator it = allClients.begin(); it != itEnd; ++it) {
+    Client *client = it->second;
+    client->receiveMessage(message);
+  }
 }
