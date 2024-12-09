@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/07 16:43:04 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/09 10:00:59 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ class Server {
   /* Checkers */
   bool nickExists(const std::string &nick) const;
   bool channelExists(const std::string &channel);
-  bool isClientInBannedList(const Channel &channel, const Client &client);
+//   bool isClientInBannedList(const Channel &channel, const Client &client);
 
   /* Commands handling */
   void handleCommand(Command command, const std::string &argument, int fd);
@@ -193,6 +193,9 @@ class Server {
                        std::string *reason);
   void kickUser(const Client &client, Channel *channel, Client *targetClient,
                const std::string &reason);
+
+    void kickBroadcast(const Client &sender, const Channel &channel,
+                      const std::string &command, const std::string &content);
 
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);

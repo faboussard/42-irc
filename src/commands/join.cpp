@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/07 16:45:52 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/09 10:08:00 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ void Server::joinChannel(int fd, const std::string &param) {
         (i < channelsAndKeys.second.size()) ? channelsAndKeys.second[i] : "";
     if (isChannelNameValid(channelName, client)) {
       std::string channelNameWithoutPrefix = channelName.substr(1);
-      // channelsMap::iterator it = _channels.find(channelNameWithoutPrefix);
       channelsMap::iterator it = _channels.begin();
       channelsMap::iterator itEnd = _channels.end();
       for (; it != itEnd; ++it) {
@@ -101,7 +100,7 @@ void Server::joinChannel(int fd, const std::string &param) {
       }
       if (!isChannelFull(constChannel, client) &&
           isClientAllowedInInviteOnlyChannel(constChannel, client) &&
-          isKeyValid(constChannel, key, client) && !isClientInBannedList(constChannel, client)) {
+          isKeyValid(constChannel, key, client)) {
         processJoinRequest(fd, &client, &channel);
       }
     }
@@ -171,15 +170,6 @@ bool Server::isClientAllowedInInviteOnlyChannel(const Channel &channel,
   return true;
 }
 
-bool Server::isClientInBannedList(const Channel &channel, const Client &client) {
-  if (channel.getBannedUsers().find(client.getNickname()) !=
-      channel.getBannedUsers().end()) {
-    send474BannedFromChan(client, channel);
-    return (true);
-  }
-  return (false);
-}
-
 bool Server::isChannelNameValid(const std::string &channelNameToCheck,
                                 const Client &client) {
 #ifdef DEBUG
@@ -232,5 +222,5 @@ void Server::addChanneltoServer(const std::string &channelName) {
   _channels[channelName] = newChannel;
   std::ostringstream oss;
   oss << newChannel.getNameWithPrefix() << ": New channel created";
-  printLog(INFO_LOG, CHANNEL, oss.str());
+  Log::printLog(INFO_LOG, CHANNEL, oss.str());
 }

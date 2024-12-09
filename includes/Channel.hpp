@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/07 16:17:01 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/09 10:07:25 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ class Channel {
   Mode _mode;
   std::string _key;
   unsigned int _limit;
-  std::set<std::string> _bannedUsers;
 
   clientPMap _channelClients;
   clientPMap _channelOperators;
@@ -91,9 +90,6 @@ class Channel {
   void removeClientFromInvitedMap(Client *client);
   bool isClientInChannel(int fd) const;
   bool isClientInvited(int fd) const;
-  bool isClientInBannedList(const std::string &nickname) const;
-  void addBan(const std::string &nickname);
-  void removeClientFromBannedList(const std::string &nickname);
 
   /* Modes handling */
   // invite-only (i)

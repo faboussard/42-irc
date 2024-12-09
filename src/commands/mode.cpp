@@ -27,8 +27,6 @@ void Server::switchMode(Client *client, const std::string &channelName,
 
     for (size_t j = 1; j < modeString.size(); ++j) {
       const char &c = modeString[j];
-
-      // Handle modes without arguments
       if (c == 'i' || c == 't') {
         if (plusMode) {
           (c == 'i') ? channel->activateInviteOnlyMode()
@@ -43,7 +41,6 @@ void Server::switchMode(Client *client, const std::string &channelName,
         }
         mode += c;
       }
-      // Handle modes with one argument (e.g., key, limit)
       else if (c == 'k' || c == 'l') {
         if (plusMode) {
           if (argumentIndex >= argumentVector.size()) {
@@ -109,7 +106,7 @@ void Server::switchMode(Client *client, const std::string &channelName,
 #ifdef DEBUG
     std::ostringstream oss;
     oss << "Mode changes: " << modeChanges;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
 #endif
   }
 }
@@ -146,7 +143,7 @@ char Server::checkModeArguments(const stringVector &modeStrings,
                                                  : "N/A")
             << " | "
             << "booleen:" << modesRequiringArgument[c];
-        printLog(DEBUG_LOG, COMMAND, oss.str());
+        Log::printLog(DEBUG_LOG, COMMAND, oss.str());
       }
 #endif
       if ((plusMode && modesRequiringArgument[c]) ||
@@ -166,7 +163,7 @@ std::string Server::checkModeString(const stringVector &modestringToCheck) {
   {
     std::ostringstream oss;
     oss << "modestringToCheck.size(): " << modestringToCheck.size();
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   if (modestringToCheck.empty()) {
@@ -179,7 +176,7 @@ std::string Server::checkModeString(const stringVector &modestringToCheck) {
     {
       std::ostringstream oss;
       oss << "mode: " << mode;
-      printLog(DEBUG_LOG, COMMAND, oss.str());
+      Log::printLog(DEBUG_LOG, COMMAND, oss.str());
     }
 #endif
     if (mode[0] != PLUS_CHAR && mode[0] != MINUS_CHAR) return mode;
@@ -189,7 +186,7 @@ std::string Server::checkModeString(const stringVector &modestringToCheck) {
         {
           std::ostringstream oss;
           oss << "Invalid Mode: " << mode[j];
-          printLog(DEBUG_LOG, COMMAND, oss.str());
+          Log::printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
         return mode;
@@ -251,7 +248,7 @@ void Server::mode(int fd, const std::string &arg) {
   {
     std::ostringstream oss;
     oss << "ENTER SWITCH MODE FUNCTION";
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   switchMode(&_clients[fd], channelName, modestringVector, modeArgumentsVector);
@@ -281,9 +278,9 @@ stringVectorPair Server::parseModeParams(const std::string &arg) {
     afterValue << "valueVector: ";
     for (size_t i = 0; i < valueVector.size(); ++i)
       afterValue << valueVector[i] << "|";
-    Server::printLog(DEBUG_LOG, COMMAND, before.str());
-    Server::printLog(DEBUG_LOG, COMMAND, afterKey.str());
-    Server::printLog(DEBUG_LOG, COMMAND, afterValue.str());
+    Log::printLog(DEBUG_LOG, COMMAND, before.str());
+    Log::printLog(DEBUG_LOG, COMMAND, afterKey.str());
+    Log::printLog(DEBUG_LOG, COMMAND, afterValue.str());
   }
 #endif
   return std::make_pair(keyVector, valueVector);

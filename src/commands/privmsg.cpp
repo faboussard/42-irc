@@ -1,12 +1,12 @@
-/* ************************************************************************** */
+/* Copyright 2024 <faboussa>************************************************* */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
+/*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:18:52 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/07 16:34:52 by fanny            ###   ########.fr       */
+/*   Updated: 2024/12/09 10:09:48 by faboussa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@ bool Server::validPrivmsgTargets(const Client &client, stringVector *targets) {
   {
     std::ostringstream oss;
     oss << "targetSize: " << TargetsSize;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
   {
     std::ostringstream oss;
     oss << "MAXTARGETS: " << gConfig->getLimit(MAXTARGETS);
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   if (TargetsSize > gConfig->getLimit(MAXTARGETS)) {
@@ -54,7 +54,7 @@ bool Server::validPrivmsgTargets(const Client &client, stringVector *targets) {
       {
         std::ostringstream oss;
         oss << "target: " << target;
-        printLog(DEBUG_LOG, COMMAND, oss.str());
+        Log::printLog(DEBUG_LOG, COMMAND, oss.str());
       }
 #endif
       if (target[0] == CHAN_OP)
@@ -99,12 +99,12 @@ bool Server::parsePrivmsgArguments(const std::string &arg, const Client &client,
   {
     std::ostringstream oss;
     oss << "targetsPart: " << targetsPart;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
   {
     std::ostringstream oss;
     oss << "message: " << message;
-    printLog(DEBUG_LOG, COMMAND, oss.str());
+    Log::printLog(DEBUG_LOG, COMMAND, oss.str());
   }
 #endif
   if (!validPrivmsgTargets(client, targetsVector)) {
@@ -131,7 +131,7 @@ void Server::privmsg(int fd, const std::string &arg) {
     {
       std::ostringstream oss;
       oss << "message: " << message;
-      printLog(DEBUG_LOG, COMMAND, oss.str());
+      Log::printLog(DEBUG_LOG, COMMAND, oss.str());
     }
 #endif
     if (!channelExists(target) && !findClientByNickname(target)) {
@@ -145,7 +145,7 @@ void Server::privmsg(int fd, const std::string &arg) {
       }
       Channel &channel = _channels.at(target.substr(1));
       if ((channel.getMode().inviteOnly &&
-          !channel.isClientInvited(sender.getFd())) || channel.isClientInBannedList(sender.getNickname())) {
+          !channel.isClientInvited(sender.getFd()))) {
         send404CannotSendToChan(sender, channel);
         return;
       }
@@ -155,7 +155,7 @@ void Server::privmsg(int fd, const std::string &arg) {
           std::ostringstream oss;
           oss << "broadcast to operators only: " << target
               << " message: " << message;
-          printLog(DEBUG_LOG, COMMAND, oss.str());
+          Log::printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
         broadcastToOperatorsOnly(sender, channel, "PRIVMSG", message);
@@ -165,7 +165,7 @@ void Server::privmsg(int fd, const std::string &arg) {
           std::ostringstream oss;
           oss << "broadcast in channel: " << target
               << " message: " << message;
-          printLog(DEBUG_LOG, COMMAND, oss.str());
+          Log::printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
         broadcastInChannelAndToSender(sender, channel, "PRIVMSG", message);
@@ -178,7 +178,7 @@ void Server::privmsg(int fd, const std::string &arg) {
           std::ostringstream oss;
           oss << "send privmsg to client: " << target
               << " message: " << message;
-          printLog(DEBUG_LOG, COMMAND, oss.str());
+          Log::printLog(DEBUG_LOG, COMMAND, oss.str());
         }
 #endif
         sendPrivmsgToClient(sender, *client, message);
