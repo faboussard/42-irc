@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 08:30:30 by mbernard          #+#    #+#             */
-/*   Updated: 2024/12/09 10:07:25 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:48:21 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ class Channel {
   const clientPMap &getChannelClients(void) const;
   const clientPMap &getChannelOperators(void) const;
   const clientPMap &getInvitedClients(void) const;
-  const std::set<std::string> &getBannedUsers(void) const;
   const Topic &getTopic(void) const;
   const Mode &getMode(void) const;
   const std::string getChannelModeFlag(void) const;

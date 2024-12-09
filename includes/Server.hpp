@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/09 10:46:05 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:48:28 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,6 @@ class Server {
   /* Checkers */
   bool nickExists(const std::string &nick) const;
   bool channelExists(const std::string &channel);
-  //   bool isClientInBannedList(const Channel &channel, const Client &client);
 
   /* Commands handling */
   void handleCommand(Command command, const std::string &argument, int fd);

@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 13:59:30 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/09 10:42:47 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:48:36 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,12 +330,6 @@ void send472UnknownMode(const Client &client, const std::string &modeChar) {
 
 void send473InviteOnlyChan(const Client &client, const Channel &channel) {
   std::string message = _473_ERR_INVITEONLYCHAN(client.getNickname(),
-                                                channel.getNameWithPrefix());
-  sendNumericReply(client.getFd(), &message);
-}
-
-void send474BannedFromChan(const Client &client, const Channel &channel) {
-  std::string message = _474_ERR_BANNEDFROMCHAN(client.getNickname(),
                                                 channel.getNameWithPrefix());
   sendNumericReply(client.getFd(), &message);
 }
