@@ -6,7 +6,7 @@
 /*   By: fanny <faboussa@student.42lyon.fr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/09 10:42:28 by yusengok         ###   ########.fr       */
+/*   Updated: 2024/12/09 14:55:23 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,11 @@ Server::Server(int port, const std::string &password)
 Client *Server::findClientByNickname(const std::string &nickname) {
   clientsMap::iterator itEnd = _clients.end();
   for (clientsMap::iterator it = _clients.begin(); it != itEnd; ++it) {
-    if (it->second.getNickname() == nickname) {
+    std::string currentNick = it->second.getNickname();
+    std::string nickTofind = nickname;
+    strToUpper(&currentNick);
+    strToUpper(&nickTofind);
+    if (currentNick == nickTofind) {
       return (&it->second);
     }
   }
