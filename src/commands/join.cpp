@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/09 10:08:00 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:44:13 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,10 @@
 #include <utility>
 #include <vector>
 
-#include "../../includes/Server.hpp"
-
 #include "../../includes/Client.hpp"
 #include "../../includes/Log.hpp"
 #include "../../includes/Parser.hpp"
+#include "../../includes/Server.hpp"
 #include "../../includes/colors.hpp"
 #include "../../includes/numericReplies.hpp"
 #include "../../includes/utils.hpp"
@@ -153,7 +152,8 @@ bool Server::isKeyValid(const Channel &channel, const std::string &key,
 
 bool Server::isChannelFull(const Channel &channel, const Client &client) {
   if (channel.getMode().limitSet &&
-      channel.getLimit() <= channel.getChannelClients().size() && !channel.isClientInChannel(client.getFd())) {
+      channel.getLimit() <= channel.getChannelClients().size() &&
+      !channel.isClientInChannel(client.getFd())) {
     send471ChannelIsFull(client, channel);
     return true;
   }

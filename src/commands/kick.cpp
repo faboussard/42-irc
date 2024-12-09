@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 10:20:03 by yusengok          #+#    #+#             */
-/*   Updated: 2024/12/09 10:05:50 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:44:43 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,8 @@
 #include <sstream>
 #include <string>
 
-#include "../../includes/Server.hpp"
-
 #include "../../includes/Log.hpp"
+#include "../../includes/Server.hpp"
 
 void Server::parseKickParams(const std::string &param, const Client &client,
                              std::string *channelName, std::string *targetNick,
@@ -81,23 +80,24 @@ void Server::kick(int fd, const std::string &param) {
     send400UnknownError(client, "KICK", "cannot kick yourself");
     return;
   }
-    kickUser(client, &channel, targetClient, reason);
+  kickUser(client, &channel, targetClient, reason);
 }
 
-void Server::kickUser(const Client &client, Channel *channel, Client *targetClient, const std::string &reason) {
+void Server::kickUser(const Client &client, Channel *channel,
+                      Client *targetClient, const std::string &reason) {
   std::string message = targetClient->getNickname() + " " + reason + "\r\n";
   kickBroadcast(client, *channel, "KICK", message);
   targetClient->decrementChannelsCount();
   channel->removeClientFromChannelMap(targetClient);
-  if (channel->getChannelOperators().find(targetClient->getFd()) != channel->getChannelOperators().end()) {
+  if (channel->getChannelOperators().find(targetClient->getFd()) !=
+      channel->getChannelOperators().end()) {
     channel->removeOperator(targetClient);
   }
 }
 
-void Server::kickBroadcast(const Client &sender,
-                                           const Channel &channel,
-                                           const std::string &command,
-                                           const std::string &content) {
+void Server::kickBroadcast(const Client &sender, const Channel &channel,
+                           const std::string &command,
+                           const std::string &content) {
   std::string message = ":" + sender.getNickname() + " " + command + " " +
                         channel.getNameWithPrefix() + " " + content + "\r\n";
   const clientPMap &allClients = channel.getChannelClients();

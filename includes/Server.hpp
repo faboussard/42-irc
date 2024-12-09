@@ -6,7 +6,7 @@
 /*   By: faboussa <faboussa@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/17 11:50:56 by faboussa          #+#    #+#             */
-/*   Updated: 2024/12/09 10:00:59 by faboussa         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:46:05 by yusengok         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,15 +56,15 @@ extern Config *gConfig;
 
 class Server {
  private:
-  static bool                _signal;
-  int                        _socketFd;
-  int                        _port;
-  struct sockaddr_in         _address;
+  static bool _signal;
+  int _socketFd;
+  int _port;
+  struct sockaddr_in _address;
   std::vector<struct pollfd> _pollFds;
-  std::string                _startTime;
-  std::string                _password;
-  clientsMap                 _clients;
-  channelsMap                _channels;
+  std::string _startTime;
+  std::string _password;
+  clientsMap _clients;
+  channelsMap _channels;
 
  public:
   explicit Server(int port, const std::string &password);
@@ -82,6 +82,7 @@ class Server {
   /*  Log */
   static void printLog(eLogLevel level, eLogContext context,
                        const std::string &message);
+
  private:
   /* Server Management */
   void fetchStartTime(void);
@@ -104,13 +105,14 @@ class Server {
   /* Checkers */
   bool nickExists(const std::string &nick) const;
   bool channelExists(const std::string &channel);
-//   bool isClientInBannedList(const Channel &channel, const Client &client);
+  //   bool isClientInBannedList(const Channel &channel, const Client &client);
 
   /* Commands handling */
   void handleCommand(Command command, const std::string &argument, int fd);
   void broadcastInChannelExceptToSender(const Client &client,
-                          const Channel &channel, const std::string &command,
-                          const std::string &content);
+                                        const Channel &channel,
+                                        const std::string &command,
+                                        const std::string &content);
   void broadcastInChannelAndToSender(const Client &client,
                                      const Channel &channel,
                                      const std::string &command,
@@ -192,10 +194,10 @@ class Server {
                        std::string *channelName, std::string *targetNick,
                        std::string *reason);
   void kickUser(const Client &client, Channel *channel, Client *targetClient,
-               const std::string &reason);
+                const std::string &reason);
 
-    void kickBroadcast(const Client &sender, const Channel &channel,
-                      const std::string &command, const std::string &content);
+  void kickBroadcast(const Client &sender, const Channel &channel,
+                     const std::string &command, const std::string &content);
 
   /*-------- PRIVMSG --------*/
   void privmsg(int fd, const std::string &arg);

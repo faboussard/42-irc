@@ -1,7 +1,19 @@
+/* Copyright 2024 <yusengok> ************************************************ */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mode.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yusengok <yusengok@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/12/09 10:45:18 by yusengok          #+#    #+#             */
+/*   Updated: 2024/12/09 10:45:41 by yusengok         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <map>
+#include <sstream>
 #include <string>
 #include <utility>
-#include <sstream>
 
 #include "../../includes/Channel.hpp"
 #include "../../includes/Parser.hpp"
@@ -40,8 +52,7 @@ void Server::switchMode(Client *client, const std::string &channelName,
           mode += currentSign;
         }
         mode += c;
-      }
-      else if (c == 'k' || c == 'l') {
+      } else if (c == 'k' || c == 'l') {
         if (plusMode) {
           if (argumentIndex >= argumentVector.size()) {
             send461NeedMoreParams(*client, "MODE +" + std::string(1, c));
