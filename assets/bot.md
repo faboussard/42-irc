@@ -166,5 +166,25 @@ The bot enhances responses by including pretty cat ASCII art, as the cat serves 
 
 ## API Requests Handling
 
-###  Timeout Management
-Manages API requests efficiently with timeout settings and poll, ensuring smooth and responsive communication.
+In KawaiiBot, API requests are used to fetch data for various interactive commands, including jokes, insults, advice, and weather forecasts. It utilizes four key APIs:
+
+- Joke: [Random dad joke](https://icanhazdadjoke.com/)
+- Insult: [Evil Insult Generator](https://evilinsult.com)
+- Advice: [Advice Slip JSON API](https://api.adviceslip.com)
+- Weather: [weather api](https://www.weatherapi.com/)
+
+### 1. Request Execution
+
+Each API request is sent using the `popen(curl)` command, which opens a process for executing the cURL command.   
+The responses are handled asynchronously with the poll system to wait for data, allowing the bot to continue processing other tasks without blocking.
+
+### 2. Polling for API Responses
+
+It uses a polling mechanism to monitor multiple file descriptors (FDs) simultaneously.   
+This ensures that when data becomes available from any of the API requests, it is processed promptly. The `poll` function checks for new data and triggers the appropriate handler when the response is received.
+
+### 3. Timeout Handling
+
+To prevent the bot from waiting indefinitely for a response, the bot checks for timeouts.   
+Each API request is given a specific timeout period, and if no response is received within that time, the bot closes the request, removes it from the polling list, and sends a "service temporary unavailable" message to clients.
+
