@@ -71,9 +71,23 @@ For detailed implementation and features of the bot, refer [here](./assets/bot.m
 
 ## 📌 Log
 
-The Log class provides a static logging mechanism to record messages with various severity levels (DEBUG, INFO, NOTIFY, WARNING, ERROR) and contexts (e.g., SYSTEM, COMMAND, CLIENT). It formats logs with a timestamp and color-coded output for better clarity, supporting both standard output and error output for different log levels.
+The Log class provides a static logging mechanism to record messages with various severity levels and contexts. It formats logs with a timestamp and color-coded output for better clarity, supporting both standard output and error output for different log levels.
 
-For more details, refer [here](./assets/log.md)
+Each log message includes:
+- A timestamp indicating when it was logged
+- A severity label (DEBUG, INFO, NOTIFY, WARNING, ERROR)
+- A context identifier, indicating the part of the system generating the log (e.g., SYSTEM, SIGNAL, COMMAND, CLIENT, etc.)
+- A message detailing the log content
+
+The Log class provides the `printLog` method, which formats and outputs log messages to the terminal with colors for each severity level and context, and is designed to work in both development and production environments.
+
+Example of logs
+```
+[2024-12-11 10:33:42] INFO    [System] Setting configuration. Missing parameters will be set to default values.
+[2024-12-11 10:33:43] INFO    [System] Configuration successfully set.
+[2024-12-11 10:33:43] DEBUG   [System] Configuration: NETWORK=42IRC CHANLIMIT=20 CHANNELLEN=200 MAXTARGETS=4 NICKLEN=9 HOSTLEN=63 KICKLEN=255 TOPICLEN=307 USERLEN=10 CASEMAPPING=ascii CHANMODES=i,t,k,l CHANTYPES=# PREFIX=(o)@ MODES=4 USERMODES= STATUSMSG=@ 
+[2024-12-11 10:33:43] NOTICE  [System] Server started on port 6667
+```
 
 ---
 ## 📌 License
