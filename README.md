@@ -63,13 +63,13 @@ For detailed information on each command, refer to their respective source files
 The IRC Bot operates independently of the server and interacts with the server as a client.   
 It listens for specific commands and responds accordingly integrating external APIs to provide services.
 
-For detailed implementation and features of the bot, refer [here](./assets/Bot.md)
+For detailed implementation and features of the bot, refer [here](./assets/bot.md)
 
 ## 📌 Log
 
 The Log class provides a static logging mechanism to record messages with various severity levels (DEBUG, INFO, NOTIFY, WARNING, ERROR) and contexts (e.g., SYSTEM, COMMAND, CLIENT). It formats logs with a timestamp and color-coded output for better clarity, supporting both standard output and error output for different log levels.
 
-For more details, refer [here](./assets/Log.md)
+For more details, refer [here](./assets/log.md)
 
 ---
 ## 📌 License
