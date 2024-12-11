@@ -13,14 +13,14 @@ The Bot operates independently of the server and behaves like a client, respondi
 
 ```
 make
-./ircserv 6667 pass
+./ircserv <port> <server password>
 ```
 
 ### IRC Bot
 
 ```
 make bot
-./ircbot 6667 pass
+./ircbot <port> <server password>
 ```
 From client's interface (like HexChat)
 ```
