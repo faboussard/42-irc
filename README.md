@@ -35,7 +35,11 @@ The key should be set in `.env` file as `WEATHER_API_KEY=key` at the root of the
 
 ### Communication flow
 
-[Server mounting with polling](./assets/MountingAnIRCServerWithPolling.md)
+The server uses sockets for communication with clients, providing a reliable method for sending and receiving messages over a network.   
+When the server starts, it opens a socket to listen for incoming client connections on a specified port. Once a client connects, the server creates a communication channel using the socket, enabling the exchange of data (e.g., IRC commands).
+The server then processes these messages via a polling mechanism that ensures active management of incoming requests without blocking.
+
+For a detailed explanation of the server's socket usage and polling mechanism, refer to [Server mounting with polling](./assets/MountingAnIRCServerWithPolling.md).
 
 ### Supported commands
 
