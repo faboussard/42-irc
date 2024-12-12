@@ -6,6 +6,7 @@ This project consists of an IRC server and a bot that interacts with the server.
 Server is responsible for managing incoming messages, parsing commands, and handling communication between Clients and Channels. Clients in this context refer to external IRC clients (e.g., HexChat), while the server tracks the Client information.   
 The Bot operates independently of the server and behaves like a client, responding to specific commands.
 
+[![Watch the video](https://img.youtube.com/vi/a2qnNwjRuQ4/0.jpg)](https://www.youtube.com/watch?v=a2qnNwjRuQ4)
 ---
 ## 📌 Usage
 
